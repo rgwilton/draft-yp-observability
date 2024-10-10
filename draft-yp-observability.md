@@ -19,22 +19,23 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "TODO - Your title"
-abbrev: "TODO - Abbreviation"
+title: "YANG Push Operational Data Observability Enhancements"
+abbrev: "Yang Push Observability"
 category: info
 
-docname: draft-todo-yourname-protocol-latest
-submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
+docname: draft-yp-observability-latest
+submissiontype: IETF
 number:
 date:
 consensus: true
 v: 3
-area: AREA
-workgroup: WG Working Group
+area: OPS
+workgroup: NETCONF
 keyword:
- - next generation
- - unicorn
- - sparkling distributed ledger
+ - YANG Push
+ - Observability
+ - Network Telemetry
+ - Operational Data
 venue:
   group: WG
   type: Working Group
@@ -45,9 +46,9 @@ venue:
 
 author:
  -
-    fullname: Your Name Here
-    organization: Your Organization Here
-    email: your.email@example.com
+    fullname: Robert Wilton
+    organization: Cisco Systems
+    email: rwilton@cisco.com
 
 normative:
 
