@@ -98,6 +98,11 @@ This section lists some other potential issues and enhancements that should be c
 
 ## YANG Extensions Data Model
 
+~~~~ yang
+{::include yang/ietf-yp-ext.yang}
+~~~~
+{: align="left" sourcecode-markers="true" sourcecode-name="ietf-yp-ext@2024-10-18.yang" title="YANG module ietf-yp-ext"}
+
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
@@ -119,4 +124,4 @@ TODO - This document will need to register new YANG models with IANA.
 # Acknowledgments
 {:numbered="false"}
 
-TODO.  This early work is based on discussions with various folk, particularly XXX
+This is early work is based on discussions with various folk, particularly Thomas Graf, Holger Keller, Dan Voyer, Nils Warnke, and Alex Huang Feng; but also wider conversations that include: Benoit Claise, Pierre Francois, Paolo Lucente, Jean Quilbeuf, and others.
