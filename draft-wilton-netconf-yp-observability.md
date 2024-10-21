@@ -163,3 +163,22 @@ TODO - This document will need to register new YANG models with IANA.
 
 This is early work is based on discussions with various folk, particularly Thomas Graf, Holger Keller, Dan Voyer, Nils Warnke, and Alex Huang Feng; but also wider conversations that include: Benoit Claise, Pierre Francois, Paolo Lucente, Jean Quilbeuf, and others.
 
+# Tree output
+
+# ietf-yp-ext.yang tree
+
+This sections shows the raw YANG tee output for ietf-yp-ext.yang
+
+~~~~ yangtree
+{::include yang/ietf-yp-ext.tree.txt}
+~~~~
+{: align="left" title="YANG tree for ietf-yp-ext.yang"}
+
+## Combined YANG tree
+
+This section shows the subsets of the combined YANG Push and Subscribed Notification trees that have changed.
+
+~~~~ yangtree
+{::include yang/all.tree.txt}
+~~~~
+{: align="left" title="YANG tree for ietf-yp-ext.yang with YANG Push and Subscribed Notifications"}
