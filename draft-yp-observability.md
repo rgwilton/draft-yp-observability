@@ -51,7 +51,7 @@ author:
     email: rwilton@cisco.com
 
 normative:
-  YANG Push: RFC 8641
+  YANG-Push: RFC8641
 
 informative:
   I-D.ietf-nmop-network-anomaly-architecture:
@@ -66,9 +66,9 @@ TODO Abstract
 
 # Introduction
 
-{{I-D.ietf-nmop-yang-message-broker-integration}} describes an architecture for how YANG Push can be integrated effectively with message brokers (e.g., Apache Kafka), that is part of a wider architecture for a *Network Anomaly Detection Framework*, specified in {{I-D.ietf-nmop-network-anomaly-architecture}}.
+{{I-D.ietf-nmop-yang-message-broker-integration}} describes an architecture for how YANG Push {{RFC8641}} can be integrated effectively with message brokers (e.g., Apache Kafka), that is part of a wider architecture for a *Network Anomaly Detection Framework*, specified in {{I-D.ietf-nmop-network-anomaly-architecture}}.
 
-{{YANG Push}} is a key part of these architectures, but through experience of implementing YANG Push specifically for the use cases described in the above architecture documents, it became clear that there are aspects of YANG Push that are not optimal for these use cases, particular as they relate to operational data, both neither producer or consumer.
+YANG-Push is a key part of these architectures, but through experience of implementing YANG Push specifically for the use cases described in the above architecture documents, it became clear that there are aspects of YANG Push that are not optimal for these use cases, particular as they relate to operational data, both neither producer or consumer.
 
 For the consumer of the telemetry data, there is a requirement to associate a schema with the provided data.  It is much more helpful for the schema to be associated with the individual messages rather than at the root of the operational datastore.  As such, it is helpful for the encoded instance data to be rooted at subscription path rather than at the root of the operational datastore.
 
