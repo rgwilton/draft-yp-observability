@@ -66,7 +66,7 @@ TODO Abstract
 
 # Introduction
 
-{{draft-ietf-nmop-yang-message-broker-integration-04}} describes an architecture for how YANG Push can be integrated effectively with message brokers (e.g., {{Apache Kafka}}), that is part of a wider architecture for a *Network Anomaly Detection Framework*, specified in {{draft-ietf-nmop-network-anomaly-architecture}}.
+{{I-D.ietf-nmop-yang-message-broker-integration}} describes an architecture for how YANG Push can be integrated effectively with message brokers (e.g., Apache Kafka [TODO - Add Ref]), that is part of a wider architecture for a *Network Anomaly Detection Framework*, specified in {{I-D.ietf-nmop-network-anomaly-architecture}}.
 
 [YANG Push] is a key part of these architectures, but through experience of implementing YANG Push specifically for the use cases described in the above architecture documents, it became clear that there are aspects of YANG Push that are not optimal for these use cases, particular as they relate to operational data, both neither producer or consumer.
 
