@@ -51,7 +51,7 @@ author:
     email: rwilton@cisco.com
 
 normative:
-  YANG-Push: RFC8641
+  RFC8641:
 
 informative:
   I-D.ietf-nmop-network-anomaly-architecture:
