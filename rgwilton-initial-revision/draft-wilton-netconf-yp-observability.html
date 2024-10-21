@@ -1,0 +1,2494 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>YANG-Push Operational Data Observability Enhancements</title>
+<meta content="Robert Wilton" name="author">
+<meta content="
+       This early draft proposes some enhancements to YANG-Push to optimize its behavior for operational data telemetry.  It also lists some additional issues that could potentially be discussed if there is further interest in this work, in particular whether we should be attempting extensions to YANG-Push (as this document is currently framed) or instead should attempt to define a new 'YANG-Push lite'. 
+    " name="description">
+<meta content="xml2rfc 3.23.2" name="generator">
+<meta content="YANG Push" name="keyword">
+<meta content="Observability" name="keyword">
+<meta content="Network Telemetry" name="keyword">
+<meta content="Operational Data" name="keyword">
+<meta content="draft-wilton-netconf-yp-observability-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.23.2
+    Python 3.12.7
+    ConfigArgParse 1.7
+    google-i18n-address 3.1.1
+    intervaltree 3.1.0
+    Jinja2 3.1.4
+    lxml 4.9.4
+    platformdirs 4.3.6
+    pycountry 22.3.5
+    PyYAML 6.0.1
+    requests 2.32.3
+    setuptools 70.3.0
+    wcwidth 0.2.13
+-->
+<link href="draft-wilton-netconf-yp-observability.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1#title {
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1#title, h1#rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+h1#rfcnum + h1#title {
+  margin: 0.2em 0;
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+}
+#abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 16px;
+  line-height: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+/* font-family isn't space-separated, but =~ will have to do */
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+}
+:is(ol, ul) :is(ol, ul) {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  line-height: 1;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+}
+dl.olPercent {
+  --indent: 5ch;
+}
+dl > dt {
+  float: left;
+  margin-right: 2ch;
+  min-width: 8ch;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+dl > dd {
+  margin-bottom: .8em;
+  margin-left: var(--indent) !important; /* stupid element overrides */
+  min-height: 2ex;
+}
+dl.olPercent > dt {
+  min-width: calc(var(--indent) - 2ch);
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+}
+:is(dl.compact, .dlCompact) > dd > :is(:first-child, .break:first-child + *) {
+  margin-top: 0;
+}
+:is(dl.compact, .dlCompact) > dd > :is(:last-child) {
+  margin-bottom: 0;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href].selfRef, .iref + a[href].internal {
+  color: var(--text-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) p {
+    margin: -2px 0;
+    max-height: 0;
+    transition: max-height 2s ease, margin 0.5s ease 0.5s;
+    overflow: hidden;
+  }
+  :is(#status-of-memo, #copyright):hover p,
+  :is(#status-of-memo, #copyright) h2:target ~ p {
+    margin: 0.5em 0;
+    max-height: 500px;
+    overflow: auto;
+  }
+  pre, svg {
+    display: inline-block;
+    overflow-x: auto;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+}
+a.pilcrow[href] { color: var(--pilcrow-weak); }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: var(--small-font-size);
+}
+.role {
+  font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  min-width: var(--identifier-width);
+  clear: left;
+  float: left;
+  text-align: right;
+  margin-right: 1ch;
+}
+#identifiers dd {
+  margin: 0;
+  margin-left: calc(1em + var(--identifier-width)) !important;
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 2px 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 10ch;
+  margin-right: 1.5ch;
+}
+.references dt:target::before {
+  content: "⇒";
+  width: 15px;
+  margin: 0 10px 0 -25px;
+}
+.references dd {
+  margin-left: 12ch !important;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 1px 0 0 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  #toc nav > ul  {
+    margin-bottom: 2em;
+  }
+  #toc ul {
+    margin: 0 0 0 4px;
+    font-size: var(--small-font-size);
+  }
+  #toc ul :is(p, li) {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre, .vcard {
+    page-break-inside: avoid;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  :is(h2, h3, h4, h5, h6)+*, dd {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+  .toplink {
+    display: none;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left {
+  text-align: left;
+}
+table .text-center {
+  text-align: center;
+}
+table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg :is([stroke="black"], [stroke^="#000"]) {
+  stroke: var(--text-color);
+}
+svg :is([stroke="white"], [stroke^="#fff"]) {
+  stroke: var(--background-color);
+}
+svg :is([fill="black"], [fill^="#000"], :not([fill])) {
+  fill: var(--text-color);
+}
+svg :is([fill="white"], [fill^="#fff"]) {
+  fill: var(--background-color);
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">YANG-Push Observability</td>
+<td class="right">October 2024</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Wilton</td>
+<td class="center">Expires 24 April 2025</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">Network Configuration</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-wilton-netconf-yp-observability-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2024-10-21" class="published">21 October 2024</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Informational</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2025-04-24">24 April 2025</time></dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">R. Wilton</div>
+<div class="org">Cisco Systems</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">YANG-Push Operational Data Observability Enhancements</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This early draft proposes some enhancements to YANG-Push to optimize its behavior for operational data telemetry.  It also lists some additional issues that could potentially be discussed if there is further interest in this work, in particular whether we should be attempting extensions to YANG-Push (as this document is currently framed) or instead should attempt to define a new 'YANG-Push lite'.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-about-this-document">
+<a href="#name-about-this-document" class="section-name selfRef">About This Document</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">
+        The latest revision of this draft can be found at <span><a href="https://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yp-observability.html">https://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yp-observability.html</a></span>.
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-wilton-netconf-yp-observability/">https://datatracker.ietf.org/doc/draft-wilton-netconf-yp-observability/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">
+        Discussion of this document takes place on the
+        Network Configuration Working Group mailing list (<span><a href="mailto:netconf@ietf.org">mailto:netconf@ietf.org</a></span>),
+        which is archived at <span><a href="https://mailarchive.ietf.org/arch/browse/netconf/">https://mailarchive.ietf.org/arch/browse/netconf/</a></span>.
+        Subscribe at <span><a href="https://www.ietf.org/mailman/listinfo/netconf/">https://www.ietf.org/mailman/listinfo/netconf/</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+<p id="section-note.1-4">Source for this draft and an issue tracker can be found at
+        <span><a href="https://github.com/rgwilton/draft-yp-observability">https://github.com/rgwilton/draft-yp-observability</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 24 April 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2024 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-complexities-in-modelling-t" class="internal xref">Complexities in Modelling the Operational State Datastore</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-yang-push-enhancements" class="internal xref">YANG-Push enhancements</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-new-encoding-format" class="internal xref">New encoding format</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-combined-periodic-and-on-ch" class="internal xref">Combined periodic and on-change subscription</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-open-issues-other-potential" class="internal xref">Open Issues &amp; Other Potential Enhancements/Changes</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-yang-extensions-data-model" class="internal xref">YANG Extensions Data Model</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4.2.1">
+                    <p id="section-toc.1-1.3.2.4.2.1.1"><a href="#section-3.4.1" class="auto internal xref">3.4.1</a>.  <a href="#name-yang-tree" class="internal xref">YANG Tree</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4.2.2">
+                    <p id="section-toc.1-1.3.2.4.2.2.1"><a href="#section-3.4.2" class="auto internal xref">3.4.2</a>.  <a href="#name-yang-file" class="internal xref">YANG file</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref"></a><a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref"></a><a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref"></a><a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-combined-yang-tree" class="internal xref">Combined YANG tree</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-examples" class="internal xref">Examples</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
+                <p id="section-toc.1-1.9.2.1.1"><a href="#appendix-B.1" class="auto internal xref">B.1</a>.  <a href="#name-example-of-an-style-push-up" class="internal xref">Example of an RFC8641 style push-update notification</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#appendix-B.2" class="auto internal xref">B.2</a>.  <a href="#name-example-of-periodic-updates" class="internal xref">Example of periodic updates using the new style update message.</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.3">
+                <p id="section-toc.1-1.9.2.3.1"><a href="#appendix-B.3" class="auto internal xref">B.3</a>.  <a href="#name-example-of-an-on-change-upd" class="internal xref">Example of an on-change-update notification using the new style update message.</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.4">
+                <p id="section-toc.1-1.9.2.4.1"><a href="#appendix-B.4" class="auto internal xref">B.4</a>.  <a href="#name-example-of-an-on-change-del" class="internal xref">Example of an on-change-delete notification using the new style update message.</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="conventions-and-definitions">
+<section id="section-1">
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+      </h2>
+<p id="section-1-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="introduction">
+<section id="section-2">
+      <h2 id="name-introduction">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-2-1"><span>[<a href="#I-D.ietf-nmop-yang-message-broker-integration" class="cite xref">I-D.ietf-nmop-yang-message-broker-integration</a>]</span> describes an architecture for how YANG-Push <span>[<a href="#RFC8641" class="cite xref">RFC8641</a>]</span> can be integrated effectively with message brokers, e.g., <span>[<a href="#Kafka" class="cite xref">Kafka</a>]</span>, that is part of a wider architecture for a <strong>Network Anomaly Detection Framework</strong>, specified in <span>[<a href="#I-D.ietf-nmop-network-anomaly-architecture" class="cite xref">I-D.ietf-nmop-network-anomaly-architecture</a>]</span>.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">YANG-Push is a key part of these architectures, but through experience of implementing YANG-Push specifically for the use cases described in the above architecture documents, it became clear that there are aspects of YANG-Push that are not optimal for these use cases for neither producer or consumer, particular as they relate to operational data.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<p id="section-2-3">For the consumer of the telemetry data, there is a requirement to associate a schema with the provided data.  It is much more helpful for the schema to be associated with the individual messages rather than at the root of the operational datastore.  As such, it is helpful for the encoded instance data to be rooted at the subscription path rather than at the schema root of the operational datastore.<a href="#section-2-3" class="pilcrow">¶</a></p>
+<div id="complexities-in-modelling-the-operational-state-datastore">
+<section id="section-2.1">
+        <h3 id="name-complexities-in-modelling-t">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-complexities-in-modelling-t" class="section-name selfRef">Complexities in Modelling the Operational State Datastore</a>
+        </h3>
+<p id="section-2.1-1">The YANG abstraction of a single datastore of related consistent data works very well for configuration that has a strong requirement to be self consistent, and that is always updated, and validated, in a transactional way.  But for producers of telemetry data, the YANG abstraction of a single operational datastore is not really possible for devices managing a non-trivial quantity of operational data.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.1-2">Some systems may store their operational data in a single logical database, yet it is less likely that the operational data can always be updated in a transactional way, and often for memory efficiency reasons such a database does not store individual leaves, but instead semi-consistent records of data at a container or list entry level.<a href="#section-2.1-2" class="pilcrow">¶</a></p>
+<p id="section-2.1-3">For other systems, the operational information may be distributed across multiple internal nodes (e.g., linecards), and potentially many different process daemons within those distributed nodes.  Such systems generally cannot exhibit full consistency <span>[<a href="#Consistency" class="cite xref">Consistency</a>]</span> of the operational data (which would require transactional semantics across all daemons and internal nodes), only offering an eventually consistent <span>[<a href="#Eventual_Consistency" class="cite xref">Eventual_Consistency</a>]</span> view of the data instead.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
+<p id="section-2.1-4">In practice, many network devices will manage their operational data as a combination of some data being stored in a central operational datastore, and other, higher scale, and potentially more frequently changing data (e.g., statistics or FIB information) being stored elsewhere in a more memory efficient and performant way.<a href="#section-2.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="yang-push-enhancements">
+<section id="section-3">
+      <h2 id="name-yang-push-enhancements">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-yang-push-enhancements" class="section-name selfRef">YANG-Push enhancements</a>
+      </h2>
+<p id="section-3-1">To address the needs described in the introduction and architecture documents, this document defines some minor extensions to YANG-Push that are designed to make YANG-Push work better both for producers and consumers of YANG telemetry data.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">Currently, it:<a href="#section-3-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.1">
+          <p id="section-3-3.1.1">defines a new YANG-Push encoding format that can be used for both on-change and periodic subscriptions that reports the data from the subscription filter point.<a href="#section-3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-3-3.2">
+          <p id="section-3-3.2.1">defines a combined periodic and on-change subscription that reports events both on a periodical cadence and also if changes to the data have occurred.<a href="#section-3-3.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-3-4">These are detailed in the following sections:<a href="#section-3-4" class="pilcrow">¶</a></p>
+<div id="new-encoding-format">
+<section id="section-3.1">
+        <h3 id="name-new-encoding-format">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-new-encoding-format" class="section-name selfRef">New encoding format</a>
+        </h3>
+<p id="section-3.1-1">This document proposes a new opt-in YANG-Push encoding format to use instead of the "push-update" and "push-change-update" notifications defined in <span>[<a href="#RFC8641" class="cite xref">RFC8641</a>]</span>.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">There are a few reasons for specifying a new encoding format:<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.1-3">
+<li id="section-3.1-3.1">
+            <p id="section-3.1-3.1.1">To use the same encoding format for both periodic and on-change messages, allowing the same messages to be easily received and stored in a time-series database, making use of the same message schema when traversing message buses, such as Apache Kafka.<a href="#section-3.1-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.1-3.2">
+            <p id="section-3.1-3.2.1">To allow the schema of the notifications to be rooted to the subscription point rather than always being to the root of the operational datastore schema.  This allows messages to be slightly less indented, and makes it easier to convert from a YANG schema to an equivalent message bus schema, where each message is defined with its own schema, rather than a single datastore schema.<a href="#section-3.1-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.1-3.3">
+            <p id="section-3.1-3.3.1">To move away from the somewhat verbose YANG Patch format <span>[<a href="#RFC8072" class="cite xref">RFC8072</a>]</span>, that is not really a great fit for encoding changes of operational data.  Many systems cannot necessarily distinguish between create versus update events (particularly for new subscriptions or after recovering from internal failures within the system), and hence cannot faithfully implement the full YANG Patch semantics defined in <span>[<a href="#RFC8641" class="cite xref">RFC8641</a>]</span>.<a href="#section-3.1-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.1-3.4">
+            <p id="section-3.1-3.4.1">To allow the device to split a subscription into smaller child subscriptions for more efficient independent and concurrent processing.  I.e., reusing the ideas from <span>[<a href="#I-D.ietf-netconf-distributed-notif" class="cite xref">I-D.ietf-netconf-distributed-notif</a>]</span>.  However, all child subscriptions are still encoded from the same subscription point.<a href="#section-3.1-3.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-3.1-4">The practical differences in the encodings may be better illustrated via the examples in <a href="#Examples" class="auto internal xref">Appendix B</a>.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="combined-periodic-and-on-change-subscription">
+<section id="section-3.2">
+        <h3 id="name-combined-periodic-and-on-ch">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-combined-periodic-and-on-ch" class="section-name selfRef">Combined periodic and on-change subscription</a>
+        </h3>
+<p id="section-3.2-1">Sometimes it is helpful to have a single subscription that covers both periodic and on-change notifications (perhaps with dampening).<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">There are two ways in which this may be useful:<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.2-3">
+<li id="section-3.2-3.1">
+            <p id="section-3.2-3.1.1">For generally slow changing data (e.g., a device's physical inventory), then on-change notifications may be most appropriate.  However, in case there is any lost notification that isn't always detected, for any reason, then it may also be helpful to have a slow cadence periodic backup notification of the data (e.g., once every 24 hours), to ensure that the management systems would should always eventually converge on the current state in the network.<a href="#section-3.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.2-3.2">
+            <p id="section-3.2-3.2.1">For data that is generally polled on a periodic basis (e.g., once every 10 minutes) and put into a time series database, then it may be helpful for some data trees to also get more immediate notifications that the data has changed.  Hence, a combined periodic and on-change subscription, potentially with some dampening, would facilitate more frequent notifications of changes of the state, to reduce the need of having to always wait for the next periodic event.<a href="#section-3.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-3.2-4">Hence, this document introduces the fairly intuitive "periodic-and-on-change" update trigger that creates a combined periodic and on-change subscription, and allows the same parameters to be configured.  For some use cases, e.g., where a time-series database is being updated, the new encoding format proposed previously may be most useful.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="open-issues-other-potential-enhancementschanges">
+<section id="section-3.3">
+        <h3 id="name-open-issues-other-potential">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-open-issues-other-potential" class="section-name selfRef">Open Issues &amp; Other Potential Enhancements/Changes</a>
+        </h3>
+<p id="section-3.3-1">This section lists some other potential issues and enhancements that should be considered as part of this work.  If there is working group interest in progressing this work, then the issues in this section could potentially be better managed as github issues.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.3-2">
+<li id="section-3.3-2.1">
+            <p id="section-3.3-2.1.1">Should we consider a version of the JSON encoding that excludes module prefixes (either everywhere, or perhaps only include the top module prefix).  The reasoning for considering this is to potentially better align the JSON data with how the schema data may be modeled in other data systems, e.g., Kafka.  Obviously, this requires that there be no duplicate data node names in different module namespaces, but most sane device schemas would avoid this anyway.<a href="#section-3.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.3-2.2">
+            <p id="section-3.3-2.2.1">Do we make use of the new notification-envelope format <span>[<a href="#I-D.netana-netconf-notif-envelope" class="cite xref">I-D.netana-netconf-notif-envelope</a>]</span> as the mandatory and only required notification format for these new forms of subscriptions.  I.e., reducing complexity by removing unnecessary flexibility and options?<a href="#section-3.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.3-2.3">
+            <p id="section-3.3-2.3.1">Document how sub-subscriptions can be used to split a higher level subscription into multiple smaller more efficient subscriptions for the device (that can be handled concurrently).<a href="#section-3.3-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.3-2.4">
+            <p id="section-3.3-2.4.1">The document's current focus is on configured subscriptions, aligned to the proposed initial deployment requirements, but the solution should probably be extended to support dynamic subscriptions, presuming that it is not hard to do so.<a href="#section-3.3-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.3-2.5">
+            <p id="section-3.3-2.5.1">Some of the YANG-Push behavior is more complex and expensive to implement (e.g., the <span class="bcp14">SHOULD</span> requirement to suggest suitable alternative subscription parameters if a subscription is rejected, subscription dependencies).  Should this document update RFC 8639 or RFC 8641 to indicate that those requirements do not apply to these new extended subscriptions?  The goal of this work should be to specify the minimal required functionality to meet the requirements.<a href="#section-3.3-2.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.3-2.6">
+            <p id="section-3.3-2.6.1">What document format should this work take?  The currently proposed approach is to add extra extensions to YANG-Push to cover the required functionality.  An alternative approach could be to write a RFC 8641-bis, or a 'YANG-Push lite'.<a href="#section-3.3-2.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.3-2.7">
+            <p id="section-3.3-2.7.1">Currently the encoding and transport parameters are per subscription, but it may make more sense for these to be per receiver definition.  I.e., if you want to use different transports and encodings to the same receiver this should still be possible, but would require a second receiver to be defined with the same destination IP address, but a different name.  Currently, the newly proposed encoding format is configured per subscription (mirroring equivalent transport and encoding configuration), but alternatively it could be configured per receiver.<a href="#section-3.3-2.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.3-2.8">
+            <p id="section-3.3-2.8.1">We should consider how a subscription could support multiple subscription paths.  The potential tricky aspect of this to consider the subscription bind point.  Related to this is whether XPath 1.0 is the best way of specifying these bind points, or whether it should something closer to the NACM node-instance-identifier <span>[<a href="#RFC6536" class="cite xref">RFC6536</a>]</span>, but perhaps using something closer to the JSON style encoding of instance identifier <span>[<a href="#RFC7951" class="cite xref">RFC7951</a>]</span>, section 6.11; or JSON PATH <span>[<a href="#RFC9535" class="cite xref">RFC9535</a>]</span>.<a href="#section-3.3-2.8.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.3-2.9">
+            <p id="section-3.3-2.9.1">What level of subscription filtering do we need and want to support?  For example, I doubt that anyone allows for full XPath filtering of operational data subscriptions because they are likely to be very computationally expensive to implement.  Is there an easier way of expressing the filter requirements rather than using subtree filtering.  Note, this could be added in a future release.<a href="#section-3.3-2.9.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+</section>
+</div>
+<div id="yang-extensions-data-model">
+<section id="section-3.4">
+        <h3 id="name-yang-extensions-data-model">
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-yang-extensions-data-model" class="section-name selfRef">YANG Extensions Data Model</a>
+        </h3>
+<p id="section-3.4-1">This sections shows the raw YANG tree output just for the ietf-yp-ext.yang module, and the proposed YANG module.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<div id="yang-tree">
+<section id="section-3.4.1">
+          <h4 id="name-yang-tree">
+<a href="#section-3.4.1" class="section-number selfRef">3.4.1. </a><a href="#name-yang-tree" class="section-name selfRef">YANG Tree</a>
+          </h4>
+<span id="name-yang-tree-for-ietf-yp-extya"></span><figure id="figure-1">
+            <div class="lang-yangtree sourcecode" id="section-3.4.1-1.1">
+<pre>
+module: ietf-yp-ext
+
+  augment /sn:subscription-started/yp:update-trigger:
+    +--:(periodic-and-on-change) {yp:on-change}?
+       +-- periodic-and-on-change!
+          +-- period              yp:centiseconds
+          +-- anchor-time?        yang:date-and-time
+          +-- dampening-period?   yp:centiseconds
+          +-- sync-on-start?      boolean
+          +-- excluded-change*    yp:change-type
+  augment /sn:subscription-started:
+    +--ro common-notification-format?   boolean
+  augment /sn:subscription-modified/yp:update-trigger:
+    +--:(periodic-and-on-change) {yp:on-change}?
+       +-- periodic-and-on-change!
+          +-- period              yp:centiseconds
+          +-- anchor-time?        yang:date-and-time
+          +-- dampening-period?   yp:centiseconds
+          +-- sync-on-start?      boolean
+          +-- excluded-change*    yp:change-type
+  augment /sn:subscription-modified:
+    +--ro common-notification-format?   boolean
+  augment /sn:subscriptions/sn:subscription/yp:update-trigger:
+    +--:(periodic-and-on-change) {yp:on-change}?
+       +--rw periodic-and-on-change!
+          +--rw period              yp:centiseconds
+          +--rw anchor-time?        yang:date-and-time
+          +--rw dampening-period?   yp:centiseconds
+          +--rw sync-on-start?      boolean
+          +--rw excluded-change*    yp:change-type
+  augment /sn:subscriptions/sn:subscription:
+    +--rw common-notification-format?   boolean
+
+  notifications:
+    +---n update
+       +--ro id?                   sn:subscription-id
+       +--ro subscription-path?    yang:xpath1.0
+       +--ro target-path?          string
+       +--ro snapshot-type?        enumeration
+       +--ro observation-time?     yang:date-and-time
+       +--ro datastore-snapshot?   &lt;anydata&gt;
+       +--ro incomplete?           empty
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-yang-tree-for-ietf-yp-extya" class="selfRef">YANG tree for ietf-yp-ext.yang</a>
+            </figcaption></figure>
+</section>
+</div>
+<div id="yang-file">
+<section id="section-3.4.2">
+          <h4 id="name-yang-file">
+<a href="#section-3.4.2" class="section-number selfRef">3.4.2. </a><a href="#name-yang-file" class="section-name selfRef">YANG file</a>
+          </h4>
+<span id="name-yang-module-ietf-yp-ext"></span><figure id="figure-2">
+            <div class="breakable lang-yang sourcecode" id="section-3.4.2-1.1">
+<pre>&lt;CODE BEGINS&gt; file "ietf-yp-ext@2024-10-18.yang"
+
+module ietf-yp-ext {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-yp-ext";
+  prefix yp-ext;
+
+  import ietf-yang-types {
+    prefix yang;
+    reference
+      "RFC 6991: Common YANG Data Types";
+  }
+  import ietf-subscribed-notifications {
+    prefix sn;
+    reference
+      "RFC 8639: Subscription to YANG Notifications";
+  }
+  import ietf-yang-push {
+    prefix yp;
+    reference
+      "RFC 8641: Subscription to YANG Datastores";
+  }
+
+  organization
+    "IETF NETCONF (Network Configuration) Working Group";
+  contact
+    "WG Web:  &lt;https:/datatracker.ietf.org/wg/netconf/&gt;
+     WG List: &lt;mailto:netconf@ietf.org&gt;
+
+     Author:  Robert Wilton
+              &lt;mailto:rwilton@cisco.com&gt;";
+
+  description
+    "This module contains YANG specifications for YANG-Push extensions.
+
+     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+     NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+     'MAY', and 'OPTIONAL' in this document are to be interpreted as
+     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+     they appear in all capitals, as shown here.
+
+     Copyright (c) 2024 IETF Trust and the persons identified as
+     authors of the code.  All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Simplified BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC 8641; see the
+     RFC itself for full legal notices.";
+
+  revision 2024-10-18 {
+    description
+      "Initial revision.";
+    reference
+      "XXX: YANG Push Observability Extensions ";
+  }
+
+  /*
+   * FEATURES
+   */
+
+  /*
+   * IDENTITIES
+   */
+
+  /*
+   * TYPE DEFINITIONS
+   */
+
+  /*
+   * GROUP DEFINITIONS
+   */
+
+  grouping periodic-and-on-change {
+    description
+      "This grouping describes the datastore-specific subscription
+       that represents a combined periodic and on-change subscription.";
+    container periodic-and-on-change {
+      presence
+        "A combined periodic and on-change subscription";
+      description
+        "The publish notifies the receiver on the specific
+          periodic, and also whenever any of the data changes.";
+      leaf period {
+        type yp:centiseconds;
+        mandatory true;
+        description
+          "Duration of time that should occur between periodic
+          push updates, in units of 0.01 seconds.";
+      }
+      leaf anchor-time {
+        type yang:date-and-time;
+        description
+          "Designates a timestamp before or after which a series
+          of periodic push updates are determined.  The next
+          update will take place at a point in time that is a
+          multiple of a period from the 'anchor-time'.
+          For example, for an 'anchor-time' that is set for the
+          top of a particular minute and a period interval of a
+          minute, updates will be sent at the top of every
+          minute that this subscription is active.";
+      }
+      leaf dampening-period {
+        type yp:centiseconds;
+        default "0";
+        description
+          "Specifies the minimum interval between the assembly of
+            successive update records for a single receiver of a
+            subscription.  Whenever subscribed objects change and
+            a dampening-period interval (which may be zero) has
+            elapsed since the previous update record creation for
+            a receiver, any subscribed objects and properties
+            that have changed since the previous update record
+            will have their current values marshalled and placed
+            in a new update record.";
+      }
+      leaf sync-on-start {
+        type boolean;
+        default "true";
+        description
+          "When this object is set to 'false', (1) it restricts an
+          on-change subscription from sending 'push-update'
+          notifications and (2) pushing a full selection per the
+          terms of the selection filter MUST NOT be done for
+          this subscription.  Only updates about changes
+          (i.e., only 'push-change-update' notifications)
+          are sent.  When set to 'true' (the default behavior),
+          in order to facilitate a receiver's synchronization,
+          a full update is sent, via a 'push-update' notification,
+          when the subscription starts.  After that,
+          'push-change-update' notifications are exclusively sent,
+          unless the publisher chooses to resync the subscription
+          via a new 'push-update' notification.";
+      }
+      leaf-list excluded-change {
+        type yp:change-type;
+        description
+          "Used to restrict which changes trigger an update.  For
+           example, if a 'replace' operation is excluded, only the
+           creation and deletion of objects are reported.
+
+           TODO - Do we want this leaf?";
+      }
+    }
+  }
+
+  grouping common-notification-format {
+    description
+      "This grouping describes the common-notif-format leaf that
+       controls whether the new common message format is used for periodic
+       and on-change notifications.";
+    leaf common-notification-format {
+      type boolean;
+      default "false";
+      description
+        "This leaf controls whether the new common message format
+         is used for periodic and on-change notifications.  If set
+         to 'true', the new common message format is used.  If set
+         to 'false', the old message format is used.
+
+         TODO - Should we support hierarchical configuration here
+         (e.g., also add the leaf to the subscription container,
+         or it could be added to the receiver instead)?";
+    }
+  }
+
+  /*
+   * RPCs
+   */
+
+  /*
+   * NOTIFICATIONS
+   */
+
+  notification update {
+    description
+      "This notification contains a push update that in turn contains
+       data subscribed to via a subscription.  In the case of a
+       periodic subscription, this notification is sent for periodic
+       updates.  It can also be used for synchronization updates of
+       an on-change subscription.  This notification shall only be
+       sent to receivers of a subscription.  It does not constitute
+       a general-purpose notification that would be subscribable as
+       part of the NETCONF event stream by any receiver.";
+    leaf id {
+      type sn:subscription-id;
+      description
+        "This references the subscription that drove the
+         notification to be sent.";
+    }
+
+    leaf subscription-path {
+      type yang:xpath1.0;
+      description
+        "The subscription path indicates the schema path from the root of the
+         schema tree to the node, for which the updated state is being
+         notified, or a notification that is has been deleted.
+
+         TODO - Make this an instance data ref";
+    }
+
+    leaf target-path {
+      type string;
+    }
+
+    leaf snapshot-type {
+      type enumeration {
+        enum "periodic" {
+          description
+            "The update message is due to a periodic update.";
+        }
+        enum "on-change-update" {
+          description
+            "The update message is due to an on-change update.  This
+             means that one or more fields have changed under the
+             snapshot path.
+
+             TODO - Split this into a on-change-delete msg?";
+        }
+        enum "on-change-delete" {
+          description
+            "The update message is due to an on-change event where
+             the data node at the target path has been delete.";
+        }
+        enum "resync" {
+          description
+            "This indicates that the update is to resynchronize the
+             state, e.g., after a subscription started notification.
+
+             Ideally, the resync message SHOULD be the first
+             notification sent when a subscription has started, but
+             it is not gauranteed or required to be the first
+             (e.g., if an on-change event occurs).
+
+             These messages can be used to ensure that all state
+             has been sent to the client, and can be used to purge
+             stale data.
+
+             TODO - In the distributed notification case, need a
+             notification to indicate that all child subscriptions
+             have been sent.";
+        }
+      }
+      description
+        "This indicates the type of notification message that is being sent.";
+    }
+
+    // Could add observation time here.
+    leaf observation-time {
+      type yang:date-and-time;
+      description
+        "The time that the update was observed by the publisher.";
+    }
+
+    anydata datastore-snapshot {
+      description
+        "This contains the updated data.  It constitutes a snapshot
+        at the time of update of the set of data that has been
+        subscribed to.  The snapshot corresponds to the same
+        snapshot that would be returned in a corresponding 'get'
+        operation with the same selection filter parameters
+        applied.
+
+        Used for snapshot types except for 'on-change-delete'.";
+    }
+
+    leaf incomplete {
+      type empty;
+      description
+        "This is a flag that indicates that not all datastore
+        nodes subscribed to are included with this update.  Receivers
+        of this data SHOULD NOT assume that any missing data has been
+        implicitly deleted.
+
+        TODO - Do we still want this flag, or would it be
+        better to notify this event out of band?";
+    }
+  }
+
+  augment "/sn:subscription-started/yp:update-trigger" {
+    if-feature "yp:on-change";
+    description
+      "Allow a subscription started notification to signal a
+       combined periodic and on-change subscription.";
+    case periodic-and-on-change {
+      uses periodic-and-on-change;
+    }
+  }
+
+  augment "/sn:subscription-started" {
+    description
+      "Allow a subscription started notification to signal that it
+       uses the common notification format.";
+    uses common-notification-format;
+  }
+
+  augment "/sn:subscription-modified/yp:update-trigger" {
+    if-feature "yp:on-change";
+    description
+      "Allow a subscription started notification to signal a
+       combined periodic and on-change subscription.";
+    case periodic-and-on-change {
+      uses periodic-and-on-change;
+    }
+  }
+
+  augment "/sn:subscription-modified" {
+    description
+      "Allow a subscription modified notification to signal that it
+       uses the common notification format.";
+    uses common-notification-format;
+  }
+
+  /*
+   * DATA NODES
+   */
+
+  augment "/sn:subscriptions/sn:subscription/yp:update-trigger" {
+    when 'yp:datastore';
+    if-feature "yp:on-change";
+    description
+      "This augmentation adds objects to a subscription that are
+       specific to a datastore subscription, i.e., a subscription to
+       a stream of datastore node updates.";
+    case periodic-and-on-change {
+      uses periodic-and-on-change;
+    }
+  }
+
+  augment "/sn:subscriptions/sn:subscription" {
+    uses common-notification-format;
+  }
+}
+
+&lt;CODE ENDS&gt;</pre>
+</div>
+<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
+<a href="#name-yang-module-ietf-yp-ext" class="selfRef">YANG module ietf-yp-ext</a>
+            </figcaption></figure>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-4">
+      <h2 id="name-security-considerations">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-4-1">TODO.  New YANG models will be defined that need to document their security considerations, but otherwise the security considerations in YANG-Push should be sufficient.<a href="#section-4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-5">
+      <h2 id="name-iana-considerations">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-5-1">TODO - This document will need to register new YANG models with IANA.<a href="#section-5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="acknowledgments">
+<section id="section-6">
+      <h2 id="name-acknowledgments">
+<a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="section-6-1">This inital draft is early work is based on discussions with various folk, particularly Thomas Graf, Holger Keller, Dan Voyer, Nils Warnke, and Alex Huang Feng; but also wider conversations that include: Benoit Claise, Pierre Francois, Paolo Lucente, Jean Quilbeuf, among others.<a href="#section-6-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-combined-references">
+<section id="section-7">
+      <h2 id="name-references">
+<a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<div id="sec-normative-references">
+<section id="section-7.1">
+        <h3 id="name-normative-references">
+<a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5277">[RFC5277]</dt>
+        <dd>
+<span class="refAuthor">Chisholm, S.</span> and <span class="refAuthor">H. Trevino</span>, <span class="refTitle">"NETCONF Event Notifications"</span>, <span class="seriesInfo">RFC 5277</span>, <span class="seriesInfo">DOI 10.17487/RFC5277</span>, <time datetime="2008-07" class="refDate">July 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5277">https://www.rfc-editor.org/rfc/rfc5277</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8641">[RFC8641]</dt>
+      <dd>
+<span class="refAuthor">Clemm, A.</span> and <span class="refAuthor">E. Voit</span>, <span class="refTitle">"Subscription to YANG Notifications for Datastore Updates"</span>, <span class="seriesInfo">RFC 8641</span>, <span class="seriesInfo">DOI 10.17487/RFC8641</span>, <time datetime="2019-09" class="refDate">September 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8641">https://www.rfc-editor.org/rfc/rfc8641</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-7.2">
+        <h3 id="name-informative-references">
+<a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="Consistency">[Consistency]</dt>
+        <dd>
+<span class="refAuthor">Wikipedia</span>, <span class="refTitle">"Consistency (database systems)"</span>, <span>&lt;<a href="https://en.wikipedia.org/wiki/Consistency_(database_systems)">https://en.wikipedia.org/wiki/Consistency_(database_systems)</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="Eventual_Consistency">[Eventual_Consistency]</dt>
+        <dd>
+<span class="refAuthor">Rouse, M.</span>, <span class="refTitle">"Eventual Consistency"</span>, <span>&lt;<a href="https://www.techopedia.com/definition/29165/eventual-consistency">https://www.techopedia.com/definition/29165/eventual-consistency</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-netconf-distributed-notif">[I-D.ietf-netconf-distributed-notif]</dt>
+        <dd>
+<span class="refAuthor">Zhou, T.</span>, <span class="refAuthor">Zheng, G.</span>, <span class="refAuthor">Voit, E.</span>, <span class="refAuthor">Graf, T.</span>, and <span class="refAuthor">P. Francois</span>, <span class="refTitle">"Subscription to Distributed Notifications"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-netconf-distributed-notif-10</span>, <time datetime="2024-10-18" class="refDate">18 October 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-10">https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-10</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-nmop-network-anomaly-architecture">[I-D.ietf-nmop-network-anomaly-architecture]</dt>
+        <dd>
+<span class="refAuthor">Graf, T.</span>, <span class="refAuthor">Du, W.</span>, and <span class="refAuthor">P. Francois</span>, <span class="refTitle">"An Architecture for a Network Anomaly Detection Framework"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-nmop-network-anomaly-architecture-01</span>, <time datetime="2024-10-20" class="refDate">20 October 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-nmop-network-anomaly-architecture-01">https://datatracker.ietf.org/doc/html/draft-ietf-nmop-network-anomaly-architecture-01</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-nmop-yang-message-broker-integration">[I-D.ietf-nmop-yang-message-broker-integration]</dt>
+        <dd>
+<span class="refAuthor">Graf, T.</span> and <span class="refAuthor">A. Elhassany</span>, <span class="refTitle">"An Architecture for YANG-Push to Message Broker Integration"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-nmop-yang-message-broker-integration-05</span>, <time datetime="2024-10-19" class="refDate">19 October 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-nmop-yang-message-broker-integration-05">https://datatracker.ietf.org/doc/html/draft-ietf-nmop-yang-message-broker-integration-05</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.netana-netconf-notif-envelope">[I-D.netana-netconf-notif-envelope]</dt>
+        <dd>
+<span class="refAuthor">Feng, A. H.</span>, <span class="refAuthor">Francois, P.</span>, <span class="refAuthor">Graf, T.</span>, and <span class="refAuthor">B. Claise</span>, <span class="refTitle">"Extensible YANG model for YANG-Push Notifications"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-netana-netconf-notif-envelope-00</span>, <time datetime="2024-10-18" class="refDate">18 October 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-netana-netconf-notif-envelope-00">https://datatracker.ietf.org/doc/html/draft-netana-netconf-notif-envelope-00</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.tgraf-netconf-notif-sequencing">[I-D.tgraf-netconf-notif-sequencing]</dt>
+        <dd>
+<span class="refAuthor">Graf, T.</span>, <span class="refAuthor">Quilbeuf, J.</span>, and <span class="refAuthor">A. H. Feng</span>, <span class="refTitle">"Support of Hostname and Sequencing in YANG Notifications"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-tgraf-netconf-notif-sequencing-06</span>, <time datetime="2024-06-29" class="refDate">29 June 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-tgraf-netconf-notif-sequencing-06">https://datatracker.ietf.org/doc/html/draft-tgraf-netconf-notif-sequencing-06</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.tgraf-netconf-yang-push-observation-time">[I-D.tgraf-netconf-yang-push-observation-time]</dt>
+        <dd>
+<span class="refAuthor">Graf, T.</span>, <span class="refAuthor">Claise, B.</span>, and <span class="refAuthor">A. H. Feng</span>, <span class="refTitle">"Support of Observation Timestamp in YANG-Push Notifications"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-tgraf-netconf-yang-push-observation-time-02</span>, <time datetime="2024-07-03" class="refDate">3 July 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-tgraf-netconf-yang-push-observation-time-02">https://datatracker.ietf.org/doc/html/draft-tgraf-netconf-yang-push-observation-time-02</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="Kafka">[Kafka]</dt>
+        <dd>
+<span class="refAuthor">Apache.org</span>, <span class="refTitle">"Apache Kafka"</span>, <span>&lt;<a href="https://kafka.apache.org/">https://kafka.apache.org/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6536">[RFC6536]</dt>
+        <dd>
+<span class="refAuthor">Bierman, A.</span> and <span class="refAuthor">M. Bjorklund</span>, <span class="refTitle">"Network Configuration Protocol (NETCONF) Access Control Model"</span>, <span class="seriesInfo">RFC 6536</span>, <span class="seriesInfo">DOI 10.17487/RFC6536</span>, <time datetime="2012-03" class="refDate">March 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6536">https://www.rfc-editor.org/rfc/rfc6536</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7951">[RFC7951]</dt>
+        <dd>
+<span class="refAuthor">Lhotka, L.</span>, <span class="refTitle">"JSON Encoding of Data Modeled with YANG"</span>, <span class="seriesInfo">RFC 7951</span>, <span class="seriesInfo">DOI 10.17487/RFC7951</span>, <time datetime="2016-08" class="refDate">August 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7951">https://www.rfc-editor.org/rfc/rfc7951</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8072">[RFC8072]</dt>
+        <dd>
+<span class="refAuthor">Bierman, A.</span>, <span class="refAuthor">Bjorklund, M.</span>, and <span class="refAuthor">K. Watsen</span>, <span class="refTitle">"YANG Patch Media Type"</span>, <span class="seriesInfo">RFC 8072</span>, <span class="seriesInfo">DOI 10.17487/RFC8072</span>, <time datetime="2017-02" class="refDate">February 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8072">https://www.rfc-editor.org/rfc/rfc8072</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9535">[RFC9535]</dt>
+      <dd>
+<span class="refAuthor">Gössner, S., Ed.</span>, <span class="refAuthor">Normington, G., Ed.</span>, and <span class="refAuthor">C. Bormann, Ed.</span>, <span class="refTitle">"JSONPath: Query Expressions for JSON"</span>, <span class="seriesInfo">RFC 9535</span>, <span class="seriesInfo">DOI 10.17487/RFC9535</span>, <time datetime="2024-02" class="refDate">February 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9535">https://www.rfc-editor.org/rfc/rfc9535</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<div id="combined-yang-tree">
+<section id="appendix-A">
+      <h2 id="name-combined-yang-tree">
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-combined-yang-tree" class="section-name selfRef">Combined YANG tree</a>
+      </h2>
+<p id="appendix-A-1">This section shows the relevant subsets of the combined Subscribed Notification YANG trees that are augmented by the ietf-yp-ext.yang additions.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<span id="name-yang-tree-for-ietf-subscrib"></span><figure id="figure-3">
+        <div class="breakable lang-yangtree sourcecode" id="appendix-A-2.1">
+<pre>
+module: ietf-subscribed-notifications
+  +--ro streams
+  |  +--ro stream* [name]
+  |     +--ro name                        string
+  |     +--ro description?                string
+  |     +--ro replay-support?             empty {replay}?
+  |     +--ro replay-log-creation-time    yang:date-and-time
+  |     |       {replay}?
+  |     +--ro replay-log-aged-time?       yang:date-and-time
+  |             {replay}?
+  +--rw filters
+  |  +--rw stream-filter* [name]
+  |  |  +--rw name                           string
+  |  |  +--rw (filter-spec)?
+  |  |     +--:(stream-subtree-filter)
+  |  |     |  +--rw stream-subtree-filter?   &lt;anydata&gt; {subtree}?
+  |  |     +--:(stream-xpath-filter)
+  |  |        +--rw stream-xpath-filter?     yang:xpath1.0 {xpath}?
+  |  +--rw yp:selection-filter* [filter-id]
+  |     +--rw yp:filter-id                         string
+  |     +--rw (yp:filter-spec)?
+  |        +--:(yp:datastore-subtree-filter)
+  |        |  +--rw yp:datastore-subtree-filter?   &lt;anydata&gt;
+  |        |          {sn:subtree}?
+  |        +--:(yp:datastore-xpath-filter)
+  |           +--rw yp:datastore-xpath-filter?     yang:xpath1.0
+  |                   {sn:xpath}?
+  +--rw subscriptions
+     +--rw subscription* [id]
+     |  +--rw id
+     |  |       subscription-id
+     |  +--rw (target)
+     |  |  +--:(stream)
+     |  |  |  +--rw (stream-filter)?
+     |  |  |  |  +--:(by-reference)
+     |  |  |  |  |  +--rw stream-filter-name
+     |  |  |  |  |          stream-filter-ref
+     |  |  |  |  +--:(within-subscription)
+     |  |  |  |     +--rw (filter-spec)?
+     |  |  |  |        +--:(stream-subtree-filter)
+     |  |  |  |        |  +--rw stream-subtree-filter?
+     |  |  |  |        |          &lt;anydata&gt; {subtree}?
+     |  |  |  |        +--:(stream-xpath-filter)
+     |  |  |  |           +--rw stream-xpath-filter?
+     |  |  |  |                   yang:xpath1.0 {xpath}?
+     |  |  |  +--rw stream
+     |  |  |  |       stream-ref
+     |  |  |  +--ro replay-start-time?
+     |  |  |  |       yang:date-and-time {replay}?
+     |  |  |  +--rw configured-replay?                         empty
+     |  |  |          {configured,replay}?
+     |  |  +--:(yp:datastore)
+     |  |     +--rw yp:datastore
+     |  |     |       identityref
+     |  |     +--rw (yp:selection-filter)?
+     |  |        +--:(yp:by-reference)
+     |  |        |  +--rw yp:selection-filter-ref
+     |  |        |          selection-filter-ref
+     |  |        +--:(yp:within-subscription)
+     |  |           +--rw (yp:filter-spec)?
+     |  |              +--:(yp:datastore-subtree-filter)
+     |  |              |  +--rw yp:datastore-subtree-filter?
+     |  |              |          &lt;anydata&gt; {sn:subtree}?
+     |  |              +--:(yp:datastore-xpath-filter)
+     |  |                 +--rw yp:datastore-xpath-filter?
+     |  |                         yang:xpath1.0 {sn:xpath}?
+     |  +--rw stop-time?
+     |  |       yang:date-and-time
+     |  +--rw dscp?
+     |  |       inet:dscp {dscp}?
+     |  +--rw weighting?                                       uint8
+     |  |       {qos}?
+     |  +--rw dependency?
+     |  |       subscription-id {qos}?
+     |  +--rw transport?
+     |  |       transport {configured}?
+     |  +--rw encoding?
+     |  |       encoding
+     |  +--rw purpose?                                         string
+     |  |       {configured}?
+     |  +--rw (notification-message-origin)? {configured}?
+     |  |  +--:(interface-originated)
+     |  |  |  +--rw source-interface?
+     |  |  |          if:interface-ref {interface-designation}?
+     |  |  +--:(address-originated)
+     |  |     +--rw source-vrf?
+     |  |     |       -&gt; /ni:network-instances/network-instance/name
+     |  |     |       {supports-vrf}?
+     |  |     +--rw source-address?
+     |  |             inet:ip-address-no-zone
+     |  +--ro configured-subscription-state?
+     |  |       enumeration {configured}?
+     |  +--rw receivers
+     |  |  +--rw receiver* [name]
+     |  |     +--rw name                         string
+     |  |     +--ro sent-event-records?
+     |  |     |       yang:zero-based-counter64
+     |  |     +--ro excluded-event-records?
+     |  |     |       yang:zero-based-counter64
+     |  |     +--ro state                        enumeration
+     |  |     +---x reset {configured}?
+     |  |     |  +--ro output
+     |  |     |     +--ro time    yang:date-and-time
+     |  |     +--rw snr:receiver-instance-ref?   leafref
+     |  +--rw (yp:update-trigger)?
+     |  |  +--:(yp:periodic)
+     |  |  |  +--rw yp:periodic!
+     |  |  |     +--rw yp:period         centiseconds
+     |  |  |     +--rw yp:anchor-time?   yang:date-and-time
+     |  |  +--:(yp:on-change) {on-change}?
+     |  |  |  +--rw yp:on-change!
+     |  |  |     +--rw yp:dampening-period?   centiseconds
+     |  |  |     +--rw yp:sync-on-start?      boolean
+     |  |  |     +--rw yp:excluded-change*    change-type
+     |  |  +--:(yp-ext:periodic-and-on-change) {yp:on-change}?
+     |  |     +--rw yp-ext:periodic-and-on-change!
+     |  |        +--rw yp-ext:period              yp:centiseconds
+     |  |        +--rw yp-ext:anchor-time?        yang:date-and-time
+     |  |        +--rw yp-ext:dampening-period?   yp:centiseconds
+     |  |        +--rw yp-ext:sync-on-start?      boolean
+     |  |        +--rw yp-ext:excluded-change*    yp:change-type
+     |  +--ro dn:message-publisher-ids*                        uint32
+     |  +--rw yp-ext:common-notification-format?
+     |          boolean
+     +--rw snr:receiver-instances
+        +--rw snr:receiver-instance* [name]
+           +--rw snr:name                        string
+           +--rw (snr:transport-type)
+              +--:(hnt:https)
+              |  +--rw hnt:https-receiver
+              |     +--rw hnt:receiver-identity {receiver-identity}?
+              |        +--rw hnt:cert-maps
+              |           +--rw hnt:cert-to-name* [id]
+              |              +--rw hnt:id             uint32
+              |              +--rw hnt:fingerprint
+              |              |       x509c2n:tls-fingerprint
+              |              +--rw hnt:map-type       identityref
+              |              +--rw hnt:name           string
+              +--:(unt:udp-notif)
+                 +--rw unt:udp-notif-receiver
+                    +--rw unt:dtls! {dtls13}?
+                    +--rw unt:enable-segmentation?   boolean
+                    |       {segmentation}?
+                    +--rw unt:max-segment-size?      uint32
+                            {segmentation}?
+
+  rpcs:
+    +---x establish-subscription
+    |  +---w input
+    ...
+
+  notifications:
+    +---n replay-completed {replay}?
+    |  ...
+    +---n subscription-completed {configured}?
+    |  ...
+    +---n subscription-modified
+    |  +--ro id
+    |  |       subscription-id
+    |  +--ro (target)
+    |  |  +--:(stream)
+    |  |  |  +--ro (stream-filter)?
+    |  |  |  |  +--:(by-reference)
+    |  |  |  |  |  +--ro stream-filter-name
+    |  |  |  |  |          stream-filter-ref
+    |  |  |  |  +--:(within-subscription)
+    |  |  |  |     +--ro (filter-spec)?
+    |  |  |  |        +--:(stream-subtree-filter)
+    |  |  |  |        |  +--ro stream-subtree-filter?
+    |  |  |  |        |          &lt;anydata&gt; {subtree}?
+    |  |  |  |        +--:(stream-xpath-filter)
+    |  |  |  |           +--ro stream-xpath-filter?
+    |  |  |  |                   yang:xpath1.0 {xpath}?
+    |  |  |  +--ro stream
+    |  |  |  |       stream-ref
+    |  |  |  +--ro replay-start-time?
+    |  |  |          yang:date-and-time {replay}?
+    |  |  +--:(yp:datastore)
+    |  |     +--ro yp:datastore
+    |  |     |       identityref
+    |  |     +--ro (yp:selection-filter)?
+    |  |        +--:(yp:by-reference)
+    |  |        |  +--ro yp:selection-filter-ref
+    |  |        |          selection-filter-ref
+    |  |        +--:(yp:within-subscription)
+    |  |           +--ro (yp:filter-spec)?
+    |  |              +--:(yp:datastore-subtree-filter)
+    |  |              |  +--ro yp:datastore-subtree-filter?
+    |  |              |          &lt;anydata&gt; {sn:subtree}?
+    |  |              +--:(yp:datastore-xpath-filter)
+    |  |                 +--ro yp:datastore-xpath-filter?
+    |  |                         yang:xpath1.0 {sn:xpath}?
+    |  +--ro stop-time?
+    |  |       yang:date-and-time
+    |  +--ro dscp?
+    |  |       inet:dscp {dscp}?
+    |  +--ro weighting?                                       uint8
+    |  |       {qos}?
+    |  +--ro dependency?
+    |  |       subscription-id {qos}?
+    |  +--ro transport?
+    |  |       transport {configured}?
+    |  +--ro encoding?
+    |  |       encoding
+    |  +--ro purpose?                                         string
+    |  |       {configured}?
+    |  +--ro (yp:update-trigger)?
+    |  |  +--:(yp:periodic)
+    |  |  |  +--ro yp:periodic!
+    |  |  |     +--ro yp:period         centiseconds
+    |  |  |     +--ro yp:anchor-time?   yang:date-and-time
+    |  |  +--:(yp:on-change) {on-change}?
+    |  |  |  +--ro yp:on-change!
+    |  |  |     +--ro yp:dampening-period?   centiseconds
+    |  |  |     +--ro yp:sync-on-start?      boolean
+    |  |  |     +--ro yp:excluded-change*    change-type
+    |  |  +--:(yp-ext:periodic-and-on-change) {yp:on-change}?
+    |  |     +--ro yp-ext:periodic-and-on-change!
+    |  |        +--ro yp-ext:period              yp:centiseconds
+    |  |        +--ro yp-ext:anchor-time?        yang:date-and-time
+    |  |        +--ro yp-ext:dampening-period?   yp:centiseconds
+    |  |        +--ro yp-ext:sync-on-start?      boolean
+    |  |        +--ro yp-ext:excluded-change*    yp:change-type
+    |  +--ro dn:message-publisher-ids*                        uint32
+    |  +--ro yp-ext:common-notification-format?               boolean
+    +---n subscription-resumed
+    |  ...
+    +---n subscription-started {configured}?
+    |  +--ro id
+    |  |       subscription-id
+    |  +--ro (target)
+    |  |  +--:(stream)
+    |  |  |  +--ro (stream-filter)?
+    |  |  |  |  +--:(by-reference)
+    |  |  |  |  |  +--ro stream-filter-name
+    |  |  |  |  |          stream-filter-ref
+    |  |  |  |  +--:(within-subscription)
+    |  |  |  |     +--ro (filter-spec)?
+    |  |  |  |        +--:(stream-subtree-filter)
+    |  |  |  |        |  +--ro stream-subtree-filter?
+    |  |  |  |        |          &lt;anydata&gt; {subtree}?
+    |  |  |  |        +--:(stream-xpath-filter)
+    |  |  |  |           +--ro stream-xpath-filter?
+    |  |  |  |                   yang:xpath1.0 {xpath}?
+    |  |  |  +--ro stream
+    |  |  |  |       stream-ref
+    |  |  |  +--ro replay-start-time?
+    |  |  |  |       yang:date-and-time {replay}?
+    |  |  |  +--ro replay-previous-event-time?
+    |  |  |          yang:date-and-time {replay}?
+    |  |  +--:(yp:datastore)
+    |  |     +--ro yp:datastore
+    |  |     |       identityref
+    |  |     +--ro (yp:selection-filter)?
+    |  |        +--:(yp:by-reference)
+    |  |        |  +--ro yp:selection-filter-ref
+    |  |        |          selection-filter-ref
+    |  |        +--:(yp:within-subscription)
+    |  |           +--ro (yp:filter-spec)?
+    |  |              +--:(yp:datastore-subtree-filter)
+    |  |              |  +--ro yp:datastore-subtree-filter?
+    |  |              |          &lt;anydata&gt; {sn:subtree}?
+    |  |              +--:(yp:datastore-xpath-filter)
+    |  |                 +--ro yp:datastore-xpath-filter?
+    |  |                         yang:xpath1.0 {sn:xpath}?
+    |  +--ro stop-time?
+    |  |       yang:date-and-time
+    |  +--ro dscp?
+    |  |       inet:dscp {dscp}?
+    |  +--ro weighting?                                       uint8
+    |  |       {qos}?
+    |  +--ro dependency?
+    |  |       subscription-id {qos}?
+    |  +--ro transport?
+    |  |       transport {configured}?
+    |  +--ro encoding?
+    |  |       encoding
+    |  +--ro purpose?                                         string
+    |  |       {configured}?
+    |  +--ro (yp:update-trigger)?
+    |  |  +--:(yp:periodic)
+    |  |  |  +--ro yp:periodic!
+    |  |  |     +--ro yp:period         centiseconds
+    |  |  |     +--ro yp:anchor-time?   yang:date-and-time
+    |  |  +--:(yp:on-change) {on-change}?
+    |  |  |  +--ro yp:on-change!
+    |  |  |     +--ro yp:dampening-period?   centiseconds
+    |  |  |     +--ro yp:sync-on-start?      boolean
+    |  |  |     +--ro yp:excluded-change*    change-type
+    |  |  +--:(yp-ext:periodic-and-on-change) {yp:on-change}?
+    |  |     +--ro yp-ext:periodic-and-on-change!
+    |  |        +--ro yp-ext:period              yp:centiseconds
+    |  |        +--ro yp-ext:anchor-time?        yang:date-and-time
+    |  |        +--ro yp-ext:dampening-period?   yp:centiseconds
+    |  |        +--ro yp-ext:sync-on-start?      boolean
+    |  |        +--ro yp-ext:excluded-change*    yp:change-type
+    |  +--ro dn:message-publisher-ids*                        uint32
+    |  +--ro yp-ext:common-notification-format?               boolean
+    +---n subscription-suspended
+    |  +--ro id        subscription-id
+    |  +--ro reason    identityref
+    +---n subscription-terminated
+       +--ro id        subscription-id
+       +--ro reason    identityref
+
+module: ietf-yp-ext
+
+  notifications:
+    +---n update
+       +--ro id?                   sn:subscription-id
+       +--ro subscription-path?    yang:xpath1.0
+       +--ro target-path?          string
+       +--ro snapshot-type?        enumeration
+       +--ro observation-time?     yang:date-and-time
+       +--ro datastore-snapshot?   &lt;anydata&gt;
+       +--ro incomplete?           empty
+</pre>
+</div>
+<figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
+<a href="#name-yang-tree-for-ietf-subscrib" class="selfRef">YANG tree for ietf-subscribed-notifications.yang with ietf-yang-push.yang and ietf-yp-ext.yang (and a couple of others).</a>
+        </figcaption></figure>
+</section>
+</div>
+<div id="Examples">
+<section id="appendix-B">
+      <h2 id="name-examples">
+<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
+      </h2>
+<p id="appendix-B-1">Notes on examples:<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B-2.1">
+          <p id="appendix-B-2.1.1">These examples have been given using a JSON encoding of the regular YANG-Push notification format, i.e., encoded using <span>[<a href="#RFC5277" class="cite xref">RFC5277</a>]</span>, but it is anticipated that these notifications could be defined to exclusive use the new format proposed by <span>[<a href="#I-D.netana-netconf-notif-envelope" class="cite xref">I-D.netana-netconf-notif-envelope</a>]</span>.<a href="#appendix-B-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-B-2.2">
+          <p id="appendix-B-2.2.1">Some additional meta data fields, e.g., like those defined in <span>[<a href="#I-D.tgraf-netconf-notif-sequencing" class="cite xref">I-D.tgraf-netconf-notif-sequencing</a>]</span> would also likely be included, but have also been excluded to allow for slightly more concise examples.<a href="#appendix-B-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-B-2.3">
+          <p id="appendix-B-2.3.1">The examples include the <span>[<a href="#I-D.tgraf-netconf-yang-push-observation-time" class="cite xref">I-D.tgraf-netconf-yang-push-observation-time</a>]</span> field for the existing YANG-Push Notification format, and the proposed equivalent "observation-time" leaf for the new update notification format.<a href="#appendix-B-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-B-2.4">
+          <p id="appendix-B-2.4.1">All these examples are created by hand, may contain errors, and may not parse correctly.<a href="#appendix-B-2.4.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<div id="example-of-an-rfc8641-style-push-update-notification">
+<section id="appendix-B.1">
+        <h3 id="name-example-of-an-style-push-up">
+<a href="#appendix-B.1" class="section-number selfRef">B.1. </a><a href="#name-example-of-an-style-push-up" class="section-name selfRef">Example of an <span class="cite xref">[RFC8641]</span> style push-update notification</a>
+        </h3>
+<p id="appendix-B.1-1">This example illustrates a periodic update message for a subscription at "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces" that is returning data from two internal data providers, one of which is returning data for "interface-summary" and the other that is returning data for "interfaces".  The device resident management agents stitches the reply together from the two data providers into a single data tree before returning it in a single message.<a href="#appendix-B.1-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.1-2">For the periodic message to be correct, and to allow it to replace any previous periodic message published on that subscription, it must include <strong>all</strong> data below the subscription path.  This may increase the total amount of internal IPC within the device and make the timestamps less accurate, since the observation timestamp only reports when the device starts polling the data providers.  If those providers are distributed across multiple processes and linecards then it may take a bit of time to complete the periodic on-change.<a href="#appendix-B.1-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.1-3">
+<pre>
+{
+  "ietf-notification:notification": {
+    "eventTime": "2024-09-27T14:16:27.773Z",
+    "ietf-yang-push:push-update": {
+      "id": 1,
+      "ietf-yp-observation:timestamp": "2024-09-27T14:16:27.773Z",
+      "ietf-yp-observation:point-in-time": "current-accounting",
+      "datastore-contents": {
+        "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces": {
+          "interface-summary": {
+            "interface-type": [
+              {
+                "interface-type-name": "IFT_GETHERNET",
+                "interface-type-description": "GigabitEthernet",
+                "interface-counts": {
+                  "interface-count": 5,
+                  "up-interface-count": 2,
+                  "down-interface-count": 0,
+                  "admin-down-interface-count": 3
+                }
+              }
+            ],
+            "interface-counts": {
+              "interface-count": 8,
+              "up-interface-count": 5,
+              "down-interface-count": 0,
+              "admin-down-interface-count": 3
+            }
+          },
+          "interfaces": {
+            "interface": [
+              {
+                "interface-name": "GigabitEthernet0/0/0/0",
+                "interface": "GigabitEthernet0/0/0/0",
+                "state": "im-state-admin-down",
+                "line-state": "im-state-admin-down"
+              },
+              {
+                "interface-name": "GigabitEthernet0/0/0/4",
+                "interface": "GigabitEthernet0/0/0/4",
+                "state": "im-state-admin-down",
+                "line-state": "im-state-admin-down"
+              },
+            ]
+          }
+        }
+      }
+    }
+  }
+}
+</pre><a href="#appendix-B.1-3" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="example-of-periodic-updates-using-the-new-style-update-message">
+<section id="appendix-B.2">
+        <h3 id="name-example-of-periodic-updates">
+<a href="#appendix-B.2" class="section-number selfRef">B.2. </a><a href="#name-example-of-periodic-updates" class="section-name selfRef">Example of periodic updates using the new style update message.</a>
+        </h3>
+<p id="appendix-B.2-1">The subscription was made on "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces", but for efficiency reasons, the device has split the subscription into separate child subscriptions for the different data providers, and makes use of the new message format.<a href="#appendix-B.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.2-2">Hence, this first periodic message is being published for the "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interface-summary" container, but it is encoded rooted relative to the schema for "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces".<a href="#appendix-B.2-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.2-3">
+<pre>
+{
+  "ietf-notification:notification": {
+    "eventTime": "2024-09-27T14:16:27.773Z",
+    "ietf-yp-ext:update": {
+      "id": 1,
+      "subscription-path": "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces",
+      "target-path":
+        "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interface-summary",
+      "snapshot-type": "periodic"
+      "observation-time": "2024-09-27T14:16:27.773Z",
+      "datastore-snapshot": {
+        "interface-summary" : {
+          "interface-type": [
+            {
+              "interface-type-name": "IFT_GETHERNET",
+              "interface-type-description": "GigabitEthernet",
+              "interface-counts": {
+                "interface-count": 5,
+                "up-interface-count": 2,
+                "down-interface-count": 0,
+                "admin-down-interface-count": 3
+              }
+            }
+          ],
+          "interface-counts": {
+            "interface-count": 8,
+            "up-interface-count": 5,
+            "down-interface-count": 0,
+            "admin-down-interface-count": 3
+          }
+        }
+      }
+    }
+  }
+}
+</pre><a href="#appendix-B.2-3" class="pilcrow">¶</a>
+</div>
+<p id="appendix-B.2-4">The second periodic message is being published for the "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interfaces/interface" list, but again, it is encoded rooted relative to the schema for "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces".  This message has a separate observation time that represents the more accurate time that this periodic date was read.<a href="#appendix-B.2-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.2-5">
+<pre>
+{
+  "ietf-notification:notification": {
+    "eventTime": "2024-09-27T14:16:27.973Z",
+    "ietf-yp-ext:update": {
+      "id": 1,
+      "subscription-path": "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces",
+      "target-path":
+        "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interfaces/interface[]",
+      "snapshot-type": "periodic"
+      "observation-time": "2024-09-27T14:16:27.973Z",
+      "datastore-snapshot": {
+        "interfaces": {
+          "interface": [
+            {
+              "interface-name": "GigabitEthernet0/0/0/0",
+              "interface": "GigabitEthernet0/0/0/0",
+              "state": "im-state-admin-down",
+              "line-state": "im-state-admin-down"
+            },
+            {
+              "interface-name": "GigabitEthernet0/0/0/4",
+              "interface": "GigabitEthernet0/0/0/4",
+              "state": "im-state-admin-down",
+              "line-state": "im-state-admin-down"
+            },
+          ]
+        }
+      }
+    }
+  }
+}
+</pre><a href="#appendix-B.2-5" class="pilcrow">¶</a>
+</div>
+<p id="appendix-B.2-6">Each child subscription would use the same period and anchor time as the configured subscription, possibly with a little bit of initial jitter to avoid all daemons attempting to publish the data at exactly the same time.<a href="#appendix-B.2-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="example-of-an-on-change-update-notification-using-the-new-style-update-message">
+<section id="appendix-B.3">
+        <h3 id="name-example-of-an-on-change-upd">
+<a href="#appendix-B.3" class="section-number selfRef">B.3. </a><a href="#name-example-of-an-on-change-upd" class="section-name selfRef">Example of an on-change-update notification using the new style update message.</a>
+        </h3>
+<p id="appendix-B.3-1">If the subscription is for on-change notifications, or periodic-and-on-change-notifications, then, if the interface state changed (specifically if the 'state' leaf of the interface changed state), and if the device was capable of generating on-change notifications, then you may see the following message.  A few points of notes here:<a href="#appendix-B.3-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.3-2.1">
+            <p id="appendix-B.3-2.1.1">The on-change notification contains <strong>all</strong> of the state at the "target-path"<a href="#appendix-B.3-2.1.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.3-2.1.2.1">
+                <p id="appendix-B.3-2.1.2.1.1">Not present in the below example, but if the notification excluded some state under an interfaces list entry (e.g., the line-state leaf) then this would logically represent the implicit deletion of that field under the given list entry.<a href="#appendix-B.3-2.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="appendix-B.3-2.1.2.2">
+                <p id="appendix-B.3-2.1.2.2.1">In this example it is restricted to a single interface. It could also publish an on-change notification for all interfaces, by indicating a target-path without any keys specified.  TODO - Can it represent notifications for a subset of interfaces?<a href="#appendix-B.3-2.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="normal" id="appendix-B.3-2.2">
+            <p id="appendix-B.3-2.2.1">The schema of the change message is exactly the same as for the equivalent periodic message.  It doesn't use the YANG Patch format <span>[<a href="#RFC8072" class="cite xref">RFC8072</a>]</span> for on-change messages.<a href="#appendix-B.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.3-2.3">
+            <p id="appendix-B.3-2.3.1">The "observation time" leaf represents when the system first observed the on-change event occurring.<a href="#appendix-B.3-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-B.3-2.4">
+            <p id="appendix-B.3-2.4.1">The on-change event doesn't differentiate the type of change to operational state.  The on-change-update snapshot type is used to indicate the creation of a new entry or some update to some existing state.  Basically, the message can be thought of as the state existing with some current value.<a href="#appendix-B.3-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<div class="alignLeft art-text artwork" id="appendix-B.3-3">
+<pre>
+{
+  "ietf-notification:notification": {
+    "eventTime": "2024-09-27T14:16:30.973Z",
+    "ietf-yp-ext:update": {
+      "id": 1,
+      "subscription-path": "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces",
+      "target-path":
+        "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interfaces/
+         interface[interface=GigabitEthernet0/0/0/0]",
+      "snapshot-type": "on-change-update"
+      "observation-time": "2024-09-27T14:16:30.973Z",
+      "datastore-snapshot": {
+        "interfaces": {
+          "interface": [
+            {
+              "interface-name": "GigabitEthernet0/0/0/0",
+              "interface": "GigabitEthernet0/0/0/0",
+              "state": "im-state-up",
+              "line-state": "im-state-up"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+</pre><a href="#appendix-B.3-3" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="example-of-an-on-change-delete-notification-using-the-new-style-update-message">
+<section id="appendix-B.4">
+        <h3 id="name-example-of-an-on-change-del">
+<a href="#appendix-B.4" class="section-number selfRef">B.4. </a><a href="#name-example-of-an-on-change-del" class="section-name selfRef">Example of an on-change-delete notification using the new style update message.</a>
+        </h3>
+<p id="appendix-B.4-1">If the interface was deleted, and if the system was capable of reporting on-change events for the delete event, then an on-change delete message would be encoded as per the following message.  Of note:<a href="#appendix-B.4-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.4-2.1">
+            <p id="appendix-B.4-2.1.1">The on-change-delete snapshot type doesn't include a "datastore-snapshot", instead it represents a delete of the list entry at the path identified by the target-path, which is similar to a YANG Patch delete notification.<a href="#appendix-B.4-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<div class="alignLeft art-text artwork" id="appendix-B.4-3">
+<pre>
+{
+  "ietf-notification:notification": {
+    "eventTime": "2024-09-27T14:16:40.973Z",
+    "ietf-yp-ext:update": {
+      "id": 1,
+      "subscription-path": "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces",
+      "target-path":
+        "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interfaces/
+         interface[interface=GigabitEthernet0/0/0/0]",
+      "snapshot-type": "on-change-delete"
+      "observation-time": "2024-09-27T14:16:40.973Z",
+    }
+  }
+}
+</pre><a href="#appendix-B.4-3" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-C">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Robert Wilton</span></div>
+<div dir="auto" class="left"><span class="org">Cisco Systems</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:rwilton@cisco.com" class="email">rwilton@cisco.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
