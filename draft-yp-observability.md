@@ -56,7 +56,6 @@ normative:
 informative:
   draft-ietf-nmop-network-anomaly-architecture
   draft-ietf-nmop-yang-message-broker-integration
-  Apache Kafka: TODO
 
 --- abstract
 
