@@ -109,18 +109,12 @@ This section lists some other potential issues and enhancements that should be c
 
 1. Currently the encoding and transport parameters are per subscription, but it may make more sense for these to be per receiver definition.  I.e., if you want to use different transports and encodings to the same receiver this should still be possible, but would require a second receiver to be defined with the same destination IP address, but a different name.  Currently, the newly proposed encoding format is configured per receiver, but alternatively it could be configured per subscription (that would better mirror the existing per-subscription transport and encoding configuration leaves).
 
-###
+<!--
 # Should the appendix contain a list of features in subscriptions notifications and YANG Push
 # that are probably not needed?
 #
 # E.g., is subscription modified useful (as opposed to just tearing down the subscription and starting again, which clients may handle from a robustness perspective anyway).
-###
-
-
-that if implemented correctly 
-that YANG Push implementations must implement if 
-
-This document specifies enhancements and refinements to {{YANG Push}} to optimize its behaviour 
+-->
 
 ## YANG Extensions Data Model
 
