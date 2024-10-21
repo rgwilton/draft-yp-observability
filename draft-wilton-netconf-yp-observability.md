@@ -9,20 +9,20 @@ number:
 date:
 consensus: true
 v: 3
-area: OPS
-workgroup: NETCONF
+area: "Operations and Management"
+workgroup: "Network Configuration"
 keyword:
  - YANG Push
  - Observability
  - Network Telemetry
  - Operational Data
 venue:
-  group: WG
-  type: Working Group
-  mail: WG@example.com
-  arch: https://example.com/WG
-  github: USER/REPO
-  latest: https://example.com/LATEST
+  group: "Network Configuration"
+  type: "Working Group"
+  mail: "netconf@ietf.org"
+  arch: "https://mailarchive.ietf.org/arch/browse/netconf/"
+  github: "rgwilton/draft-yp-observability"
+  latest: "https://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yp-observability.html"
 
 author:
  -
