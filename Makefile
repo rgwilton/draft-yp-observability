@@ -1,3 +1,4 @@
+export UPLOAD_EMAIL ?= rwilton@cisco.com
 LIBDIR := lib
 include $(LIBDIR)/main.mk
 
