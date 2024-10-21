@@ -1,0 +1,42 @@
+module: ietf-yp-ext
+
+  augment /sn:subscription-started/yp:update-trigger:
+    +--:(periodic-and-on-change) {yp:on-change}?
+       +-- periodic-and-on-change!
+          +-- period              yp:centiseconds
+          +-- anchor-time?        yang:date-and-time
+          +-- dampening-period?   yp:centiseconds
+          +-- sync-on-start?      boolean
+          +-- excluded-change*    yp:change-type
+  augment /sn:subscription-started:
+    +--ro common-notification-format?   boolean
+  augment /sn:subscription-modified/yp:update-trigger:
+    +--:(periodic-and-on-change) {yp:on-change}?
+       +-- periodic-and-on-change!
+          +-- period              yp:centiseconds
+          +-- anchor-time?        yang:date-and-time
+          +-- dampening-period?   yp:centiseconds
+          +-- sync-on-start?      boolean
+          +-- excluded-change*    yp:change-type
+  augment /sn:subscription-modified:
+    +--ro common-notification-format?   boolean
+  augment /sn:subscriptions/sn:subscription/yp:update-trigger:
+    +--:(periodic-and-on-change) {yp:on-change}?
+       +--rw periodic-and-on-change!
+          +--rw period              yp:centiseconds
+          +--rw anchor-time?        yang:date-and-time
+          +--rw dampening-period?   yp:centiseconds
+          +--rw sync-on-start?      boolean
+          +--rw excluded-change*    yp:change-type
+  augment /sn:subscriptions/sn:subscription:
+    +--rw common-notification-format?   boolean
+
+  notifications:
+    +---n update
+       +--ro id?                   sn:subscription-id
+       +--ro subscription-path?    yang:xpath1.0
+       +--ro target-path?          string
+       +--ro snapshot-type?        enumeration
+       +--ro observation-time?     yang:date-and-time
+       +--ro datastore-snapshot?   <anydata>
+       +--ro incomplete?           empty
