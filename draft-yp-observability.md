@@ -51,11 +51,11 @@ author:
     email: rwilton@cisco.com
 
 normative:
-  YANG Push: RFC 8641
+- YANG Push: RFC 8641
 
 informative:
-  draft-ietf-nmop-network-anomaly-architecture
-  draft-ietf-nmop-yang-message-broker-integration
+- I-D.ietf-nmop-network-anomaly-architecture
+- I-D.ietf-nmop-yang-message-broker-integration
 
 --- abstract
 
