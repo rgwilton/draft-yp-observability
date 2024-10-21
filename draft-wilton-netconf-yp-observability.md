@@ -1,4 +1,5 @@
 ---
+<<<<<<< HEAD
 ###
 # Internet-Draft Markdown Template
 #
@@ -19,6 +20,8 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
+=======
+>>>>>>> main
 title: "YANG Push Operational Data Observability Enhancements"
 abbrev: "Yang Push Observability"
 category: info
@@ -29,20 +32,34 @@ number:
 date:
 consensus: true
 v: 3
+<<<<<<< HEAD
 area: OPS
 workgroup: NETCONF
+=======
+area: "Operations and Management"
+workgroup: "Network Configuration"
+>>>>>>> main
 keyword:
  - YANG Push
  - Observability
  - Network Telemetry
  - Operational Data
 venue:
+<<<<<<< HEAD
   group: WG
   type: Working Group
   mail: WG@example.com
   arch: https://example.com/WG
   github: USER/REPO
   latest: https://example.com/LATEST
+=======
+  group: "Network Configuration"
+  type: "Working Group"
+  mail: "netconf@ietf.org"
+  arch: "https://mailarchive.ietf.org/arch/browse/netconf/"
+  github: "rgwilton/draft-yp-observability"
+  latest: "https://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yp-observability.html"
+>>>>>>> main
 
 author:
  -
@@ -118,6 +135,11 @@ This section lists some other potential issues and enhancements that should be c
 
 ## YANG Extensions Data Model
 
+~~~~ yang
+{::include yang/ietf-yp-ext.yang}
+~~~~
+{: align="left" sourcecode-markers="true" sourcecode-name="ietf-yp-ext@2024-10-18.yang" title="YANG module ietf-yp-ext"}
+
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
@@ -139,4 +161,5 @@ TODO - This document will need to register new YANG models with IANA.
 # Acknowledgments
 {:numbered="false"}
 
-TODO.  This early work is based on discussions with various folk, particularly XXX
+This is early work is based on discussions with various folk, particularly Thomas Graf, Holger Keller, Dan Voyer, Nils Warnke, and Alex Huang Feng; but also wider conversations that include: Benoit Claise, Pierre Francois, Paolo Lucente, Jean Quilbeuf, and others.
+
