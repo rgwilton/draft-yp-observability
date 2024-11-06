@@ -12,7 +12,7 @@
 /.targets.mk
 /.venv/
 /.vscode/
-/lib
+/lib/
 /node_modules/
 /versioned/
 Gemfile.lock
