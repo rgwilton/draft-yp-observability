@@ -109,9 +109,10 @@ Currently, it:
 - Clarifies the behaviour when authorization changes (local and remote)
 - Removes the YANG patch format
 - Mandates the use of the YANG push envelope header as defined in {{I-D.draft-netana-netconf-notif-envelope}}
-- Provides a subscription-path option in addition to a path option
+- Provides a subscription-path option in addition to a path option [TBD]
 - Removes the negotiation phase when setting up subscriptions replacing it with a simple accept/reject at that instantanous point in time
 - Describes that only "change" and "delete" updates are sent
+
 
 
 ## Single message type for on-change and periodic updates
