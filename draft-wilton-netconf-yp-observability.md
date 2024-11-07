@@ -181,6 +181,16 @@ to a "processing" state (or some other next state in their workflow).
 An end-of-sync field is provided which exists with a value of True (boolean) when it is sent.  A value of False or the absense of the end-of-sync field means that the producer has not finished sending it's data.
 
 
+## Clarifies the behaviour when authorization changes (local and remote)
+
+
+
+
+
+
+
+
+
 These are detailed in the following sections:
 
 ## New encoding format
