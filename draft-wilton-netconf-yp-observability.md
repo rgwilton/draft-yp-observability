@@ -108,8 +108,22 @@ Currently, it:
 - Removes the YANG patch format
 - Mandates the use of the YANG push envelope header as defined in {{I-D.draft-netana-netconf-notif-envelope}}
 - Provides a subscription-path option in addition to a path option
+- Removes the negotiation phase when setting up subscriptions replacing it with a simple accept/reject at that instantanous point in time
 
-## Single message type for 'on change' and periodic updates
+
+## Single message type for on-change and periodic updates
+
+The original YANG push drafts define two message types for updates ("push-update" and "push-change-update").  
+Sometimes it is helpful to have a single subscription that covers both periodic and on-change notifications.
+
+There are two ways in which this may be useful:
+
+1. For generally slow changing data (e.g., a device's physical inventory), then on-change notifications may be most appropriate.  However, in case there is any lost notification that isn't always detected, for any reason, then it may also be helpful to have a slow cadence periodic backup notification of the data (e.g., once every 24 hours), to ensure that the management systems would should always eventually converge on the current state in the network.
+
+1. For data that is generally polled on a periodic basis (e.g., once every 10 minutes) and put into a time series database, then it may be helpful for some data trees to also get more immediate notifications that the data has changed.  Hence, a combined periodic and on-change subscription, potentially with some dampening, would facilitate more frequent notifications of changes of the state, to reduce the need of having to always wait for the next periodic event.
+
+Hence, this document introduces the fairly intuitive "periodic-and-on-change" update trigger that creates a combined periodic and on-change subscription, and allows the same parameters to be configured.  For some use cases, e.g., where a time-series database is being updated, the new encoding format proposed previously may be most useful.
+
 
 ## Provides an extensible option for data encoding
 
@@ -154,15 +168,7 @@ The practical differences in the encodings may be better illustrated via the exa
 
 ## Combined periodic and on-change subscription
 
-Sometimes it is helpful to have a single subscription that covers both periodic and on-change notifications (perhaps with dampening).
 
-There are two ways in which this may be useful:
-
-1. For generally slow changing data (e.g., a device's physical inventory), then on-change notifications may be most appropriate.  However, in case there is any lost notification that isn't always detected, for any reason, then it may also be helpful to have a slow cadence periodic backup notification of the data (e.g., once every 24 hours), to ensure that the management systems would should always eventually converge on the current state in the network.
-
-1. For data that is generally polled on a periodic basis (e.g., once every 10 minutes) and put into a time series database, then it may be helpful for some data trees to also get more immediate notifications that the data has changed.  Hence, a combined periodic and on-change subscription, potentially with some dampening, would facilitate more frequent notifications of changes of the state, to reduce the need of having to always wait for the next periodic event.
-
-Hence, this document introduces the fairly intuitive "periodic-and-on-change" update trigger that creates a combined periodic and on-change subscription, and allows the same parameters to be configured.  For some use cases, e.g., where a time-series database is being updated, the new encoding format proposed previously may be most useful.
 
 ## Open Issues & Other Potential Enhancements/Changes
 
