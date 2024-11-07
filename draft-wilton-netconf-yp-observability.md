@@ -171,6 +171,14 @@ Hence, this document introduces the fairly intuitive "periodic-and-on-change" up
 
 
 
+## Provides an end-of-sync marker
+
+Controllers often use on-change subscriptions to obtain a continual view of the current state of the configuration on
+a node without the need to regularly deliver the entire configuration.  In some scenarios it is useful for the controller
+to know that the node has finished sending all of it's updates and so the controller could move from a "receiving" mode
+to a "processing" state (or some other next state in their workflow).
+
+An end-of-sync field is provided which exists with a value of True (boolean) when it is sent.  A value of False or the absense of the end-of-sync field means that the producer has not finished sending it's data.
 
 
 These are detailed in the following sections:
