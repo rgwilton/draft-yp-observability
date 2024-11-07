@@ -40,6 +40,7 @@ normative:
   RFC8639:
   RFC7951:
   RFC9254:
+  RFC7950:
 
 informative:
   I-D.ietf-nmop-network-anomaly-architecture:
@@ -103,18 +104,62 @@ Currently, it:
 - Defines a single message type for both 'on change' and periodic updates
 - Provides an extensible option for data encoding
 - Provides the concept of a heartbeat interval to 'on change' subscripitons
+- Adds a new subscripiton type named periodic-on-change and describes the differences between this and on-change with heartbeat
 - Provides an end-of-sync marker
 - Clarifies the behaviour when authorization changes (local and remote)
 - Removes the YANG patch format
 - Mandates the use of the YANG push envelope header as defined in {{I-D.draft-netana-netconf-notif-envelope}}
 - Provides a subscription-path option in addition to a path option
 - Removes the negotiation phase when setting up subscriptions replacing it with a simple accept/reject at that instantanous point in time
+- Describes that only "change" and "delete" updates are sent
 
 
 ## Single message type for on-change and periodic updates
 
-The original YANG push drafts define two message types for updates ("push-update" and "push-change-update").  
+The original YANG push drafts define two message types for updates ("push-update" and "push-change-update").
+
+Collectors do not need to identify update messages between stream updates and on-change updates, as such a unified
+message type called "push-update-notification" is defined that is provided for all updates no matter what the
+subscription type is.
+
+
+## Provides an extensible option for data encoding
+
+NETCONF is an XML based protocol and all NETCONF operations and notifications are defined in XML.  Inside NETCONF
+operations and notifications is encoded data.  This encoded data can be delivered in multiple encodings, there need
+not necessarily be a limitation on what encoding this data takes as long as the server/producer can encode it and the
+client/receiver can decode it.
+
+There are a number of common data encodings in use today (and already standardised by the IETF), however, there may
+be new encodings in the future.  This draft, thereforem, will provide an extensible encoding selection to allow
+for future additions.
+
+The three data encodings provided initially in this draft are:
+
+- XML as defined in {{RFC7950}}
+- JSON_IETF as defined in {{RFC7951}}
+- CBOR as defined in {{RFC9254}}
+
+This draft does not mandate any specific data encoding nor does it define the default encoding, instead, leaving the
+encoding selection of choice to the consumer (or producer in the case of a configured subscription).
+
+The establish-subscription operation is extended with an "encoding" option to determine the encoding type.  This "encoding" leaf is an enumeration with the following options: xml, json_ietf, cbor
+
+
+## Provides the concept of a heartbeat interval to on-change subscripitons
+
+An on-change subscripiton delivers notification update messages when a change is determined in a specific node.  Often
+there are no changes over a period of time and it is important for a management system to be able to identify whether
+the session is still operating correctly and to ensure that their current view of the environment is correct.
+
+The heartbeat option is provided (with a value provided in seconds) along with an on-change subscription.  Upon the
+expiry of this timer the current state of all paths in the subscriptions is sent to the consumer regardless of whether
+it has changed or not.
+
+## Adds a new subscripiton type named periodic-on-change and describes the differences between this and on-change with heartbeat
+
 Sometimes it is helpful to have a single subscription that covers both periodic and on-change notifications.
+
 
 There are two ways in which this may be useful:
 
@@ -125,25 +170,6 @@ There are two ways in which this may be useful:
 Hence, this document introduces the fairly intuitive "periodic-and-on-change" update trigger that creates a combined periodic and on-change subscription, and allows the same parameters to be configured.  For some use cases, e.g., where a time-series database is being updated, the new encoding format proposed previously may be most useful.
 
 
-## Provides an extensible option for data encoding
-
-NETCONF is an XML based protocol and all NETCONF operations and notifications are defined in XML.  Inside NETCONF
-operations and notifications is encoded data.  This encoded data can be delivered in multiple encodings, there need
-not necessarily be a limitation on what encoding this data takes as long as the server/producer can encode it and the
-client/receiver can decode it.
-
-There are a number of common data encodings in use today (and already standardised by the IETF), however, there may 
-be new encodings in the future.  This draft, thereforem, will provide an extensible encoding selection to allow 
-for future additions.
-
-The three data encodings provided initially in this draft are:
-
-- XML
-- JSON_IETF as defined in {{RFC7951}}
-- CBOR as defined in {{RFC9254}}
-
-This draft does not mandate any specific data encoding, however, implementers SHOULD implement both XML (to maintain
-alignment with NETCONF operation/notification definitions) and JSON_IETF as a minimum.
 
 
 
