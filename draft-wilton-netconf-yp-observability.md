@@ -109,10 +109,10 @@ Currently, it:
 - Clarifies the behaviour when authorization changes (local and remote)
 - Removes the YANG patch format
 - Mandates the use of the YANG push envelope header as defined in {{I-D.draft-netana-netconf-notif-envelope}}
-- Provides a subscription-path option in addition to a path option [TBD]
 - Removes the negotiation phase when setting up subscriptions replacing it with a simple accept/reject at that instantanous point in time
 - Describes that only "change" and "delete" updates are sent
-
+- Send in initial subscription setup response the current content-id
+- Multiple path expressions in the single
 
 
 ## Single message type for on-change and periodic updates
@@ -170,8 +170,6 @@ There are two ways in which this may be useful:
 
 Hence, this document introduces the fairly intuitive "periodic-and-on-change" update trigger that creates a combined periodic and on-change subscription, and allows the same parameters to be configured.  For some use cases, e.g., where a time-series database is being updated, the new encoding format proposed previously may be most useful.
 
-
-
 ## Provides an end-of-sync marker
 
 Controllers often use on-change subscriptions to obtain a continual view of the current state of the configuration on
@@ -187,28 +185,6 @@ An end-of-sync field is provided which exists with a value of True (boolean) whe
 
 
 
-
-
-
-
-
-These are detailed in the following sections:
-
-## New encoding format
-
-This document proposes a new opt-in YANG-Push encoding format to use instead of the "push-update" and "push-change-update" notifications defined in {{RFC8641}}.
-
-There are a few reasons for specifying a new encoding format:
-
-1. To use the same encoding format for both periodic and on-change messages, allowing the same messages to be easily received and stored in a time-series database, making use of the same message schema when traversing message buses, such as Apache Kafka.
-
-1. To allow the schema of the notifications to be rooted to the subscription point rather than always being to the root of the operational datastore schema.  This allows messages to be slightly less indented, and makes it easier to convert from a YANG schema to an equivalent message bus schema, where each message is defined with its own schema, rather than a single datastore schema.
-
-1. To move away from the somewhat verbose YANG Patch format {{RFC8072}}, that is not really a great fit for encoding changes of operational data.  Many systems cannot necessarily distinguish between create versus update events (particularly for new subscriptions or after recovering from internal failures within the system), and hence cannot faithfully implement the full YANG Patch semantics defined in {{RFC8641}}.
-
-1. To allow the device to split a subscription into smaller child subscriptions for more efficient independent and concurrent processing.  I.e., reusing the ideas from {{?I-D.ietf-netconf-distributed-notif}}.  However, all child subscriptions are still encoded from the same subscription point.
-
-The practical differences in the encodings may be better illustrated via the examples in {{Examples}}.
 
 
 ## Combined periodic and on-change subscription
