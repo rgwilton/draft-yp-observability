@@ -144,7 +144,7 @@ The three data encodings provided initially in this draft are:
 This draft does not mandate any specific data encoding nor does it define the default encoding, instead, leaving the
 encoding selection of choice to the consumer (or producer in the case of a configured subscription).
 
-The establish-subscription operation is extended with an "encoding" option to determine the encoding type.  This "encoding" leaf is an enumeration with the following options: xml, json_ietf, cbor
+The establish-subscription operation is extended with an "encoding" option to determine the encoding type.  This "encoding" leaf is an identityref with the following defined identities: xml, json_ietf, cbor
 
 
 ## Provides the concept of a heartbeat interval to on-change subscripitons
