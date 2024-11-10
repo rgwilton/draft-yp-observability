@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-11-07T00:16:07.815324+00:00",
+  "timestamp": "2024-11-10T00:17:31.012417+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -151,6 +151,79 @@
       },
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 5,
+      "id": "PR_kwDOM-PT7s6BL9e8",
+      "title": "Jgc 01",
+      "url": "https://github.com/rgwilton/draft-yp-observability/pull/5",
+      "state": "CLOSED",
+      "author": "jgcumming",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-11-07T13:15:26Z",
+      "updatedAt": "2024-11-07T13:15:57Z",
+      "baseRepository": "rgwilton/draft-yp-observability",
+      "baseRefName": "main",
+      "baseRefOid": "d5488db948318c4788c7b7aaffdd2648e2a6ce1d",
+      "headRepository": "jgcumming/draft-yp-observability",
+      "headRefName": "jgc-01",
+      "headRefOid": "cb9d0e2cfb12a35071d82eb831b9f780928044a1",
+      "closedAt": "2024-11-07T13:15:57Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 6,
+      "id": "PR_kwDOM-PT7s6BMGaH",
+      "title": "WIP: Updates to specify YANG push lite",
+      "url": "https://github.com/rgwilton/draft-yp-observability/pull/6",
+      "state": "OPEN",
+      "author": "jgcumming",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-11-07T13:31:40Z",
+      "updatedAt": "2024-11-08T11:48:46Z",
+      "baseRepository": "rgwilton/draft-yp-observability",
+      "baseRefName": "main",
+      "baseRefOid": "d5488db948318c4788c7b7aaffdd2648e2a6ce1d",
+      "headRepository": "jgcumming/draft-yp-observability",
+      "headRefName": "jgc-01",
+      "headRefOid": "f3221b284aa056d9ea29e86d074140848d5cf6ed",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOM-PT7s6QcIdj",
+          "commit": {
+            "abbreviatedOid": "a116515"
+          },
+          "author": "earies",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-11-08T10:10:48Z",
+          "updatedAt": "2024-11-08T10:10:49Z",
+          "comments": [
+            {
+              "originalPosition": 122,
+              "body": "```suggestion\r\nThe establish-subscription operation is extended with an \"encoding\" option to determine the encoding type.  This \"encoding\" leaf is an identityref with the following defined identities: xml, json_ietf, cbor\r\n```\r\nThis enables better extensibility (should one choose to augment additional encodings at a later point)",
+              "createdAt": "2024-11-08T10:10:49Z",
+              "updatedAt": "2024-11-08T10:10:49Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
