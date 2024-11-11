@@ -1,7 +1,7 @@
 ---
-title: "YANG-Push Operational Data Observability Enhancements"
-abbrev: "YANG-Push Observability"
-category: info
+title: "YANG Push Lite: Operational Data Observability Enhancements"
+abbrev: "YANG Push Lite"
+category: std
 
 docname: draft-wilton-netconf-yp-observability-latest
 submissiontype: IETF
@@ -25,17 +25,27 @@ venue:
   latest: "https://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yp-observability.html"
 
 author:
- -
-    fullname: Robert Wilton
+  - fullname: Robert Wilton
     organization: Cisco Systems
     email: rwilton@cisco.com
+  - fullname: James Cumming
+    organization: Nokia
+    email: james.cumming@nokia.com
+  - fullname: Ebben Aries
+    organization: Juniper Networks
+    email: exa@juniper.net
 
 normative:
   RFC8641:
+  RFC8639:
+  RFC7951:
+  RFC9254:
+  RFC7950:
 
 informative:
   I-D.ietf-nmop-network-anomaly-architecture:
   I-D.ietf-nmop-yang-message-broker-integration:
+  I-D.draft-netana-netconf-notif-envelope:
   Kafka:
     target: https://kafka.apache.org/
     title: Apache Kafka
@@ -57,7 +67,7 @@ informative:
 
 --- abstract
 
-This early draft proposes some enhancements to YANG-Push to optimize its behavior for operational data telemetry.  It also lists some additional issues that could potentially be discussed if there is further interest in this work, in particular whether we should be attempting extensions to YANG-Push (as this document is currently framed) or instead should attempt to define a new 'YANG-Push lite'.
+This early draft proposes a new, streamlined version of YANG-Push called YANG push lite, in order to optimize its behavior for operational data telemetry.  It also addresses some additional issues and potential resolutions.
 
 --- middle
 
@@ -71,11 +81,9 @@ This early draft proposes some enhancements to YANG-Push to optimize its behavio
 
 YANG-Push is a key part of these architectures, but through experience of implementing YANG-Push specifically for the use cases described in the above architecture documents, it became clear that there are aspects of YANG-Push that are not optimal for these use cases for neither producer or consumer, particular as they relate to operational data.
 
-For the consumer of the telemetry data, there is a requirement to associate a schema with the provided data.  It is much more helpful for the schema to be associated with the individual messages rather than at the root of the operational datastore.  As such, it is helpful for the encoded instance data to be rooted at the subscription path rather than at the schema root of the operational datastore.
-
 ## Complexities in Modelling the Operational State Datastore
 
-The YANG abstraction of a single datastore of related consistent data works very well for configuration that has a strong requirement to be self consistent, and that is always updated, and validated, in a transactional way.  But for producers of telemetry data, the YANG abstraction of a single operational datastore is not really possible for devices managing a non-trivial quantity of operational data.
+The YANG abstraction of a single datastore of related consistent data works very well for a configuration that has a strong requirement to be self consistent, and that is always updated, and validated, in a transactional way.  But for producers of telemetry data, the YANG abstraction of a single operational datastore is not really possible for devices managing a non-trivial quantity of operational data.
 
 Some systems may store their operational data in a single logical database, yet it is less likely that the operational data can always be updated in a transactional way, and often for memory efficiency reasons such a database does not store individual leaves, but instead semi-consistent records of data at a container or list entry level.
 
@@ -84,38 +92,78 @@ For other systems, the operational information may be distributed across multipl
 In practice, many network devices will manage their operational data as a combination of some data being stored in a central operational datastore, and other, higher scale, and potentially more frequently changing data (e.g., statistics or FIB information) being stored elsewhere in a more memory efficient and performant way.
 
 
-# YANG-Push enhancements
+# YANG push lite
 
-To address the needs described in the introduction and architecture documents, this document defines some minor extensions to YANG-Push that are designed to make YANG-Push work better both for producers and consumers of YANG telemetry data.
+To address the needs described in the introduction and architecture documents, this document defines a new protocol 'YANG push lite'
+that is designed to provide a more efficient protocol for both producers and consumers of YANG telemetry data.
 
 Currently, it:
 
-- defines a new YANG-Push encoding format that can be used for both on-change and periodic subscriptions that reports the data from the subscription filter point.
-
-- defines a combined periodic and on-change subscription that reports events both on a periodical cadence and also if changes to the data have occurred.
-
-These are detailed in the following sections:
-
-## New encoding format
-
-This document proposes a new opt-in YANG-Push encoding format to use instead of the "push-update" and "push-change-update" notifications defined in {{RFC8641}}.
-
-There are a few reasons for specifying a new encoding format:
-
-1. To use the same encoding format for both periodic and on-change messages, allowing the same messages to be easily received and stored in a time-series database, making use of the same message schema when traversing message buses, such as Apache Kafka.
-
-1. To allow the schema of the notifications to be rooted to the subscription point rather than always being to the root of the operational datastore schema.  This allows messages to be slightly less indented, and makes it easier to convert from a YANG schema to an equivalent message bus schema, where each message is defined with its own schema, rather than a single datastore schema.
-
-1. To move away from the somewhat verbose YANG Patch format {{RFC8072}}, that is not really a great fit for encoding changes of operational data.  Many systems cannot necessarily distinguish between create versus update events (particularly for new subscriptions or after recovering from internal failures within the system), and hence cannot faithfully implement the full YANG Patch semantics defined in {{RFC8641}}.
-
-1. To allow the device to split a subscription into smaller child subscriptions for more efficient independent and concurrent processing.  I.e., reusing the ideas from {{?I-D.ietf-netconf-distributed-notif}}.  However, all child subscriptions are still encoded from the same subscription point.
-
-The practical differences in the encodings may be better illustrated via the examples in {{Examples}}.
+- Uses {{RFC8639}} to define what a subscription is and how to create it.  This includes the terminology defined in this RFC such as  configured subscriptions and dynamic subscriptions [TBD]
+- Replaces {{RFC8641}} [TBD]
+- Defines a single message type for both 'on change' and periodic updates
+- Provides an extensible option for data encoding
+- Provides the concept of a heartbeat interval to 'on change' subscripitons
+- Adds a new subscripiton type named periodic-on-change and describes the differences between this and on-change with heartbeat
+- Provides an end-of-sync marker
+- Clarifies the behaviour when authorization changes (local and remote)
+- Removes the YANG patch format
+- Mandates the use of the YANG push envelope header as defined in {{I-D.draft-netana-netconf-notif-envelope}}
+- Removes the negotiation phase when setting up subscriptions replacing it with a simple accept/reject at that instantanous point in time (no mandatory resource check)
+- Describes that only "change" and "delete" updates are sent
+- Send in initial subscription setup response the current content-id
+- Multiple path expressions in the single
+- Removes dampening
+- Data is rooted from the root of the tree
 
 
-## Combined periodic and on-change subscription
 
-Sometimes it is helpful to have a single subscription that covers both periodic and on-change notifications (perhaps with dampening).
+## Single message type for on-change and periodic updates
+
+The original YANG push drafts define two message types for updates ("push-update" and "push-change-update").
+
+Collectors do not need to identify update messages between stream updates and on-change updates, as such a unified
+message type called "push-update-notification" is defined that is provided for all updates no matter what the
+subscription type is.
+
+
+## Provides an extensible option for data encoding
+
+NETCONF is an XML based protocol and all NETCONF operations and notifications are defined in XML.  Inside NETCONF
+operations and notifications is encoded data.  This encoded data can be delivered in multiple encodings, there need
+not necessarily be a limitation on what encoding this data takes as long as the server/producer can encode it and the
+client/receiver can decode it.
+
+There are a number of common data encodings in use today (and already standardised by the IETF), however, there may
+be new encodings in the future.  This draft, thereforem, will provide an extensible encoding selection to allow
+for future additions.
+
+The three data encodings provided initially in this draft are:
+
+- XML as defined in {{RFC7950}}
+- JSON_IETF as defined in {{RFC7951}}
+- CBOR as defined in {{RFC9254}}
+
+This draft does not mandate any specific data encoding nor does it define the default encoding, instead, leaving the
+encoding selection of choice to the consumer (or producer in the case of a configured subscription).
+
+The establish-subscription operation is extended with an "encoding" option to determine the encoding type.  This "encoding" leaf is an identityref with the following defined identities: xml, json_ietf, cbor
+
+
+## Provides the concept of a heartbeat interval to on-change subscripitons
+
+An on-change subscripiton delivers notification update messages when a change is determined in a specific node.  Often
+there are no changes over a period of time and it is important for a management system to be able to identify whether
+the session is still operating correctly and to ensure that their current view of the environment is correct.
+
+The heartbeat option is provided (with a value provided in seconds) along with an on-change subscription.  Upon the
+expiry of this timer the current state of all paths in the subscriptions is sent to the consumer regardless of whether
+it has changed or not.
+
+## Adds a new subscripiton type named periodic-on-change and describes the differences between this and on-change with heartbeat
+
+Sometimes it is helpful to have a single subscription that covers both periodic and on-change notifications.
+
 
 There are two ways in which this may be useful:
 
@@ -124,6 +172,27 @@ There are two ways in which this may be useful:
 1. For data that is generally polled on a periodic basis (e.g., once every 10 minutes) and put into a time series database, then it may be helpful for some data trees to also get more immediate notifications that the data has changed.  Hence, a combined periodic and on-change subscription, potentially with some dampening, would facilitate more frequent notifications of changes of the state, to reduce the need of having to always wait for the next periodic event.
 
 Hence, this document introduces the fairly intuitive "periodic-and-on-change" update trigger that creates a combined periodic and on-change subscription, and allows the same parameters to be configured.  For some use cases, e.g., where a time-series database is being updated, the new encoding format proposed previously may be most useful.
+
+## Provides an end-of-sync marker
+
+Controllers often use on-change subscriptions to obtain a continual view of the current state of the configuration on
+a node without the need to regularly deliver the entire configuration.  In some scenarios it is useful for the controller
+to know that the node has finished sending all of it's updates and so the controller could move from a "receiving" mode
+to a "processing" state (or some other next state in their workflow).
+
+An end-of-sync field is provided which exists with a value of True (boolean) when it is sent.  A value of False or the absense of the end-of-sync field means that the producer has not finished sending it's data.
+
+
+## Clarifies the behaviour when authorization changes (local and remote)
+
+
+
+
+
+
+## Combined periodic and on-change subscription
+
+
 
 ## Open Issues & Other Potential Enhancements/Changes
 
@@ -143,7 +212,7 @@ This section lists some other potential issues and enhancements that should be c
 
 1. Currently the encoding and transport parameters are per subscription, but it may make more sense for these to be per receiver definition.  I.e., if you want to use different transports and encodings to the same receiver this should still be possible, but would require a second receiver to be defined with the same destination IP address, but a different name.  Currently, the newly proposed encoding format is configured per subscription (mirroring equivalent transport and encoding configuration), but alternatively it could be configured per receiver.
 
-1. We should consider how a subscription could support multiple subscription paths.  The potential tricky aspect of this to consider the subscription bind point.  Related to this is whether XPath 1.0 is the best way of specifying these bind points, or whether it should something closer to the NACM node-instance-identifier {{?RFC6536}}, but perhaps using something closer to the JSON style encoding of instance identifier {{?RFC7951}}, section 6.11; or JSON PATH {{?RFC9535}}.
+1. We should consider how a subscription could support multiple subscription paths.  The potential tricky aspect of this to consider the subscription bind point.  Related to this is whether XPath 1.0 is the best way of specifying these bind points, or whether it should something closer to the NACM node-instance-identifier {{?RFC6536}}, but perhaps using something closer to the JSON style encoding of instance identifier {{RFC7951}}, section 6.11; or JSON PATH {{?RFC9535}}.
 
 1. What level of subscription filtering do we need and want to support?  For example, I doubt that anyone allows for full XPath filtering of operational data subscriptions because they are likely to be very computationally expensive to implement.  Is there an easier way of expressing the filter requirements rather than using subtree filtering.  Note, this could be added in a future release.
 
