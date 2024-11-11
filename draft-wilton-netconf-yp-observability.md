@@ -114,6 +114,7 @@ Currently, it:
 - Send in initial subscription setup response the current content-id
 - Multiple path expressions in the single
 - Removes dampening
+- Data is rooted from the root of the tree
 
 
 
