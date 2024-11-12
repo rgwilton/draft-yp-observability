@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-11-10T00:17:31.012417+00:00",
+  "timestamp": "2024-11-12T00:15:53.167430+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -190,13 +190,13 @@
       "labels": [],
       "body": "",
       "createdAt": "2024-11-07T13:31:40Z",
-      "updatedAt": "2024-11-08T11:48:46Z",
+      "updatedAt": "2024-11-11T22:09:28Z",
       "baseRepository": "rgwilton/draft-yp-observability",
       "baseRefName": "main",
       "baseRefOid": "d5488db948318c4788c7b7aaffdd2648e2a6ce1d",
       "headRepository": "jgcumming/draft-yp-observability",
       "headRefName": "jgc-01",
-      "headRefOid": "f3221b284aa056d9ea29e86d074140848d5cf6ed",
+      "headRefOid": "6a16d71643ee9767f01036d51b3ebb85fd432aee",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
