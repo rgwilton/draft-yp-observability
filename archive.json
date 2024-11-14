@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-11-12T00:15:53.167430+00:00",
+  "timestamp": "2024-11-14T00:16:10.822252+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -190,7 +190,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2024-11-07T13:31:40Z",
-      "updatedAt": "2024-11-11T22:09:28Z",
+      "updatedAt": "2024-11-13T13:35:24Z",
       "baseRepository": "rgwilton/draft-yp-observability",
       "baseRefName": "main",
       "baseRefOid": "d5488db948318c4788c7b7aaffdd2648e2a6ce1d",
@@ -222,6 +222,19 @@
               "updatedAt": "2024-11-08T10:10:49Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOM-PT7s6RB0t4",
+          "commit": {
+            "abbreviatedOid": "6a16d71"
+          },
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-11-13T13:35:24Z",
+          "updatedAt": "2024-11-13T13:35:24Z",
+          "comments": []
         }
       ]
     }
