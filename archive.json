@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-12-08T00:19:23.657094+00:00",
+  "timestamp": "2024-12-10T00:18:07.096901+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -190,7 +190,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2024-11-07T13:31:40Z",
-      "updatedAt": "2024-11-13T13:35:24Z",
+      "updatedAt": "2024-12-08T17:46:44Z",
       "baseRepository": "rgwilton/draft-yp-observability",
       "baseRefName": "main",
       "baseRefOid": "d5488db948318c4788c7b7aaffdd2648e2a6ce1d",
@@ -201,7 +201,15 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "earies",
+          "authorAssociation": "NONE",
+          "body": "are we ready to merge this PR and iterate from there?",
+          "createdAt": "2024-12-08T17:46:44Z",
+          "updatedAt": "2024-12-08T17:46:44Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOM-PT7s6QcIdj",
