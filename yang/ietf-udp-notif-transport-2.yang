@@ -103,7 +103,7 @@ module ietf-udp-notif-transport-2 {
       "Provides a reusable description of a UDP-Notif target
       receiver.";
 
-    uses udpc:udp-client {
+    uses udpc:udp-client-grouping {
       refine remote-port {
         mandatory true;
       }

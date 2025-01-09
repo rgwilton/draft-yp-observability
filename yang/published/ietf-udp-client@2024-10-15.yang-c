@@ -47,7 +47,7 @@ module ietf-udp-client {
        UDP clients.";
   }
 
-  grouping udp-client-grouping {
+  grouping udp-client {
     description
       "A reusable grouping for configuring a UDP client.
 

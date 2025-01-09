@@ -1,0 +1,52 @@
+28c28,33
+< 
+---
+>   import ietf-notification-sequencing {
+>     prefix inotifseq;
+>     reference
+>       "draft-tgraf-netconf-notif-sequencing-05: YANG Notifications
+>       Sequencing";
+>   }
+70,107d74
+<   typedef notification-support {
+<     type bits {
+<       bit config-changes {
+<         description
+<           "The publisher is capable of sending
+<           notifications for 'config true' nodes for the
+<           relevant scope and subscription type.";
+<       }
+<       bit state-changes {
+<         description
+<           "The publisher is capable of sending
+<           notifications for 'config false' nodes for the
+<           relevant scope and subscription type.";
+<       }
+<     }
+<     description
+<       "Redefition of the type 'notification-support' from
+<       'ietf-notification-capabilities' module to be reusable in
+<       other YANG modules.
+< 
+<       Type for defining whether 'on-change' or
+<       'periodic' notifications are supported for all data nodes,
+<       'config false' data nodes, 'config true' data nodes, or
+<       no data nodes.
+< 
+<       The bits config-changes or state-changes have no effect
+<       when they are set for a datastore or for a set of nodes
+<       that does not contain nodes with the indicated config
+<       value.  In those cases, the effect is the same as if no
+<       support was declared.  One example of this is indicating
+<       support for state-changes for a candidate datastore that
+<       has no effect.";
+<     reference
+<       "RFC XXXX: YANG Notifications Sequencing
+<       RFC 9196: YANG Modules Describing Capabilities for
+<       Systems and Datastore Update Notifications";
+<   }
+< 
+159c126
+<       type notification-support;
+---
+>       type inotifseq:notification-support;

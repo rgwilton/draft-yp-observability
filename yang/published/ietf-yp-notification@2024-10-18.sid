@@ -1,0 +1,55 @@
+{
+  "ietf-sid-file:sid-file": {
+    "module-name": "ietf-yp-notification",
+    "module-revision": "2024-10-10",
+    "description": "YANG-Push Notification Envelope",
+    "dependency-revision": [
+      {
+        "module-name": "ietf-yang-types",
+        "module-revision": "2013-07-15"
+      },
+      {
+        "module-name": "ietf-subscribed-notifications",
+        "module-revision": "2019-09-09"
+      }
+    ],
+    "assignment-range": [
+      {
+        "entry-point": "2550",
+        "size": "50"
+      }
+    ],
+    "item": [
+      {
+        "namespace": "module",
+        "identifier": "ietf-yp-notification",
+        "sid": "2550"
+      },
+      {
+        "namespace": "data",
+        "identifier": "/ietf-yp-notification:envelope",
+        "sid": "2551"
+      },
+      {
+        "namespace": "data",
+        "identifier": "/ietf-yp-notification:envelope/event-time",
+        "sid": "2552"
+      },
+      {
+        "namespace": "data",
+        "identifier": "/ietf-yp-notification:envelope/hostname",
+        "sid": "2553"
+      },
+      {
+        "namespace": "data",
+        "identifier": "/ietf-yp-notification:envelope/sequence-number",
+        "sid": "2554"
+      },
+      {
+        "namespace": "data",
+        "identifier": "/ietf-yp-notification:envelope/notification-contents",
+        "sid": "2555"
+      }
+    ]
+  }
+}

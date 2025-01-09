@@ -40,7 +40,7 @@ module ietf-udp-server {
       "RFC-to-be: YANG Groupings for UDP Clients and UDP Servers";
   }
 
-  grouping udp-server-grouping {
+  grouping udp-server {
     description
       "Provides a reusable grouping for configuring a UDP server.
 
