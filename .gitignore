@@ -2,8 +2,11 @@
 *.pdf
 *.redxml
 *.swp
-*.txt
+draft-*.txt
 *.upload
+.scala-build/
+.metals/
+.bsp/
 *~
 .tags
 /*-[0-9][0-9].xml
@@ -21,3 +24,4 @@ draft-wilton-netconf-yp-observability.xml
 package-lock.json
 report.xml
 !requirements.txt
+old/

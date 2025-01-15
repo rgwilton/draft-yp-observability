@@ -1,0 +1,130 @@
+module: ietf-yp-lite
+  +--rw datastore-telemetry
+     +--rw filters
+     |  +--rw selection-filter* [filter-id]
+     |     +--rw filter-id                         string
+     |     +--rw (ds-filter-spec)?
+     |        +--:(datastore-subtree-filter)
+     |        |  +--rw datastore-subtree-filter?   <anydata>
+     |        |          {ypl:subtree}?
+     |        +--:(datastore-xpath-filter)
+     |           +--rw datastore-xpath-filter?     yang:xpath1.0
+     |                   {ypl:xpath}?
+     +--rw subscriptions
+     |  +--rw subscription* [id]
+     |     +--rw id                               subscription-id
+     |     +--rw target
+     |     |  +--rw datastore?
+     |     |  |       identityref
+     |     |  +--rw (selection-filter)?
+     |     |     +--:(by-reference)
+     |     |     |  +--rw selection-filter-ref
+     |     |     |          selection-filter-ref
+     |     |     +--:(within-subscription)
+     |     |        +--rw (ds-filter-spec)?
+     |     |           +--:(datastore-subtree-filter)
+     |     |           |  +--rw datastore-subtree-filter?   <anydata>
+     |     |           |          {ypl:subtree}?
+     |     |           +--:(datastore-xpath-filter)
+     |     |              +--rw datastore-xpath-filter?
+     |     |                      yang:xpath1.0 {ypl:xpath}?
+     |     +--rw dscp?                            inet:dscp {dscp}?
+     |     +--rw purpose?                         string
+     |     |       {configured}?
+     |     +--ro configured-subscription-state?   enumeration
+     |     |       {configured}?
+     |     +--rw receivers
+     |     |  +--rw receiver* [name]
+     |     |     +--rw name                      leafref
+     |     |     +--ro sent-event-records?
+     |     |     |       yang:zero-based-counter64
+     |     |     +--ro excluded-event-records?
+     |     |     |       yang:zero-based-counter64
+     |     |     +--ro state                     enumeration
+     |     |     +---x reset {configured}?
+     |     |        +--ro output
+     |     |           +--ro time    yang:date-and-time
+     |     +--rw (update-trigger)?
+     |        +--:(periodic)
+     |        |  +--rw periodic!
+     |        |     +--rw period         centiseconds
+     |        |     +--rw anchor-time?   yang:date-and-time
+     |        +--:(on-change) {on-change}?
+     |           +--rw on-change!
+     |              +--rw dampening-period?   centiseconds
+     |              +--rw sync-on-start?      boolean
+     +--rw receivers
+        +--rw receiver* [name]
+           +--rw name                      string
+           +--rw encoding?                 encoding
+           +--rw dscp?                     inet:dscp {dscp}?
+           +--rw (notification-message-origin)? {configured}?
+           |  +--:(interface-originated)
+           |  |  +--rw source-interface?   if:interface-ref
+           |  |          {interface-designation}?
+           |  +--:(address-originated)
+           |     +--rw source-vrf?         leafref {supports-vrf}?
+           |     +--rw source-address?     inet:ip-address-no-zone
+           +--rw (transport-type)
+
+  rpcs:
+    +---x establish-subscription
+    |  +---w input
+    |  |  +---w target
+    |  |  |  +---w datastore?
+    |  |  |  |       identityref
+    |  |  |  +---w (selection-filter)?
+    |  |  |     +--:(by-reference)
+    |  |  |     |  +---w selection-filter-ref
+    |  |  |     |          selection-filter-ref
+    |  |  |     +--:(within-subscription)
+    |  |  |        +---w (ds-filter-spec)?
+    |  |  |           +--:(datastore-subtree-filter)
+    |  |  |           |  +---w datastore-subtree-filter?   <anydata>
+    |  |  |           |          {ypl:subtree}?
+    |  |  |           +--:(datastore-xpath-filter)
+    |  |  |              +---w datastore-xpath-filter?
+    |  |  |                      yang:xpath1.0 {ypl:xpath}?
+    |  |  +---w dscp?       inet:dscp {dscp}?
+    |  |  +---w encoding?   encoding
+    |  +--ro output
+    |     +--ro id    subscription-id
+    +---x delete-subscription
+    |  +---w input
+    |     +---w id    subscription-id
+    +---x kill-subscription
+       +---w input
+          +---w id    subscription-id
+
+  notifications:
+    +---n replay-completed
+    |  +--ro id    subscription-id
+    +---n subscription-started {configured}?
+    |  +--ro id         subscription-id
+    |  +--ro target
+    |  |  +--ro datastore?                              identityref
+    |  |  +--ro (selection-filter)?
+    |  |     +--:(by-reference)
+    |  |     |  +--ro selection-filter-ref
+    |  |     |          selection-filter-ref
+    |  |     +--:(within-subscription)
+    |  |        +--ro (ds-filter-spec)?
+    |  |           +--:(datastore-subtree-filter)
+    |  |           |  +--ro datastore-subtree-filter?   <anydata>
+    |  |           |          {ypl:subtree}?
+    |  |           +--:(datastore-xpath-filter)
+    |  |              +--ro datastore-xpath-filter?     yang:xpath1.0
+    |  |                      {ypl:xpath}?
+    |  +--ro dscp?      inet:dscp {dscp}?
+    |  +--ro purpose?   string {configured}?
+    +---n subscription-terminated
+    |  +--ro id        subscription-id
+    |  +--ro reason    identityref
+    +---n update
+       +--ro id?                   subscription-id
+       +--ro subscription-path?    yang:xpath1.0
+       +--ro target-path?          string
+       +--ro snapshot-type?        enumeration
+       +--ro observation-time?     yang:date-and-time
+       +--ro datastore-snapshot?   <anydata>
+       +--ro incomplete?           empty
