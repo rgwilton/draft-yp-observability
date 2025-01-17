@@ -19,6 +19,16 @@ object BuildYangTree:
     os.write.over(filePath, selectedOutput)
     println(s"Tree output for $start written to $fileName")
 
+  def extractSubtree(path: String, fileName: String) =
+    val cmd =
+      s"pyang -f tree *.yang -p published/ --tree-line-length=69 --tree-path \"$path\""
+    val cmdRes = (os.call(cmd = ("sh", "-c", cmd), cwd = os.pwd / "yang"))
+    if cmdRes.exitCode != 0 then println(s"Error: ${cmdRes.out.text()}")
+    else
+      val outputText = cmdRes.out.text()
+      os.write.over(os.pwd / treeDir / fileName, outputText)
+      println(s"Tree output for $path written to $fileName")
+
   @main(doc = """|Build the tree output""".stripMargin)
   def buildYangTree() =
     val cmd = "pyang -f tree *.yang -p published/ --tree-line-length=69"
@@ -30,11 +40,34 @@ object BuildYangTree:
       os.write.over(os.pwd / treeDir / "ietf-yp-lite-tree.txt", outputText)
       println("Tree output written to ietf-yp-lite-tree.txt")
 
+      extractSubtree("datastore-telemetry/subscriptions", "subscriptions.txt")
+
       extractRPC(
         outputText,
         "establish-subscription",
         "delete-subscription",
-        "establish-subscription-tree.txt"
+        "establish-subscription.txt"
+      )
+
+      extractRPC(
+        outputText,
+        "subscription-started",
+        "subscription-terminated",
+        "subscription-started.txt"
+      )
+
+      extractRPC(
+        outputText,
+        "subscription-terminated",
+        "update",
+        "subscription-terminated.txt"
+      )
+
+      extractRPC(
+        outputText,
+        "replay-completed",
+        "subscription-started",
+        "replay-completed.txt"
       )
 
   // Hack to make main-args work with scala-cli.

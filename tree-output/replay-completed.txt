@@ -1,0 +1,2 @@
+    +---n replay-completed
+    |  +--ro id    subscription-id

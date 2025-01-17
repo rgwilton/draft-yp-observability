@@ -1,0 +1,18 @@
+    +---n subscription-started {configured}?
+    |  +--ro id         subscription-id
+    |  +--ro target
+    |  |  +--ro datastore?                              identityref
+    |  |  +--ro (selection-filter)?
+    |  |     +--:(by-reference)
+    |  |     |  +--ro selection-filter-ref
+    |  |     |          selection-filter-ref
+    |  |     +--:(within-subscription)
+    |  |        +--ro (ds-filter-spec)?
+    |  |           +--:(datastore-subtree-filter)
+    |  |           |  +--ro datastore-subtree-filter?   <anydata>
+    |  |           |          {ypl:subtree}?
+    |  |           +--:(datastore-xpath-filter)
+    |  |              +--ro datastore-xpath-filter?     yang:xpath1.0
+    |  |                      {ypl:xpath}?
+    |  +--ro dscp?      inet:dscp {dscp}?
+    |  +--ro purpose?   string {configured}?

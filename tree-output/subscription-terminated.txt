@@ -1,0 +1,3 @@
+    +---n subscription-terminated
+    |  +--ro id        subscription-id
+    |  +--ro reason    identityref
