@@ -119,27 +119,6 @@ module ietf-yp-lite {
        are supported.";
   }
 
-/*
-  feature qos {
-    description
-      "This feature indicates that a publisher supports absolute
-       dependencies of one subscription's traffic over another
-       as well as weighted bandwidth sharing between subscriptions.
-       Both of these are Quality of Service (QoS) features that allow
-       differentiated treatment of notification messages between a
-       publisher and a specific receiver.";
-  }
-*/
-
-/*
-  feature replay {
-    description
-      "This feature indicates that historical event record replay is
-       supported.  With replay, it is possible for past event records
-       to be streamed in chronological order.";
-  }
-*/
-
   feature subtree {
     description
       "This feature indicates support for YANG subtree filtering.";
@@ -165,23 +144,6 @@ module ietf-yp-lite {
       "XML Path Language (XPath) Version 1.0
        (https://www.w3.org/TR/1999/REC-xpath-19991116)";
   }
-
-  /*
-   * EXTENSIONS
-   */
-
-/* TODO - Seems unnecessary.
-  extension subscription-state-notification {
-    description
-      "This statement applies only to notifications.  It indicates
-       that the notification is a subscription state change
-       notification.  Therefore, it does not participate in a regular
-       event stream and does not need to be specifically subscribed
-       to in order to be received.  This statement can only occur as
-       a substatement of the YANG 'notification' statement.  This
-       statement is not for use outside of this YANG module.";
-  }
-*/
 
   /*
    * IDENTITIES
@@ -257,18 +219,6 @@ module ietf-yp-lite {
        result of a nonexistent subscription ID, an ID that belongs to
        another subscriber, or an ID for a configured subscription.";
   }
-
-/*
-  identity replay-unsupported {
-    base establish-subscription-error;
-    if-feature "replay";
-    description
-      "Replay cannot be performed for this subscription.  This means
-       the publisher will not provide the requested historic
-       information from the event stream via replay to this
-       receiver.";
-  }
-*/
 
   identity stream-unavailable {
     base subscription-terminated-reason;
@@ -359,26 +309,6 @@ module ietf-yp-lite {
       "Specifies a data encoding, e.g., for a data subscription.";
   }
 
-/*
-  typedef stream-filter-ref {
-    type leafref {
-      path "/datastore-telemetry/filters/stream-filter/name";
-    }
-    description
-      "This type is used to reference an event stream filter.";
-  }
-*/
-/*
-  typedef stream-ref {
-    type leafref {
-      path "/ypl:streams/ypl:stream/ypl:name";
-    }
-    description
-      "This type is used to reference a system-provided
-       event stream.";
-  }
-*/
-
   typedef subscription-id {
     type uint32;
     description
@@ -396,9 +326,9 @@ module ietf-yp-lite {
 
 // TODO - Consider changes to list keys or reordering of user-ordered lists.
 
-  typedef selection-filter-ref {
+  typedef filter-ref {
     type leafref {
-      path "/datastore-telemetry/filters/selection-filter/filter-id";
+      path "/datastore-telemetry/filters/filter/name";
     }
     description
       "This type is used to reference a selection filter.";
@@ -413,80 +343,6 @@ module ietf-yp-lite {
   /*
    * GROUPINGS
    */
-
-  grouping stream-filter-elements {
-    description
-      "This grouping defines the base for filters applied to event
-       streams.";
-    choice filter-spec {
-      description
-        "The content filter specification for this request.";
-      anydata stream-subtree-filter {
-        if-feature "subtree";
-        description
-          "Event stream evaluation criteria encoded in the syntax of
-           a subtree filter as defined in RFC 6241, Section 6.
-
-           The subtree filter is applied to the representation of
-           individual, delineated event records as contained in the
-           event stream.
-
-           If the subtree filter returns a non-empty node set, the
-           filter matches the event record, and the event record is
-           included in the notification message sent to the
-           receivers.";
-        reference
-          "RFC 6241: Network Configuration Protocol (NETCONF),
-                     Section 6";
-      }
-      leaf stream-xpath-filter {
-        if-feature "xpath";
-        type yang:xpath1.0;
-        description
-          "Event stream evaluation criteria encoded in the syntax of
-           an XPath 1.0 expression.
-
-           The XPath expression is evaluated on the representation of
-           individual, delineated event records as contained in
-           the event stream.
-
-           The result of the XPath expression is converted to a
-           boolean value using the standard XPath 1.0 rules.  If the
-           boolean value is 'true', the filter matches the event
-           record, and the event record is included in the
-           notification message sent to the receivers.
-
-           The expression is evaluated in the following XPath
-           context:
-
-              o  The set of namespace declarations is the set of
-                 prefix and namespace pairs for all YANG modules
-                 implemented by the server, where the prefix is the
-                 YANG module name and the namespace is as defined by
-                 the 'namespace' statement in the YANG module.
-
-                 If the leaf is encoded in XML, all namespace
-                 declarations in scope on the 'stream-xpath-filter'
-                 leaf element are added to the set of namespace
-                 declarations.  If a prefix found in the XML is
-                 already present in the set of namespace
-                 declarations, the namespace in the XML is used.
-
-              o  The set of variable bindings is empty.
-
-              o  The function library is comprised of the core
-                 function library and the XPath functions defined in
-                 Section 10 in RFC 7950.
-
-              o  The context node is the root node.";
-        reference
-          "XML Path Language (XPath) Version 1.0
-           (https://www.w3.org/TR/1999/REC-xpath-19991116)
-           RFC 7950: The YANG 1.1 Data Modeling Language,
-                     Section 10";
-      }
-    }
-  }
 
   grouping update-qos {
     description
@@ -559,17 +415,24 @@ grouping datastore-criteria {
       description
         "Datastore from which to retrieve data, defaults to operational";
     }
-    uses selection-filter-objects;
+    uses filter-objects;
   }
 
-  grouping selection-filter-types {
+  grouping filter-types {
     description
       "This grouping defines the types of selectors for objects
        from a datastore.";
-    choice ds-filter-spec {
+    choice filter-spec {
       description
         "The content filter specification for this request.";
-      anydata datastore-subtree-filter {
+
+      leaf-list paths {
+        type string;
+        description
+          "A basic path filter that allows wildcard, regex, or
+           fixed value for list keys.  Each format is TODO";
+      }
+      anydata subtree {
         if-feature "ypl:subtree";
         description
           "This parameter identifies the portions of the
@@ -578,7 +441,7 @@ grouping datastore-criteria {
           "RFC 6241: Network Configuration Protocol (NETCONF),
                      Section 6";
       }
-      leaf datastore-xpath-filter {
+      leaf-list xpaths {
         if-feature "ypl:xpath";
         type yang:xpath1.0;
         description
@@ -623,11 +486,11 @@ grouping datastore-criteria {
     }
   }
 
-  grouping selection-filter-objects {
+  grouping filter-objects {
     description
       "This grouping defines a selector for objects from a
        datastore.";
-    choice selection-filter {
+    choice filter {
       description
         "The source of the selection filter applied to the
          subscription.  This will either (1) come referenced from a
@@ -636,8 +499,8 @@ grouping datastore-criteria {
         description
           "Incorporates a filter that has been configured
            separately.";
-        leaf selection-filter-ref {
-          type selection-filter-ref;
+        leaf filter-ref {
+          type filter-ref;
           mandatory true;
           description
             "References an existing selection filter that is to be
@@ -648,7 +511,7 @@ grouping datastore-criteria {
         description
           "A local definition allows a filter to have the same
            lifecycle as the subscription.";
-        uses selection-filter-types;
+        uses filter-types;
       }
     }
   }
@@ -658,61 +521,45 @@ grouping datastore-criteria {
       "This grouping describes the datastore-specific subscription
        conditions that can be changed during the lifetime of the
        subscription.";
-    choice update-trigger {
+
+    container update-trigger {
       description
-        "Defines necessary conditions for sending an event record to
-         the subscriber.";
-      case periodic {
-        container periodic {
-          presence "indicates a periodic subscription";
+        "This container describes all conditions under which
+         subscription update messages are generated";
+
+      container periodic {
+        presence "indicates a periodic subscription";
+        description
+          "The publisher is requested to periodically notify the
+            receiver regarding the current values of the datastore
+            as defined by the selection filter.";
+        leaf period {
+          type centiseconds;
+          mandatory true;
           description
-            "The publisher is requested to periodically notify the
-             receiver regarding the current values of the datastore
-             as defined by the selection filter.";
-          leaf period {
-            type centiseconds;
-            mandatory true;
-            description
-              "Duration of time that should occur between periodic
-               push updates, in units of 0.01 seconds.";
-          }
-          leaf anchor-time {
-            type yang:date-and-time;
-            description
-              "Designates a timestamp before or after which a series
-               of periodic push updates are determined.  The next
-               update will take place at a point in time that is a
-               multiple of a period from the 'anchor-time'.
-               For example, for an 'anchor-time' that is set for the
-               top of a particular minute and a period interval of a
-               minute, updates will be sent at the top of every
-               minute that this subscription is active.";
-          }
+            "Duration of time that should occur between periodic
+              push updates, in units of 0.01 seconds.";
+        }
+        leaf anchor-time {
+          type yang:date-and-time;
+          description
+            "Designates a timestamp before or after which a series
+              of periodic push updates are determined.  The next
+              update will take place at a point in time that is a
+              multiple of a period from the 'anchor-time'.
+              For example, for an 'anchor-time' that is set for the
+              top of a particular minute and a period interval of a
+              minute, updates will be sent at the top of every
+              minute that this subscription is active.";
         }
       }
-      case on-change {
+      container on-change {
         if-feature "on-change";
-        container on-change {
-          presence "indicates an on-change subscription";
-          description
-            "The publisher is requested to notify the receiver
-             regarding changes in values in the datastore subset as
-             defined by a selection filter.";
-          leaf dampening-period {
-            type centiseconds;
-            default "0";
-            description
-              "Specifies the minimum interval between the assembly of
-               successive update records for a single receiver of a
-               subscription.  Whenever subscribed objects change and
-               a dampening-period interval (which may be zero) has
-               elapsed since the previous update record creation for
-               a receiver, any subscribed objects and properties
-               that have changed since the previous update record
-               will have their current values marshalled and placed
-               in a new update record.";
-          }
-        }
+        presence "indicates an on-change subscription";
+        description
+          "The publisher is requested to notify the receiver
+            regarding changes in values in the datastore subset as
+            defined by a selection filter.";
       }
     }
   }
@@ -722,7 +569,7 @@ grouping datastore-criteria {
       "This grouping describes the datastore-specific subscription
        conditions of a subscription.";
     uses update-policy-modifiable {
-      augment "update-trigger/on-change/on-change" {
+      augment "update-trigger/on-change" {
         description
           "Includes objects that are not modifiable once a
            subscription is established.";
@@ -744,13 +591,6 @@ grouping datastore-criteria {
              unless the publisher chooses to resync the subscription
              via a new 'push-update' notification.";
         }
-/*        leaf-list excluded-change {
-          type change-type;
-          description
-            "Used to restrict which changes trigger an update.  For
-             example, if a 'replace' operation is excluded, only the
-             creation and deletion of objects are reported.";
-        }*/
       }
     }
   }
@@ -789,20 +629,6 @@ grouping datastore-criteria {
         description
           "Identifier used for this subscription.";
       }
-/*      leaf replay-start-time-revision {
-        if-feature "replay";
-        type yang:date-and-time;
-        description
-          "If a replay has been requested, this object represents
-           the earliest time covered by the event buffer for the
-           requested event stream.  The value of this object is the
-           'replay-log-aged-time' if it exists.  Otherwise, it is
-           the 'replay-log-creation-time'.  All buffered event
-           records after this time will be replayed to a receiver.
-           This object will only be sent if the starting time has
-           been revised to be later than the time requested by the
-           subscriber.";
-      }*/
     }
   }
 
@@ -835,62 +661,6 @@ grouping datastore-criteria {
       }
     }
   }
-
-  /*
-  rpc modify-subscription {
-    description
-      "This RPC allows a subscriber to modify a dynamic
-       subscription's parameters.  If successful, the changed
-       subscription parameters remain in effect for the duration of
-       the subscription, until the subscription is again modified, or
-       until the subscription is terminated.  In the case of an error
-       or an inability to meet the modified parameters, the
-       subscription is not modified and the original subscription
-       parameters remain in effect.  In that case, the RPC error MAY
-       include 'error-info' suggested parameter hints that would have
-       a high likelihood of succeeding in a subsequent
-       'modify-subscription' request.  A successful
-       'modify-subscription' will return a suspended subscription to
-       the 'active' state.";
-    input {
-      leaf id {
-        type subscription-id;
-        mandatory true;
-        description
-          "Identifier to use for this subscription.";
-      }
-      uses subscription-policy-modifiable;
-    }
-  }
-
-  sx:structure modify-subscription-stream-error-info {
-    container modify-subscription-stream-error-info {
-      description
-        "This yang-data MAY be provided as part of a subscription's
-         RPC error response when there is a failure of a
-         'modify-subscription' RPC that has been made against an
-         event stream.  This yang-data MUST be used if hints are to
-         be provided back to the subscriber.";
-      leaf reason {
-        type identityref {
-          base modify-subscription-error;
-        }
-        description
-          "Information in a 'modify-subscription' RPC error response
-           that indicates the reason why the subscription to an event
-           stream has failed to be modified.";
-      }
-      leaf filter-failure-hint {
-        type string;
-        description
-          "Information describing where and/or why a provided
-           filter was unsupportable for a subscription.  The syntax
-           and semantics of this hint are
-           implementation specific.";
-      }
-    }
-  }
-  */
 
   rpc delete-subscription {
     description
@@ -984,69 +754,8 @@ grouping datastore-criteria {
     }
   }
 
-  /*
-  notification subscription-completed {
-    ypl:subscription-state-notification;
-    if-feature "configured";
-    description
-      "This notification is sent to indicate that a subscription has
-       finished passing event records, as the 'stop-time' has been
-       reached.";
-    leaf id {
-      type subscription-id;
-      mandatory true;
-      description
-        "This references the gracefully completed subscription.";
-    }
-  }
-
-  notification subscription-modified {
-    ypl:subscription-state-notification;
-    description
-      "This notification indicates that a subscription has been
-       modified.  Notification messages sent from this point on will
-       conform to the modified terms of the subscription.  For
-       completeness, this subscription state change notification
-       includes both modified and unmodified aspects of a
-       subscription.";
-    leaf id {
-      type subscription-id;
-      mandatory true;
-      description
-        "This references the affected subscription.";
-    }
-    uses subscription-policy {
-      refine "target/stream/stream-filter/within-subscription" {
-        description
-          "Filter applied to the subscription.  If the
-           'stream-filter-name' is populated, the filter in the
-           subscription came from the 'filters' container.
-           Otherwise, it is populated in-line as part of the
-           subscription.";
-      }
-    }
-  }
-
-  notification subscription-resumed {
-    ypl:subscription-state-notification;
-    description
-      "This notification indicates that a subscription that had
-       previously been suspended has resumed.  Notifications will
-       once again be sent.  In addition, a 'subscription-resumed'
-       indicates that no modification of parameters has occurred
-       since the last time event records have been sent.";
-    leaf id {
-      type subscription-id;
-      mandatory true;
-      description
-        "This references the affected subscription.";
-    }
-  }
-  */
-
   notification subscription-started {
     //ypl:subscription-state-notification;
-    if-feature "configured";
     description
       "This notification indicates that a configured subscription has
        started and notifications will now be sent.";
@@ -1056,77 +765,8 @@ grouping datastore-criteria {
       description
         "This references the affected subscription.";
     }
-    uses subscription-policy {
-/*      refine "target/stream/replay-start-time" {
-        description
-          "Indicates the time that a replay is using for the
-           streaming of buffered event records.  This will be
-           populated with the most recent of the following:
-           the event time of the previous event record sent to a
-           receiver, the 'replay-log-creation-time', the
-           'replay-log-aged-time', or the most recent publisher
-           boot time.";
-      }
-      refine "target/stream/stream-filter/within-subscription" {
-        description
-          "Filter applied to the subscription.  If the
-           'stream-filter-name' is populated, the filter in the
-           subscription came from the 'filters' container.
-           Otherwise, it is populated in-line as part of the
-           subscription.";
-      }
-*/
-/*      augment "target/stream" {
-        description
-          "This augmentation adds additional parameters specific to a
-           'subscription-started' notification.";
-        leaf replay-previous-event-time {
-          when '../replay-start-time';
-          if-feature "replay";
-          type yang:date-and-time;
-          description
-            "If there is at least one event in the replay buffer
-             prior to 'replay-start-time', this gives the time of
-             the event generated immediately prior to the
-             'replay-start-time'.
-
-             If a receiver previously received event records for
-             this configured subscription, it can compare this time
-             to the last event record previously received.  If the
-             two are not the same (perhaps due to a reboot), then a
-             dynamic replay can be initiated to acquire any missing
-             event records.";
-        }
-      }*/
-    }
+    uses subscription-policy;
   }
-
-/*
-  notification subscription-suspended {
-    ypl:subscription-state-notification;
-    description
-      "This notification indicates that a suspension of the
-       subscription by the publisher has occurred.  No further
-       notifications will be sent until the subscription resumes.
-       This notification shall only be sent to receivers of a
-       subscription; it does not constitute a general-purpose
-       notification.";
-    leaf id {
-      type subscription-id;
-      mandatory true;
-      description
-        "This references the affected subscription.";
-    }
-    leaf reason {
-      type identityref {
-        base subscription-suspended-reason;
-      }
-      mandatory true;
-      description
-        "Identifies the condition that resulted in the suspension.";
-    }
-  }
-  */
 
   notification subscription-terminated {
     //ypl:subscription-state-notification;
@@ -1254,88 +894,167 @@ grouping datastore-criteria {
     }
   }
 
+  notification update-2 {
+    description
+      "This notification contains a push update that in turn contains
+       data subscribed to via a subscription.  In the case of a
+       periodic subscription, this notification is sent for periodic
+       updates.  It can also be used for synchronization updates of
+       an on-change subscription.  This notification shall only be
+       sent to receivers of a subscription.  It does not constitute
+       a general-purpose notification that would be subscribable as
+       part of the NETCONF event stream by any receiver.";
+    leaf id {
+      type subscription-id;
+      description
+        "This references the subscription that drove the
+         notification to be sent.";
+    }
+
+    leaf subscription-path {
+      type yang:xpath1.0;
+      description
+        "The subscription path indicates the schema path from the root of the
+         schema tree to the node, for which the updated state is being
+         notified, or a notification that is has been deleted.
+
+         TODO - Make this an instance data ref";
+    }
+
+    leaf snapshot-type {
+      type enumeration {
+        enum "periodic" {
+          description
+            "The update message is due to a periodic update.";
+        }
+        enum "on-change-update" {
+          description
+            "The update message is due to an on-change update.  This
+             means that one or more fields have changed under the
+             snapshot path.
+
+             TODO - Split this into a on-change-delete msg?";
+        }
+        enum "on-change-delete" {
+          description
+            "The update message is due to an on-change event where
+             the data node at the target path has been delete.";
+        }
+        enum "resync" {
+          description
+            "This indicates that the update is to resynchronize the
+             state, e.g., after a subscription started notification.
+
+             Ideally, the resync message SHOULD be the first
+             notification sent when a subscription has started, but
+             it is not gauranteed or required to be the first
+             (e.g., if an on-change event occurs).
+
+             These messages can be used to ensure that all state
+             has been sent to the client, and can be used to purge
+             stale data.
+
+             TODO - In the distributed notification case, need a
+             notification to indicate that all child subscriptions
+             have been sent.";
+        }
+      }
+      description
+        "This indicates the type of notification message that is being sent.";
+    }
+
+    // Could add observation time here.
+    leaf observation-time {
+      type yang:date-and-time;
+      description
+        "The time that the update was observed by the publisher.";
+    }
+
+    list updates {
+      key "target-path";
+      description
+        "This list contains the updated data.  It constitutes a snapshot
+         at the time of update of the set of data that has been
+         subscribed to.  The snapshot corresponds to the same
+         snapshot that would be returned in a corresponding 'get'
+         operation with the same selection filter parameters
+         applied.";
+      leaf target-path {
+        type string;
+      }
+
+      anydata datastore-snapshot {
+        description
+          "This contains the updated data.  It constitutes a snapshot
+          at the time of update of the set of data that has been
+          subscribed to.  The snapshot corresponds to the same
+          snapshot that would be returned in a corresponding 'get'
+          operation with the same selection filter parameters
+          applied.
+
+          Used for snapshot types except for 'on-change-delete'.";
+      }
+    }
+
+    leaf incomplete {
+      type empty;
+      description
+        "This is a flag that indicates that not all datastore
+        nodes subscribed to are included with this update.  Receivers
+        of this data SHOULD NOT assume that any missing data has been
+        implicitly deleted.
+
+        TODO - Do we still want this flag, or would it be
+        better to notify this event out of band?";
+    }
+  }
+
+  notification datanode-delete {
+    description
+      "This on-change datanode-delete notification is used to indicate
+       that the datanode at the path specified by the target path has been
+       deleted.  This notification shall only be sent to receivers
+       of a subscription.  It does not constitute a general-purpose
+       notification that would be subscribable as part of the
+       NETCONF event stream by any receiver.";
+    leaf id {
+      type subscription-id;
+      description
+        "This references the subscription that drove the
+         notification to be sent.";
+    }
+
+    leaf subscription-path {
+      type yang:xpath1.0;
+      description
+        "The subscription path indicates the schema path from the root of the
+         schema tree to the data node that has been deleted.
+
+         TODO - Make this an instance data ref";
+    }
+
+    leaf target-path {
+      type string;
+    }
+
+    leaf observation-time {
+      type yang:date-and-time;
+      description
+        "The time that the data node delete events was observed by
+         the publisher.";
+    }
+  }
+
   /*
    * DATA NODES
    */
 
 container datastore-telemetry {
-  /*
-    container streams {
-      config false;
-      description
-        "Contains information on the built-in event streams provided by
-        the publisher.";
-      list stream {
-        key "name";
-        description
-          "Identifies the built-in event streams that are supported by
-          the publisher.";
-        leaf name {
-          type string;
-          description
-            "A handle for a system-provided event stream made up of a
-            sequential set of event records, each of which is
-            characterized by its own domain and semantics.";
-        }
-        leaf description {
-          type string;
-          description
-            "A description of the event stream, including such
-            information as the type of event records that are
-            available in this event stream.";
-        }
-        leaf replay-support {
-          if-feature "replay";
-          type empty;
-          description
-            "Indicates that event record replay is available on this
-            event stream.";
-        }
-        leaf replay-log-creation-time {
-          when '../replay-support';
-          if-feature "replay";
-          type yang:date-and-time;
-          mandatory true;
-          description
-            "The timestamp of the creation of the log used to support
-            the replay function on this event stream.  This time
-            might be earlier than the earliest available information
-            contained in the log.  This object is updated if the log
-            resets for some reason.";
-        }
-        leaf replay-log-aged-time {
-          when '../replay-support';
-          if-feature "replay";
-          type yang:date-and-time;
-          description
-            "The timestamp associated with the last event record that
-            has been aged out of the log.  This timestamp identifies
-            how far back in history this replay log extends, if it
-            doesn't extend back to the 'replay-log-creation-time'.
-            This object MUST be present if replay is supported and any
-            event records have been aged out of the log.";
-        }
-      }
-    }
-    */
     container filters {
       description
         "Contains a list of configurable filters that can be applied to
         subscriptions.  This facilitates the reuse of complex filters
         once defined.";
-/*      list stream-filter {
-        key "name";
-        description
-          "A list of preconfigured filters that can be applied to
-          subscriptions.";
-        leaf name {
-          type string;
-          description
-            "A name to differentiate between filters.";
-        }
-        uses stream-filter-elements;
-      }
-*/
     }
     container subscriptions {
       description
@@ -1362,88 +1081,7 @@ container datastore-telemetry {
             "Identifier of a subscription; unique in a given
             publisher.";
         }
-        uses subscription-policy {
-          // TODO - Fix description of stream and transport.
-  /*       refine "target/stream/stream" {
-            description
-              "Indicates the event stream to be considered for this
-              subscription.  If an event stream has been removed
-              and can no longer be referenced by an active
-              subscription, send a 'subscription-terminated'
-              notification with 'stream-unavailable' as the reason.
-              If a configured subscription refers to a nonexistent
-              event stream, move that subscription to the
-              'invalid' state.";
-          }
-          refine "transport" {
-            description
-              "For a configured subscription, this leaf specifies the
-              transport used to deliver messages destined for all
-              receivers of that subscription.  This object is
-              mandatory for subscriptions in the configuration
-              datastore.  This object (1) is not mandatory for dynamic
-              subscriptions in the operational state datastore and
-              (2) should not be present for other types of dynamic
-              subscriptions.";
-          }
-          augment "target/stream" {
-            description
-              "Enables objects to be added to a configured stream
-              subscription.";
-            leaf configured-replay {
-              if-feature "configured";
-              if-feature "replay";
-              type empty;
-              description
-                "The presence of this leaf indicates that replay for
-                the configured subscription should start at the
-                earliest time in the event log or at the publisher
-                boot time, whichever is later.";
-            }
-          }
-  */
-        }
-  /*      choice notification-message-origin {
-          if-feature "configured";
-          description
-            "Identifies the egress interface on the publisher
-            from which notification messages are to be sent.";
-          case interface-originated {
-            description
-              "When notification messages are to egress a specific,
-              designated interface on the publisher.";
-            leaf source-interface {
-              if-feature "interface-designation";
-              type if:interface-ref;
-              description
-                "References the interface for notification messages.";
-            }
-          }
-          case address-originated {
-            description
-              "When notification messages are to depart from a
-              publisher using a specific originating address and/or
-              routing context information.";
-            leaf source-vrf {
-              if-feature "supports-vrf";
-              type leafref {
-                path "/ni:network-instances/ni:network-instance/ni:name";
-              }
-              description
-                "VRF from which notification messages should egress a
-                publisher.";
-            }
-            leaf source-address {
-              type inet:ip-address-no-zone;
-              description
-                "The source address for the notification messages.
-                If a source VRF exists but this object doesn't, a
-                publisher's default address for that VRF must
-                be used.";
-            }
-          }
-        }
-  */
+        uses subscription-policy;
         leaf configured-subscription-state {
           if-feature "configured";
           type enumeration {
@@ -1669,19 +1307,18 @@ container datastore-telemetry {
   augment "/datastore-telemetry/filters" {
     description
       "This augmentation allows the datastore to be included as part
-       of the selection-filtering criteria for a subscription.";
-    list selection-filter {
-      key "filter-id";
+       of the filtering criteria for a subscription.";
+    list filter {
+      key "name";
       description
         "A list of preconfigured filters that can be applied
          to datastore subscriptions.";
-      leaf filter-id {
+      leaf name {
         type string;
         description
-          "An identifier to differentiate between selection
-           filters.";
+          "A unique name to identify the selection filters.";
       }
-      uses selection-filter-types;
+      uses filter-types;
     }
   }
 
@@ -1692,14 +1329,4 @@ container datastore-telemetry {
        a stream of datastore node updates.";
     uses update-policy;
   }
-/*
-  augment "/datastore-telemetry/subscriptions/subscription/target" {
-    description
-      "This augmentation allows the datastore to be included as
-       part of the selection-filtering criteria for a subscription.";
-    case datastore {
-      uses datastore-criteria;
-    }
-  }
-*/
 }

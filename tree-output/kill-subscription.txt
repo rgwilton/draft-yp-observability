@@ -1,0 +1,3 @@
+    +---x kill-subscription
+       +---w input
+          +---w id    subscription-id

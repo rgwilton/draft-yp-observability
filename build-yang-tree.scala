@@ -10,14 +10,17 @@ object BuildYangTree:
 
   def extractRPC(output: String, start: String, end: String, fileName: String) =
     val filePath = os.pwd / treeDir / fileName
-    val selectedOutput =
+    val selectedOutputLines =
       output
         .split("\n")
         .dropWhile(!_.contains(start))
         .takeWhile(!_.contains(end))
-        .mkString("\n")
+    val selectedOutput = selectedOutputLines.mkString("\n")
     os.write.over(filePath, selectedOutput)
-    println(s"Tree output for $start written to $fileName")
+    println(
+      s"Tree output for $start written to $fileName; " +
+        s"${selectedOutputLines.length} lines, ${selectedOutput.length} chars"
+    )
 
   def extractSubtree(path: String, fileName: String) =
     val cmd =
@@ -27,7 +30,10 @@ object BuildYangTree:
     else
       val outputText = cmdRes.out.text()
       os.write.over(os.pwd / treeDir / fileName, outputText)
-      println(s"Tree output for $path written to $fileName")
+      println(
+        s"Tree output for '$path' written to $fileName" +
+          s"; ${outputText.split("\n").length} lines, ${outputText.length} chars"
+      )
 
   @main(doc = """|Build the tree output""".stripMargin)
   def buildYangTree() =
@@ -38,36 +44,76 @@ object BuildYangTree:
       val outputText = cmdRes.out.text()
       os.makeDir.all(os.pwd / treeDir)
       os.write.over(os.pwd / treeDir / "ietf-yp-lite-tree.txt", outputText)
-      println("Tree output written to ietf-yp-lite-tree.txt")
+      println(
+        "Tree output written to ietf-yp-lite-tree.txt" +
+          s"; ${outputText.split("\n").length} lines, ${outputText.length} chars"
+      )
 
       extractSubtree("datastore-telemetry/subscriptions", "subscriptions.txt")
+      extractSubtree("datastore-telemetry/receivers", "receivers.txt")
+      extractSubtree("datastore-telemetry/filters", "filters.txt")
 
       extractRPC(
         outputText,
-        "establish-subscription",
-        "delete-subscription",
+        "-x establish-subscription",
+        "-x delete-subscription",
         "establish-subscription.txt"
       )
 
       extractRPC(
         outputText,
-        "subscription-started",
+        "-x delete-subscription",
+        "-x kill-subscription",
+        "delete-subscription.txt"
+      )
+
+      extractRPC(
+        outputText,
+        "-x kill-subscription",
+        "notifications",
+        "kill-subscription.txt"
+      )
+
+      extractRPC(
+        outputText,
+        "-n subscription-started",
         "subscription-terminated",
         "subscription-started.txt"
       )
 
       extractRPC(
         outputText,
-        "subscription-terminated",
+        "-n subscription-terminated",
         "update",
         "subscription-terminated.txt"
       )
 
       extractRPC(
         outputText,
-        "replay-completed",
+        "-n replay-completed",
         "subscription-started",
         "replay-completed.txt"
+      )
+
+      extractRPC(
+        outputText,
+        "-n update",
+        "-n update-2",
+        "update-notification.txt"
+      )
+
+      extractRPC(
+        outputText,
+        "-n update-2",
+        "-n datanode-delete",
+        "update-2-notification.txt"
+      )
+
+      extractRPC(
+        outputText,
+        "-n datanode-delete",
+        "<end>",
+        "datanode-delete-notification.txt"
       )
 
   // Hack to make main-args work with scala-cli.

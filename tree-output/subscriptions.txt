@@ -4,20 +4,18 @@ module: ietf-yp-lite
         +--rw subscription* [id]
            +--rw id                               subscription-id
            +--rw target
-           |  +--rw datastore?
-           |  |       identityref
-           |  +--rw (selection-filter)?
+           |  +--rw datastore?             identityref
+           |  +--rw (filter)?
            |     +--:(by-reference)
-           |     |  +--rw selection-filter-ref
-           |     |          selection-filter-ref
+           |     |  +--rw filter-ref       filter-ref
            |     +--:(within-subscription)
-           |        +--rw (ds-filter-spec)?
-           |           +--:(datastore-subtree-filter)
-           |           |  +--rw datastore-subtree-filter?   <anydata>
-           |           |          {ypl:subtree}?
-           |           +--:(datastore-xpath-filter)
-           |              +--rw datastore-xpath-filter?
-           |                      yang:xpath1.0 {ypl:xpath}?
+           |        +--rw (filter-spec)?
+           |           +--:(paths)
+           |           |  +--rw paths*     string
+           |           +--:(subtree)
+           |           |  +--rw subtree?   <anydata> {ypl:subtree}?
+           |           +--:(xpaths)
+           |              +--rw xpaths*    yang:xpath1.0 {ypl:xpath}?
            +--rw dscp?                            inet:dscp {dscp}?
            +--rw purpose?                         string
            |       {configured}?
@@ -34,12 +32,9 @@ module: ietf-yp-lite
            |     +---x reset {configured}?
            |        +--ro output
            |           +--ro time    yang:date-and-time
-           +--rw (update-trigger)?
-              +--:(periodic)
-              |  +--rw periodic!
-              |     +--rw period         centiseconds
-              |     +--rw anchor-time?   yang:date-and-time
-              +--:(on-change) {on-change}?
-                 +--rw on-change!
-                    +--rw dampening-period?   centiseconds
-                    +--rw sync-on-start?      boolean
+           +--rw update-trigger
+              +--rw periodic!
+              |  +--rw period         centiseconds
+              |  +--rw anchor-time?   yang:date-and-time
+              +--rw on-change! {on-change}?
+                 +--rw sync-on-start?   boolean

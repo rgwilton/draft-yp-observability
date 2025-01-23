@@ -1,0 +1,15 @@
+module: ietf-yp-lite
+  +--rw datastore-telemetry
+     +--rw receivers
+        +--rw receiver* [name]
+           +--rw name                      string
+           +--rw encoding?                 encoding
+           +--rw dscp?                     inet:dscp {dscp}?
+           +--rw (notification-message-origin)? {configured}?
+           |  +--:(interface-originated)
+           |  |  +--rw source-interface?   if:interface-ref
+           |  |          {interface-designation}?
+           |  +--:(address-originated)
+           |     +--rw source-vrf?         leafref {supports-vrf}?
+           |     +--rw source-address?     inet:ip-address-no-zone
+           +--rw (transport-type)

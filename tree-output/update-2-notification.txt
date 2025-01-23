@@ -1,0 +1,9 @@
+    +---n update-2
+    |  +--ro id?                  subscription-id
+    |  +--ro subscription-path?   yang:xpath1.0
+    |  +--ro snapshot-type?       enumeration
+    |  +--ro observation-time?    yang:date-and-time
+    |  +--ro updates* [target-path]
+    |  |  +--ro target-path           string
+    |  |  +--ro datastore-snapshot?   <anydata>
+    |  +--ro incomplete?          empty
