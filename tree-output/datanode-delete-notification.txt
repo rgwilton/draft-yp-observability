@@ -1,5 +1,0 @@
-    +---n datanode-delete
-       +--ro id?                  subscription-id
-       +--ro subscription-path?   yang:xpath1.0
-       +--ro target-path?         string
-       +--ro observation-time?    yang:date-and-time

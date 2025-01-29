@@ -754,6 +754,20 @@ grouping datastore-criteria {
     }
   }
 
+  notification update-completed {
+    //ypl:subscription-state-notification;
+    //if-feature "replay";
+    description
+      "This notification is sent to indicate that all of the replay
+       notifications have been sent.";
+    leaf id {
+      type subscription-id;
+      mandatory true;
+      description
+        "This references the affected subscription.";
+    }
+  }
+
   notification subscription-started {
     //ypl:subscription-state-notification;
     description
@@ -806,119 +820,13 @@ grouping datastore-criteria {
          notification to be sent.";
     }
 
-    leaf subscription-path {
-      type yang:xpath1.0;
-      description
-        "The subscription path indicates the schema path from the root of the
-         schema tree to the node, for which the updated state is being
-         notified, or a notification that is has been deleted.
-
-         TODO - Make this an instance data ref";
-    }
-
-    leaf target-path {
+    leaf path-prefix {
       type string;
-    }
-
-    leaf snapshot-type {
-      type enumeration {
-        enum "periodic" {
-          description
-            "The update message is due to a periodic update.";
-        }
-        enum "on-change-update" {
-          description
-            "The update message is due to an on-change update.  This
-             means that one or more fields have changed under the
-             snapshot path.
-
-             TODO - Split this into a on-change-delete msg?";
-        }
-        enum "on-change-delete" {
-          description
-            "The update message is due to an on-change event where
-             the data node at the target path has been delete.";
-        }
-        enum "resync" {
-          description
-            "This indicates that the update is to resynchronize the
-             state, e.g., after a subscription started notification.
-
-             Ideally, the resync message SHOULD be the first
-             notification sent when a subscription has started, but
-             it is not gauranteed or required to be the first
-             (e.g., if an on-change event occurs).
-
-             These messages can be used to ensure that all state
-             has been sent to the client, and can be used to purge
-             stale data.
-
-             TODO - In the distributed notification case, need a
-             notification to indicate that all child subscriptions
-             have been sent.";
-        }
-      }
       description
-        "This indicates the type of notification message that is being sent.";
-    }
-
-    // Could add observation time here.
-    leaf observation-time {
-      type yang:date-and-time;
-      description
-        "The time that the update was observed by the publisher.";
-    }
-
-    anydata datastore-snapshot {
-      description
-        "This contains the updated data.  It constitutes a snapshot
-        at the time of update of the set of data that has been
-        subscribed to.  The snapshot corresponds to the same
-        snapshot that would be returned in a corresponding 'get'
-        operation with the same selection filter parameters
-        applied.
-
-        Used for snapshot types except for 'on-change-delete'.";
-    }
-
-    leaf incomplete {
-      type empty;
-      description
-        "This is a flag that indicates that not all datastore
-        nodes subscribed to are included with this update.  Receivers
-        of this data SHOULD NOT assume that any missing data has been
-        implicitly deleted.
-
-        TODO - Do we still want this flag, or would it be
-        better to notify this event out of band?";
-    }
-  }
-
-  notification update-2 {
-    description
-      "This notification contains a push update that in turn contains
-       data subscribed to via a subscription.  In the case of a
-       periodic subscription, this notification is sent for periodic
-       updates.  It can also be used for synchronization updates of
-       an on-change subscription.  This notification shall only be
-       sent to receivers of a subscription.  It does not constitute
-       a general-purpose notification that would be subscribable as
-       part of the NETCONF event stream by any receiver.";
-    leaf id {
-      type subscription-id;
-      description
-        "This references the subscription that drove the
-         notification to be sent.";
-    }
-
-    leaf subscription-path {
-      type yang:xpath1.0;
-      description
-        "The subscription path indicates the schema path from the root of the
-         schema tree to the node, for which the updated state is being
-         notified, or a notification that is has been deleted.
-
-         TODO - Make this an instance data ref";
+        "Specifies the common prefix that all other paths and data
+         are encoded relative to.
+         
+         TODO - This should be a JSONified instance data path.";
     }
 
     leaf snapshot-type {
@@ -979,11 +887,16 @@ grouping datastore-criteria {
          snapshot that would be returned in a corresponding 'get'
          operation with the same selection filter parameters
          applied.";
+
       leaf target-path {
         type string;
+        description
+          "The target path of the data that is being replaced, i.e., 
+           updated or deleted.  The path is given relative to the
+           path-prefix.";
       }
 
-      anydata datastore-snapshot {
+      anydata data {
         description
           "This contains the updated data.  It constitutes a snapshot
           at the time of update of the set of data that has been
@@ -992,7 +905,11 @@ grouping datastore-criteria {
           operation with the same selection filter parameters
           applied.
 
-          Used for snapshot types except for 'on-change-delete'.";
+          For an on-change delete notification, the
+          datastore-snapshot will be absent for the given target
+          path.
+
+          The snapshot is encoded relative to the path-prefix.";
       }
     }
 
@@ -1006,42 +923,6 @@ grouping datastore-criteria {
 
         TODO - Do we still want this flag, or would it be
         better to notify this event out of band?";
-    }
-  }
-
-  notification datanode-delete {
-    description
-      "This on-change datanode-delete notification is used to indicate
-       that the datanode at the path specified by the target path has been
-       deleted.  This notification shall only be sent to receivers
-       of a subscription.  It does not constitute a general-purpose
-       notification that would be subscribable as part of the
-       NETCONF event stream by any receiver.";
-    leaf id {
-      type subscription-id;
-      description
-        "This references the subscription that drove the
-         notification to be sent.";
-    }
-
-    leaf subscription-path {
-      type yang:xpath1.0;
-      description
-        "The subscription path indicates the schema path from the root of the
-         schema tree to the data node that has been deleted.
-
-         TODO - Make this an instance data ref";
-    }
-
-    leaf target-path {
-      type string;
-    }
-
-    leaf observation-time {
-      type yang:date-and-time;
-      description
-        "The time that the data node delete events was observed by
-         the publisher.";
     }
   }
 

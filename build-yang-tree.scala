@@ -10,11 +10,13 @@ object BuildYangTree:
 
   def extractRPC(output: String, start: String, end: String, fileName: String) =
     val filePath = os.pwd / treeDir / fileName
+    val s = s".*$start.*"
+    val e = s".*$end.*"
     val selectedOutputLines =
       output
         .split("\n")
-        .dropWhile(!_.contains(start))
-        .takeWhile(!_.contains(end))
+        .dropWhile(!_.matches(s))
+        .takeWhile(!_.matches(e))
     val selectedOutput = selectedOutputLines.mkString("\n")
     os.write.over(filePath, selectedOutput)
     println(
@@ -50,6 +52,10 @@ object BuildYangTree:
       )
 
       extractSubtree("datastore-telemetry/subscriptions", "subscriptions.txt")
+      extractSubtree(
+        "datastore-telemetry/subscriptions/subscription/update-trigger",
+        "update-trigger.txt"
+      )
       extractSubtree("datastore-telemetry/receivers", "receivers.txt")
       extractSubtree("datastore-telemetry/filters", "filters.txt")
 
@@ -97,23 +103,9 @@ object BuildYangTree:
 
       extractRPC(
         outputText,
-        "-n update",
-        "-n update-2",
-        "update-notification.txt"
-      )
-
-      extractRPC(
-        outputText,
-        "-n update-2",
-        "-n datanode-delete",
-        "update-2-notification.txt"
-      )
-
-      extractRPC(
-        outputText,
-        "-n datanode-delete",
+        "-n update$",
         "<end>",
-        "datanode-delete-notification.txt"
+        "update-notification.txt"
       )
 
   // Hack to make main-args work with scala-cli.
