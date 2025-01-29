@@ -4,8 +4,8 @@
 
 Network Configuration                                          R. Wilton
 Internet-Draft                                             Cisco Systems
-Intended status: Informational                           23 January 2025
-Expires: 27 July 2025
+Intended status: Standards Track                         29 January 2025
+Expires: 2 August 2025
 
 
                YANG Datastore Telemetry (YANG Push Lite)
@@ -51,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 27 July 2025.
+   This Internet-Draft will expire on 2 August 2025.
 
 Copyright Notice
 
@@ -76,7 +76,7 @@ Table of Contents
    5.  Introduction
      5.1.  Background and Motivation for YANG Push Lite
      5.2.  Complexities in Modelling the Operational State Datastore
-     5.3.  Another section
+     5.3.  Complexities for Consumers of YANG Push Data
      5.4.  Functional changes between YANG Push Lite and YANG Push
        5.4.1.  Changed Functionality
        5.4.2.  Removed Functionality
@@ -86,17 +86,16 @@ Table of Contents
    7.  Definitions
    8.  Sensor paths and selection filters
      8.1.  The "filters" Container
-     8.2.  Decomposing Subscriptions
+     8.2.  Decomposing Subscription Filters
    9.  Datastore Event Streams
      9.1.  Event Records
-       9.1.1.  Notifications for Subscribed Content
      9.2.  Types of subscription event monitoring
      9.3.  Periodic events
      9.4.  On-Change events
        9.4.1.  On-Change Notifiable Datastore Nodes
        9.4.2.  On-Change Considerations
      9.5.  Combined period and on-change subscriptions
-     9.6.  Streaming Updates
+     9.6.  Streaming Update Examples
    10. Receivers
      10.1.  Transports
        10.1.1.  Requirements for Yang Push Lite Transport
@@ -178,11 +177,10 @@ Table of Contents
    parts of the design and data model of those RFCs.
 
    For ease of reference, this document, sourced much of the starting
-   text and basis for the _yang-push-lite_ YANG model directly from
-   those RFCs, rather than either starting from scratch or creating a
-   separate document that would contain numerous references back to
-   sections in those RFCs and correspondingly would be hard to read and
-   follow.
+   text and basis for the _ietf-yp-lite_ YANG model directly from those
+   RFCs, rather than either starting from scratch or creating a separate
+   document that would contain numerous references back to sections in
+   those RFCs and correspondingly would be hard to read and follow.
 
    Hence, the authors of this draft would like to sincerely thank and
    acknowledge the very significant previous effort put into those RFCs
@@ -199,20 +197,11 @@ Table of Contents
    continued interest in this work, i.e., it becomes adopted, then these
    should move to github issues.
 
-   1.   Should we consider a version of the JSON encoding that excludes
-        module prefixes (either everywhere, or perhaps only include the
-        top module prefix).  The reasoning for considering this is to
-        potentially better align the JSON data with how the schema data
-        may be modeled in other data systems, e.g., Kafka.  Obviously,
-        this requires that there be no duplicate data node names in
-        different module namespaces, but most sane device schemas would
-        avoid this anyway.
-
-   2.   Document how sub-subscriptions can be used to split a higher
+   1.   Document how sub-subscriptions can be used to split a higher
         level subscription into multiple smaller more efficient
         subscriptions for the device (that can be handled concurrently).
 
-   3.   Currently the encoding and transport parameters are per
+   2.   Currently the encoding and transport parameters are per
         subscription, but it may make more sense for these to be per
         receiver definition.  I.e., if you want to use different
         transports and encodings to the same receiver this should still
@@ -223,7 +212,7 @@ Table of Contents
         configuration), but alternatively it could be configured per
         receiver.
 
-   4.   We should consider how a subscription could support multiple
+   3.   We should consider how a subscription could support multiple
         subscription paths.  One potential tricky aspect of this is to
         determine the shared common ancestor path to all the
         subscriptions.  Related to this is whether XPath 1.0 is the best
@@ -233,7 +222,7 @@ Table of Contents
         JSON style encoding of instance identifier [RFC7951], section
         6.11; or JSON PATH [RFC9535].
 
-   5.   We want to align on-change and periodic messages together using
+   4.   We want to align on-change and periodic messages together using
         the same schema:
 
         *  Should on-change deletes be a separate message type, or just
@@ -245,7 +234,7 @@ Table of Contents
            relative to the subscription point?  If it is relative to the
            subscription point then what does
 
-   6.   What level of subscription filtering do we need and want to
+   5.   What level of subscription filtering do we need and want to
         support?  For example, I doubt that anyone allows for full XPath
         filtering of operational data subscriptions because they are
         likely to be very computationally expensive to implement.  Is
@@ -253,15 +242,15 @@ Table of Contents
         than using subtree filtering.  Note, this could be added in a
         future release.
 
-   7.   Do we need to fold in any text from RFC 8640? and RESTCONF.
+   6.   Do we need to fold in any text from RFC 8640? and RESTCONF.
         I.e., there was this text in the one of the previous docs:
         Bindings for subscribed event record delivery for NETCONF and
         RESTCONF are defined in [RFC8640] and [RESTCONF-Notif],
         respectively.
 
-   8.   Handling lists with separate producers of list entries.
+   7.   Handling lists with separate producers of list entries.
 
-   9.   Do we need to allow a dynamic subscription to be modified?  If
+   8.   Do we need to allow a dynamic subscription to be modified?  If
         we do, then it would be better to change the establish-
         subscription RPC to have an optional existing subscription-id
         rather than define a separate RPC.  I would propose that such a
@@ -269,36 +258,68 @@ Table of Contents
         recreating a subscription other than reusing the same
         subscription-id.
 
-   10.  Should we allow for strings names rather than numeric ids for
+   9.   Should we allow for strings names rather than numeric ids for
         configured subscriptions?
 
-   11.  Should DSCP marking be configured under the receiver or the
+   10.  Should DSCP marking be configured under the receiver or the
         subscription?  Or perhaps in both places with DSCP marking at
         the subscription overriding a default set on the receiver?
 
-   12.  When a subscription is terminated, should be MUST NOT send any
+   11.  When a subscription is terminated, should be MUST NOT send any
         more notifications after the terminated message, or SHOULD NOT?
         For a dynamic subscription, should the RPC be synchronous and
         not reply until it knows that all queues have been drained?
 
-   13.  If a subscription references a filter, then should that be
+   12.  If a subscription references a filter, then should that be
         included inline in the subscription started notification (as per
         the RFC 8641 text), or should it indicate that it is a
         referenced filter?
 
-   14.  Check agree that if a subscription has multiple receivers, then
+   13.  Check agree that if a subscription has multiple receivers, then
         the encoding (and transport and dscp markings???) for all of
         those receivers must be the same.
 
-   15.  We should allow devices to limit which datastores subscriptions
+   14.  We should allow devices to limit which datastores subscriptions
         can be made against (e.g., not candidate or factory-default as
         some obvious examples).  Should these be advertised in the
         capabilities?
 
-   16.  If this work progresses we want to create bis versions of the
+   15.  If this work progresses we want to create bis versions of the
         transports so that they augment into the new data model paths.
 
-   17.  I've introduced a new basic path filter
+   16.  I've introduced a new basic path filter
+
+   17.  Add in an option path-prefix in the notification messages so
+        they don't need to be encoded from the root.  Need to define
+        semantics of how this works, e.g., this should probably be
+        controlled via configuration.
+
+   18.  We allow multiple updates to be batched together in a single
+        message (which is really for handling on-change messages).
+
+   19.  For on-change messages, a delete is inferred by replacing with a
+        empty data node.
+
+   20.  Need to consider how NACM applies to YANG Push Lite, which may
+        differ for dynamic vs configured subscription, but generally we
+        want the permissions to be checked when the subscription is
+        created rather than each time a path is accessed.
+
+   21.  Is a publisher allowed to arbitrarily send a sync-on-start
+        resync, e.g., if it detects data loss, or should it always just
+        terminate and reinitialize the susbcription?
+
+   22.  For on-change, should a subscription be rejected (or not brought
+        up) if there are no on-change notifiable nodes.
+
+   23.  Should we use the object terminology?  This may be better than
+        data node subtree, or the equivalent, and could be better than
+        introducing _bags_?
+
+   24.  Should we mandate that all implementations MUST support
+        configured subscriptions?  Currently the text indicates that
+        both configured and dynamic are optional and only one must be
+        implemented.
 
 4.  Conventions
 
@@ -321,21 +342,22 @@ Table of Contents
    [I-D.ietf-nmop-network-anomaly-architecture].
 
    This document specifies "YANG Push Lite", an lightweight alternative
-   to Subscribed Notifications [RFC8639] and YANG Push [RFC8641].  This
-   document specifies a separate YANG datastore telemetry solution,
-   which can be implemented independently, and if desired alongside
-   [RFC8639] and [RFC8641].
+   to Subscribed Notifications [RFC8639] and YANG Push [RFC8641].  YANG
+   Push Lite is a separate YANG datastore telemetry solution, which can
+   be implemented independently or, if desired, alongside [RFC8639] and
+   [RFC8641].
 
    At a high level, YANG Push Lite is designed to solve a similar set of
-   requirements as YANG Push, and it reuses a significant amount of the
-   ideas and solution from YANG Push.  YANG Push Lite defines a separate
-   data model to allow concurrent implementation of both protocols, but
-   many of the data nodes are copied from YANG Push and have the same,
-   or very similar definitions.
+   requirements as YANG Push, and it reuses a significant subset of the
+   ideas and base solution from YANG Push.  YANG Push Lite defines a
+   separate data model to allow concurrent implementation of both
+   protocols and to facilitate more significant changes in behavior, but
+   many of the data nodes are taken from YANG Push and have the same, or
+   very similar definitions.
 
    The following sections give the background for the solution, and
    highlight the key ways that this specification differs from the
-   specifications that is based on.
+   specifications that it is derived from.
 
 5.1.  Background and Motivation for YANG Push Lite
 
@@ -354,49 +376,50 @@ Table of Contents
    Early implementation efforts of the
    [I-D.ietf-nmop-yang-message-broker-integration] architecture hit
    issues with using either of the two common YANG datastore telemetry
-   solutions that have been specified, i.e., YANG Push [RFC8641] or
-   [gNMI].
+   solutions that have been specified, i.e., [gNMI] or YANG Push
+   [RFC8641].
 
    gNMI is specified by the OpenConfig Industry Consortium.  It is more
    widely implemented, but operators report that some inter-operability
    issues between device implementations cause problems.  Many of the
    OpenConfig protocols and data models are also expected to evolve more
-   rapidly than IETF protocols and models that are expected to have a
-   more gradual pass of evolution once an RFC has been published.
+   rapidly than IETF protocols and models - that are expected to have a
+   more gradual pace of evolution once an RFC has been published.
 
    YANG Push [RFC8641] was standardized by the IETF in 2019, but market
-   adoption has been rather slow.  In, 2023/2024, where vendors started
-   implementing, or considering implementing, YANG Push, it was seen
-   that some of the ways that the features have been specified in the
-   solution make it expensive and difficult to write performant
-   implementations, particularly when considering the complexities and
-   distributed nature of operational data.  In addition, some design
-   choices of how the data is encoded (e.g., YANG Patch [RFC8072]) make
-   more sense when considering changes in configuration data, but make
-   less sense when the goal is to export a subset of the operational
-   data off the device in an efficient fashion.
+   adoption has been rather slow.  During 2023/2024, when vendors
+   started implementing, or considering implementing, YANG Push, it was
+   seen that some design choices for how particular features have been
+   specified in the solution make it expensive and difficult to write
+   performant implementations, particularly when considering the
+   complexities and distributed nature of operational data.  In
+   addition, some design choices of how the data is encoded (e.g., YANG
+   Patch [RFC8072]) make more sense when considering changes in
+   configuration data but less sense when the goal is to export a subset
+   of the operational data off the device in an efficient fashion for
+   both devices (publishers) and clients (receivers).
 
    Hence, during 2024, the vendors and operators working towards YANG
    telemetry solutions agreed to a plan to implement a subset of
    [RFC8639] and [RFC8641], including common agreements of features that
    are not needed and would not be implemented, and deviations from the
-   standard for some aspects of encoding YANG data.  In addition, the
+   standards for some aspects of encoding YANG data.  In addition, the
    implementation efforts identified the minimal subset of functionality
    needed to support the initial telemetry use cases, and areas of
    potential improvement and optimization to the overall YANG Push
    telemetry solution (which has been written up as a set of small
-   internet drafts).
+   internet drafts that augment or extend the base YANG Push solution).
 
-   Out of these work, consensus was building to specify a cut down
+   Out of this work, consensus was building to specify a cut down
    version of Subscribed Notifications [RFC8639] and YANG Push [RFC8641]
    that is both more focussed on the operational telemetry use case, and
    is also easier to implement, by relaxing some of the constraints on
    consistency on the device, and removing, or simplifying some of the
-   operational features.  This also resulted in this specification, YANG
+   operational features.  This has resulted in this specification, YANG
    Push Lite.
 
    The implementation efforts also gave arise to potential improvements
-   to the protocol and encoding
+   to the protocol and encoding of notification messages.
 
 5.2.  Complexities in Modelling the Operational State Datastore
 
@@ -416,10 +439,11 @@ Table of Contents
    For other systems, the operational information may be distributed
    across multiple internal nodes (e.g., linecards), and potentially
    many different process daemons within those distributed nodes.  Such
-   systems generally cannot exhibit full consistency [Consistency] of
-   the operational data (which would require transactional semantics
-   across all daemons and internal nodes), only offering an eventually
-   consistent [EventualConsistency] view of the data instead.
+   systems generally do not, and cannot, exhibit full consistency
+   [Consistency] of the operational data (which would require
+   transactional semantics across all daemons and internal nodes), only
+   offering an eventually consistent [EventualConsistency] view of the
+   data instead.
 
    In practice, many network devices will manage their operational data
    as a combination of some data being stored in a central operational
@@ -427,14 +451,7 @@ Table of Contents
    changing data (e.g., statistics or FIB information) being stored
    elsewhere in a more memory efficient and performant way.
 
-5.3.  Another section
-
-   YANG-Push is a key part of these architectures, but through
-   experience of implementing YANG-Push specifically for the use cases
-   described in the above architecture documents, it became clear that
-   there are aspects of YANG-Push that are not optimal for these use
-   cases for neither producer or consumer, particular as they relate to
-   operational data.
+5.3.  Complexities for Consumers of YANG Push Data
 
    For the consumer of the telemetry data, there is a requirement to
    associate a schema with the instance-data that will be provided by a
@@ -451,16 +468,27 @@ Table of Contents
    subscription path rather than as an absolute path from the root of
    the operational datastore.
 
+   *TODO More needs to be added here, e.g., encoding, on-change
+   considerations.*
+
 5.4.  Functional changes between YANG Push Lite and YANG Push
 
    This non-normative section highlights the significant functional
    changes where the YANG Push Lite implementation differs from YANG
    Push.  However, in all cases, the text in this document, from
-   Section 7 onwards, provides the normative definition of the YANG Push
+   Section 6 onwards, provides the normative definition of the YANG Push
    Lite specification, except for any text or sections that explicitly
    indicate that they are informative rather being normative.
 
+   _Note to reviews (RFC editor please remove this section before
+   publication): If you notice mistakes in this section during
+   development of the document and solution then please point them out
+   to the authors and the working group._
+
 5.4.1.  Changed Functionality
+
+   This section documents behavior that exist in both YANG Push and YANG
+   Push Lite, but the behavior differs between the two:
 
    *  All YANG Push Lite notifications messages use
       [I-D.draft-netana-netconf-notif-envelope] rather than [RFC5277]
@@ -480,22 +508,28 @@ Table of Contents
       receivers.  I.e., they must be configured with the same encoding
       (*TODO, and perhaps transport and DSCP marking?*).
 
-   *  Period and on-change message uses a common message format,
-      allowing for combined period and on-change subscriptions.
+   *  Periodic and on-change message uses a common _update_ notification
+      message format, allowing for combined periodic and on-change
+      subscriptions which can be processed by clients in a similar
+      fashion.
 
-   *  On-Change dampening.  Rather than be specified by the client, the
-      publisher is allows to rate-limit how frequently on-change events
-      may be delivered for a particular data node that is changing
-      rapidly.  In addition, if the state of a data node changes and
-      changes back over a dampening period, then a publisher is not
-      required to notify the client.
+   *  On-change dampening.  Rather than dampening being controlled by
+      the client, the publisher is allows to rate-limit how frequently
+      on-change events may be delivered for a particular data node that
+      is changing rapidly.  In addition, if the state of a data node
+      changes and then reverts back to the previous state within a
+      dampening period, then the publisher is not required to notify the
+      client of the change, it can be entirely suppressed.  See
+      Section 9.4.1 for further details.
 
    *  Dynamic subscriptions are no longer mandatory to implement, either
       or both of Configured and Dynamic Subscriptions may be implemented
       in YANG Push Lite.
 
-   *  The solution focuses solely on datastore subscriptions that use a
-      standard event stream, which cannot have filtered applied.
+   *  The solution focuses solely on datastore subscriptions that each
+      have their own event stream.  Filters cannot be applied to the
+      event stream, only to the set of datastore data nodes that are
+      monitored by the subscription.
 
    *  The lifecycle events of when a subscription-started or
       subscription-terminated may be sent differs from RFC 8639/RFC
@@ -529,12 +563,12 @@ Table of Contents
       subscription transport session comes up which will reply the
       current state.
 
-   *  QoS weighting and dependency has been removed due to the
-      complexity of implementation.
+   *  QoS weighting and dependency between subscriptions has been
+      removed due to the complexity of implementation.
 
    *  Support for reporting subscription error hints has been removed.
       The device SHOULD reject subscriptions that are likely to overload
-      the device, but more onus is places on the operator configuring
+      the device, but more onus is placed on the operator configuring
       the subscriptions or setting up the dynamic subscriptions to
       ensure that subscriptions are reasonable, as they would be
       expected to do for any other configuration.
@@ -546,14 +580,22 @@ Table of Contents
    *  Device capabilities are reported via XXX and additional models
       that augment that data model.
 
+   *  Common prefix in the update message.
+
+   *  The ability to send multiple updates in a single update message.
+
+   *  TODO - More operational data on the subscription load and
+      performance.
+
 6.  YANG Push Lite Overview
 
    This document specifies a lightweight telemetry solution that
-   provides a subscription service for updates from a datastore.
+   provides a subscription service for updates to the state and changes
+   in state from a chosen datastore.
 
    Subscriptions specify when notification messages (also referred to as
-   _push updates_) should be sent, what data to include in update
-   records, and where those notifications should be sent to.
+   _updates_) should be sent, what data to include in the update
+   records, and where those notifications should be sent.
 
    A YANG Push lite subscription comprises:
 
@@ -562,11 +604,12 @@ Table of Contents
    *  a set of selection filters to choose which datastore nodes the
       subscription is monitoring or sampling, as described in Section 8.
 
-   *  an indication of how update event notifications for the data nodes
-      are triggered.  I.e., either periodic sampling, on-change event-
-      driven, or both.  These are described in *TODO, add reference*.
+   *  a choice of how update event notifications for a datastore's data
+      nodes are triggered.  I.e., either periodic sampling of the
+      current state, on-change event-driven, or both.  These are
+      described in *TODO, add reference*.
 
-   *  a chosen encoding of the messages, e.g., JSON.
+   *  a chosen encoding of the messages, e.g., JSON, CBOR.
 
    *  a set of one or more receivers for which datastore updates and
       subscription notifications are sent, as described in Section 10;
@@ -583,7 +626,7 @@ Table of Contents
    with a subscription, then the publisher will enact the subscription,
    periodically sampling or monitoring changes to the chosen datastore's
    data nodes that match the selection filter.  Push updates are
-   subsequently sent by the publisher to the receiver, as per the terms
+   subsequently sent by the publisher to the receivers, as per the terms
    of the subscription.
 
    Subscriptions may be set up in two ways: either through configuration
@@ -613,18 +656,18 @@ Table of Contents
 
    This document defines a YANG data model, that includes RPCs and
    notifications, for configuring and managing subscriptions and
-   associated configuration, and to define the format of a _Push Update_
-   message.  The YANG model is defined in Section 15.1 and associated
-   tree view in Section 15.1.  The YANG data model defined in this
-   document conforms to the Network Management Datastore Architecture
-   defined in [RFC8342].
+   associated configuration, and to define the format of a _update_
+   notification message.  The YANG model is defined in Section 15.2 and
+   associated tree view in Section 15.1.  The YANG data model defined in
+   this document conforms to the Network Management Datastore
+   Architecture defined in [RFC8342].
 
 6.1.  Relationship to RFC 5277
 
    All of the notifications defined in this specification, i.e., both
    the datastore update message and subscription lifecycle update
-   notifications Section 12 use the notification envelope format defined
-   in [I-D.draft-netana-netconf-notif-envelope].
+   notifications (Section 12) use the notification envelope format
+   defined in [I-D.draft-netana-netconf-notif-envelope].
 
    As such, this specification does not make use of the notification
    format defined in [RFC5277], but devices may also use [RFC5277]
@@ -635,6 +678,11 @@ Table of Contents
 
    This document reuses the terminology defined in [RFC7950], [RFC8341],
    [RFC8342], [RFC8639] and [RFC8641].
+
+   *TODO, if this document progresses, we should check which of this
+   terminology we actually use/re-use, and what new terminology should
+   be introduced in this document.  And also an action to check that it
+   is used consistently.*
 
    The following terms are taken from [RFC8342]:
 
@@ -750,26 +798,34 @@ Table of Contents
 
 8.  Sensor paths and selection filters
 
-   In order to know which data nodes are monitored, a subscription must
-   specify both the selection filters and the datastore against which
-   these selection filters will be applied.  This information is used to
-   choose, and subsequently push, data from the publisher's datastore to
-   the receivers.
+   A key part of a subscription is to select which data nodes should be
+   monitored, and so a subscription must specify both the selection
+   filters and the datastore against which these selection filters will
+   be applied.  This information is used to choose, and subsequently
+   push, _update_ notifications from the publisher's datastore(s) to the
+   subscription's receiver(s).
+
+   Filters can either be defined inline within a configured subscription
+   (Figure 6), a dynamic subscription's _establish-subscription_ RPC
+   (Figure 10), or as part of the _datastore-telemetry/filters_
+   container (Figure 1) which can then be referenced from a configured
+   or dynamic subscription.
 
    The following selection filter types are included in the YANG Push
-   lite data model and may be applied against a datastore:
+   Lite data model and may be applied against a datastore:
 
-   *  _paths_: A list of basic path selection filters, that as a very
-      restricted subset of an XPath filter, defines a path to a set of
-      data node in the schema.  For each YANG list element on the path,
-      the keys may either be wildcarded, or key entries to identify an
-      exact list element, or regex expressions may be used on the keys
-      to select a subset of list entries. *TODO, does this need a basic
-      form of inclusion/exclusion of elements at the end of the filter?*
+   *  _paths_: A list of basic path selection filters that, as a very
+      restricted subset of an XPath filter, defines a path to a subtree
+      of data nodes in the schema.  For each YANG list element on the
+      path, the list keys may either be: (i) wildcarded to allow any
+      value, (ii) specify a value as an exactly match for a key, or
+      (iii) have a regex expression to match a subset of list entries.
+      *TODO, do we also want a basic form of inclusion/exclusion of
+      elements at the end of the filter?*
 
    *  _subtree_: A subtree selection filter identifies one or more
-      datastore subtrees.  When specified, update records will only come
-      from the datastore nodes of selected datastore subtree(s).  The
+      datastore subtrees.  When specified, _update_ records will only
+      include the datastore nodes of selected datastore subtree(s).  The
       syntax and semantics correspond to those specified in [RFC6241],
       Section 6.
 
@@ -777,13 +833,14 @@ Table of Contents
       expression that returns a node set.  (XPath is a query language
       for selecting nodes in an XML document; see [XPATH] for details.)
       When specified, updates will only come from the selected datastore
-      nodes.
+      nodes that match the XPath expression.
 
-   These filters are intended to be used as selectors that define which
-   objects are within the scope of a subscription.  A publisher MUST
-   support basic path filters, and MAY also support subtree or xpath
-   filters.  *TODO, do we really need full XPath filters, does anyone
-   intend to support this?*
+   These filters are used as selectors that define which data nodes fall
+   within the scope of a subscription.  A publisher MUST support basic
+   path filters, and MAY also support subtree or xpath filters.  *TODO,
+   do we really need full XPath filters, does anyone intend to support
+   this?  I thought that many implements only support a limited subset
+   much closer to the new 'paths' definition above.*
 
    XPath itself provides powerful filtering constructs, and care must be
    used in filter definition.  Consider an XPath filter that only passes
@@ -791,8 +848,8 @@ Table of Contents
    to understand the implications of the presence or absence of objects
    in each update.
 
-   For path and xpath based filters, each subscription may use a list of
-   selection filters.  Each of these filter paths is processed by the
+   For both path and xpath based filters, each filter may define a list
+   of paths/xpaths.  Each of these filter paths is processed by the
    publisher independently, and if two or more filter paths end up
    selecting overlapping data nodes then the publisher MAY notify
    duplicate values for those data nodes, but the encoded data that is
@@ -804,7 +861,7 @@ Table of Contents
    The "filters" container maintains a list of all datastore
    subscription filters that persist outside the lifecycle of a single
    subscription.  This enables predefined filters that may be referenced
-   by more than one subscription.
+   by more than one configured or dynamic subscription.
 
    Below is a tree diagram for the "filters" container.  All objects
    contained in this tree are described in the YANG module in
@@ -823,17 +880,25 @@ Table of Contents
                  +--:(xpaths)
                     +--rw xpaths*    yang:xpath1.0 {ypl:xpath}?
 
-                       Figure 1: 'filters' container
+                                  Figure 1
 
-8.2.  Decomposing Subscriptions
+8.2.  Decomposing Subscription Filters
 
    In order to address the issues described in Section 5.2, YANG Push
-   Lite allows for client specified filters to be decomposed into more
-   specific filters by the server.  This is to facilitate publishers
-   that internally group some of their operational data fields together
-   into larger structures for efficiency (referred to as _bag of data_).
-   E.g., each entry in the _/ietf-interfaces:interface/interface_ list
-   could be represents as a bag of data internally within a publisher.
+   Lite allows for publishers to send subtrees of data nodes in separate
+   _update_ notifications, rather than requiring that the subscription
+   data be returned as a single datastore update covering all data nodes
+   matched by the subscription filter.  This better facilitates
+   publishers that internally group some of their operational data
+   fields together into larger structures for efficiency (referred to as
+   an _object_), and avoids the publishers or receivers having to
+   consume potentially very large notification messages.  For example,
+   each entry in the _/ietf-interfaces:interface/interface_ list could
+   be represents as an object of data internally within the publisher.
+   In essence, a client specified subscription filter can be decomposed
+   by a publisher into more specific, non-overlapping, filters, that are
+   then used to return the data.
+
    In particular:
 
    1.  A Publisher MAY decompose a client specified subscription filter
@@ -849,67 +914,46 @@ Table of Contents
        response, or it may split them into multiple smaller messages,
        perhaps for 500 interfaces at a time. *TODO We need a mechanism
        so that the client knows all list entries have been returned, and
-       hence it can delete stale entries?  E.g., something like a _more_
-       flag and _complete_ flag.*
+       hence it can delete stale entries?  E.g., something like a
+       _more_data_ flag.*
 
-   3.  A Publisher is allowed to generate on-change notifications at a
-       _bag_ level, and hence that contain other associated fields that
-       may not have changed, rather than restricting the on-change
-       notifications strictly to only those fields that have changed.
-       E.g., if a subscribers registers on the path _/ietf-
-       interfaces:interfaces/interface[name = *]/oper-status_, and if
-       interface _eth1_ had a change in oper-status, then rather than
-       just publishing the updated oper-status leaf, the publisher may
-       instead publish all the data associated with that interface
-       entry, i.e., everything under _/ietf-interfaces:interface/
-       interface[name = eth1]_.  *TODO Does it have to be the entire
-       subtree that is published?  Do we need to add a capability
-       annotation to indicate that point.*
+   3.  A Publisher is allowed to generate on-change notifications at an
+       _object_ level, which hence may contain other associated fields
+       that may not have changed state, rather than restricting the on-
+       change notifications strictly to only those specific fields that
+       have changed state.  E.g., if a subscribers registers on the path
+       _/ietf-interfaces:interfaces/interface[name = *]/oper-status_,
+       and if interface _eth1_ had a change in the _oper-status_ leaf
+       state, then rather than just publishing the updated _oper-status_
+       leaf, the publisher may instead publish all the data associated
+       with that interface entry object, i.e., everything under _/ietf-
+       interfaces:interface/interface[name = eth1]_.  *TODO Does it have
+       to be the entire subtree that is published?  Do we need to add a
+       capability annotation to indicate the object publication paths?*
 
    To ensure that clients can reasonably process data returned via
    decomposed filters then:
 
-   1.  If a filter is decomposed into more specific filters then all
-       data MUST still be encoded relative to the initial subscription
-       filter.
+   1.  _update_ notifications MUST indicate the precise subtree of data
+       that the update message is updating or replacing, i.e., so a
+       receiver can infer that data nodes no longer being notified by
+       the publisher have been deleted:
 
-   2.  _update_ notifications MUST indicate the actual filter that the
-       data satisfies.
+       *  if we support splitting list entries in multiple updates, then
+          something like a _more_data_ flag is needed to indicate that
+          the given update message is not complete.
 
-   3.  *TODO Indicate when a given periodic interval has completed.*
+   *TODO We should consider adding a _update-complete_ message
+   (potentially including an incrementing collection counter) to
+   indicate when a periodic update has completed for a subscription.*
 
 9.  Datastore Event Streams
 
    In YANG Push Lite, a subscription, based on the selected filters,
-   will generate a stream of update records that is called an event
-   stream.  Each subscription logically has a different stream of update
-   records, even if multiple subscriptions use the same filters.
-
-   Depending on the type of subscription, these update records either
-   indicate the current state for a subtree of data nodes in a
-   datastore, or, in the case of an on-change registration, they may
-   also indicate when an a data node subtree has changed, or has been
-   deleted.
-
-   that report the current
-
-   An event stream is a named entity on a publisher; this entity exposes
-   a continuously updating set of YANG-defined event records.  An event
-   record is an instantiation of a "notification" YANG statement.  If
-   the "notification" is defined as a child to a data node, the
-   instantiation includes the hierarchy of nodes that identifies the
-   data node in the datastore (see Section 7.16.2 of [RFC7950]).  Each
-   event stream is available for subscription.  Identifying a) how event
-   streams are defined (other than the NETCONF stream), b) how event
-   records are defined/generated, and c) how event records are assigned
-   to event streams is out of scope for this document.
-
-   There is only one reserved event stream name in this document:
-   "NETCONF".  The "NETCONF" event stream contains all NETCONF event
-   record information supported by the publisher, except where an event
-   record has explicitly been excluded from the stream.  Beyond the
-   "NETCONF" stream, implementations MAY define additional event
-   streams.
+   will generate a ordered stream of datastore _update_ records that is
+   referred to as an event stream.  Each subscription logically has a
+   different event stream of update records, even if multiple
+   subscriptions use the same filters to select datastore nodes.
 
    As YANG-defined event records are created by a system, they may be
    assigned to one or more streams.  The event record is distributed to
@@ -922,134 +966,113 @@ Table of Contents
    access.  See [RFC8341], Section 3.4.6 for an example of how this
    might be accomplished.  Note that per Section 2.7 of this document,
    subscription state change notifications are never filtered out.
+   *TODO, filtering and NACM filtering should be dependent on whether it
+   is a configured or dynamic subscription.*
 
-   If no access control permissions are in place for event records on an
-   event stream, then a receiver MUST be allowed access to all the event
-   records.  If subscriber permissions change during the lifecycle of a
+   If subscriber permissions change during the lifecycle of a
    subscription and event stream access is no longer permitted, then the
-   subscription MUST be terminated.
+   subscription MUST be terminated. *TODO, check this*
 
-   Event records MUST NOT be delivered to a receiver in a different
-   order than the order in which they were placed on an event stream.
-
-   *  The specification of update policies that contain conditions that
-      trigger the generation and pushing of new update records.  There
-      are two types of subscriptions, distinguished by how updates are
-      triggered:
-
-      -  For periodic subscriptions, the update trigger is specified by
-         two parameters that define when updates are to be pushed.
-         These parameters are (1) the period interval with which to
-         report updates and (2) an "anchor-time", i.e., a reference
-         point in time that can be used to calculate at which points in
-         time periodic updates need to be assembled and sent.
-
-      -  For on-change subscriptions, an update trigger occurs whenever
-         a change in the subscribed information is detected.  The
-         following additional parameters are included:
-
-         o  "sync-on-start": This parameter defines whether or not a
-            complete "push-update" (Section 3.7) of all subscribed data
-            will be sent at the beginning of a subscription.  Such early
-            synchronization establishes the frame of reference for
-            subsequent updates.
+   Event records SHALL be delivered to a receiver in the order in which
+   they were generated.
 
 9.1.  Event Records
 
-   There are two types of event records:
+   A single _update_ record is used for all notifications.  It is used
+   to report the current state of a set of data nodes at a given target
+   path for either periodic, on-change, or resync notifications, and
+   also for on-change notifications to indicate that the data node at
+   the given target path has been deleted.
 
-   1.  _update_ records that are used to report the current state of a
-       set of data nodes for either periodic, on-change, or resync
-       notifications.
+   The update notification is encoded using
+   [I-D.draft-netana-netconf-notif-envelope] to wrap the notification
+   message, instead of [RFC5277], that is normally used for NETCONF
+   [RFC8641] and RESTCONF [RFC8040] YANG notifications.
 
-   2.  _datanode-delete_ records are only used during on-change
-       notifications to indicate that a data node at the given path has
-       been deleted.
-
-   The schema for these two notifications is given in the following tree
-   diagrams:
+   The schema for this notifications is given in the following tree
+   diagram:
 
        +---n update
-       |  +--ro id?                   subscription-id
-       |  +--ro subscription-path?    yang:xpath1.0
-       |  +--ro target-path?          string
-       |  +--ro snapshot-type?        enumeration
-       |  +--ro observation-time?     yang:date-and-time
-       |  +--ro datastore-snapshot?   <anydata>
-       |  +--ro incomplete?           empty
+          +--ro id?                 subscription-id
+          +--ro path-prefix?        string
+          +--ro snapshot-type?      enumeration
+          +--ro observation-time?   yang:date-and-time
+          +--ro updates* [target-path]
+          |  +--ro target-path    string
+          |  +--ro data?          <anydata>
+          +--ro incomplete?         empty
 
                       Figure 2: 'update' notification
 
-       +---n datanode-delete
-          +--ro id?                  subscription-id
-          +--ro subscription-path?   yang:xpath1.0
-          +--ro target-path?         string
-          +--ro observation-time?    yang:date-and-time
+   The normative definitions for the notifications fields are given in
+   the YANG module in Section 15.  The fields can be informatively
+   summarized as:
 
-                  Figure 3: 'datanode-delete' notification
+   *  _id_ - identifies the subscription the notification relates to.
 
-   The normative definitions for the notifications fields is given in
-   the YANG module.  The fields can be informatively summarized as:
+   *  _path-prefix_ - identifies the absolute instance-data path to
+      which all target-paths are data are encoded relative to.
 
-   *  _id_ - identifies the subscription the message relates to.
-
-   *  _subscription-path_ - identifies the absolute instance-data path
-      to which all data is encoded relative to.
-
-   *  _target-path_ - identifies the data node that is being acted on,
-      either providing the replacement data for, or that data node that
-      is being deleted.
-
-   *  _snapshot-type_ - for _update_ notifications, this indicates what
-      type of event causes the update message to be sent.  I.e., a
-      periodic notification, or an on-change message because some of the
-      data in the subtree contained in the notification has changed, or
-      a resync message to replay the initiate state after the
-      subscription has started.
+   *  _snapshot-type_ - this indicates what type of event causes the
+      update message to be sent.  I.e., a periodic collection, an on-
+      change event, or a resync collection.
 
    *  _observation-time_ - the time that the data was sampled, or when
       the on-change event occurred that caused the message to be
       published.
 
-   *  _datastore-snapshot_ - the full replacement data subtree for the
-      content at the target-path.  Only needed for _update_ messages.
+   *  _target-path_ - identifies the data node that is being acted on,
+      either providing the replacement data for, or that data node that
+      is being deleted.
 
-   *  _incomplete_ - indicates that the _update_ message is incomplete
-      in some way.
+   *  _data_ - the full replacement data subtree for the content at the
+      target-path, encoded from the path-prefix.
 
-9.1.1.  Notifications for Subscribed Content
+   *  _incomplete_ - indicates that the message is incomplete for any
+      reason.  For example, perhaps a periodic subscription expects to
+      retrieve data from multiple data sources, but one of those data
+      sources is unavailable.  Normally, a receiver can use the absence
+      of a field in an update message to implicitly indicate that the
+      field has been deleted, but that should not be inferred if the
+      incomplete-update leaf is present because not all changes that
+      have occurred since the last update are actually included with
+      this update.
 
-   Along with the subscribed content, there are other objects that might
-   be part of a "push-update" or "push-change-update" notification.
-
-   *  An "id" (that identifies the subscription).
-
-   *  An "incomplete-update" leaf.  This leaf indicates that the message
-      is incomplete for any reason.  For example, perhaps a periodic
-      subscription expects to retrieve data from multiple data sources,
-      but one of those data sources is unavailable.  Normally, a
-      receiver can use the absence of a field in an update message to
-      implicitly indicate that the field has been deleted, but that
-      should not be inferred if the incomplete-update leaf is present
-      because
-
-   not all changes that have occurred since the last update are actually
-   included with this update.  In other words, the publisher has failed
-   to fulfill its full subscription obligations.  (For example, a
-   datastore was unable to provide the full set of datastore nodes to a
-   publisher process.)  To facilitate the resynchronization of on-change
-   subscriptions, a publisher MAY subsequently send a "push-update"
-   containing a full selection snapshot of subscribed data.
+   As per the structure of the _update_ notification, a single
+   notification MAY provide updates for multiple target-paths.
 
 9.2.  Types of subscription event monitoring
 
    Subscription can either be based on sampling the requested data on a
-   periodic cadence, and/or being notified when the requested data
-   changes.  This specification also allows for subscriptions that both
-   notify on-changes but also with a periodic cadence, which can help
+   periodic cadence or being notified when the requested data changes.
+   In addition, this specification allows for subscriptions that both
+   notify on-change and also with a periodic cadence, which can help
    ensure that the system eventually converges on the right state, even
-   if an on-change notification was somehow lost or mis-processed
-   somewhere in the data processing pipeline.
+   if on-change notification were somehow lost or mis-processed anywhere
+   in the data processing pipeline.
+
+   The schema for the update-trigger container is given in the following
+   tree diagram:
+
+   module: ietf-yp-lite
+     +--rw datastore-telemetry
+        +--rw subscriptions
+           +--rw subscription* [id]
+              +--rw update-trigger
+                 +--rw periodic!
+                 |  +--rw period         centiseconds
+                 |  +--rw anchor-time?   yang:date-and-time
+                 +--rw on-change! {on-change}?
+                    +--rw sync-on-start?   boolean
+
+                    Figure 3: 'update-trigger' container
+
+   *TODO Minor - is providing the structure from root helpful, or should
+   this just report the update-trigger container.*
+
+   The normative definitions for the update-trigger fields are given in
+   the _ietf-yp-lite_ YANG module in Section 15.  They are also
+   described in the following sections.
 
 9.3.  Periodic events
 
@@ -1057,47 +1080,95 @@ Table of Contents
    record corresponds to data that could have been read using a
    retrieval operation.  Only the state that exists in the system at the
    time that it is being read is reported, periodic updates never
-   explicitly indicate that any data-nodes or list entries have been
-   deleted.  Instead, deletions must be inferred by the receiver from
-   the absence of data during a particular collection event.
+   explicitly indicate whether any data-nodes or list entries have been
+   deleted.  Instead, receivers must infer deletions by the absence of
+   data during a particular collection event.
 
-   *  For periodic subscriptions, triggered updates will occur at the
-      boundaries of a specified time interval.  These boundaries can be
-      calculated from the periodic parameters:
+   For periodic subscriptions, triggered updates will occur at the
+   boundaries of a specified time interval.  These boundaries can be
+   calculated from the periodic parameters:
 
-      -  a _period_ that defines the duration between push updates.
+   *  a _period_ that defines the duration between push updates.
 
-      -  an _anchor-time_; update intervals fall on the points in time
-         that are a multiple of a _period_ from an _anchor-time_.  If an
-         _anchor-time_ is not provided, then the publisher chooses a
-         suitable anchor-time, e.g., perhaps the time that the
-         subscription was first instantiated by the publisher.
+   *  an _anchor-time_; update intervals fall on the points in time that
+      are a multiple of a _period_ from an _anchor-time_.  If an
+      _anchor-time_ is not provided, then the publisher chooses a
+      suitable anchor-time, e.g., perhaps the time that the subscription
+      was first instantiated by the publisher.
 
    The anchor time and period are particularly useful, in fact required,
    for when the collected telemetry data is being stored in a time-
    series database and the subscription is setup to ensure that each
-   collection is placed in a separate time bucket.
+   collection is placed in a separate time-interval bucket.
+
+   Periodic update notifications are expected, but not required, to use
+   a single _target-path_ per _update_ notification.
 
 9.4.  On-Change events
 
-   In an on-change subscription, update records indicate updated values
-   or when a monitored data node or list node has been deleted.
+   In an on-change subscription, _update_ records indicate updated
+   values or when a monitored data node or list node has been deleted.
+   _update_ records SHOULD be generated at the same subtree as
+   equivalent periodic subscription rather than only the specific data
+   node that is on-change notifiable.  The goal is to ensure that the
+   _update_ message contains a consistent set of data on the
+   subscription path.
 
-   *TODO, give more indication that the delete applies to the path
-   object, rather than a child node*.
+   Each entry in the _updates_ list identifies a data node (i.e., list
+   entry, container, leaf or leaf-list), via the _target-path_ that
+   either has changes is state or has been deleted.
 
-   Publishers are not required to notify every change or value for an
-   on-change monitored data node.  Instead, publishers MAY limit the
-   rate at which changes are reported for a given data node, suppressing
-   further updates for a short time interval.  If a data node changes
-   value and then reverts back to the original value then the publisher
-   MAY suppress reporting the change entirely.  However, if the data
-   node changes to a new value for a longer period than any internal
-   dampening interval, then the change and latest state MUST be reported
-   to the receiver.
+   A delete of a specific individual data node or subtree may be
+   notified in two different ways:
 
-   For example, if the interface link state reported by hardware is
-   changing state hundreds of times per second, then it would be
+   *  if the data that is being deleted is below the _target-path_ then
+      the delete is implicit by the publisher returning the current data
+      node subtree with the delete data nodes missing.  I.e., the
+      receiver must implicitly infer deletion.
+
+   *  if the data node is being deleted at the target path.  E.g., if an
+      interface is deleted then an entire list entry related to that
+      interface may be removed.  In this case, the _target path_
+      identifies the list entry that is being deleted, but the data
+      returned is just an empty object {}, which replaces all the
+      existing data for that object in the receiver.
+
+   For on-change subscriptions, an update trigger occurs whenever a
+   change in the subscribed information is detected.  The following
+   additional parameters are included:
+
+   *  _sync-on-start_ defines whether or not a complete snapshot of all
+      subscribed data is sent at the beginning of a subscription.  Such
+      early synchronization establishes the frame of reference for
+      subsequent updates.
+
+9.4.1.  On-Change Notifiable Datastore Nodes
+
+   Publishers are not required to support on-change notifications for
+   all data nodes, and they may not be able to generate on-change
+   updates for some data nodes.  Possible reasons for this include:
+
+   *  the value of the datastore node changes frequently (e.g., the in-
+      octets counter as defined in [RFC8343]),
+
+   *  small object changes that are frequent and meaningless (e.g., a
+      temperature gauge changing 0.1 degrees),
+
+   *  or no implementation is available to generate a notification when
+      the source variable for a particular data node has changed.
+
+   In addition, publishers are not required to notify every change or
+   value for an on-change monitored data node.  Instead, publishers MAY
+   limit the rate at which changes are reported for a given data node,
+   suppressing further updates for a short time interval.  If a data
+   node changes value and then reverts back to the original value then
+   the publisher MAY suppress reporting the change entirely.  However,
+   if the data node changes to a new value for a longer period than any
+   internal dampening interval, then the change and latest state MUST be
+   reported to the receiver.
+
+   To give an example, if the interface link state reported by hardware
+   is changing state hundreds of times per second, then it would be
    entirely reasonable to limit those interface state changes to a much
    lower cadence, e.g., perhaps every 100 milliseconds.  In the
    particular case of interfaces, there may also be data model specific
@@ -1105,18 +1176,8 @@ Table of Contents
    that notify interface down events immediately, but rate limit how
    quickly the interface is allowed to transition to up state, which
    overall acts as a limit on the rate at which the interface state may
-   change, and hence also act as a limit on the rate at which change
+   change, and hence also act as a limit on the rate at which on-change
    notifications could be generated.
-
-9.4.1.  On-Change Notifiable Datastore Nodes
-
-   In some cases, a publisher supporting on-change notifications may not
-   be able to push on-change updates for some object types.  Reasons for
-   this might be that the value of the datastore node changes frequently
-   (e.g., the in-octets counter as defined in [RFC8343]), small object
-   changes are frequent and meaningless (e.g., a temperature gauge
-   changing 0.1 degrees), or the implementation is not capable of on-
-   change notification for a particular object.
 
    The information about what nodes support on-change notifications is
    reported using capabilities operational data model.  This is further
@@ -1147,7 +1208,8 @@ Table of Contents
    accordingly on a publisher.  Accordingly, when subscribing, it is the
    responsibility of the subscriber to ensure that it is aware of which
    objects support on-change and which do not.  For more on how objects
-   are so marked, see Section 3.10.
+   are so marked, see Section 3.10. *TODO Is this paragraph and the one
+   below still the right choice for YANG Push Lite?*
 
    Alternatively, a publisher MAY decide to simply reject an on-change
    subscription if the scope of the subscription contains objects for
@@ -1162,49 +1224,17 @@ Table of Contents
    the same path, except that they share the same subscription-id and
    filter paths.
 
-9.6.  Streaming Updates
+9.6.  Streaming Update Examples
 
-   Contrary to traditional data retrieval requests, datastore
-   subscription enables an unbounded series of update records to be
-   streamed over time.  Two generic YANG notifications for update
-   records have been defined for this scenario: "push-update" and "push-
-   change-update".
+   *TODO, Generate new JSON based example of a periodic, and delete
+   messages.  Current placeholders are the existing YANG Push
+   Notifications.*
 
-   A "push-update" notification defines a complete, filtered update of
-   the datastore per the terms of a subscription.  This type of YANG
-   notification is used for continuous updates of periodic
-   subscriptions.  A "push-update" notification can also be used for the
-   on-change subscriptions in two cases.  First, it MUST be used as the
-   initial "push-update" if there is a need to synchronize the receiver
-   at the start of a new subscription.  Second, it MAY be sent if the
-   publisher later chooses to resync an on-change subscription.  The
-   "push-update" update record contains an instantiated datastore
-   subtree with all of the subscribed contents.  The content of the
-   update record is equivalent to the contents that would be obtained
-   had the same data been explicitly retrieved using a datastore
-   retrieval operation using the same transport with the same filters
-   applied.
-
-   A "push-change-update" notification is the most common type of update
-   for on-change subscriptions.  The update record in this case contains
-   the set of changes that datastore nodes have undergone since the last
-   notification message.  In other words, this indicates which datastore
-   nodes have been created, have been deleted, or have had changes to
-   their values.  In cases where multiple changes have occurred over the
-   course of a dampening period and the object has not been deleted, the
-   object's most current value is reported.  (In other words, for each
-   object, only one change is reported, not its entire history.  Doing
-   so would defeat the purpose of the dampening period.)
-
-   "push-update" and "push-change-update" are encoded and placed in
-   notification messages and are ultimately queued for egress over the
-   specified transport.
-
-   Figure 1 provides an example of a notification message for a
+   Figure XXX provides an example of a notification message for a
    subscription tracking the operational status of a single Ethernet
    interface (per [RFC8343]).  This notification message is encoded XML
    _W3C.REC-xml-20081126_ over the Network Configuration Protocol
-   (NETCONF) as per _RFC8640_.
+   (NETCONF) as per [RFC8640].
 
   <notification xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
   <eventTime>2017-10-25T08:00:11.22Z</eventTime>
@@ -1221,10 +1251,10 @@ Table of Contents
   </push-update>
   </notification>
 
-                        Figure 1: Push Example
+             Figure 4: Example 'update' periodic notification
 
-   Figure 2 provides an example of an on-change notification message for
-   the same subscription.
+   Figure XXX provides an example of an on-change notification message
+   for the same subscription.
 
   <notification xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
   <eventTime>2017-10-25T08:22:33.44Z</eventTime>
@@ -1253,19 +1283,7 @@ Table of Contents
   </push-change-update>
   </notification>
 
-      Figure 2: Push Example for an On-Change Notification Message
-
-   Of note in the above example is the "patch-id" with a value of "0".
-   Per [RFC8072], the "patch-id" is an arbitrary string.  With YANG-
-   Push, the publisher SHOULD put into the "patch-id" a counter starting
-   at "0" that increments with every "push-change-update" generated for
-   a subscription.  If used as a counter, this counter MUST be reset to
-   "0" any time a resynchronization occurs (i.e., with the sending of a
-   "push-update").  Also, if used as a counter, the counter MUST be
-   reset to "0" after passing a maximum value of "4294967295" (i.e., the
-   maximum value that can be represented using the uint32 data type).
-   Such a mechanism allows easy identification of lost or out-of-
-   sequence update records.
+            Figure 5: Example 'update' on-change notification
 
 10.  Receivers
 
@@ -1627,7 +1645,7 @@ Table of Contents
                  +--rw on-change! {on-change}?
                     +--rw sync-on-start?   boolean
 
-               Figure 4: subscriptions container Tree Diagram
+               Figure 6: subscriptions container Tree Diagram
 
 11.1.1.  Configured Subscription State Machine
 
@@ -1675,7 +1693,7 @@ Table of Contents
                  is supportable
      (*): resulting subscription state change notification
 
-     Figure 5: Publisher's State Machine for a Configured Subscription
+     Figure 7: Publisher's State Machine for a Configured Subscription
 
    A subscription in the _valid_ state may move to the _invalid_ state
    in one of two ways.  First, it may be modified in a way that fails a
@@ -1721,7 +1739,7 @@ Table of Contents
 
    * indicates a subscription state change notification
 
-     Figure 6: Receiver State Machine for a Configured Subscription on
+     Figure 8: Receiver State Machine for a Configured Subscription on
                                 a Publisher
 
    When a configured subscription first moves to the _valid_ state, the
@@ -1872,7 +1890,7 @@ Table of Contents
                      :  end  :
                      :.......:
 
-       Figure 7: Publisher's State Machine for a Dynamic Subscription
+       Figure 9: Publisher's State Machine for a Dynamic Subscription
 
    Of interest in this state machine are the following:
 
@@ -1933,7 +1951,7 @@ Table of Contents
        |  +--ro output
        |     +--ro id    subscription-id
 
-                 Figure 8: establish-subscription YANG RPC
+                 Figure 10: establish-subscription YANG RPC
 
    A publisher MAY reject the "establish-subscription" RPC for many
    reasons, as described in Section 2.4.6.
@@ -1950,7 +1968,7 @@ Table of Contents
            Figure 3: "establish-subscription-stream-error-info"
                        RPC yang-data Tree Diagram
 
-     Figure 9: "establish-subscription-stream-error-info" Tree Diagram
+     Figure 11: "establish-subscription-stream-error-info" Tree Diagram
 
 11.2.2.1.  Negotiation of Subscription Policies
 
@@ -2184,7 +2202,7 @@ Table of Contents
        |  +--ro dscp?      inet:dscp {dscp}?
        |  +--ro purpose?   string {configured}?
 
-         Figure 10: subscription-started Notification Tree Diagram
+         Figure 12: subscription-started Notification Tree Diagram
 
 12.2.  "subscription-terminated"
 
@@ -2231,7 +2249,7 @@ Table of Contents
        |  +--ro id        subscription-id
        |  +--ro reason    identityref
 
-        Figure 11: subscription-terminated Notification Tree Diagram
+        Figure 13: subscription-terminated Notification Tree Diagram
 
    *TODO Augmenting extra fields is better for clients?* The _reason_
    datanode identifyref indicates why a subcription has been terminated,
@@ -2256,8 +2274,10 @@ Table of Contents
 
        +---n replay-completed
        |  +--ro id    subscription-id
+       +---n update-completed
+       |  +--ro id    subscription-id
 
-           Figure 12: replay-completed Notification Tree Diagram
+           Figure 14: replay-completed Notification Tree Diagram
 
 13.  Performance, Reliability, and Subscription Monitoring
 
@@ -2551,6 +2571,8 @@ Table of Contents
      notifications:
        +---n replay-completed
        |  +--ro id    subscription-id
+       +---n update-completed
+       |  +--ro id    subscription-id
        +---n subscription-started
        |  +--ro id         subscription-id
        |  +--ro target
@@ -2572,29 +2594,16 @@ Table of Contents
        |  +--ro id        subscription-id
        |  +--ro reason    identityref
        +---n update
-       |  +--ro id?                   subscription-id
-       |  +--ro subscription-path?    yang:xpath1.0
-       |  +--ro target-path?          string
-       |  +--ro snapshot-type?        enumeration
-       |  +--ro observation-time?     yang:date-and-time
-       |  +--ro datastore-snapshot?   <anydata>
-       |  +--ro incomplete?           empty
-       +---n update-2
-       |  +--ro id?                  subscription-id
-       |  +--ro subscription-path?   yang:xpath1.0
-       |  +--ro snapshot-type?       enumeration
-       |  +--ro observation-time?    yang:date-and-time
-       |  +--ro updates* [target-path]
-       |  |  +--ro target-path           string
-       |  |  +--ro datastore-snapshot?   <anydata>
-       |  +--ro incomplete?          empty
-       +---n datanode-delete
-          +--ro id?                  subscription-id
-          +--ro subscription-path?   yang:xpath1.0
-          +--ro target-path?         string
-          +--ro observation-time?    yang:date-and-time
+          +--ro id?                 subscription-id
+          +--ro path-prefix?        string
+          +--ro snapshot-type?      enumeration
+          +--ro observation-time?   yang:date-and-time
+          +--ro updates* [target-path]
+          |  +--ro target-path    string
+          |  +--ro data?          <anydata>
+          +--ro incomplete?         empty
 
-         Figure 13: YANG tree for YANG Push Lite Module Tree Output
+         Figure 15: YANG tree for YANG Push Lite Module Tree Output
 
 15.2.  ietf-yp-lite YANG Model
 
@@ -3364,6 +3373,20 @@ Table of Contents
        }
      }
 
+     notification update-completed {
+       //ypl:subscription-state-notification;
+       //if-feature "replay";
+       description
+         "This notification is sent to indicate that all of the replay
+          notifications have been sent.";
+       leaf id {
+         type subscription-id;
+         mandatory true;
+         description
+           "This references the affected subscription.";
+       }
+     }
+
      notification subscription-started {
        //ypl:subscription-state-notification;
        description
@@ -3416,119 +3439,13 @@ Table of Contents
             notification to be sent.";
        }
 
-       leaf subscription-path {
-         type yang:xpath1.0;
-         description
-           "The subscription path indicates the schema path from the root of the
-            schema tree to the node, for which the updated state is being
-            notified, or a notification that is has been deleted.
-
-            TODO - Make this an instance data ref";
-       }
-
-       leaf target-path {
+       leaf path-prefix {
          type string;
-       }
-
-       leaf snapshot-type {
-         type enumeration {
-           enum "periodic" {
-             description
-               "The update message is due to a periodic update.";
-           }
-           enum "on-change-update" {
-             description
-               "The update message is due to an on-change update.  This
-                means that one or more fields have changed under the
-                snapshot path.
-
-                TODO - Split this into a on-change-delete msg?";
-           }
-           enum "on-change-delete" {
-             description
-               "The update message is due to an on-change event where
-                the data node at the target path has been delete.";
-           }
-           enum "resync" {
-             description
-               "This indicates that the update is to resynchronize the
-                state, e.g., after a subscription started notification.
-
-                Ideally, the resync message SHOULD be the first
-                notification sent when a subscription has started, but
-                it is not gauranteed or required to be the first
-                (e.g., if an on-change event occurs).
-
-                These messages can be used to ensure that all state
-                has been sent to the client, and can be used to purge
-                stale data.
-
-                TODO - In the distributed notification case, need a
-                notification to indicate that all child subscriptions
-                have been sent.";
-           }
-         }
          description
-           "This indicates the type of notification message that is being sent.";
-       }
+           "Specifies the common prefix that all other paths and data
+            are encoded relative to.
 
-       // Could add observation time here.
-       leaf observation-time {
-         type yang:date-and-time;
-         description
-           "The time that the update was observed by the publisher.";
-       }
-
-       anydata datastore-snapshot {
-         description
-           "This contains the updated data.  It constitutes a snapshot
-           at the time of update of the set of data that has been
-           subscribed to.  The snapshot corresponds to the same
-           snapshot that would be returned in a corresponding 'get'
-           operation with the same selection filter parameters
-           applied.
-
-           Used for snapshot types except for 'on-change-delete'.";
-       }
-
-       leaf incomplete {
-         type empty;
-         description
-           "This is a flag that indicates that not all datastore
-           nodes subscribed to are included with this update.  Receivers
-           of this data SHOULD NOT assume that any missing data has been
-           implicitly deleted.
-
-           TODO - Do we still want this flag, or would it be
-           better to notify this event out of band?";
-       }
-     }
-
-     notification update-2 {
-       description
-         "This notification contains a push update that in turn contains
-          data subscribed to via a subscription.  In the case of a
-          periodic subscription, this notification is sent for periodic
-          updates.  It can also be used for synchronization updates of
-          an on-change subscription.  This notification shall only be
-          sent to receivers of a subscription.  It does not constitute
-          a general-purpose notification that would be subscribable as
-          part of the NETCONF event stream by any receiver.";
-       leaf id {
-         type subscription-id;
-         description
-           "This references the subscription that drove the
-            notification to be sent.";
-       }
-
-       leaf subscription-path {
-         type yang:xpath1.0;
-         description
-           "The subscription path indicates the schema path from the root of the
-            schema tree to the node, for which the updated state is being
-            notified, or a notification that is has been deleted.
-
-            TODO - Make this an instance data ref";
+            TODO - This should be a JSONified instance data path.";
        }
 
        leaf snapshot-type {
@@ -3589,11 +3506,16 @@ Table of Contents
             snapshot that would be returned in a corresponding 'get'
             operation with the same selection filter parameters
             applied.";
+
          leaf target-path {
            type string;
+           description
+             "The target path of the data that is being replaced, i.e.,
+              updated or deleted.  The path is given relative to the
+              path-prefix.";
          }
 
-         anydata datastore-snapshot {
+         anydata data {
            description
              "This contains the updated data.  It constitutes a snapshot
              at the time of update of the set of data that has been
@@ -3602,7 +3524,11 @@ Table of Contents
              operation with the same selection filter parameters
              applied.
 
-             Used for snapshot types except for 'on-change-delete'.";
+             For an on-change delete notification, the
+             datastore-snapshot will be absent for the given target
+             path.
+
+             The snapshot is encoded relative to the path-prefix.";
          }
        }
 
@@ -3616,42 +3542,6 @@ Table of Contents
 
            TODO - Do we still want this flag, or would it be
            better to notify this event out of band?";
-       }
-     }
-
-     notification datanode-delete {
-       description
-         "This on-change datanode-delete notification is used to indicate
-          that the datanode at the path specified by the target path has been
-          deleted.  This notification shall only be sent to receivers
-          of a subscription.  It does not constitute a general-purpose
-          notification that would be subscribable as part of the
-          NETCONF event stream by any receiver.";
-       leaf id {
-         type subscription-id;
-         description
-           "This references the subscription that drove the
-            notification to be sent.";
-       }
-
-       leaf subscription-path {
-         type yang:xpath1.0;
-         description
-           "The subscription path indicates the schema path from the root of the
-            schema tree to the data node that has been deleted.
-
-            TODO - Make this an instance data ref";
-       }
-
-       leaf target-path {
-         type string;
-       }
-
-       leaf observation-time {
-         type yang:date-and-time;
-         description
-           "The time that the data node delete events was observed by
-            the publisher.";
        }
      }
 
@@ -3942,7 +3832,7 @@ Table of Contents
    }
    <CODE ENDS>
 
-                    Figure 14: YANG module ietf-yp-lite
+                    Figure 16: YANG module ietf-yp-lite
 
 16.  Security Considerations
 
@@ -4139,11 +4029,11 @@ Normative References
 
    [I-D.draft-netana-netconf-notif-envelope]
               Feng, A. H., Francois, P., Graf, T., and B. Claise,
-              "Extensible YANG model for YANG-Push Notifications", Work
+              "Extensible YANG Model for YANG-Push Notifications", Work
               in Progress, Internet-Draft, draft-netana-netconf-notif-
-              envelope-01, 3 November 2024,
+              envelope-02, 28 January 2025,
               <https://datatracker.ietf.org/doc/html/draft-netana-
-              netconf-notif-envelope-01>.
+              netconf-notif-envelope-02>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -4184,6 +4074,11 @@ Normative References
               and R. Wilton, "Network Management Datastore Architecture
               (NMDA)", RFC 8342, DOI 10.17487/RFC8342, March 2018,
               <https://www.rfc-editor.org/rfc/rfc8342>.
+
+   [RFC8525]  Bierman, A., Bjorklund, M., Schoenwaelder, J., Watsen, K.,
+              and R. Wilton, "YANG Library", RFC 8525,
+              DOI 10.17487/RFC8525, March 2019,
+              <https://www.rfc-editor.org/rfc/rfc8525>.
 
    [RFC8529]  Berger, L., Hopps, C., Lindem, A., Bogdanovic, D., and X.
               Liu, "YANG Data Model for Network Instances", RFC 8529,
@@ -4259,11 +4154,11 @@ Informative References
 
    [I-D.netana-netconf-notif-envelope]
               Feng, A. H., Francois, P., Graf, T., and B. Claise,
-              "Extensible YANG model for YANG-Push Notifications", Work
+              "Extensible YANG Model for YANG-Push Notifications", Work
               in Progress, Internet-Draft, draft-netana-netconf-notif-
-              envelope-01, 3 November 2024,
+              envelope-02, 28 January 2025,
               <https://datatracker.ietf.org/doc/html/draft-netana-
-              netconf-notif-envelope-01>.
+              netconf-notif-envelope-02>.
 
    [I-D.tgraf-netconf-notif-sequencing]
               Graf, T., Quilbeuf, J., and A. H. Feng, "Support of
@@ -4323,6 +4218,10 @@ Informative References
    [RFC8040]  Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
               Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
               <https://www.rfc-editor.org/rfc/rfc8040>.
+
+   [RFC8071]  Watsen, K., "NETCONF Call Home and RESTCONF Call Home",
+              RFC 8071, DOI 10.17487/RFC8071, February 2017,
+              <https://www.rfc-editor.org/rfc/rfc8071>.
 
    [RFC8072]  Bierman, A., Bjorklund, M., and K. Watsen, "YANG Patch
               Media Type", RFC 8072, DOI 10.17487/RFC8072, February
