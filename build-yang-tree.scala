@@ -97,7 +97,7 @@ object BuildYangTree:
       extractRPC(
         outputText,
         "-n replay-completed",
-        "subscription-started",
+        "-n update-complete",
         "replay-completed.txt"
       )
 
