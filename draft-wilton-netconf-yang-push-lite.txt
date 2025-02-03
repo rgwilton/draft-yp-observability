@@ -4,8 +4,8 @@
 
 Network Configuration                                          R. Wilton
 Internet-Draft                                             Cisco Systems
-Intended status: Standards Track                         31 January 2025
-Expires: 4 August 2025
+Intended status: Standards Track                         3 February 2025
+Expires: 7 August 2025
 
 
                YANG Datastore Telemetry (YANG Push Lite)
@@ -51,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 August 2025.
+   This Internet-Draft will expire on 7 August 2025.
 
 Copyright Notice
 
@@ -97,13 +97,14 @@ Table of Contents
        9.4.2.  On-Change Considerations
      9.5.  Combined period and on-change subscriptions
      9.6.  Streaming Update Examples
-   10. Receivers
-     10.1.  Transports
-       10.1.1.  Requirements for Yang Push Lite Transport
+   10. Receivers, Transports, and Encodings
+     10.1.  Receivers for Configured Subscriptions
+       10.1.1.  Receivers for Dynamic Subscriptions
+     10.2.  Transports
+       10.2.1.  Requirements for Yang Push Lite Transport
                Specifications
-       10.1.2.  Transport Connectivity for a Configured Subscription
-     10.2.  Encodings
-       10.2.1.  DSCP Marking
+       10.2.2.  DSCP Marking
+     10.3.  Encodings
    11. Setting up and Managing Subscriptions
      11.1.  Configured Subscriptions
        11.1.1.  Configured Subscription State Machine
@@ -140,23 +141,21 @@ Table of Contents
    References
      Normative References
      Informative References
-   Appendix A.  Example Configured Transport Augmentation (from RFC
-           8639)
-   Appendix B.  Subscription Errors (from RFC 8641)
-     B.1.  RPC Failures
-     B.2.  Failure Notifications
-   Appendix C.  Examples
-     C.1.  Example of an RFC8641 style push-update notification
-     C.2.  Example of periodic updates using the new style update
+   Appendix A.  Subscription Errors (from RFC 8641)
+     A.1.  RPC Failures
+     A.2.  Failure Notifications
+   Appendix B.  Examples
+     B.1.  Example of an RFC8641 style push-update notification
+     B.2.  Example of periodic updates using the new style update
            message
-     C.3.  Example of an on-change-update notification using the new
+     B.3.  Example of an on-change-update notification using the new
            style update message
-     C.4.  Example of an on-change-delete notification using the new
+     B.4.  Example of an on-change-delete notification using the new
            style update message
-     C.5.  Subscription RPC examples (from RFC 8641)
-       C.5.1.  "establish-subscription" RPC
-       C.5.2.  "delete-subscription" RPC
-       C.5.3.  "resync-subscription" RPC
+     B.5.  Subscription RPC examples (from RFC 8641)
+       B.5.1.  "establish-subscription" RPC
+       B.5.2.  "delete-subscription" RPC
+       B.5.3.  "resync-subscription" RPC
    Author's Address
 
 1.  Document Status
@@ -614,6 +613,10 @@ Table of Contents
 
    *  Some of the requirements on transport have been relaxed.
 
+   *  The encoding identities have been extended with CBOR encodings,
+      and the "encoding-" prefix has been removed (so that there is a
+      better on the wire representation).
+
 5.4.2.  Removed Functionality
 
    This section lists functionality specified in [RFC8639] and YANG Push
@@ -734,7 +737,7 @@ Table of Contents
    configure the subscription, and other transports, e.g.,
    [I-D.draft-ietf-netconf-udp-notif] defines a simple UDP based
    transport for Push notifications.  Transport considerations are
-   described in Section 10.1.
+   described in Section 10.2.
 
    *TODO Introduce capabilities and operational monitoring*
 
@@ -890,8 +893,8 @@ Table of Contents
    subscription's receiver(s).
 
    Filters can either be defined inline within a configured subscription
-   (Figure 6), a dynamic subscription's _establish-subscription_ RPC
-   (Figure 10), or as part of the _datastore-telemetry/filters_
+   (Figure 7), a dynamic subscription's _establish-subscription_ RPC
+   (Figure 11), or as part of the _datastore-telemetry/filters_
    container (Figure 1) which can then be referenced from a configured
    or dynamic subscription.
 
@@ -1369,94 +1372,76 @@ Table of Contents
 
             Figure 5: Example 'update' on-change notification
 
-10.  Receivers
+10.  Receivers, Transports, and Encodings
 
-   Text moved from configured subscriptions.
+   Every subscription is associated with one or more receivers, which
+   each identify the destination host where all the subscription
+   notifications are sent.  Each receiver has the following associated
+   properties:
 
-   In addition to the subscription parameters available to dynamic
-   subscriptions as described in Section 2.4.2, the following additional
-   parameters are also available to configured subscriptions:
+   *  a _name_ to identify and reference the receiver in configured
+      subscriptions.
 
-   *  A "transport", which identifies the transport protocol to use to
+   *  a _transport_, which identifies the transport protocol to use to
       connect with all subscription receivers.
 
-   *  One or more receivers, each intended as the destination for event
-      records.  Note that each individual receiver is identifiable by
-      its "name".
+      -  Optional transport-specific related parameters, e.g., DSCP.
+         There are likely to be various data nodes related to
+         establishing appropriate security and encryption.
 
-   *  Optional parameters to identify where traffic should egress a
+   *  an _encoding_ to encode all YANG notification messages to the
+      receiver, i.e., see Section 10.3.
+
+   *  optional parameters to identify where traffic should egress the
       publisher:
 
-      -  A "source-interface", which identifies the egress interface to
-         use from the publisher.  Publisher support for this parameter
-         is optional and advertised using the "interface-designation"
-         feature.
+      -  a _source-interface_, which identifies the egress interface to
+         use from the publisher.
 
-      -  A "source-address" address, which identifies the IP address to
+      -  a _source-address_ address, which identifies the IP address to
          stamp on notification messages destined for the receiver.
 
-      -  A "source-vrf", which identifies the Virtual Routing and
+      -  a _source-vrf_, which identifies the Virtual Routing and
          Forwarding (VRF) instance on which to reach receivers.  This
          VRF is a network instance as defined in [RFC8529].  Publisher
          support for VRFs is optional and advertised using the
-         "supports-vrf" feature.
+         _supports-vrf_ feature. *TODO - do we also support inferring
+         the VRF from the source interface?*
 
       If none of the above parameters are set, notification messages
-      MUST egress the publisher's default interface.
+      egress the publisher's default interface.
 
-10.1.  Transports
+10.1.  Receivers for Configured Subscriptions
 
-   This document describes a transport-agnostic mechanism for
-   subscribing to and receiving content from an event stream in a
-   publisher.  This mechanism operates through the use of a
-   subscription.
+   For configured subscriptions, receivers are configured independently
+   from the subscriptions and then referenced from the subscription.
 
-   Also note that transport-specific specifications based on this
-   specification MUST detail the lifecycle of dynamic subscriptions as
-   well as the lifecycle of configured subscriptions (if supported).
+   Configured subscriptions MAY have multiple receivers, but they MUST
+   have the same encoding.  Multiple receivers facilitate redundancy at
+   the receivers.  *TODO, is there a diagram from one of Thomas's drafts
+   that we can reference here to show the end-to-end picture*
 
-   A subscriber that includes a "dscp" leaf in an "establish-
-   subscription" request will need to understand and consider what the
-   corresponding DSCP value represents in the domain of the publisher.
+   Below is a tree diagram for _datastore-telemetry/receivers_
+   container.  All objects contained in this tree are described in the
+   YANG module in Section 15.2.
 
-10.1.1.  Requirements for Yang Push Lite Transport Specifications
+   module: ietf-yp-lite
+     +--rw datastore-telemetry
+        +--rw receivers
+           +--rw receiver* [name]
+              +--rw name                      string
+              +--rw encoding?                 encoding
+              +--rw dscp?                     inet:dscp {dscp}?
+              +--rw (notification-message-origin)? {configured}?
+              |  +--:(interface-originated)
+              |  |  +--rw source-interface?   if:interface-ref
+              |  |          {interface-designation}?
+              |  +--:(address-originated)
+              |     +--rw source-vrf?         leafref {supports-vrf}?
+              |     +--rw source-address?     inet:ip-address-no-zone
+              +--rw (transport-type)
 
-   This section provides requirements for any transport specifications
-   supporting the YANG Push Lite solution presented in this document.
-
-   The transport selected by the subscriber to reach the publisher
-   SHOULD be able to support multiple "establish-subscription" requests
-   made in the same transport session.
-
-   For both configured and dynamic subscriptions, the publisher SHOULD
-   authenticate a receiver via some transport-level mechanism before
-   sending any event records that the receiver is authorized to see.  In
-   addition, the receiver SHOULD authenticate the publisher at the
-   transport level.  The result is mutual authentication between the
-   two.
-
-   A secure transport is RECOMMENDED.  For dynamic subscriptions, the
-   publisher MUST ensure that the receiver has sufficient authorization
-   to perform the function it is requesting against the specific subset
-   of content involved.
-
-   A specification for a transport built upon this document may or may
-   not choose to require the use of the same logical channel for the
-   RPCs and the event records.  However, the event records and the
-   subscription state change notifications MUST be sent on the same
-   transport session to ensure properly ordered delivery.
-
-   A specification for a transport MUST identify any encodings that are
-   supported.  If a configured subscription's transport allows different
-   encodings, the specification MUST identify the default encoding.
-
-   Additional transport requirements may be dictated by the choice of
-   transport used with a subscription.  For an example of such
-   requirements, see [RFC8640].
-
-10.1.2.  Transport Connectivity for a Configured Subscription
-
-   *TODO Next paragraph is from section 2.*
+             Figure 6: datastore-telemetry/receivers container
 
    Because there is no explicit association with an existing transport
    session, configuration operations include additional parameters
@@ -1480,19 +1465,120 @@ Table of Contents
    specific parameters for a particular receiver may be augmented.  This
    node is _/datastore-telemetry/receivers/receiver/transport-type_.
 
-   A publisher supporting the feature "configured" MUST also support at
-   least one YANG data model that augments transport connectivity
-   parameters on _/datastore-telemetry/receivers/receiver/transport-
-   type_.  For an example of such an augmentation, see *TODO
-   Appendix A*. *TODO - Should this be put under the configured
-   subscription*.
+   A publisher supporting configured subscriptions must obviously
+   support at least one YANG data model that augments transport
+   connectivity parameters on _/datastore-telemetry/receivers/receiver/
+   transport-type_.  For an example of such an augmentation, see
+   [I-D.draft-ietf-netconf-udp-notif] *TODO, this isn't quite the right
+   reference, since we will need a variant that augments into the YP
+   Lite receiver container.*
 
-10.2.  Encodings
+10.1.1.  Receivers for Dynamic Subscriptions
 
-   The _update_ (Section 9.1) and subscription lifecycle messages
-   (Section 12) can be encoded in any format that is defined for
-   encoding YANG data.  For a given subscription, all notification
-   messages MUST be encoded using the same encoding.
+   For dynamic subscriptions, each subscription has a single receiver
+   that is implicit from the host that initiated the _establish-
+   subscription_ RPC, reusing the same transport session for all the
+   subscription notifications.
+
+   Hence most receiver parameters for a dynamic subscription are
+   implicitly determined, and cannot be explicitly controlled.
+
+   Dynamic subscriptions MUST specify an encoding (see Section 10.3) and
+   MAY specify DSCP Marking (see Section 10.2.2) for the telemetry
+   notifications in the _establish-subscription_ RPC (see Figure 11).
+
+10.2.  Transports
+
+   This document describes a transport-agnostic mechanism for
+   subscribing to YANG datastore telemetry.  Hence, separate
+   specifications are required to define transports that support YANG
+   Push Lite.  The requirements for these transport specifications are
+   documented in the following section:
+
+10.2.1.  Requirements for Yang Push Lite Transport Specifications
+
+   This section provides requirements for any transport specifications
+   supporting the YANG Push Lite solution presented in this document.
+
+   The transport MUST provide a YANG module (to be implemented by the
+   receiver) that _datastore-telemetry/receivers/transport-type_ choice
+   statement with a container the identifies the transport and contains
+   all the transport specific parameters.
+
+   The transport selected by the subscriber to reach the publisher
+   SHOULD be able to support multiple "establish-subscription" requests
+   made in the same transport session.
+
+   For both configured and dynamic subscriptions, the publisher SHOULD
+   authenticate a receiver via some transport-level mechanism before
+   sending any event records that the receiver is authorized to see.  In
+   addition, the receiver SHOULD authenticate the publisher at the
+   transport level.  The result is mutual authentication between the
+   two. *TODO, do we want this text, I have already weakened this from
+   the MUST in Yang Push.*
+
+   A secure transport is RECOMMENDED.  For dynamic subscriptions, the
+   publisher MUST ensure that the receiver has sufficient authorization
+   to perform the function it is requesting against the specific subset
+   of content involved. *TODO, is this transport level authorization, or
+   NACM based authorization (in which case, it should not be stated
+   here, since it is application specific rather than being transport
+   specific).*
+
+   A specification for a transport built upon this document can choose
+   whether to use of the same logical channel for the RPCs and the event
+   records.  However, the _update_ records and the subscription state
+   change notifications MUST be sent on the same transport session to
+   ensure properly ordered delivery.
+
+   If a transport can only support some encodings, then it MUST identify
+   what encodings are supported.  If a configured subscription's
+   transport allows different encodings, the specification MUST identify
+   the default encoding. *TODO, would it be easier to always require the
+   encoding to be specified?*
+
+   Any transport specific impacts to the lifecycle of configured or
+   dynamic subscriptions MUST be documented.  E.g., the point at which a
+   subscription can be determined as being established. *TODO, do we
+   need this paragraph, if the behavior is meant to be transport
+   specific that why does anything need to be said at all?  And if the
+   transport wants to change the behavior then, by definition, that must
+   be documented in the transport specification anyway.*
+
+   Additional transport requirements may be dictated by the choice of
+   transport used with a subscription.  For an example of such
+   requirements, see [RFC8640].
+
+10.2.2.  DSCP Marking
+
+   YANG Push Lite supports "dscp" marking to differentiate
+   prioritization of notification messages during network transit.
+
+   If the publisher supports the "dscp" feature, then a subscription
+   with a "dscp" leaf results in a corresponding Differentiated Services
+   Code Point (DSCP) marking [RFC2474] being placed in the IP header of
+   any resulting notification messages and subscription state change
+   notifications.  A publisher MUST respect the DSCP markings for
+   subscription traffic egressing that publisher.
+
+   *TODO, do we want to keep "dscp" as a feature, or to simplify, just
+   assume implementations will support it or otherwise deviate the
+   leaf?*
+
+   Different DSCP code points require different transport connections.
+   As a result, where TCP is used, a publisher that supports the "dscp"
+   feature must ensure that a subscription's notification messages are
+   returned in a single TCP transport session where all traffic shares
+   the subscription's "dscp" leaf value.  If this cannot be guaranteed,
+   any "establish-subscription" RPC request SHOULD be rejected with a
+   "dscp-unavailable" error.  *TODO - Is this text still relevant?*
+
+10.3.  Encodings
+
+   The _update_ notification(Section 9.1) and subscription lifecycle
+   notifications (Section 12) can be encoded in any format that has a
+   definition for encoding YANG data.  For a given subscription, all
+   notification messages are encoded using the same encoding.
 
    Some IETF standards for YANG encodings known at the time of
    publication are:
@@ -1508,26 +1594,28 @@ Table of Contents
    support JSON and CBOR encodings.  Also supporting XML and CBOR using
    YANG SIDs is OPTIONAL.
 
-10.2.1.  DSCP Marking
+   Encodings are defined in the _ietf-yp-lite.yang_ as YANG identities
+   that derive from the _encoding_ base identity.  Additional encodings
+   can be defined by defining and implementing new identities that
+   derive from the _encoding_ base identity, and also advertising those
+   identities as part of the capabilities YANG model. *TODO, given more
+   details of which leaf this is in the capabilities model.*
 
-   YANG Push Lite supports "dscp" marking to differentiate
-   prioritization of notification messages during network transit.
+   *TODO, the YP data model use if-feature statements for each of the
+   encodings.  Should we preserve these feature statements, or rely only
+   on capabilities information to indicate what encoding are supported?
+   Currently they are commented out with an intention to remove them.*
 
-   If the publisher supports the "dscp" feature, then a subscription
-   with a "dscp" leaf results in a corresponding Differentiated Services
-   Code Point (DSCP) marking [RFC2474] being placed in the IP header of
-   any resulting notification messages and subscription state change
-   notifications.  A publisher MUST respect the DSCP markings for
-   subscription traffic egressing that publisher.
+   For configured subscriptions, the encoding is configured as part of
+   the receiver configuration (Figure 6).
 
-   *TODO - Is this still relevant?* Different DSCP code points require
-   different transport connections.  As a result, where TCP is used, a
-   publisher that supports the "dscp" feature must ensure that a
-   subscription's notification messages are returned in a single TCP
-   transport session where all traffic shares the subscription's "dscp"
-   leaf value.  If this cannot be guaranteed, any "establish-
-   subscription" RPC request SHOULD be rejected with a "dscp-
-   unavailable" error.
+   For dynamic subscriptions, the encoding is selected as part of the
+   establish-subscription RPC (Figure 11).
+
+   *TODO For dynamic subscriptions, Yang Push will infer the encoding
+   from incoming RPC if not provided.  Do we want to preserve the
+   existing behavior or just be explicit and enforce that an encoding
+   must always be specified?*
 
 11.  Setting up and Managing Subscriptions
 
@@ -1669,6 +1757,7 @@ Table of Contents
               |     +--ro excluded-event-records?
               |     |       yang:zero-based-counter64
               |     +--ro state                     enumeration
+              |     +--ro encoding?                 encoding
               |     +---x reset {configured}?
               |        +--ro output
               |           +--ro time    yang:date-and-time
@@ -1679,7 +1768,7 @@ Table of Contents
                  +--rw on-change! {on-change}?
                     +--rw sync-on-start?   boolean
 
-               Figure 6: subscriptions container Tree Diagram
+               Figure 7: subscriptions container Tree Diagram
 
 11.1.1.  Configured Subscription State Machine
 
@@ -1727,7 +1816,7 @@ Table of Contents
                  is supportable
      (*): resulting subscription state change notification
 
-     Figure 7: Publisher's State Machine for a Configured Subscription
+     Figure 8: Publisher's State Machine for a Configured Subscription
 
    A subscription in the _valid_ state may move to the _invalid_ state
    in one of two ways.  First, it may be modified in a way that fails a
@@ -1773,7 +1862,7 @@ Table of Contents
 
    * indicates a subscription state change notification
 
-     Figure 8: Receiver State Machine for a Configured Subscription on
+     Figure 9: Receiver State Machine for a Configured Subscription on
                                 a Publisher
 
    When a configured subscription first moves to the _valid_ state, the
@@ -1924,7 +2013,7 @@ Table of Contents
                      :  end  :
                      :.......:
 
-       Figure 9: Publisher's State Machine for a Dynamic Subscription
+      Figure 10: Publisher's State Machine for a Dynamic Subscription
 
    Of interest in this state machine are the following:
 
@@ -1985,7 +2074,7 @@ Table of Contents
        |  +--ro output
        |     +--ro id    subscription-id
 
-                 Figure 10: establish-subscription YANG RPC
+                 Figure 11: establish-subscription YANG RPC
 
    A publisher MAY reject the "establish-subscription" RPC for many
    reasons, as described in Section 2.4.6.
@@ -2002,7 +2091,7 @@ Table of Contents
            Figure 3: "establish-subscription-stream-error-info"
                        RPC yang-data Tree Diagram
 
-     Figure 11: "establish-subscription-stream-error-info" Tree Diagram
+     Figure 12: "establish-subscription-stream-error-info" Tree Diagram
 
 11.2.2.1.  Negotiation of Subscription Policies
 
@@ -2238,7 +2327,7 @@ Table of Contents
        |  +--ro dscp?      inet:dscp {dscp}?
        |  +--ro purpose?   string {configured}?
 
-         Figure 12: subscription-started Notification Tree Diagram
+         Figure 13: subscription-started Notification Tree Diagram
 
    *TODO, Should the subscription-started notification report decomposed
    subscription paths?*
@@ -2288,7 +2377,7 @@ Table of Contents
        |  +--ro id        subscription-id
        |  +--ro reason    identityref
 
-        Figure 13: subscription-terminated Notification Tree Diagram
+        Figure 14: subscription-terminated Notification Tree Diagram
 
    *TODO Augmenting extra fields is better for clients?* The _reason_
    datanode identifyref indicates why a subcription has been terminated,
@@ -2316,11 +2405,12 @@ Table of Contents
        +---n replay-completed
        |  +--ro id    subscription-id
 
-           Figure 14: replay-completed Notification Tree Diagram
+           Figure 15: replay-completed Notification Tree Diagram
 
 13.  Performance, Reliability, and Subscription Monitoring
 
-   *TODO.  Not sure if this text doesn't end up elsewhere?*
+   *TODO.  Needs updating.  Not sure if this text doesn't end up
+   elsewhere?*
 
    A subscription to updates from a datastore is intended to obviate the
    need for polling.  However, in order to do so, it is critical that
@@ -2564,6 +2654,7 @@ Table of Contents
         |     |     +--ro excluded-event-records?
         |     |     |       yang:zero-based-counter64
         |     |     +--ro state                     enumeration
+        |     |     +--ro encoding?                 encoding
         |     |     +---x reset {configured}?
         |     |        +--ro output
         |     |           +--ro time    yang:date-and-time
@@ -2649,7 +2740,7 @@ Table of Contents
           |  +--ro data?          <anydata>
           +--ro incomplete?         empty
 
-         Figure 15: YANG tree for YANG Push Lite Module Tree Output
+         Figure 16: YANG tree for YANG Push Lite Module Tree Output
 
 15.2.  ietf-yp-lite YANG Model
 
@@ -2936,22 +3027,46 @@ Table of Contents
          "Base identity to represent data encodings.";
      }
 
-     identity encode-xml {
+     identity xml {
        base encoding;
-       if-feature "encode-xml";
+       //if-feature "encode-xml";
        description
          "Encode data using XML as described in RFC 7950.";
        reference
          "RFC 7950: The YANG 1.1 Data Modeling Language";
      }
 
-     identity encode-json {
+     identity json {
        base encoding;
-       if-feature "encode-json";
+       //if-feature "encode-json";
        description
          "Encode data using JSON as described in RFC 7951.";
        reference
          "RFC 7951: JSON Encoding of Data Modeled with YANG";
+     }
+
+     identity cbor {
+       base encoding;
+       //if-feature "encode-json";
+       description
+         "Encode data using CBOR as described in RFC 9245,
+          without using YANG SIDs";
+       reference
+         "RFC 9245: Encoding of Data Modeled with YANG in the
+          Concise Binary Object Representation (CBOR).";
+     }
+
+     identity cbor-sids {
+       base encoding;
+       //if-feature "encode-json";
+       description
+         "Encode data using JSON as described in RFC 7951, using YANG
+          SIDs.";
+       reference
+         "RFC 9245: Encoding of Data Modeled with YANG in the
+          Concise Binary Object Representation (CBOR).
+
+          RFC 9595: YANG Schema Item iDentifier (YANG SID).";
      }
 
      /* Identities for transports */
@@ -3745,6 +3860,14 @@ Table of Contents
                    publisher is currently generating notification
                    messages intended for that receiver.";
                }
+
+               leaf encoding {
+                 config false;
+                 type encoding;
+                 description
+                   "The type of encoding for notification messages.";
+               }
+
                // TODO - Do we want the reset action?
                action reset {
                  if-feature "configured";
@@ -3878,7 +4001,7 @@ Table of Contents
    }
    <CODE ENDS>
 
-                    Figure 16: YANG module ietf-yp-lite
+                    Figure 17: YANG module ietf-yp-lite
 
 16.  Security Considerations
 
@@ -3940,7 +4063,7 @@ Table of Contents
     push-change-update   | access allowed? | ---> | to update record   |
                          +-----------------+      +--------------------+
 
-                 Figure 17: Access Control for Push Updates
+                 Figure 18: Access Control for Push Updates
 
    A publisher MUST allow for the possibility that a subscription's
    selection filter references nonexistent data or data that a receiver
@@ -4321,86 +4444,9 @@ Informative References
    [XPATH]    W3C, "XML Path Language (XPath) Version 1.0",
               <https://www.w3.org/TR/1999/REC-xpath-19991116/>.
 
-Appendix A.  Example Configured Transport Augmentation (from RFC 8639)
+Appendix A.  Subscription Errors (from RFC 8641)
 
-   This appendix provides a non-normative example of how the YANG module
-   defined in Section 4 may be enhanced to incorporate the configuration
-   parameters needed to support the transport connectivity process.
-   This example is not intended to be a complete transport model.  In
-   this example, connectivity via an imaginary transport type of "foo"
-   is explored.  For more on the overall objectives behind configuring
-   transport connectivity for a configured subscription, see
-   Section 2.5.7.
-
-   The YANG module example defined in this appendix contains two main
-   elements.  First is a transport identity "foo".  This transport
-   identity allows a configuration agent to define "foo" as the selected
-   type of transport for a subscription.  Second is a YANG case
-   augmentation "foo", which is made to the
-   "/subscriptions/subscription/receivers/receiver" node of Section 4.
-   In this augmentation are the transport configuration parameters
-   "address" and "port", which are necessary to make the connection to
-   the receiver.
-
-   module example-foo-subscribed-notifications {
-     yang-version 1.1;
-     namespace
-       "urn:example:foo-subscribed-notifications";
-
-     prefix fsn;
-
-     import ietf-subscribed-notifications {
-       prefix sn;
-     }
-     import ietf-inet-types {
-       prefix inet;
-     }
-
-     description
-       "Defines 'foo' as a supported type of configured transport for
-       subscribed event notifications.";
-
-     identity foo {
-       base sn:transport;
-       description
-         "Transport type 'foo' is available for use as a configured
-         subscription's transport protocol for subscribed
-         notifications.";
-     }
-
-     augment
-       "/sn:subscriptions/sn:subscription/sn:receivers/sn:receiver" {
-       when 'derived-from(../../../transport, "fsn:foo")';
-       description
-         "This augmentation makes transport parameters specific to 'foo'
-         available for a receiver.";
-       leaf address {
-         type inet:host;
-         mandatory true;
-         description
-           "Specifies the address to use for messages destined for a
-           receiver.";
-       }
-       leaf port {
-         type inet:port-number;
-         mandatory true;
-         description
-           "Specifies the port number to use for messages destined for a
-           receiver.";
-       }
-     }
-   }
-
-                 Figure 21: Example Transport Augmentation
-                     for the Fictitious Protocol "foo"
-
-   This example YANG module for transport "foo" will not be seen in a
-   real-world deployment.  For a real-world deployment supporting an
-   actual transport technology, a similar YANG module must be defined.
-
-Appendix B.  Subscription Errors (from RFC 8641)
-
-B.1.  RPC Failures
+A.1.  RPC Failures
 
    Rejection of an RPC for any reason is indicated via an RPC error
    response from the publisher.  Valid RPC errors returned include both
@@ -4455,7 +4501,7 @@ B.1.  RPC Failures
        placed elsewhere in the transport portion of a failed "resync-
        subscription" RPC response.
 
-B.2.  Failure Notifications
+A.2.  Failure Notifications
 
    A subscription may be unexpectedly terminated or suspended
    independently of any RPC or configuration operation.  In such cases,
@@ -4471,7 +4517,7 @@ B.2.  Failure Notifications
      unchanging-selection           update-too-big
                                      synchronization-size
 
-Appendix C.  Examples
+Appendix B.  Examples
 
    Notes on examples:
 
@@ -4495,7 +4541,7 @@ Appendix C.  Examples
    *  All these examples are created by hand, may contain errors, and
       may not parse correctly.
 
-C.1.  Example of an [RFC8641] style push-update notification
+B.1.  Example of an [RFC8641] style push-update notification
 
    This example illustrates a periodic update message for a subscription
    at "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces" that is returning data
@@ -4565,7 +4611,7 @@ C.1.  Example of an [RFC8641] style push-update notification
      }
    }
 
-C.2.  Example of periodic updates using the new style update message
+B.2.  Example of periodic updates using the new style update message
 
    The subscription was made on "Cisco-IOS-XR-pfi-im-cmd-
    oper:interfaces", but for efficiency reasons, the device has split
@@ -4657,7 +4703,7 @@ C.2.  Example of periodic updates using the new style update message
    jitter to avoid all daemons attempting to publish the data at exactly
    the same time.
 
-C.3.  Example of an on-change-update notification using the new style
+B.3.  Example of an on-change-update notification using the new style
       update message
 
    If the subscription is for on-change notifications, or periodic-and-
@@ -4720,7 +4766,7 @@ C.3.  Example of an on-change-update notification using the new style
      }
    }
 
-C.4.  Example of an on-change-delete notification using the new style
+B.4.  Example of an on-change-delete notification using the new style
       update message
 
    If the interface was deleted, and if the system was capable of
@@ -4748,12 +4794,12 @@ C.4.  Example of an on-change-delete notification using the new style
      }
    }
 
-C.5.  Subscription RPC examples (from RFC 8641)
+B.5.  Subscription RPC examples (from RFC 8641)
 
    YANG-Push subscriptions are established, modified, and deleted using
    RPCs augmented from [RFC8639].
 
-C.5.1.  "establish-subscription" RPC
+B.5.1.  "establish-subscription" RPC
 
    The subscriber sends an "establish-subscription" RPC with the
    parameters listed in Section 3.1.  An example might look like:
@@ -4853,7 +4899,7 @@ C.5.1.  "establish-subscription" RPC
 
        Figure 13: "establish-subscription" Error Response: Example 2
 
-C.5.2.  "delete-subscription" RPC
+B.5.2.  "delete-subscription" RPC
 
    To stop receiving updates from a subscription and effectively delete
    a subscription that had previously been established using an
@@ -4861,7 +4907,7 @@ C.5.2.  "delete-subscription" RPC
    subscription" RPC, which takes as its only input the subscription's
    "id".  This RPC is unmodified from [RFC8639].
 
-C.5.3.  "resync-subscription" RPC
+B.5.3.  "resync-subscription" RPC
 
    This RPC is supported only for on-change subscriptions previously
    established using an "establish-subscription" RPC.  For example:

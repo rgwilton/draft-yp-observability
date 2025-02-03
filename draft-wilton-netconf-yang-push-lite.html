@@ -9,14 +9,14 @@
 <meta content="
        YANG Push Lite is a YANG datastore telemetry solution, as an alternative specification to the Subscribed Notifications and YANG Push solution, specifically optimized for the efficient observability of operational data. 
     " name="description">
-<meta content="xml2rfc 3.25.0" name="generator">
+<meta content="xml2rfc 3.26.0" name="generator">
 <meta content="YANG Push" name="keyword">
 <meta content="Observability" name="keyword">
 <meta content="Network Telemetry" name="keyword">
 <meta content="Operational Data" name="keyword">
 <meta content="draft-wilton-netconf-yang-push-lite-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.25.0
+  xml2rfc 3.26.0
     Python 3.12.8
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
@@ -1047,11 +1047,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">YANG-Push Lite</td>
-<td class="right">January 2025</td>
+<td class="right">February 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Wilton</td>
-<td class="center">Expires 4 August 2025</td>
+<td class="center">Expires 7 August 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1064,12 +1064,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-wilton-netconf-yang-push-lite-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-01-31" class="published">31 January 2025</time>
+<time datetime="2025-02-03" class="published">3 February 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-08-04">4 August 2025</time></dd>
+<dd class="expires"><time datetime="2025-08-07">7 August 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1119,7 +1119,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 4 August 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 7 August 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1247,26 +1247,29 @@ svg :is([fill="white"], [fill^="#fff"]) {
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-receivers" class="internal xref">Receivers</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-receivers-transports-and-en" class="internal xref">Receivers, Transports, and Encodings</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1">
-                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="auto internal xref">10.1</a>.  <a href="#name-transports" class="internal xref">Transports</a></p>
+                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="auto internal xref">10.1</a>.  <a href="#name-receivers-for-configured-su" class="internal xref">Receivers for Configured Subscriptions</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1.2.1">
-                    <p id="section-toc.1-1.10.2.1.2.1.1"><a href="#section-10.1.1" class="auto internal xref">10.1.1</a>.  <a href="#name-requirements-for-yang-push-" class="internal xref">Requirements for Yang Push Lite Transport Specifications</a></p>
-</li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1.2.2">
-                    <p id="section-toc.1-1.10.2.1.2.2.1"><a href="#section-10.1.2" class="auto internal xref">10.1.2</a>.  <a href="#name-transport-connectivity-for-" class="internal xref">Transport Connectivity for a Configured Subscription</a></p>
+                    <p id="section-toc.1-1.10.2.1.2.1.1"><a href="#section-10.1.1" class="auto internal xref">10.1.1</a>.  <a href="#name-receivers-for-dynamic-subsc" class="internal xref">Receivers for Dynamic Subscriptions</a></p>
 </li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
-                <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="auto internal xref">10.2</a>.  <a href="#name-encodings" class="internal xref">Encodings</a></p>
+                <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="auto internal xref">10.2</a>.  <a href="#name-transports" class="internal xref">Transports</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2.2.1">
-                    <p id="section-toc.1-1.10.2.2.2.1.1"><a href="#section-10.2.1" class="auto internal xref">10.2.1</a>.  <a href="#name-dscp-marking" class="internal xref">DSCP Marking</a></p>
+                    <p id="section-toc.1-1.10.2.2.2.1.1"><a href="#section-10.2.1" class="auto internal xref">10.2.1</a>.  <a href="#name-requirements-for-yang-push-" class="internal xref">Requirements for Yang Push Lite Transport Specifications</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2.2.2">
+                    <p id="section-toc.1-1.10.2.2.2.2.1"><a href="#section-10.2.2" class="auto internal xref">10.2.2</a>.  <a href="#name-dscp-marking" class="internal xref">DSCP Marking</a></p>
 </li>
                 </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.3">
+                <p id="section-toc.1-1.10.2.3.1"><a href="#section-10.3" class="auto internal xref">10.3</a>.  <a href="#name-encodings" class="internal xref">Encodings</a></p>
 </li>
             </ul>
 </li>
@@ -1397,52 +1400,49 @@ svg :is([fill="white"], [fill^="#fff"]) {
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.20">
-            <p id="section-toc.1-1.20.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-example-configured-transpor" class="internal xref">Example Configured Transport Augmentation (from RFC 8639)</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21">
-            <p id="section-toc.1-1.21.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-subscription-errors-from-rf" class="internal xref">Subscription Errors (from RFC 8641)</a></p>
+            <p id="section-toc.1-1.20.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-subscription-errors-from-rf" class="internal xref">Subscription Errors (from RFC 8641)</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21.2.1">
-                <p id="section-toc.1-1.21.2.1.1"><a href="#appendix-B.1" class="auto internal xref">B.1</a>.  <a href="#name-rpc-failures-2" class="internal xref">RPC Failures</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.20.2.1">
+                <p id="section-toc.1-1.20.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-rpc-failures-2" class="internal xref">RPC Failures</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21.2.2">
-                <p id="section-toc.1-1.21.2.2.1"><a href="#appendix-B.2" class="auto internal xref">B.2</a>.  <a href="#name-failure-notifications" class="internal xref">Failure Notifications</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.20.2.2">
+                <p id="section-toc.1-1.20.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-failure-notifications" class="internal xref">Failure Notifications</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.22">
-            <p id="section-toc.1-1.22.1"><a href="#appendix-C" class="auto internal xref">Appendix C</a>.  <a href="#name-examples" class="internal xref">Examples</a></p>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21">
+            <p id="section-toc.1-1.21.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-examples" class="internal xref">Examples</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.22.2.1">
-                <p id="section-toc.1-1.22.2.1.1"><a href="#appendix-C.1" class="auto internal xref">C.1</a>.  <a href="#name-example-of-an-style-push-up" class="internal xref">Example of an RFC8641 style push-update notification</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21.2.1">
+                <p id="section-toc.1-1.21.2.1.1"><a href="#appendix-B.1" class="auto internal xref">B.1</a>.  <a href="#name-example-of-an-style-push-up" class="internal xref">Example of an RFC8641 style push-update notification</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.22.2.2">
-                <p id="section-toc.1-1.22.2.2.1"><a href="#appendix-C.2" class="auto internal xref">C.2</a>.  <a href="#name-example-of-periodic-updates" class="internal xref">Example of periodic updates using the new style update message</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21.2.2">
+                <p id="section-toc.1-1.21.2.2.1"><a href="#appendix-B.2" class="auto internal xref">B.2</a>.  <a href="#name-example-of-periodic-updates" class="internal xref">Example of periodic updates using the new style update message</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.22.2.3">
-                <p id="section-toc.1-1.22.2.3.1"><a href="#appendix-C.3" class="auto internal xref">C.3</a>.  <a href="#name-example-of-an-on-change-upd" class="internal xref">Example of an on-change-update notification using the new style update message</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21.2.3">
+                <p id="section-toc.1-1.21.2.3.1"><a href="#appendix-B.3" class="auto internal xref">B.3</a>.  <a href="#name-example-of-an-on-change-upd" class="internal xref">Example of an on-change-update notification using the new style update message</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.22.2.4">
-                <p id="section-toc.1-1.22.2.4.1"><a href="#appendix-C.4" class="auto internal xref">C.4</a>.  <a href="#name-example-of-an-on-change-del" class="internal xref">Example of an on-change-delete notification using the new style update message</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21.2.4">
+                <p id="section-toc.1-1.21.2.4.1"><a href="#appendix-B.4" class="auto internal xref">B.4</a>.  <a href="#name-example-of-an-on-change-del" class="internal xref">Example of an on-change-delete notification using the new style update message</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.22.2.5">
-                <p id="section-toc.1-1.22.2.5.1"><a href="#appendix-C.5" class="auto internal xref">C.5</a>.  <a href="#name-subscription-rpc-examples-f" class="internal xref">Subscription RPC examples (from RFC 8641)</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21.2.5">
+                <p id="section-toc.1-1.21.2.5.1"><a href="#appendix-B.5" class="auto internal xref">B.5</a>.  <a href="#name-subscription-rpc-examples-f" class="internal xref">Subscription RPC examples (from RFC 8641)</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.22.2.5.2.1">
-                    <p id="section-toc.1-1.22.2.5.2.1.1"><a href="#appendix-C.5.1" class="auto internal xref">C.5.1</a>.  <a href="#name-establish-subscription-rpc" class="internal xref">"establish-subscription" RPC</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21.2.5.2.1">
+                    <p id="section-toc.1-1.21.2.5.2.1.1"><a href="#appendix-B.5.1" class="auto internal xref">B.5.1</a>.  <a href="#name-establish-subscription-rpc" class="internal xref">"establish-subscription" RPC</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.22.2.5.2.2">
-                    <p id="section-toc.1-1.22.2.5.2.2.1"><a href="#appendix-C.5.2" class="auto internal xref">C.5.2</a>.  <a href="#name-delete-subscription-rpc" class="internal xref">"delete-subscription" RPC</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21.2.5.2.2">
+                    <p id="section-toc.1-1.21.2.5.2.2.1"><a href="#appendix-B.5.2" class="auto internal xref">B.5.2</a>.  <a href="#name-delete-subscription-rpc" class="internal xref">"delete-subscription" RPC</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.22.2.5.2.3">
-                    <p id="section-toc.1-1.22.2.5.2.3.1"><a href="#appendix-C.5.3" class="auto internal xref">C.5.3</a>.  <a href="#name-resync-subscription-rpc" class="internal xref">"resync-subscription" RPC</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21.2.5.2.3">
+                    <p id="section-toc.1-1.21.2.5.2.3.1"><a href="#appendix-B.5.3" class="auto internal xref">B.5.3</a>.  <a href="#name-resync-subscription-rpc" class="internal xref">"resync-subscription" RPC</a></p>
 </li>
                 </ul>
 </li>
             </ul>
 </li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.23">
-            <p id="section-toc.1-1.23.1"><a href="#appendix-D" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.22">
+            <p id="section-toc.1-1.22.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1711,6 +1711,9 @@ defined in <span>[<a href="#RFC8340" class="cite xref">RFC8340</a>]</span>.<a hr
             <li class="normal" id="section-5.4.1-2.8">
               <p id="section-5.4.1-2.8.1">Some of the requirements on transport have been relaxed.<a href="#section-5.4.1-2.8.1" class="pilcrow">¶</a></p>
 </li>
+            <li class="normal" id="section-5.4.1-2.9">
+              <p id="section-5.4.1-2.9.1">The encoding identities have been extended with CBOR encodings, and the "encoding-" prefix has been removed (so that there is a better on the wire representation).<a href="#section-5.4.1-2.9.1" class="pilcrow">¶</a></p>
+</li>
           </ul>
 </section>
 </div>
@@ -1821,7 +1824,7 @@ defined in <span>[<a href="#RFC8340" class="cite xref">RFC8340</a>]</span>.<a hr
 <p id="section-6-6">Subscriptions may be set up in two ways: either through configuration - or YANG RPCs to create and manage dynamic subscriptions.  These two mechanisms are described in <a href="#ConfiguredAndDynamic" class="auto internal xref">Section 11</a>.<a href="#section-6-6" class="pilcrow">¶</a></p>
 <p id="section-6-7">Changes to the state of subscription are notified to receivers as subscription lifecycle notifications.  These are described in <a href="#LifecycleNotifications" class="auto internal xref">Section 12</a>.<a href="#section-6-7" class="pilcrow">¶</a></p>
 <p id="section-6-8">NACM <span>[<a href="#RFC8341" class="cite xref">RFC8341</a>]</span> based access control is used to ensure the receivers only get access to the information for which they are allowed.  This is further described in <a href="#security" class="auto internal xref">Section 16</a>.<a href="#section-6-8" class="pilcrow">¶</a></p>
-<p id="section-6-9">While the functionality defined in this document is transport agnostic, transports like the Network Configuration Protocol (NETCONF) <span>[<a href="#RFC6241" class="cite xref">RFC6241</a>]</span> or RESTCONF <span>[<a href="#RFC8040" class="cite xref">RFC8040</a>]</span> can be used to configure or dynamically signal subscriptions.  In the case of configured subscription, the transport used for carrying the subscription notifications is entirely independent from the protocol used to configure the subscription, and other transports, e.g., <span>[<a href="#I-D.draft-ietf-netconf-udp-notif" class="cite xref">I-D.draft-ietf-netconf-udp-notif</a>]</span> defines a simple UDP based transport for Push notifications. Transport considerations are described in <a href="#transports" class="auto internal xref">Section 10.1</a>.<a href="#section-6-9" class="pilcrow">¶</a></p>
+<p id="section-6-9">While the functionality defined in this document is transport agnostic, transports like the Network Configuration Protocol (NETCONF) <span>[<a href="#RFC6241" class="cite xref">RFC6241</a>]</span> or RESTCONF <span>[<a href="#RFC8040" class="cite xref">RFC8040</a>]</span> can be used to configure or dynamically signal subscriptions.  In the case of configured subscription, the transport used for carrying the subscription notifications is entirely independent from the protocol used to configure the subscription, and other transports, e.g., <span>[<a href="#I-D.draft-ietf-netconf-udp-notif" class="cite xref">I-D.draft-ietf-netconf-udp-notif</a>]</span> defines a simple UDP based transport for Push notifications. Transport considerations are described in <a href="#transports" class="auto internal xref">Section 10.2</a>.<a href="#section-6-9" class="pilcrow">¶</a></p>
 <p id="section-6-10"><strong>TODO Introduce capabilities and operational monitoring</strong><a href="#section-6-10" class="pilcrow">¶</a></p>
 <p id="section-6-11">This document defines a YANG data model, that includes RPCs and notifications, for configuring and managing subscriptions and associated configuration, and to define the format of a <em>update</em> notification message.  The YANG model is defined in <a href="#yp-lite-yang-module" class="auto internal xref">Section 15.2</a> and associated tree view in <a href="#yp-lite-tree" class="auto internal xref">Section 15.1</a>.  The YANG data model defined in this document conforms to the Network Management Datastore Architecture defined in <span>[<a href="#RFC8342" class="cite xref">RFC8342</a>]</span>.<a href="#section-6-11" class="pilcrow">¶</a></p>
 <div id="relationship-to-rfc-5277">
@@ -1863,108 +1866,73 @@ defined in <span>[<a href="#RFC8340" class="cite xref">RFC8340</a>]</span>.<a hr
           <p id="section-7-6.1.1"><em>Configured subscription</em>: A subscription installed via configuration into a configuration datastore.<a href="#section-7-6.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-6.2">
-          <p id="section-7-6.2.1"><em>Dynamic subscription</em>: A subscription created dynamically by a
-subscriber via a Remote Procedure Call (RPC).<a href="#section-7-6.2.1" class="pilcrow">¶</a></p>
+          <p id="section-7-6.2.1"><em>Dynamic subscription</em>: A subscription created dynamically by a subscriber via a Remote Procedure Call (RPC).<a href="#section-7-6.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-6.3">
-          <p id="section-7-6.3.1"><em>Event</em>: An occurrence of something that may be of interest.
-Examples include a configuration change, a fault, a change in
-status, crossing a threshold, or an external input to the system.<a href="#section-7-6.3.1" class="pilcrow">¶</a></p>
+          <p id="section-7-6.3.1"><em>Event</em>: An occurrence of something that may be of interest.  Examples include a configuration change, a fault, a change in status, crossing a threshold, or an external input to the system.<a href="#section-7-6.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-6.4">
-          <p id="section-7-6.4.1"><em>Event occurrence time</em>: A timestamp matching the time an
-originating process identified as when an event happened.<a href="#section-7-6.4.1" class="pilcrow">¶</a></p>
+          <p id="section-7-6.4.1"><em>Event occurrence time</em>: A timestamp matching the time an originating process identified as when an event happened.<a href="#section-7-6.4.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-6.5">
           <p id="section-7-6.5.1"><em>Event record</em>: A set of information detailing an event.<a href="#section-7-6.5.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-6.6">
-          <p id="section-7-6.6.1"><em>Event stream</em>: A continuous, chronologically ordered set of events
-aggregated under some context.<a href="#section-7-6.6.1" class="pilcrow">¶</a></p>
+          <p id="section-7-6.6.1"><em>Event stream</em>: A continuous, chronologically ordered set of events aggregated under some context.<a href="#section-7-6.6.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-6.7">
-          <p id="section-7-6.7.1"><em>Event stream filter</em>: Evaluation criteria that may be applied
-against event records in an event stream.  Event records pass the
-filter when specified criteria are met.<a href="#section-7-6.7.1" class="pilcrow">¶</a></p>
+          <p id="section-7-6.7.1"><em>Event stream filter</em>: Evaluation criteria that may be applied against event records in an event stream.  Event records pass the filter when specified criteria are met.<a href="#section-7-6.7.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-6.8">
-          <p id="section-7-6.8.1"><em>Notification message</em>: Information intended for a receiver
-indicating that one or more events have occurred.<a href="#section-7-6.8.1" class="pilcrow">¶</a></p>
+          <p id="section-7-6.8.1"><em>Notification message</em>: Information intended for a receiver indicating that one or more events have occurred.<a href="#section-7-6.8.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-6.9">
-          <p id="section-7-6.9.1"><em>Publisher</em>: An entity responsible for streaming notification
-messages per the terms of a subscription.<a href="#section-7-6.9.1" class="pilcrow">¶</a></p>
+          <p id="section-7-6.9.1"><em>Publisher</em>: An entity responsible for streaming notification messages per the terms of a subscription.<a href="#section-7-6.9.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-6.10">
-          <p id="section-7-6.10.1"><em>Receiver</em>: A target to which a publisher pushes subscribed event
-records.  For dynamic subscriptions, the receiver and subscriber
-are the same entity.<a href="#section-7-6.10.1" class="pilcrow">¶</a></p>
+          <p id="section-7-6.10.1"><em>Receiver</em>: A target to which a publisher pushes subscribed event records.  For dynamic subscriptions, the receiver and subscriber are the same entity.<a href="#section-7-6.10.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-6.11">
-          <p id="section-7-6.11.1"><em>Subscriber</em>: A client able to request and negotiate a contract for
-the generation and push of event records from a publisher.  For
-dynamic subscriptions, the receiver and subscriber are the same
-entity.<a href="#section-7-6.11.1" class="pilcrow">¶</a></p>
+          <p id="section-7-6.11.1"><em>Subscriber</em>: A client able to request and negotiate a contract for the generation and push of event records from a publisher.  For dynamic subscriptions, the receiver and subscriber are the same entity.<a href="#section-7-6.11.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-7-7">The following terms are taken from <span>[<a href="#RFC8641" class="cite xref">RFC8641</a>]</span>:<a href="#section-7-7" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7-8.1">
-          <p id="section-7-8.1.1"><em>Datastore node</em>: A node in the instantiated YANG data tree
-associated with a datastore.  In this document, datastore nodes
-are often also simply referred to as "objects".<a href="#section-7-8.1.1" class="pilcrow">¶</a></p>
+          <p id="section-7-8.1.1"><em>Datastore node</em>: A node in the instantiated YANG data tree associated with a datastore.  In this document, datastore nodes are often also simply referred to as "objects".<a href="#section-7-8.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-8.2">
-          <p id="section-7-8.2.1"><em>Datastore node update</em>: A data item containing the current value of
-a datastore node at the time the datastore node update was
-created, as well as the path to the datastore node.<a href="#section-7-8.2.1" class="pilcrow">¶</a></p>
+          <p id="section-7-8.2.1"><em>Datastore node update</em>: A data item containing the current value of a datastore node at the time the datastore node update was created, as well as the path to the datastore node.<a href="#section-7-8.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-8.3">
-          <p id="section-7-8.3.1"><em>Datastore subscription</em>: A subscription to a stream of datastore
-node updates.<a href="#section-7-8.3.1" class="pilcrow">¶</a></p>
+          <p id="section-7-8.3.1"><em>Datastore subscription</em>: A subscription to a stream of datastore node updates.<a href="#section-7-8.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-8.4">
-          <p id="section-7-8.4.1"><em>Datastore subtree</em>: A datastore node and all its descendant
-datastore nodes.<a href="#section-7-8.4.1" class="pilcrow">¶</a></p>
+          <p id="section-7-8.4.1"><em>Datastore subtree</em>: A datastore node and all its descendant datastore nodes.<a href="#section-7-8.4.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-8.5">
-          <p id="section-7-8.5.1"><em>On-change subscription</em>: A datastore subscription with updates that
-are triggered when changes in subscribed datastore nodes are
-detected.<a href="#section-7-8.5.1" class="pilcrow">¶</a></p>
+          <p id="section-7-8.5.1"><em>On-change subscription</em>: A datastore subscription with updates that are triggered when changes in subscribed datastore nodes are detected.<a href="#section-7-8.5.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-8.6">
-          <p id="section-7-8.6.1"><em>Periodic subscription</em>: A datastore subscription with updates that
-are triggered periodically according to some time interval.<a href="#section-7-8.6.1" class="pilcrow">¶</a></p>
+          <p id="section-7-8.6.1"><em>Periodic subscription</em>: A datastore subscription with updates that are triggered periodically according to some time interval.<a href="#section-7-8.6.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-8.7">
-          <p id="section-7-8.7.1"><em>Selection filter</em>: Evaluation and/or selection criteria that may be
-applied against a targeted set of objects.<a href="#section-7-8.7.1" class="pilcrow">¶</a></p>
+          <p id="section-7-8.7.1"><em>Selection filter</em>: Evaluation and/or selection criteria that may be applied against a targeted set of objects.<a href="#section-7-8.7.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-8.8">
-          <p id="section-7-8.8.1"><em>Update record</em>: A representation of one or more datastore node
-updates.  In addition, an update record may contain which type of
-update led to the datastore node update (e.g., whether the
-datastore node was added, changed, or deleted).  Also included in
-the update record may be other metadata, such as a subscription ID
-of the subscription for which the update record was generated.  In
-this document, update records are often also simply referred to as
-"updates".<a href="#section-7-8.8.1" class="pilcrow">¶</a></p>
+          <p id="section-7-8.8.1"><em>Update record</em>: A representation of one or more datastore node updates.  In addition, an update record may contain which type of update led to the datastore node update (e.g., whether the datastore node was added, changed, or deleted).  Also included in the update record may be other metadata, such as a subscription ID of the subscription for which the update record was generated.  In this document, update records are often also simply referred to as "updates".<a href="#section-7-8.8.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-8.9">
-          <p id="section-7-8.9.1"><em>Update trigger</em>: A mechanism that determines when an update record
-needs to be generated.<a href="#section-7-8.9.1" class="pilcrow">¶</a></p>
+          <p id="section-7-8.9.1"><em>Update trigger</em>: A mechanism that determines when an update record needs to be generated.<a href="#section-7-8.9.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-8.10">
-          <p id="section-7-8.10.1"><em>YANG-Push</em>: The subscription and push mechanism for datastore
-updates that is specified in <span>[<a href="#RFC8641" class="cite xref">RFC8641</a>]</span>.<a href="#section-7-8.10.1" class="pilcrow">¶</a></p>
+          <p id="section-7-8.10.1"><em>YANG-Push</em>: The subscription and push mechanism for datastore updates that is specified in <span>[<a href="#RFC8641" class="cite xref">RFC8641</a>]</span>.<a href="#section-7-8.10.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-7-9">This document introduces the following terms:<a href="#section-7-9" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7-10.1">
-          <p id="section-7-10.1.1"><em>Subscription</em>: A registration with a publisher, stipulating the
-information that one or more receivers wish to have pushed from
-the publisher without the need for further solicitation.<a href="#section-7-10.1.1" class="pilcrow">¶</a></p>
+          <p id="section-7-10.1.1"><em>Subscription</em>: A registration with a publisher, stipulating the information that one or more receivers wish to have pushed from the publisher without the need for further solicitation.<a href="#section-7-10.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-7-10.2">
           <p id="section-7-10.2.1"><em>Subscription Identifier</em>: A numerical identifier for a configured or dynamic subscription.  Also referred to as the subscription-id.<a href="#section-7-10.2.1" class="pilcrow">¶</a></p>
@@ -1973,8 +1941,7 @@ the publisher without the need for further solicitation.<a href="#section-7-10.1
           <p id="section-7-10.3.1"><em>YANG-Push-Lite</em>: The light weight subscription and push mechanism for datastore updates that is specified in this document.<a href="#section-7-10.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-7-11">All <em>YANG tree diagrams</em> used in this document follow the notation
-defined in <span>[<a href="#RFC8340" class="cite xref">RFC8340</a>]</span>.<a href="#section-7-11" class="pilcrow">¶</a></p>
+<p id="section-7-11">All <em>YANG tree diagrams</em> used in this document follow the notation defined in <span>[<a href="#RFC8340" class="cite xref">RFC8340</a>]</span>.<a href="#section-7-11" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="pathsAndFilters">
@@ -1983,7 +1950,7 @@ defined in <span>[<a href="#RFC8340" class="cite xref">RFC8340</a>]</span>.<a hr
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-sensor-paths-and-selection-" class="section-name selfRef">Sensor paths and selection filters</a>
       </h2>
 <p id="section-8-1">A key part of a subscription is to select which data nodes should be monitored, and so a subscription must specify both the selection filters and the datastore against which these selection filters will be applied.  This information is used to choose, and subsequently push, <em>update</em> notifications from the publisher's datastore(s) to the subscription's receiver(s).<a href="#section-8-1" class="pilcrow">¶</a></p>
-<p id="section-8-2">Filters can either be defined inline within a configured subscription (<a href="#SubscriptionYangTree" class="auto internal xref">Figure 6</a>), a dynamic subscription's <em>establish-subscription</em> RPC (<a href="#EstablishSubscriptionYangTree" class="auto internal xref">Figure 10</a>), or as part of the <em>datastore-telemetry/filters</em> container (<a href="#FilterContainerYangTree" class="auto internal xref">Figure 1</a>) which can then be referenced from a configured or dynamic subscription.<a href="#section-8-2" class="pilcrow">¶</a></p>
+<p id="section-8-2">Filters can either be defined inline within a configured subscription (<a href="#SubscriptionYangTree" class="auto internal xref">Figure 7</a>), a dynamic subscription's <em>establish-subscription</em> RPC (<a href="#EstablishSubscriptionYangTree" class="auto internal xref">Figure 11</a>), or as part of the <em>datastore-telemetry/filters</em> container (<a href="#FilterContainerYangTree" class="auto internal xref">Figure 1</a>) which can then be referenced from a configured or dynamic subscription.<a href="#section-8-2" class="pilcrow">¶</a></p>
 <p id="section-8-3">The following selection filter types are included in the YANG Push Lite data model and may be applied against a datastore:<a href="#section-8-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-4.1">
@@ -2223,10 +2190,7 @@ module: ietf-yp-lite
           </h4>
 <p id="section-9.4.2-1">On-change subscriptions allow receivers to receive updates whenever changes to targeted objects occur.  As such, on-change subscriptions are particularly effective for data that changes infrequently but for which applications need to be quickly notified, with minimal delay, whenever a change does occur.<a href="#section-9.4.2-1" class="pilcrow">¶</a></p>
 <p id="section-9.4.2-2">On-change subscriptions tend to be more difficult to implement than periodic subscriptions.  Accordingly, on-change subscriptions may not be supported by all implementations or for every object.<a href="#section-9.4.2-2" class="pilcrow">¶</a></p>
-<p id="section-9.4.2-3">Whether or not to accept or reject on-change subscription requests when the scope of the subscription contains objects for which on-change is not supported is up to the publisher implementation.  A publisher <span class="bcp14">MAY</span> accept an on-change subscription even when the scope of
-the subscription contains objects for which on-change is not supported.  In that case, updates are sent only for those objects within the scope of the subscription that do support on-change updates, whereas other objects are excluded from update records, even
-if their values change.  In order for a subscriber to determine whether objects support on-change subscriptions, objects are marked accordingly on a publisher.  Accordingly, when subscribing, it is the responsibility of the subscriber to ensure that it is aware of which
-objects support on-change and which do not.  For more on how objects are so marked, see Section 3.10. <strong>TODO Is this paragraph and the one below still the right choice for YANG Push Lite?</strong><a href="#section-9.4.2-3" class="pilcrow">¶</a></p>
+<p id="section-9.4.2-3">Whether or not to accept or reject on-change subscription requests when the scope of the subscription contains objects for which on-change is not supported is up to the publisher implementation.  A publisher <span class="bcp14">MAY</span> accept an on-change subscription even when the scope of the subscription contains objects for which on-change is not supported.  In that case, updates are sent only for those objects within the scope of the subscription that do support on-change updates, whereas other objects are excluded from update records, even if their values change.  In order for a subscriber to determine whether objects support on-change subscriptions, objects are marked accordingly on a publisher.  Accordingly, when subscribing, it is the responsibility of the subscriber to ensure that it is aware of which objects support on-change and which do not.  For more on how objects are so marked, see Section 3.10. <strong>TODO Is this paragraph and the one below still the right choice for YANG Push Lite?</strong><a href="#section-9.4.2-3" class="pilcrow">¶</a></p>
 <p id="section-9.4.2-4">Alternatively, a publisher <span class="bcp14">MAY</span> decide to simply reject an on-change subscription if the scope of the subscription contains objects for which on-change is not supported.  In the case of a configured subscription, the publisher <span class="bcp14">MAY</span> suspend the subscription.<a href="#section-9.4.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2312,120 +2276,153 @@ the same subscription.<a href="#section-9.6-4" class="pilcrow">¶</a></p>
 </div>
 <div id="receivers">
 <section id="section-10">
-      <h2 id="name-receivers">
-<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-receivers" class="section-name selfRef">Receivers</a>
+      <h2 id="name-receivers-transports-and-en">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-receivers-transports-and-en" class="section-name selfRef">Receivers, Transports, and Encodings</a>
       </h2>
-<p id="section-10-1">Text moved from configured subscriptions.<a href="#section-10-1" class="pilcrow">¶</a></p>
-<p id="section-10-2">In addition to the subscription parameters available to dynamic
-subscriptions as described in Section 2.4.2, the following additional
-parameters are also available to configured subscriptions:<a href="#section-10-2" class="pilcrow">¶</a></p>
+<p id="section-10-1">Every subscription is associated with one or more receivers, which each identify the destination host where all the subscription notifications are sent.  Each receiver has the following associated properties:<a href="#section-10-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-10-3.1">
-          <p id="section-10-3.1.1">A "transport", which identifies the transport protocol to use to
-connect with all subscription receivers.<a href="#section-10-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-10-2.1">
+          <p id="section-10-2.1.1">a <em>name</em> to identify and reference the receiver in configured subscriptions.<a href="#section-10-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-10-3.2">
-          <p id="section-10-3.2.1">One or more receivers, each intended as the destination for event
-records.  Note that each individual receiver is identifiable by
-its "name".<a href="#section-10-3.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-10-3.3">
-          <p id="section-10-3.3.1">Optional parameters to identify where traffic should egress a
-publisher:<a href="#section-10-3.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-10-2.2">
+          <p id="section-10-2.2.1">a <em>transport</em>, which identifies the transport protocol to use to
+connect with all subscription receivers.<a href="#section-10-2.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-10-3.3.2.1">
-              <p id="section-10-3.3.2.1.1">A "source-interface", which identifies the egress interface to
-  use from the publisher.  Publisher support for this parameter
-  is optional and advertised using the "interface-designation"
-  feature.<a href="#section-10-3.3.2.1.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="section-10-3.3.2.2">
-              <p id="section-10-3.3.2.2.1">A "source-address" address, which identifies the IP address to
-  stamp on notification messages destined for the receiver.<a href="#section-10-3.3.2.2.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="section-10-3.3.2.3">
-              <p id="section-10-3.3.2.3.1">A "source-vrf", which identifies the Virtual Routing and
-  Forwarding (VRF) instance on which to reach receivers.  This
-  VRF is a network instance as defined in <span>[<a href="#RFC8529" class="cite xref">RFC8529</a>]</span>.  Publisher
-  support for VRFs is optional and advertised using the
-  "supports-vrf" feature.<a href="#section-10-3.3.2.3.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-10-2.2.2.1">
+              <p id="section-10-2.2.2.1.1">Optional transport-specific related parameters, e.g., DSCP.  There are likely to be various data nodes related to establishing appropriate security and encryption.<a href="#section-10-2.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-10-3.3.3">
-If none of the above parameters are set, notification messages
-<span class="bcp14">MUST</span> egress the publisher's default interface.<a href="#section-10-3.3.3" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-10-2.3">
+          <p id="section-10-2.3.1">an <em>encoding</em> to encode all YANG notification messages to the receiver, i.e., see <a href="#Encodings" class="auto internal xref">Section 10.3</a>.<a href="#section-10-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-10-2.4">
+          <p id="section-10-2.4.1">optional parameters to identify where traffic should egress the publisher:<a href="#section-10-2.4.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-10-2.4.2.1">
+              <p id="section-10-2.4.2.1.1">a <em>source-interface</em>, which identifies the egress interface to use from the publisher.<a href="#section-10-2.4.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-10-2.4.2.2">
+              <p id="section-10-2.4.2.2.1">a <em>source-address</em> address, which identifies the IP address to stamp on notification messages destined for the receiver.<a href="#section-10-2.4.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-10-2.4.2.3">
+              <p id="section-10-2.4.2.3.1">a <em>source-vrf</em>, which identifies the Virtual Routing and Forwarding (VRF) instance on which to reach receivers.  This VRF is a network instance as defined in <span>[<a href="#RFC8529" class="cite xref">RFC8529</a>]</span>.  Publisher support for VRFs is optional and advertised using the <em>supports-vrf</em> feature. <strong>TODO - do we also support inferring the VRF from the source interface?</strong><a href="#section-10-2.4.2.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-10-2.4.3">
+If none of the above parameters are set, notification messages egress the publisher's default interface.<a href="#section-10-2.4.3" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<div id="transports">
+<div id="receivers-for-configured-subscriptions">
 <section id="section-10.1">
-        <h3 id="name-transports">
-<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-transports" class="section-name selfRef">Transports</a>
+        <h3 id="name-receivers-for-configured-su">
+<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-receivers-for-configured-su" class="section-name selfRef">Receivers for Configured Subscriptions</a>
         </h3>
-<p id="section-10.1-1">This document describes a transport-agnostic mechanism for subscribing to and receiving content from an event stream in a publisher.  This mechanism operates through the use of a subscription.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
-<p id="section-10.1-2">Also note that transport-specific specifications based on this specification <span class="bcp14">MUST</span> detail the lifecycle of dynamic subscriptions as well as the lifecycle of configured subscriptions (if supported).<a href="#section-10.1-2" class="pilcrow">¶</a></p>
-<p id="section-10.1-3">A subscriber that includes a "dscp" leaf in an "establish-subscription" request will need to understand and consider what the corresponding DSCP value represents in the domain of the publisher.<a href="#section-10.1-3" class="pilcrow">¶</a></p>
-<div id="requirements-for-yang-push-lite-transport-specifications">
+<p id="section-10.1-1">For configured subscriptions, receivers are configured independently from the subscriptions and then referenced from the subscription.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
+<p id="section-10.1-2">Configured subscriptions <span class="bcp14">MAY</span> have multiple receivers, but they <span class="bcp14">MUST</span> have the same encoding.  Multiple receivers facilitate redundancy at the receivers.  <strong>TODO, is there a diagram from one of Thomas's drafts that we can reference here to show the end-to-end picture</strong><a href="#section-10.1-2" class="pilcrow">¶</a></p>
+<p id="section-10.1-3">Below is a tree diagram for <em>datastore-telemetry/receivers</em> container.  All objects contained in this tree are described in the YANG module in <a href="#yp-lite-yang-module" class="auto internal xref">Section 15.2</a>.<a href="#section-10.1-3" class="pilcrow">¶</a></p>
+<span id="name-datastore-telemetry-receive"></span><div id="ReceiversYangTree">
+<figure id="figure-6">
+          <div class="lang-yangtree sourcecode" id="section-10.1-4.1">
+<pre>
+module: ietf-yp-lite
+  +--rw datastore-telemetry
+     +--rw receivers
+        +--rw receiver* [name]
+           +--rw name                      string
+           +--rw encoding?                 encoding
+           +--rw dscp?                     inet:dscp {dscp}?
+           +--rw (notification-message-origin)? {configured}?
+           |  +--:(interface-originated)
+           |  |  +--rw source-interface?   if:interface-ref
+           |  |          {interface-designation}?
+           |  +--:(address-originated)
+           |     +--rw source-vrf?         leafref {supports-vrf}?
+           |     +--rw source-address?     inet:ip-address-no-zone
+           +--rw (transport-type)
+</pre>
+</div>
+<figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
+<a href="#name-datastore-telemetry-receive" class="selfRef">datastore-telemetry/receivers container</a>
+          </figcaption></figure>
+</div>
+<p id="section-10.1-5">Because there is no explicit association with an existing transport session, configuration operations include additional parameters beyond those of dynamic subscriptions.  These parameters identify each receiver, how to connect with that receiver, and possibly whether the notification messages need to come from a specific egress interface on the publisher.  Receiver-specific transport connectivity parameters <span class="bcp14">MUST</span> be configured via transport-specific augmentations to this specification.  See Section 2.5.7 for details.<a href="#section-10.1-5" class="pilcrow">¶</a></p>
+<p id="section-10.1-6">This specification is transport independent.  However, supporting a configured subscription will normally require the establishment of transport connectivity.  Some parameters used for this transport connectivity establishment are transport specific.  As a result, the
+YANG module defined in <a href="#yp-lite-yang-module" class="auto internal xref">Section 15.2</a> is not able to directly define and expose these transport parameters.<a href="#section-10.1-6" class="pilcrow">¶</a></p>
+<p id="section-10.1-7">It is necessary for an implementation to support the connection establishment process.  To support this function, the YANG data model defined in this document includes a YANG choice node where transport-specific parameters for a particular receiver may be augmented.  This node is <em>/datastore-telemetry/receivers/receiver/transport-type</em>.<a href="#section-10.1-7" class="pilcrow">¶</a></p>
+<p id="section-10.1-8">A publisher supporting configured subscriptions must obviously support at least one YANG data model that augments transport connectivity parameters on
+<em>/datastore-telemetry/receivers/receiver/transport-type</em>.  For an example of such an augmentation, see <span>[<a href="#I-D.draft-ietf-netconf-udp-notif" class="cite xref">I-D.draft-ietf-netconf-udp-notif</a>]</span> <strong>TODO, this isn't quite the right reference, since we will need a variant that augments into the YP Lite receiver container.</strong><a href="#section-10.1-8" class="pilcrow">¶</a></p>
+<div id="receivers-for-dynamic-subscriptions">
 <section id="section-10.1.1">
-          <h4 id="name-requirements-for-yang-push-">
-<a href="#section-10.1.1" class="section-number selfRef">10.1.1. </a><a href="#name-requirements-for-yang-push-" class="section-name selfRef">Requirements for Yang Push Lite Transport Specifications</a>
+          <h4 id="name-receivers-for-dynamic-subsc">
+<a href="#section-10.1.1" class="section-number selfRef">10.1.1. </a><a href="#name-receivers-for-dynamic-subsc" class="section-name selfRef">Receivers for Dynamic Subscriptions</a>
           </h4>
-<p id="section-10.1.1-1">This section provides requirements for any transport specifications supporting the YANG Push Lite solution presented in this document.<a href="#section-10.1.1-1" class="pilcrow">¶</a></p>
-<p id="section-10.1.1-2">The transport selected by the subscriber to reach the publisher <span class="bcp14">SHOULD</span> be able to support multiple "establish-subscription" requests made in the same transport session.<a href="#section-10.1.1-2" class="pilcrow">¶</a></p>
-<p id="section-10.1.1-3">For both configured and dynamic subscriptions, the publisher <span class="bcp14">SHOULD</span> authenticate a receiver via some transport-level mechanism before sending any event records that the receiver is authorized to see.  In addition, the receiver <span class="bcp14">SHOULD</span> authenticate the publisher at the
-transport level.  The result is mutual authentication between the two.<a href="#section-10.1.1-3" class="pilcrow">¶</a></p>
-<p id="section-10.1.1-4">A secure transport is <span class="bcp14">RECOMMENDED</span>.  For dynamic subscriptions, the publisher <span class="bcp14">MUST</span> ensure that the receiver has sufficient authorization to perform the function it is requesting against the specific subset of content involved.<a href="#section-10.1.1-4" class="pilcrow">¶</a></p>
-<p id="section-10.1.1-5">A specification for a transport built upon this document may or may not choose to require the use of the same logical channel for the RPCs and the event records.  However, the event records and the subscription state change notifications <span class="bcp14">MUST</span> be sent on the same transport session to ensure properly ordered delivery.<a href="#section-10.1.1-5" class="pilcrow">¶</a></p>
-<p id="section-10.1.1-6">A specification for a transport <span class="bcp14">MUST</span> identify any encodings that are supported.  If a configured subscription's transport allows different encodings, the specification <span class="bcp14">MUST</span> identify the default encoding.<a href="#section-10.1.1-6" class="pilcrow">¶</a></p>
-<p id="section-10.1.1-7">Additional transport requirements may be dictated by the choice of transport used with a subscription.  For an example of such requirements, see <span>[<a href="#RFC8640" class="cite xref">RFC8640</a>]</span>.<a href="#section-10.1.1-7" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="transport-connectivity-for-a-configured-subscription">
-<section id="section-10.1.2">
-          <h4 id="name-transport-connectivity-for-">
-<a href="#section-10.1.2" class="section-number selfRef">10.1.2. </a><a href="#name-transport-connectivity-for-" class="section-name selfRef">Transport Connectivity for a Configured Subscription</a>
-          </h4>
-<p id="section-10.1.2-1"><strong>TODO Next paragraph is from section 2.</strong><a href="#section-10.1.2-1" class="pilcrow">¶</a></p>
-<p id="section-10.1.2-2">Because there is no explicit association with an existing transport session, configuration operations include additional parameters beyond those of dynamic subscriptions.  These parameters identify each receiver, how to connect with that receiver, and possibly whether the notification messages need to come from a specific egress interface on the publisher.  Receiver-specific transport connectivity parameters <span class="bcp14">MUST</span> be configured via transport-specific augmentations to this specification.  See Section 2.5.7 for details.<a href="#section-10.1.2-2" class="pilcrow">¶</a></p>
-<p id="section-10.1.2-3">This specification is transport independent.  However, supporting a configured subscription will normally require the establishment of transport connectivity.  Some parameters used for this transport connectivity establishment are transport specific.  As a result, the
-YANG module defined in <a href="#yp-lite-yang-module" class="auto internal xref">Section 15.2</a> is not able to directly define and expose these transport parameters.<a href="#section-10.1.2-3" class="pilcrow">¶</a></p>
-<p id="section-10.1.2-4">It is necessary for an implementation to support the connection establishment process.  To support this function, the YANG data model defined in this document includes a YANG choice node where transport-specific parameters for a particular receiver may be augmented.  This node is <em>/datastore-telemetry/receivers/receiver/transport-type</em>.<a href="#section-10.1.2-4" class="pilcrow">¶</a></p>
-<p id="section-10.1.2-5">A publisher supporting the feature "configured" <span class="bcp14">MUST</span> also support at least one
-YANG data model that augments transport connectivity parameters on
-<em>/datastore-telemetry/receivers/receiver/transport-type</em>.  For an example of
-such an augmentation, see <strong>TODO Appendix A</strong>. <strong>TODO - Should this be put under the configured subscription</strong>.<a href="#section-10.1.2-5" class="pilcrow">¶</a></p>
+<p id="section-10.1.1-1">For dynamic subscriptions, each subscription has a single receiver that is implicit from the host that initiated the <em>establish-subscription</em> RPC, reusing the same transport session for all the subscription notifications.<a href="#section-10.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-10.1.1-2">Hence most receiver parameters for a dynamic subscription are implicitly determined, and cannot be explicitly controlled.<a href="#section-10.1.1-2" class="pilcrow">¶</a></p>
+<p id="section-10.1.1-3">Dynamic subscriptions <span class="bcp14">MUST</span> specify an encoding (see <a href="#Encodings" class="auto internal xref">Section 10.3</a>) and <span class="bcp14">MAY</span> specify DSCP Marking (see <a href="#DSCP" class="auto internal xref">Section 10.2.2</a>) for the telemetry notifications in the <em>establish-subscription</em> RPC (see <a href="#EstablishSubscriptionYangTree" class="auto internal xref">Figure 11</a>).<a href="#section-10.1.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
-<div id="encodings">
+<div id="transports">
 <section id="section-10.2">
-        <h3 id="name-encodings">
-<a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-encodings" class="section-name selfRef">Encodings</a>
+        <h3 id="name-transports">
+<a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-transports" class="section-name selfRef">Transports</a>
         </h3>
-<p id="section-10.2-1">The <em>update</em> (<a href="#EventRecords" class="auto internal xref">Section 9.1</a>) and subscription lifecycle messages (<a href="#LifecycleNotifications" class="auto internal xref">Section 12</a>) can be encoded in any format that is defined for encoding YANG data.  For a given subscription, all notification messages <span class="bcp14">MUST</span> be encoded using the same encoding.<a href="#section-10.2-1" class="pilcrow">¶</a></p>
-<p id="section-10.2-2">Some IETF standards for YANG encodings known at the time of publication are:<a href="#section-10.2-2" class="pilcrow">¶</a></p>
+<p id="section-10.2-1">This document describes a transport-agnostic mechanism for subscribing to YANG datastore telemetry.  Hence, separate specifications are required to define transports that support YANG Push Lite.  The requirements for these transport specifications are documented in the following section:<a href="#section-10.2-1" class="pilcrow">¶</a></p>
+<div id="requirements-for-yang-push-lite-transport-specifications">
+<section id="section-10.2.1">
+          <h4 id="name-requirements-for-yang-push-">
+<a href="#section-10.2.1" class="section-number selfRef">10.2.1. </a><a href="#name-requirements-for-yang-push-" class="section-name selfRef">Requirements for Yang Push Lite Transport Specifications</a>
+          </h4>
+<p id="section-10.2.1-1">This section provides requirements for any transport specifications supporting the YANG Push Lite solution presented in this document.<a href="#section-10.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-10.2.1-2">The transport <span class="bcp14">MUST</span> provide a YANG module (to be implemented by the receiver) that <em>datastore-telemetry/receivers/transport-type</em> choice statement with a container the identifies the transport and contains all the transport specific parameters.<a href="#section-10.2.1-2" class="pilcrow">¶</a></p>
+<p id="section-10.2.1-3">The transport selected by the subscriber to reach the publisher <span class="bcp14">SHOULD</span> be able to support multiple "establish-subscription" requests made in the same transport session.<a href="#section-10.2.1-3" class="pilcrow">¶</a></p>
+<p id="section-10.2.1-4">For both configured and dynamic subscriptions, the publisher <span class="bcp14">SHOULD</span> authenticate a receiver via some transport-level mechanism before sending any event records that the receiver is authorized to see.  In addition, the receiver <span class="bcp14">SHOULD</span> authenticate the publisher at the transport level.  The result is mutual authentication between the two. <strong>TODO, do we want this text, I have already weakened this from the <span class="bcp14">MUST</span> in Yang Push.</strong><a href="#section-10.2.1-4" class="pilcrow">¶</a></p>
+<p id="section-10.2.1-5">A secure transport is <span class="bcp14">RECOMMENDED</span>.  For dynamic subscriptions, the publisher <span class="bcp14">MUST</span> ensure that the receiver has sufficient authorization to perform the function it is requesting against the specific subset of content involved. <strong>TODO, is this transport level authorization, or NACM based authorization (in which case, it should not be stated here, since it is application specific rather than being transport specific).</strong><a href="#section-10.2.1-5" class="pilcrow">¶</a></p>
+<p id="section-10.2.1-6">A specification for a transport built upon this document can choose whether to use of the same logical channel for the RPCs and the event records.  However, the <em>update</em> records and the subscription state change notifications <span class="bcp14">MUST</span> be sent on the same transport session to ensure properly ordered delivery.<a href="#section-10.2.1-6" class="pilcrow">¶</a></p>
+<p id="section-10.2.1-7">If a transport can only support some encodings, then it <span class="bcp14">MUST</span> identify what encodings are supported.  If a configured subscription's transport allows different encodings, the specification <span class="bcp14">MUST</span> identify the default encoding. <strong>TODO, would it be easier to always require the encoding to be specified?</strong><a href="#section-10.2.1-7" class="pilcrow">¶</a></p>
+<p id="section-10.2.1-8">Any transport specific impacts to the lifecycle of configured or dynamic subscriptions <span class="bcp14">MUST</span> be documented.  E.g., the point at which a subscription can be determined as being established. <strong>TODO, do we need this paragraph, if the behavior is meant to be transport specific that why does anything need to be said at all?  And if the transport wants to change the behavior then, by definition, that must be documented in the transport specification anyway.</strong><a href="#section-10.2.1-8" class="pilcrow">¶</a></p>
+<p id="section-10.2.1-9">Additional transport requirements may be dictated by the choice of transport used with a subscription.  For an example of such requirements, see <span>[<a href="#RFC8640" class="cite xref">RFC8640</a>]</span>.<a href="#section-10.2.1-9" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="DSCP">
+<section id="section-10.2.2">
+          <h4 id="name-dscp-marking">
+<a href="#section-10.2.2" class="section-number selfRef">10.2.2. </a><a href="#name-dscp-marking" class="section-name selfRef">DSCP Marking</a>
+          </h4>
+<p id="section-10.2.2-1">YANG Push Lite supports "dscp" marking to differentiate prioritization of notification messages during network transit.<a href="#section-10.2.2-1" class="pilcrow">¶</a></p>
+<p id="section-10.2.2-2">If the publisher supports the "dscp" feature, then a subscription with a "dscp" leaf results in a corresponding Differentiated Services Code Point (DSCP) marking [RFC2474] being placed in the IP header of any resulting notification messages and subscription state change notifications.  A publisher <span class="bcp14">MUST</span> respect the DSCP markings for subscription traffic egressing that publisher.<a href="#section-10.2.2-2" class="pilcrow">¶</a></p>
+<p id="section-10.2.2-3"><strong>TODO, do we want to keep "dscp" as a feature, or to simplify, just assume implementations will support it or otherwise deviate the leaf?</strong><a href="#section-10.2.2-3" class="pilcrow">¶</a></p>
+<p id="section-10.2.2-4">Different DSCP code points require different transport connections.  As a result, where TCP is used, a publisher that supports the "dscp" feature must ensure that a subscription's notification messages are returned in a single TCP transport session where all traffic shares the subscription's "dscp" leaf value.  If this cannot be guaranteed, any "establish-subscription" RPC request <span class="bcp14">SHOULD</span> be rejected with a "dscp-unavailable" error.  <strong>TODO - Is this text still relevant?</strong><a href="#section-10.2.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="Encodings">
+<section id="section-10.3">
+        <h3 id="name-encodings">
+<a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-encodings" class="section-name selfRef">Encodings</a>
+        </h3>
+<p id="section-10.3-1">The <em>update</em> notification(<a href="#EventRecords" class="auto internal xref">Section 9.1</a>) and subscription lifecycle notifications (<a href="#LifecycleNotifications" class="auto internal xref">Section 12</a>) can be encoded in any format that has a definition for encoding YANG data.  For a given subscription, all notification messages are encoded using the same encoding.<a href="#section-10.3-1" class="pilcrow">¶</a></p>
+<p id="section-10.3-2">Some IETF standards for YANG encodings known at the time of publication are:<a href="#section-10.3-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-10.2-3.1">
-            <p id="section-10.2-3.1.1">JSON, defined in <span>[<a href="#RFC7951" class="cite xref">RFC7951</a>]</span><a href="#section-10.2-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-10.3-3.1">
+            <p id="section-10.3-3.1.1">JSON, defined in <span>[<a href="#RFC7951" class="cite xref">RFC7951</a>]</span><a href="#section-10.3-3.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-10.2-3.2">
-            <p id="section-10.2-3.2.1">CBOR, defined in <span>[<a href="#RFC9254" class="cite xref">RFC9254</a>]</span>, and <span>[<a href="#RFC9595" class="cite xref">RFC9595</a>]</span> for using compressed schema identifiers (YANG SIDs)<a href="#section-10.2-3.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-10.3-3.2">
+            <p id="section-10.3-3.2.1">CBOR, defined in <span>[<a href="#RFC9254" class="cite xref">RFC9254</a>]</span>, and <span>[<a href="#RFC9595" class="cite xref">RFC9595</a>]</span> for using compressed schema identifiers (YANG SIDs)<a href="#section-10.3-3.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-10.2-3.3">
-            <p id="section-10.2-3.3.1">XML, defined in <span>[<a href="#RFC7950" class="cite xref">RFC7950</a>]</span><a href="#section-10.2-3.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-10.3-3.3">
+            <p id="section-10.3-3.3.1">XML, defined in <span>[<a href="#RFC7950" class="cite xref">RFC7950</a>]</span><a href="#section-10.3-3.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-10.2-4">To maximize interoperability, all implementations are <span class="bcp14">RECOMMENDED</span> to support JSON and CBOR encodings. Also supporting XML and CBOR using YANG SIDs is <span class="bcp14">OPTIONAL</span>.<a href="#section-10.2-4" class="pilcrow">¶</a></p>
-<div id="dscp-marking">
-<section id="section-10.2.1">
-          <h4 id="name-dscp-marking">
-<a href="#section-10.2.1" class="section-number selfRef">10.2.1. </a><a href="#name-dscp-marking" class="section-name selfRef">DSCP Marking</a>
-          </h4>
-<p id="section-10.2.1-1">YANG Push Lite supports "dscp" marking to differentiate prioritization of notification messages during network transit.<a href="#section-10.2.1-1" class="pilcrow">¶</a></p>
-<p id="section-10.2.1-2">If the publisher supports the "dscp" feature, then a subscription with a "dscp" leaf results in a corresponding Differentiated Services Code Point (DSCP) marking [RFC2474] being placed in the IP header of any resulting notification messages and subscription state change notifications.  A publisher <span class="bcp14">MUST</span> respect the DSCP markings for subscription traffic egressing that publisher.<a href="#section-10.2.1-2" class="pilcrow">¶</a></p>
-<p id="section-10.2.1-3"><strong>TODO - Is this still relevant?</strong> Different DSCP code points require different transport connections.  As a result, where TCP is used, a publisher that supports the "dscp" feature must ensure that a subscription's notification messages are returned in a single TCP transport session where all traffic shares the subscription's "dscp" leaf value.  If this cannot be guaranteed, any "establish-subscription" RPC request <span class="bcp14">SHOULD</span> be rejected with a "dscp-unavailable" error.<a href="#section-10.2.1-3" class="pilcrow">¶</a></p>
-</section>
-</div>
+<p id="section-10.3-4">To maximize interoperability, all implementations are <span class="bcp14">RECOMMENDED</span> to support JSON and CBOR encodings. Also supporting XML and CBOR using YANG SIDs is <span class="bcp14">OPTIONAL</span>.<a href="#section-10.3-4" class="pilcrow">¶</a></p>
+<p id="section-10.3-5">Encodings are defined in the <em>ietf-yp-lite.yang</em> as YANG identities that derive from the <em>encoding</em> base identity.  Additional encodings can be defined by defining and implementing new identities that derive from the <em>encoding</em> base identity, and also advertising those identities as part of the capabilities YANG model. <strong>TODO, given more details of which leaf this is in the capabilities model.</strong><a href="#section-10.3-5" class="pilcrow">¶</a></p>
+<p id="section-10.3-6"><strong>TODO, the YP data model use if-feature statements for each of the encodings.  Should we preserve these feature statements, or rely only on capabilities information to indicate what encoding are supported?  Currently they are commented out with an intention to remove them.</strong><a href="#section-10.3-6" class="pilcrow">¶</a></p>
+<p id="section-10.3-7">For configured subscriptions, the encoding is configured as part of the receiver configuration (<a href="#ReceiversYangTree" class="auto internal xref">Figure 6</a>).<a href="#section-10.3-7" class="pilcrow">¶</a></p>
+<p id="section-10.3-8">For dynamic subscriptions, the encoding is selected as part of the establish-subscription RPC (<a href="#EstablishSubscriptionYangTree" class="auto internal xref">Figure 11</a>).<a href="#section-10.3-8" class="pilcrow">¶</a></p>
+<p id="section-10.3-9"><strong>TODO For dynamic subscriptions, Yang Push will infer the encoding from incoming RPC if not provided.  Do we want to preserve the existing behavior or just be explicit and enforce that an encoding must always be specified?</strong><a href="#section-10.3-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2444,49 +2441,18 @@ such an augmentation, see <strong>TODO Appendix A</strong>. <strong>TODO - Shoul
           <p id="section-11-2.2.1">Dynamic Subscriptions - a subscription created and controlled via a YANG RPC from a telemetry receiver.<a href="#section-11-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
-<p id="section-11-3">Both configured and dynamic subscriptions are represented in the list
-<em>datastore-telemetry/subscriptions/subscription</em>, and most of the functionality and behavior of configured and dynamic subscriptions described in this document is specified to be the same or very similar.  However, they differ in how they are created and in the associated lifecycle management, described in the following sections:<a href="#section-11-3" class="pilcrow">¶</a></p>
-<p id="section-11-4">Additional characteristics differentiating configured from dynamic
-subscriptions include the following:<a href="#section-11-4" class="pilcrow">¶</a></p>
+<p id="section-11-3">Both configured and dynamic subscriptions are represented in the list <em>datastore-telemetry/subscriptions/subscription</em>, and most of the functionality and behavior of configured and dynamic subscriptions described in this document is specified to be the same or very similar.  However, they differ in how they are created and in the associated lifecycle management, described in the following sections:<a href="#section-11-3" class="pilcrow">¶</a></p>
+<p id="section-11-4">Additional characteristics differentiating configured from dynamic subscriptions include the following:<a href="#section-11-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-11-5.1">
-          <p id="section-11-5.1.1">The lifetime of a dynamic subscription is bound by the transport
-session used to establish it.  For connection-oriented stateful
-transports like NETCONF, the loss of the transport session will
-result in the immediate termination of any associated dynamic
-subscriptions.  For connectionless or stateless transports like
-HTTP, a lack of receipt acknowledgment of a sequential set of
-notification messages and/or keep-alives can be used to trigger a
-termination of a dynamic subscription.  Contrast this to the
-lifetime of a configured subscription.  This lifetime is driven by
-relevant configuration being present in the publisher's applied
-configuration.  Being tied to configuration operations implies
-that (1) configured subscriptions can be configured to persist
-across reboots and (2) a configured subscription can persist even
-when its publisher is fully disconnected from any network.<a href="#section-11-5.1.1" class="pilcrow">¶</a></p>
+          <p id="section-11-5.1.1">The lifetime of a dynamic subscription is bound by the transport session used to establish it.  For connection-oriented stateful transports like NETCONF, the loss of the transport session will result in the immediate termination of any associated dynamic subscriptions.  For connectionless or stateless transports like HTTP, a lack of receipt acknowledgment of a sequential set of notification messages and/or keep-alives can be used to trigger a termination of a dynamic subscription.  Contrast this to the lifetime of a configured subscription.  This lifetime is driven by relevant configuration being present in the publisher's applied configuration.  Being tied to configuration operations implies that (1) configured subscriptions can be configured to persist across reboots and (2) a configured subscription can persist even when its publisher is fully disconnected from any network.<a href="#section-11-5.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-11-5.2">
-          <p id="section-11-5.2.1">Configured subscriptions can be modified by any configuration
-client with write permission on the configuration of the
-subscription.  Dynamic subscriptions can only be modified via an
-RPC request made by the original subscriber or by a change to
-configuration data referenced by the subscription.<a href="#section-11-5.2.1" class="pilcrow">¶</a></p>
+          <p id="section-11-5.2.1">Configured subscriptions can be modified by any configuration client with write permission on the configuration of the subscription.  Dynamic subscriptions can only be modified via an RPC request made by the original subscriber or by a change to configuration data referenced by the subscription.<a href="#section-11-5.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-11-6">Note that there is no mixing and matching of dynamic and configured
-operations on a single subscription.  Specifically, a configured
-subscription cannot be modified or deleted using RPCs defined in this
-document.  Similarly, a dynamic subscription cannot be directly
-modified or deleted by configuration operations.  It is, however,
-possible to perform a configuration operation that indirectly impacts
-a dynamic subscription.  By changing the value of a preconfigured
-filter referenced by an existing dynamic subscription, the selected
-event records passed to a receiver might change.<a href="#section-11-6" class="pilcrow">¶</a></p>
-<p id="section-11-7">A publisher <span class="bcp14">MAY</span> terminate a dynamic subscription at any time.
-Similarly, it <span class="bcp14">MAY</span> decide to temporarily suspend the sending of
-notification messages for any dynamic subscription, or for one or
-more receivers of a configured subscription.  Such termination or
-suspension is driven by internal considerations of the publisher.<a href="#section-11-7" class="pilcrow">¶</a></p>
+<p id="section-11-6">Note that there is no mixing and matching of dynamic and configured operations on a single subscription.  Specifically, a configured subscription cannot be modified or deleted using RPCs defined in this document.  Similarly, a dynamic subscription cannot be directly modified or deleted by configuration operations.  It is, however, possible to perform a configuration operation that indirectly impacts a dynamic subscription.  By changing the value of a preconfigured filter referenced by an existing dynamic subscription, the selected event records passed to a receiver might change.<a href="#section-11-6" class="pilcrow">¶</a></p>
+<p id="section-11-7">A publisher <span class="bcp14">MAY</span> terminate a dynamic subscription at any time. Similarly, it <span class="bcp14">MAY</span> decide to temporarily suspend the sending of notification messages for any dynamic subscription, or for one or more receivers of a configured subscription.  Such termination or suspension is driven by internal considerations of the publisher.<a href="#section-11-7" class="pilcrow">¶</a></p>
 <div id="configured-subscriptions">
 <section id="section-11.1">
         <h3 id="name-configured-subscriptions">
@@ -2526,7 +2492,7 @@ suspension is driven by internal considerations of the publisher.<a href="#secti
 <p id="section-11.1-6">Multiple configured subscriptions <span class="bcp14">MUST</span> be supportable over a single transport session.<a href="#section-11.1-6" class="pilcrow">¶</a></p>
 <p id="section-11.1-7">Below is a tree diagram for the "subscriptions" container.  All objects contained in this tree are described in the YANG module in <a href="#yp-lite-yang-module" class="auto internal xref">Section 15.2</a>.  In the operational datastore <span>[<a href="#RFC8342" class="cite xref">RFC8342</a>]</span>, the "subscription" list contains entries both for configured and dynamic subscriptions.<a href="#section-11.1-7" class="pilcrow">¶</a></p>
 <span id="name-subscriptions-container-tre"></span><div id="SubscriptionYangTree">
-<figure id="figure-6">
+<figure id="figure-7">
           <div class="lang-yangtree sourcecode" id="section-11.1-8.1">
 <pre>
 module: ietf-yp-lite
@@ -2560,6 +2526,7 @@ module: ietf-yp-lite
            |     +--ro excluded-event-records?
            |     |       yang:zero-based-counter64
            |     +--ro state                     enumeration
+           |     +--ro encoding?                 encoding
            |     +---x reset {configured}?
            |        +--ro output
            |           +--ro time    yang:date-and-time
@@ -2571,7 +2538,7 @@ module: ietf-yp-lite
                  +--rw sync-on-start?   boolean
 </pre>
 </div>
-<figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
+<figcaption><a href="#figure-7" class="selfRef">Figure 7</a>:
 <a href="#name-subscriptions-container-tre" class="selfRef">subscriptions container Tree Diagram</a>
           </figcaption></figure>
 </div>
@@ -2582,7 +2549,7 @@ module: ietf-yp-lite
           </h4>
 <p id="section-11.1.1-1">Below is the state machine for a configured subscription on the publisher.  This state machine describes the three states (<em>valid</em>, <em>invalid</em>, and <em>concluded</em>) as well as the transitions between these states.  Start and end states are depicted to reflect configured subscription creation and deletion events.  The creation or modification of a configured subscription, referenced filter or receiver initiates an evaluation by the publisher to determine if the subscription is in the <em>valid</em> state or the <em>invalid</em> state.  The publisher uses its own criteria in making this determination.  If in the <em>valid</em> state, the subscription becomes operational.  See (1) in the diagram below.<a href="#section-11.1.1-1" class="pilcrow">¶</a></p>
 <p id="section-11.1.1-2">**TODO - Add a new 'Active state' to the subscription state machine.  I.e., a subscription is active as long as it has at least one valid receiver (in some cases this would mean that negotiation with the receiver is complete, for others, such as simple UDP, is just requires configuration to be valid.)<a href="#section-11.1.1-2" class="pilcrow">¶</a></p>
-<span id="name-publishers-state-machine-fo"></span><figure id="figure-7">
+<span id="name-publishers-state-machine-fo"></span><figure id="figure-8">
             <div class="alignLeft art-text artwork" id="section-11.1.1-3.1">
 <pre>
 .........
@@ -2612,14 +2579,12 @@ Legend:
   (*): resulting subscription state change notification
 </pre>
 </div>
-<figcaption><a href="#figure-7" class="selfRef">Figure 7</a>:
+<figcaption><a href="#figure-8" class="selfRef">Figure 8</a>:
 <a href="#name-publishers-state-machine-fo" class="selfRef">Publisher's State Machine for a Configured Subscription</a>
             </figcaption></figure>
-<p id="section-11.1.1-4">A subscription in the <em>valid</em> state may move to the <em>invalid</em> state in one of two ways.  First, it may be modified in a way that fails a re-evaluation.  See (2) in the diagram.  Second, the publisher might determine that the subscription is no longer supportable.  This could be because of an unexpected but sustained increase in an event stream's event records, degraded CPU capacity, a more complex referenced filter, or other subscriptions that have usurped
-resources.  See (3) in the diagram.  No matter the case, a <em>subscription-terminated</em> notification is sent to any receivers in the <em>active</em> or state.  Finally, a subscription may be
-deleted by configuration (4).<a href="#section-11.1.1-4" class="pilcrow">¶</a></p>
+<p id="section-11.1.1-4">A subscription in the <em>valid</em> state may move to the <em>invalid</em> state in one of two ways.  First, it may be modified in a way that fails a re-evaluation.  See (2) in the diagram.  Second, the publisher might determine that the subscription is no longer supportable.  This could be because of an unexpected but sustained increase in an event stream's event records, degraded CPU capacity, a more complex referenced filter, or other subscriptions that have usurped resources.  See (3) in the diagram.  No matter the case, a <em>subscription-terminated</em> notification is sent to any receivers in the <em>active</em> or state.  Finally, a subscription may be deleted by configuration (4).<a href="#section-11.1.1-4" class="pilcrow">¶</a></p>
 <p id="section-11.1.1-5">When a subscription is in the <em>valid</em> state, a publisher will attempt to connect with all receivers of a configured subscription and deliver notification messages.  Below is the state machine for each receiver of a configured subscription.  This receiver state machine is fully contained in the state machine of the configured subscription and is only relevant when the configured subscription is in the <em>valid</em> state.<a href="#section-11.1.1-5" class="pilcrow">¶</a></p>
-<span id="name-receiver-state-machine-for-"></span><figure id="figure-8">
+<span id="name-receiver-state-machine-for-"></span><figure id="figure-9">
             <div class="alignLeft art-text artwork" id="section-11.1.1-6.1">
 <pre>
 .-----------------------------------------------------------.
@@ -2647,15 +2612,12 @@ Legend:
 * indicates a subscription state change notification
 </pre>
 </div>
-<figcaption><a href="#figure-8" class="selfRef">Figure 8</a>:
+<figcaption><a href="#figure-9" class="selfRef">Figure 9</a>:
 <a href="#name-receiver-state-machine-for-" class="selfRef">Receiver State Machine for a Configured Subscription on a Publisher</a>
             </figcaption></figure>
-<p id="section-11.1.1-7">When a configured subscription first moves to the <em>valid</em> state, the <em>state</em> leaf of each receiver is initialized to the <em>connecting</em> state.  If transport connectivity is not available to any receivers and there are any notification messages to deliver, a transport session is established (e.g., per <span>[<a href="#RFC8071" class="cite xref">RFC8071</a>]</span>).  Individual receivers are moved to the <em>active</em> state when a <em>subscription-started</em> subscription state change notification is successfully passed to that
-receiver (a).  Event records are only sent to active receivers. Receivers of a configured subscription remain active on the publisher if both (1) transport connectivity to the receiver is active and (2) event records are not being dropped due to a publisher's sending capacity being reached.  In addition, a configured subscription's receiver <span class="bcp14">MUST</span> be moved to the "connecting" state if the receiver is reset via the "reset" action (b), (c).  For more on the "reset" action, see Section 2.5.5.  If transport connectivity cannot be achieved while in the "connecting" state, the receiver <span class="bcp14">MAY</span> be moved to the "disconnected" state.<a href="#section-11.1.1-7" class="pilcrow">¶</a></p>
-<p id="section-11.1.1-8">A configured subscription's receiver <span class="bcp14">MUST</span> be moved to the "suspended" state if there is transport connectivity between the publisher and receiver but (1) delivery of notification messages is failing due to a publisher's buffer capacity being reached or (2) notification
-messages cannot be generated for that receiver due to insufficient CPU (d).  This is indicated to the receiver by the "subscription-suspended" subscription state change notification.<a href="#section-11.1.1-8" class="pilcrow">¶</a></p>
-<p id="section-11.1.1-9">A configured subscription's receiver <span class="bcp14">MUST</span> be returned to the "active" state from the "suspended" state when notification messages can be generated, bandwidth is sufficient to handle the notification messages, and a receiver has successfully been sent a "subscription-
-resumed" or "subscription-modified" subscription state change notification (e).  The choice as to which of these two subscription state change notifications is sent is determined by whether the subscription was modified during the period of suspension.<a href="#section-11.1.1-9" class="pilcrow">¶</a></p>
+<p id="section-11.1.1-7">When a configured subscription first moves to the <em>valid</em> state, the <em>state</em> leaf of each receiver is initialized to the <em>connecting</em> state.  If transport connectivity is not available to any receivers and there are any notification messages to deliver, a transport session is established (e.g., per <span>[<a href="#RFC8071" class="cite xref">RFC8071</a>]</span>).  Individual receivers are moved to the <em>active</em> state when a <em>subscription-started</em> subscription state change notification is successfully passed to that receiver (a).  Event records are only sent to active receivers. Receivers of a configured subscription remain active on the publisher if both (1) transport connectivity to the receiver is active and (2) event records are not being dropped due to a publisher's sending capacity being reached.  In addition, a configured subscription's receiver <span class="bcp14">MUST</span> be moved to the "connecting" state if the receiver is reset via the "reset" action (b), (c).  For more on the "reset" action, see Section 2.5.5.  If transport connectivity cannot be achieved while in the "connecting" state, the receiver <span class="bcp14">MAY</span> be moved to the "disconnected" state.<a href="#section-11.1.1-7" class="pilcrow">¶</a></p>
+<p id="section-11.1.1-8">A configured subscription's receiver <span class="bcp14">MUST</span> be moved to the "suspended" state if there is transport connectivity between the publisher and receiver but (1) delivery of notification messages is failing due to a publisher's buffer capacity being reached or (2) notification messages cannot be generated for that receiver due to insufficient CPU (d).  This is indicated to the receiver by the "subscription-suspended" subscription state change notification.<a href="#section-11.1.1-8" class="pilcrow">¶</a></p>
+<p id="section-11.1.1-9">A configured subscription's receiver <span class="bcp14">MUST</span> be returned to the "active" state from the "suspended" state when notification messages can be generated, bandwidth is sufficient to handle the notification messages, and a receiver has successfully been sent a "subscription-resumed" or "subscription-modified" subscription state change notification (e).  The choice as to which of these two subscription state change notifications is sent is determined by whether the subscription was modified during the period of suspension.<a href="#section-11.1.1-9" class="pilcrow">¶</a></p>
 <p id="section-11.1.1-10">Modification of a configured subscription is possible at any time.  A "subscription-modified" subscription state change notification will be sent to all active receivers, immediately followed by notification messages conforming to the new parameters.  Suspended receivers will
 also be informed of the modification.  However, this notification will await the end of the suspension for that receiver (e).<a href="#section-11.1.1-10" class="pilcrow">¶</a></p>
 </section>
@@ -2666,8 +2628,7 @@ also be informed of the modification.  However, this notification will await the
 <a href="#section-11.1.2" class="section-number selfRef">11.1.2. </a><a href="#name-creating-a-configured-subsc" class="section-name selfRef">Creating a Configured Subscription</a>
           </h4>
 <p id="section-11.1.2-1">Configured subscriptions are created using configuration operations against the top-level <em>subscriptions</em> subtree.<a href="#section-11.1.2-1" class="pilcrow">¶</a></p>
-<p id="section-11.1.2-2">After a subscription is successfully established, the publisher immediately sends a "subscription-started" subscription state change notification to each receiver.  It is quite possible that upon configuration, reboot, or even steady-state operations, a transport
-session may not be currently available to the receiver.  In this case, when there is something to transport for an active subscription, transport-specific "call home" operations <span>[<a href="#RFC8071" class="cite xref">RFC8071</a>]</span> will be used to establish the connection.  When transport connectivity is available, notification messages may then be pushed.<a href="#section-11.1.2-2" class="pilcrow">¶</a></p>
+<p id="section-11.1.2-2">After a subscription is successfully established, the publisher immediately sends a "subscription-started" subscription state change notification to each receiver.  It is quite possible that upon configuration, reboot, or even steady-state operations, a transport session may not be currently available to the receiver.  In this case, when there is something to transport for an active subscription, transport-specific "call home" operations <span>[<a href="#RFC8071" class="cite xref">RFC8071</a>]</span> will be used to establish the connection.  When transport connectivity is available, notification messages may then be pushed.<a href="#section-11.1.2-2" class="pilcrow">¶</a></p>
 <p id="section-11.1.2-3">With active configured subscriptions, it is allowable to buffer event records even after a <em>subscription-started</em> has been sent.  However, if events are lost (rather than just delayed) due to buffer capacity being reached, a <em>subscription-terminated</em> notification must be sent, followed by a new subscription-started" notification. These notifications indicate an event record discontinuity has occurred.<a href="#section-11.1.2-3" class="pilcrow">¶</a></p>
 <p id="section-11.1.2-4"><strong>TODO, to see an example of subscription creation using configuration operations over NETCONF, see Appendix A.</strong><a href="#section-11.1.2-4" class="pilcrow">¶</a></p>
 </section>
@@ -2695,8 +2656,7 @@ session may not be currently available to the receiver.  In this case, when ther
 <a href="#section-11.1.5" class="section-number selfRef">11.1.5. </a><a href="#name-resetting-a-configured-subs" class="section-name selfRef">Resetting a Configured Subscription's Receiver</a>
           </h4>
 <p id="section-11.1.5-1"><strong>TODO: Is this RPC needed?  It may possibly be useful for a UDP based receiver.</strong><a href="#section-11.1.5-1" class="pilcrow">¶</a></p>
-<p id="section-11.1.5-2">It is possible that a configured subscription to a receiver needs to be reset.  This is accomplished via the <em>reset</em> action in the YANG module at <em>/subscriptions/subscription/receivers/receiver/reset</em>.  This action may be useful in cases where a publisher has timed out
-trying to reach a receiver.  When such a reset occurs, a transport session will be initiated if necessary, and a new <em>subscription-started</em> notification will be sent.  This action does not have any effect on transport connectivity if the needed connectivity already exists.<a href="#section-11.1.5-2" class="pilcrow">¶</a></p>
+<p id="section-11.1.5-2">It is possible that a configured subscription to a receiver needs to be reset.  This is accomplished via the <em>reset</em> action in the YANG module at <em>/subscriptions/subscription/receivers/receiver/reset</em>.  This action may be useful in cases where a publisher has timed out trying to reach a receiver.  When such a reset occurs, a transport session will be initiated if necessary, and a new <em>subscription-started</em> notification will be sent.  This action does not have any effect on transport connectivity if the needed connectivity already exists.<a href="#section-11.1.5-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2714,7 +2674,7 @@ trying to reach a receiver.  When such a reset occurs, a transport session will 
 <a href="#section-11.2.1" class="section-number selfRef">11.2.1. </a><a href="#name-dynamic-subscription-state-" class="section-name selfRef">Dynamic Subscription State Machine</a>
           </h4>
 <p id="section-11.2.1-1">Below is the publisher's state machine for a dynamic subscription. Each state is shown in its own box.  It is important to note that such a subscription doesn't exist at the publisher until an <em>establish-subscription</em> RPC is accepted.  The mere request by a subscriber to establish a subscription is not sufficient for that subscription to be externally visible.  Start and end states are depicted to reflect subscription creation and deletion events.<a href="#section-11.2.1-1" class="pilcrow">¶</a></p>
-<span id="name-publishers-state-machine-for"></span><figure id="figure-9">
+<span id="name-publishers-state-machine-for"></span><figure id="figure-10">
             <div class="alignLeft art-text artwork" id="section-11.2.1-2.1">
 <pre>
                   .........
@@ -2739,7 +2699,7 @@ trying to reach a receiver.  When such a reset occurs, a transport session will 
                   :.......:
 </pre>
 </div>
-<figcaption><a href="#figure-9" class="selfRef">Figure 9</a>:
+<figcaption><a href="#figure-10" class="selfRef">Figure 10</a>:
 <a href="#name-publishers-state-machine-for" class="selfRef">Publisher's State Machine for a Dynamic Subscription</a>
             </figcaption></figure>
 <p id="section-11.2.1-3">Of interest in this state machine are the following:<a href="#section-11.2.1-3" class="pilcrow">¶</a></p>
@@ -2756,27 +2716,20 @@ trying to reach a receiver.  When such a reset occurs, a transport session will 
           </ul>
 </section>
 </div>
-<div id="establishing-a-dynamic-subscription">
+<div id="EstablishDynamic">
 <section id="section-11.2.2">
           <h4 id="name-establishing-a-dynamic-subs">
 <a href="#section-11.2.2" class="section-number selfRef">11.2.2. </a><a href="#name-establishing-a-dynamic-subs" class="section-name selfRef">Establishing a Dynamic Subscription</a>
           </h4>
 <p id="section-11.2.2-1">The "establish-subscription" RPC allows a subscriber to request the creation of a subscription.<a href="#section-11.2.2-1" class="pilcrow">¶</a></p>
 <p id="section-11.2.2-2">The input parameters of the operation are:<a href="#section-11.2.2-2" class="pilcrow">¶</a></p>
-<p id="section-11.2.2-3">o  A "stream" name, which identifies the targeted event stream
-  against which the subscription is applied.<a href="#section-11.2.2-3" class="pilcrow">¶</a></p>
-<p id="section-11.2.2-4">o  An event stream filter, which may reduce the set of event records
-  pushed.<a href="#section-11.2.2-4" class="pilcrow">¶</a></p>
-<p id="section-11.2.2-5">o  If the transport used by the RPC supports multiple encodings, an
-  optional "encoding" for the event records pushed.  If no
-  "encoding" is included, the encoding of the RPC <span class="bcp14">MUST</span> be used.<a href="#section-11.2.2-5" class="pilcrow">¶</a></p>
-<p id="section-11.2.2-6">If the publisher can satisfy the "establish-subscription" request, it
-replies with an identifier for the subscription and then immediately
-starts streaming notification messages.<a href="#section-11.2.2-6" class="pilcrow">¶</a></p>
-<p id="section-11.2.2-7">Below is a tree diagram for "establish-subscription".  All objects
-contained in this tree are described in the YANG module in <a href="#yp-lite-yang-module" class="auto internal xref">Section 15.2</a>.<a href="#section-11.2.2-7" class="pilcrow">¶</a></p>
+<p id="section-11.2.2-3">o  A "stream" name, which identifies the targeted event stream against which the subscription is applied.<a href="#section-11.2.2-3" class="pilcrow">¶</a></p>
+<p id="section-11.2.2-4">o  An event stream filter, which may reduce the set of event records pushed.<a href="#section-11.2.2-4" class="pilcrow">¶</a></p>
+<p id="section-11.2.2-5">o  If the transport used by the RPC supports multiple encodings, an optional "encoding" for the event records pushed.  If no "encoding" is included, the encoding of the RPC <span class="bcp14">MUST</span> be used.<a href="#section-11.2.2-5" class="pilcrow">¶</a></p>
+<p id="section-11.2.2-6">If the publisher can satisfy the "establish-subscription" request, it replies with an identifier for the subscription and then immediately starts streaming notification messages.<a href="#section-11.2.2-6" class="pilcrow">¶</a></p>
+<p id="section-11.2.2-7">Below is a tree diagram for "establish-subscription".  All objects contained in this tree are described in the YANG module in <a href="#yp-lite-yang-module" class="auto internal xref">Section 15.2</a>.<a href="#section-11.2.2-7" class="pilcrow">¶</a></p>
 <span id="name-establish-subscription-yang"></span><div id="EstablishSubscriptionYangTree">
-<figure id="figure-10">
+<figure id="figure-11">
             <div class="lang-yangtree sourcecode" id="section-11.2.2-8.1">
 <pre>
     +---x establish-subscription
@@ -2800,16 +2753,13 @@ contained in this tree are described in the YANG module in <a href="#yp-lite-yan
     |     +--ro id    subscription-id
 </pre>
 </div>
-<figcaption><a href="#figure-10" class="selfRef">Figure 10</a>:
+<figcaption><a href="#figure-11" class="selfRef">Figure 11</a>:
 <a href="#name-establish-subscription-yang" class="selfRef">establish-subscription YANG RPC</a>
             </figcaption></figure>
 </div>
-<p id="section-11.2.2-9">A publisher <span class="bcp14">MAY</span> reject the "establish-subscription" RPC for many
-reasons, as described in Section 2.4.6.<a href="#section-11.2.2-9" class="pilcrow">¶</a></p>
-<p id="section-11.2.2-10">Below is a tree diagram for "establish-subscription-stream-error-
-info" RPC yang-data.  All objects contained in this tree are
-described in the YANG module in Section 4.<a href="#section-11.2.2-10" class="pilcrow">¶</a></p>
-<span id="name-establish-subscription-stre"></span><figure id="figure-11">
+<p id="section-11.2.2-9">A publisher <span class="bcp14">MAY</span> reject the "establish-subscription" RPC for many reasons, as described in Section 2.4.6.<a href="#section-11.2.2-9" class="pilcrow">¶</a></p>
+<p id="section-11.2.2-10">Below is a tree diagram for "establish-subscription-stream-error-info" RPC yang-data.  All objects contained in this tree are described in the YANG module in Section 4.<a href="#section-11.2.2-10" class="pilcrow">¶</a></p>
+<span id="name-establish-subscription-stre"></span><figure id="figure-12">
             <div class="alignLeft art-text artwork" id="section-11.2.2-11.1">
 <pre>
     yang-data establish-subscription-stream-error-info
@@ -2821,7 +2771,7 @@ described in the YANG module in Section 4.<a href="#section-11.2.2-10" class="pi
                     RPC yang-data Tree Diagram
 </pre>
 </div>
-<figcaption><a href="#figure-11" class="selfRef">Figure 11</a>:
+<figcaption><a href="#figure-12" class="selfRef">Figure 12</a>:
 <a href="#name-establish-subscription-stre" class="selfRef">"establish-subscription-stream-error-info" Tree Diagram</a>
             </figcaption></figure>
 <div id="negotiation-of-subscription-policies">
@@ -2829,9 +2779,7 @@ described in the YANG module in Section 4.<a href="#section-11.2.2-10" class="pi
             <h5 id="name-negotiation-of-subscription">
 <a href="#section-11.2.2.1" class="section-number selfRef">11.2.2.1. </a><a href="#name-negotiation-of-subscription" class="section-name selfRef">Negotiation of Subscription Policies</a>
             </h5>
-<p id="section-11.2.2.1-1">A dynamic subscription request <span class="bcp14">SHOULD</span> be declined if a publisher
-determines that it may be unable to provide update records meeting
-the terms of an "establish-subscription" RPC request.<a href="#section-11.2.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-11.2.2.1-1">A dynamic subscription request <span class="bcp14">SHOULD</span> be declined if a publisher determines that it may be unable to provide update records meeting the terms of an "establish-subscription" RPC request.<a href="#section-11.2.2.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2841,13 +2789,10 @@ the terms of an "establish-subscription" RPC request.<a href="#section-11.2.2.1-
           <h4 id="name-deleting-a-dynamic-subscrip">
 <a href="#section-11.2.3" class="section-number selfRef">11.2.3. </a><a href="#name-deleting-a-dynamic-subscrip" class="section-name selfRef">Deleting a Dynamic Subscription</a>
           </h4>
-<p id="section-11.2.3-1">The <em>delete-subscription</em> operation permits canceling an existing
-dynamic subscription that was established on the same transport session connecting to the subscriber.<a href="#section-11.2.3-1" class="pilcrow">¶</a></p>
+<p id="section-11.2.3-1">The <em>delete-subscription</em> operation permits canceling an existing dynamic subscription that was established on the same transport session connecting to the subscriber.<a href="#section-11.2.3-1" class="pilcrow">¶</a></p>
 <p id="section-11.2.3-2">If the publisher accepts the request, which it <span class="bcp14">MUST</span>, if the subscription-id matches a dynamic subscription established in the same transport session, then it should stop the subscription and send a <em>subscription-terminated</em> notification.<a href="#section-11.2.3-2" class="pilcrow">¶</a></p>
 <p id="section-11.2.3-3">The publisher <span class="bcp14">MAY</span> reply back to the client before the subscription has been terminated, i.e., it may act asynchronously with respect to the request.  The publisher <span class="bcp14">SHOULD NOT</span> send any further events related to the subscription after the <em>subscription-terminated</em> notification and<a href="#section-11.2.3-3" class="pilcrow">¶</a></p>
-<p id="section-11.2.3-4"><strong>TODO, I think that we should relax this to a <span class="bcp14">SHOULD</span></strong>  If the publisher accepts the request and the publisher
-has indicated success, the publisher <span class="bcp14">MUST NOT</span> send any more
-notification messages for this subscription.<a href="#section-11.2.3-4" class="pilcrow">¶</a></p>
+<p id="section-11.2.3-4"><strong>TODO, I think that we should relax this to a <span class="bcp14">SHOULD</span></strong>  If the publisher accepts the request and the publisher has indicated success, the publisher <span class="bcp14">MUST NOT</span> send any more notification messages for this subscription.<a href="#section-11.2.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="killing-a-dynamic-subscription">
@@ -3039,9 +2984,8 @@ notification has been sent, respectively.<a href="#section-11.4-7" class="pilcro
             <p id="section-12.1-3.5.1">A dynamic subscription has been established.<a href="#section-12.1-3.5.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-12.1-4">Below is the tree diagram for "subscription-started".  All objects
-contained in this tree diagram are described in the YANG module in <a href="#yp-lite-yang-module" class="auto internal xref">Section 15.2</a>.<a href="#section-12.1-4" class="pilcrow">¶</a></p>
-<span id="name-subscription-started-notifi"></span><figure id="figure-12">
+<p id="section-12.1-4">Below is the tree diagram for "subscription-started".  All objects contained in this tree diagram are described in the YANG module in <a href="#yp-lite-yang-module" class="auto internal xref">Section 15.2</a>.<a href="#section-12.1-4" class="pilcrow">¶</a></p>
+<span id="name-subscription-started-notifi"></span><figure id="figure-13">
           <div class="lang-yangtree sourcecode" id="section-12.1-5.1">
 <pre>
     +---n subscription-started
@@ -3063,7 +3007,7 @@ contained in this tree diagram are described in the YANG module in <a href="#yp-
     |  +--ro purpose?   string {configured}?
 </pre>
 </div>
-<figcaption><a href="#figure-12" class="selfRef">Figure 12</a>:
+<figcaption><a href="#figure-13" class="selfRef">Figure 13</a>:
 <a href="#name-subscription-started-notifi" class="selfRef">subscription-started Notification Tree Diagram</a>
           </figcaption></figure>
 <p id="section-12.1-6"><strong>TODO, Should the subscription-started notification report decomposed subscription paths?</strong><a href="#section-12.1-6" class="pilcrow">¶</a></p>
@@ -3103,9 +3047,8 @@ contained in this tree diagram are described in the YANG module in <a href="#yp-
             </ul>
 </li>
         </ol>
-<p id="section-12.2-6">Below is a tree diagram for "subscription-terminated".  All objects
-contained in this tree are described in the YANG module in <a href="#yp-lite-yang-module" class="auto internal xref">Section 15.2</a>.<a href="#section-12.2-6" class="pilcrow">¶</a></p>
-<span id="name-subscription-terminated-not"></span><figure id="figure-13">
+<p id="section-12.2-6">Below is a tree diagram for "subscription-terminated".  All objects contained in this tree are described in the YANG module in <a href="#yp-lite-yang-module" class="auto internal xref">Section 15.2</a>.<a href="#section-12.2-6" class="pilcrow">¶</a></p>
+<span id="name-subscription-terminated-not"></span><figure id="figure-14">
           <div class="lang-yangtree sourcecode" id="section-12.2-7.1">
 <pre>
     +---n subscription-terminated
@@ -3113,7 +3056,7 @@ contained in this tree are described in the YANG module in <a href="#yp-lite-yan
     |  +--ro reason    identityref
 </pre>
 </div>
-<figcaption><a href="#figure-13" class="selfRef">Figure 13</a>:
+<figcaption><a href="#figure-14" class="selfRef">Figure 14</a>:
 <a href="#name-subscription-terminated-not" class="selfRef">subscription-terminated Notification Tree Diagram</a>
           </figcaption></figure>
 <p id="section-12.2-8"><strong>TODO Augmenting extra fields is better for clients?</strong>  The <em>reason</em> datanode identifyref indicates why a subcription has been terminated, and could be extended with further reasons in future.<a href="#section-12.2-8" class="pilcrow">¶</a></p>
@@ -3128,14 +3071,14 @@ contained in this tree are described in the YANG module in <a href="#yp-lite-yan
 <p id="section-12.3-2">This notification indicates that all of the event records prior to the current time have been passed to a receiver.  It is sent before any notification messages containing an event record with a timestamp later than (1) the subscription's start time.<a href="#section-12.3-2" class="pilcrow">¶</a></p>
 <p id="section-12.3-3">After the "replay-completed" notification has been sent, additional event records will be sent in sequence as they arise naturally on the publisher.<a href="#section-12.3-3" class="pilcrow">¶</a></p>
 <p id="section-12.3-4">Below is a tree diagram for "replay-completed".  All objects contained in this tree are described in the YANG module in Section 4.<a href="#section-12.3-4" class="pilcrow">¶</a></p>
-<span id="name-replay-completed-notificati"></span><figure id="figure-14">
+<span id="name-replay-completed-notificati"></span><figure id="figure-15">
           <div class="lang-yangtree sourcecode" id="section-12.3-5.1">
 <pre>
     +---n replay-completed
     |  +--ro id    subscription-id
 </pre>
 </div>
-<figcaption><a href="#figure-14" class="selfRef">Figure 14</a>:
+<figcaption><a href="#figure-15" class="selfRef">Figure 15</a>:
 <a href="#name-replay-completed-notificati" class="selfRef">replay-completed Notification Tree Diagram</a>
           </figcaption></figure>
 </section>
@@ -3147,40 +3090,11 @@ contained in this tree are described in the YANG module in <a href="#yp-lite-yan
       <h2 id="name-performance-reliability-and">
 <a href="#section-13" class="section-number selfRef">13. </a><a href="#name-performance-reliability-and" class="section-name selfRef">Performance, Reliability, and Subscription Monitoring</a>
       </h2>
-<p id="section-13-1"><strong>TODO.  Not sure if this text doesn't end up elsewhere?</strong><a href="#section-13-1" class="pilcrow">¶</a></p>
-<p id="section-13-2">A subscription to updates from a datastore is intended to obviate the
-need for polling.  However, in order to do so, it is critical that
-subscribers can rely on the subscription and have confidence that
-they will indeed receive the subscribed updates without having to
-worry about updates being silently dropped.  In other words, a
-subscription constitutes a promise on the side of the publisher to
-provide the receivers with updates per the terms of the subscription, or otherwise notify the receiver if t<a href="#section-13-2" class="pilcrow">¶</a></p>
-<p id="section-13-3">Now, there are many reasons why a publisher may at some point no
-longer be able to fulfill the terms of the subscription, even if the
-subscription had been initiated in good faith.  For example, the
-volume of datastore nodes may be larger than anticipated, the
-interval may prove too short to send full updates in rapid
-succession, or an internal problem may prevent objects from being
-collected.  For this reason, the solution defined in this document
-(1) mandates that a publisher notify receivers immediately and
-reliably whenever it encounters a situation in which it is unable to
-keep the terms of the subscription and (2) provides the publisher
-with the option to suspend the subscription in such a case.  This
-includes indicating the fact that an update is incomplete as part of
-a "push-update" or "push-change-update" notification, as well as
-emitting a "subscription-suspended" notification as applicable.  This
-is described further in Section 3.11.1.<a href="#section-13-3" class="pilcrow">¶</a></p>
-<p id="section-13-4">A publisher <span class="bcp14">SHOULD</span> reject a request for a subscription if it is
-unlikely that the publisher will be able to fulfill the terms of that
-subscription request.  In such cases, it is preferable to have a
-subscriber request a less resource-intensive subscription than to
-deal with frequently degraded behavior.<a href="#section-13-4" class="pilcrow">¶</a></p>
-<p id="section-13-5">The solution builds on <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>.  As defined therein, any loss of an
-underlying transport connection will be detected and result in
-subscription termination (in the case of dynamic subscriptions) or
-suspension (in the case of configured subscriptions), ensuring that
-situations where the loss of update notifications would go unnoticed
-will not occur.<a href="#section-13-5" class="pilcrow">¶</a></p>
+<p id="section-13-1"><strong>TODO.  Needs updating.  Not sure if this text doesn't end up elsewhere?</strong><a href="#section-13-1" class="pilcrow">¶</a></p>
+<p id="section-13-2">A subscription to updates from a datastore is intended to obviate the need for polling.  However, in order to do so, it is critical that subscribers can rely on the subscription and have confidence that they will indeed receive the subscribed updates without having to worry about updates being silently dropped.  In other words, a subscription constitutes a promise on the side of the publisher to provide the receivers with updates per the terms of the subscription, or otherwise notify the receiver if t<a href="#section-13-2" class="pilcrow">¶</a></p>
+<p id="section-13-3">Now, there are many reasons why a publisher may at some point no longer be able to fulfill the terms of the subscription, even if the subscription had been initiated in good faith.  For example, the volume of datastore nodes may be larger than anticipated, the interval may prove too short to send full updates in rapid succession, or an internal problem may prevent objects from being collected.  For this reason, the solution defined in this document (1) mandates that a publisher notify receivers immediately and reliably whenever it encounters a situation in which it is unable to keep the terms of the subscription and (2) provides the publisher with the option to suspend the subscription in such a case.  This includes indicating the fact that an update is incomplete as part of a "push-update" or "push-change-update" notification, as well as emitting a "subscription-suspended" notification as applicable.  This is described further in Section 3.11.1.<a href="#section-13-3" class="pilcrow">¶</a></p>
+<p id="section-13-4">A publisher <span class="bcp14">SHOULD</span> reject a request for a subscription if it is unlikely that the publisher will be able to fulfill the terms of that subscription request.  In such cases, it is preferable to have a subscriber request a less resource-intensive subscription than to deal with frequently degraded behavior.<a href="#section-13-4" class="pilcrow">¶</a></p>
+<p id="section-13-5">The solution builds on <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>.  As defined therein, any loss of an underlying transport connection will be detected and result in subscription termination (in the case of dynamic subscriptions) or suspension (in the case of configured subscriptions), ensuring that situations where the loss of update notifications would go unnoticed will not occur.<a href="#section-13-5" class="pilcrow">¶</a></p>
 <div id="subscription-monitoring">
 <section id="section-13.1">
         <h3 id="name-subscription-monitoring">
@@ -3333,7 +3247,7 @@ implementations <span class="bcp14">SHOULD</span> provide their own solution.<a 
 <p id="section-15.1-1">This section shows the full tree output for ietf-yp-lite YANG module.<a href="#section-15.1-1" class="pilcrow">¶</a></p>
 <p id="section-15.1-2">Note, this output does not include support for any transport configuration, and at least one would expect to be configurable.<a href="#section-15.1-2" class="pilcrow">¶</a></p>
 <p id="section-15.1-3"><strong>TODO What about capabilities?  Perhaps further explanation is needed here?</strong><a href="#section-15.1-3" class="pilcrow">¶</a></p>
-<span id="name-yang-tree-for-yang-push-lit"></span><figure id="figure-15">
+<span id="name-yang-tree-for-yang-push-lit"></span><figure id="figure-16">
           <div class="breakable lang-yangtree sourcecode" id="section-15.1-4.1">
 <pre>
 module: ietf-yp-lite
@@ -3377,6 +3291,7 @@ module: ietf-yp-lite
      |     |     +--ro excluded-event-records?
      |     |     |       yang:zero-based-counter64
      |     |     +--ro state                     enumeration
+     |     |     +--ro encoding?                 encoding
      |     |     +---x reset {configured}?
      |     |        +--ro output
      |     |           +--ro time    yang:date-and-time
@@ -3463,7 +3378,7 @@ module: ietf-yp-lite
        +--ro incomplete?         empty
 </pre>
 </div>
-<figcaption><a href="#figure-15" class="selfRef">Figure 15</a>:
+<figcaption><a href="#figure-16" class="selfRef">Figure 16</a>:
 <a href="#name-yang-tree-for-yang-push-lit" class="selfRef">YANG tree for YANG Push Lite Module Tree Output</a>
           </figcaption></figure>
 </section>
@@ -3476,7 +3391,7 @@ module: ietf-yp-lite
 <p id="section-15.2-1">This module imports typedefs from <span>[<a href="#RFC6991" class="cite xref">RFC6991</a>]</span>, <span>[<a href="#RFC8343" class="cite xref">RFC8343</a>]</span>, <span>[<a href="#RFC8341" class="cite xref">RFC8341</a>]</span>, <span>[<a href="#RFC8529" class="cite xref">RFC8529</a>]</span>, and <span>[<a href="#RFC8342" class="cite xref">RFC8342</a>]</span>.  It references <span>[<a href="#RFC6241" class="cite xref">RFC6241</a>]</span>, <span>[<a href="#XPATH" class="cite xref">XPATH</a>]</span> ("XML Path Language (XPath) Version 1.0"), <span>[<a href="#RFC7049" class="cite xref">RFC7049</a>]</span>, <span>[<a href="#RFC8259" class="cite xref">RFC8259</a>]</span>, <span>[<a href="#RFC7950" class="cite xref">RFC7950</a>]</span>, <span>[<a href="#RFC7951" class="cite xref">RFC7951</a>]</span>, and <span>[<a href="#RFC7540" class="cite xref">RFC7540</a>]</span>.<a href="#section-15.2-1" class="pilcrow">¶</a></p>
 <p id="section-15.2-2">This YANG module imports typedefs from <span>[<a href="#RFC6991" class="cite xref">RFC6991</a>]</span>, identities from
 <span>[<a href="#RFC8342" class="cite xref">RFC8342</a>]</span>, and the "sx:structure" extension from <span>[<a href="#RFC8791" class="cite xref">RFC8791</a>]</span>. It also references <span>[<a href="#RFC6241" class="cite xref">RFC6241</a>]</span>, <span>[<a href="#XPATH" class="cite xref">XPATH</a>]</span>, and <span>[<a href="#RFC7950" class="cite xref">RFC7950</a>]</span>.<a href="#section-15.2-2" class="pilcrow">¶</a></p>
-<span id="name-yang-module-ietf-yp-lite"></span><figure id="figure-16">
+<span id="name-yang-module-ietf-yp-lite"></span><figure id="figure-17">
           <div class="breakable lang-yang sourcecode" id="section-15.2-3.1">
 <pre>&lt;CODE BEGINS&gt; file "ietf-yp-lite.yang#0.1.0"
 
@@ -3753,22 +3668,46 @@ module ietf-yp-lite {
       "Base identity to represent data encodings.";
   }
 
-  identity encode-xml {
+  identity xml {
     base encoding;
-    if-feature "encode-xml";
+    //if-feature "encode-xml";
     description
       "Encode data using XML as described in RFC 7950.";
     reference
       "RFC 7950: The YANG 1.1 Data Modeling Language";
   }
 
-  identity encode-json {
+  identity json {
     base encoding;
-    if-feature "encode-json";
+    //if-feature "encode-json";
     description
       "Encode data using JSON as described in RFC 7951.";
     reference
       "RFC 7951: JSON Encoding of Data Modeled with YANG";
+  }
+
+  identity cbor {
+    base encoding;
+    //if-feature "encode-json";
+    description
+      "Encode data using CBOR as described in RFC 9245,
+       without using YANG SIDs";
+    reference
+      "RFC 9245: Encoding of Data Modeled with YANG in the
+       Concise Binary Object Representation (CBOR).";
+  }
+
+  identity cbor-sids {
+    base encoding;
+    //if-feature "encode-json";
+    description
+      "Encode data using JSON as described in RFC 7951, using YANG
+       SIDs.";
+    reference
+      "RFC 9245: Encoding of Data Modeled with YANG in the
+       Concise Binary Object Representation (CBOR).
+
+       RFC 9595: YANG Schema Item iDentifier (YANG SID).";
   }
 
   /* Identities for transports */
@@ -4562,6 +4501,14 @@ container datastore-telemetry {
                 publisher is currently generating notification
                 messages intended for that receiver.";
             }
+
+            leaf encoding {
+              config false;
+              type encoding;
+              description
+                "The type of encoding for notification messages.";
+            }
+
             // TODO - Do we want the reset action?
             action reset {
               if-feature "configured";
@@ -4696,7 +4643,7 @@ container datastore-telemetry {
 
 &lt;CODE ENDS&gt;</pre>
 </div>
-<figcaption><a href="#figure-16" class="selfRef">Figure 16</a>:
+<figcaption><a href="#figure-17" class="selfRef">Figure 17</a>:
 <a href="#name-yang-module-ietf-yp-lite" class="selfRef">YANG module ietf-yp-lite</a>
           </figcaption></figure>
 </section>
@@ -4722,7 +4669,7 @@ container datastore-telemetry {
 <p id="section-16.1-3">A receiver of subscription data <span class="bcp14">MUST</span> only be sent updates for which it has proper authorization.  A publisher <span class="bcp14">MUST</span> ensure that no unauthorized data is included in push updates.  To do so, it needs to apply all corresponding checks applicable at the time of a specific pushed update and, if necessary, silently remove any unauthorized data from datastore subtrees.  This enables YANG data that is pushed based on subscriptions to be authorized in a way that is equivalent to a regular data retrieval ("get") operation.<a href="#section-16.1-3" class="pilcrow">¶</a></p>
 <p id="section-16.1-4">Each "push-update" and "push-change-update" <span class="bcp14">MUST</span> have access control applied, as depicted in Figure 5.  This includes validating that read access is permitted for any new objects selected since the last notification message was sent to a particular receiver.  A publisher <span class="bcp14">MUST</span> silently omit data nodes from the results that the client is not authorized to see.  To accomplish this, implementations <span class="bcp14">SHOULD</span> apply the conceptual authorization model of <span>[<a href="#RFC8341" class="cite xref">RFC8341</a>]</span>, specifically Section 3.2.4, extended to apply analogously to data nodes included in notifications, not just &lt;rpc-reply&gt; messages sent in response to
 &lt;get&gt; and &lt;get-config&gt; requests.<a href="#section-16.1-4" class="pilcrow">¶</a></p>
-<span id="name-access-control-for-push-upd"></span><figure id="figure-17">
+<span id="name-access-control-for-push-upd"></span><figure id="figure-18">
           <div class="alignLeft art-text artwork" id="section-16.1-5.1">
 <pre>
                       +-----------------+      +--------------------+
@@ -4731,7 +4678,7 @@ container datastore-telemetry {
                       +-----------------+      +--------------------+
 </pre>
 </div>
-<figcaption><a href="#figure-17" class="selfRef">Figure 17</a>:
+<figcaption><a href="#figure-18" class="selfRef">Figure 18</a>:
 <a href="#name-access-control-for-push-upd" class="selfRef">Access Control for Push Updates</a>
           </figcaption></figure>
 <p id="section-16.1-6">A publisher <span class="bcp14">MUST</span> allow for the possibility that a subscription's selection filter references nonexistent data or data that a receiver is not allowed to access.  Such support permits a receiver the ability to monitor the entire lifecycle of some datastore tree without needing to explicitly enumerate every individual datastore node.  If, after access control has been applied, there are no objects remaining in an update record, then the effect varies given if the subscription is a periodic or on-change subscription.  For a periodic subscription, an empty "push-update" notification <span class="bcp14">MUST</span> be sent, so that clients do not get confused into thinking that an update was lost.  For an on-change subscription, a "push-update" notification <span class="bcp14">MUST NOT</span> be sent, so that clients remain unaware of changes made to nodes they don't have read-access for.  By the same token, changes to objects that are filtered <span class="bcp14">MUST NOT</span> affect any dampening intervals.<a href="#section-16.1-6" class="pilcrow">¶</a></p>
@@ -4749,8 +4696,7 @@ continuous and total filtering of a subscription's content for every update reco
 <p id="section-16.2-2">This section is modeled after the template described in Section 3.7.1 of <span>[<a href="#I-D.draft-ietf-netmod-rfc8407bis" class="cite xref">I-D.draft-ietf-netmod-rfc8407bis</a>]</span>.<a href="#section-16.2-2" class="pilcrow">¶</a></p>
 <p id="section-16.2-3">The "ietf-yp-lite" YANG module defines a data model that is designed to be accessed via YANG-based management protocols, such as NETCONF <span>[<a href="#RFC6241" class="cite xref">RFC6241</a>]</span> and RESTCONF <span>[<a href="#RFC8040" class="cite xref">RFC8040</a>]</span>. These protocols have to use a secure transport layer (e.g., SSH <span>[<a href="#RFC4252" class="cite xref">RFC4252</a>]</span>, TLS <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>, and QUIC <span>[<a href="#RFC9000" class="cite xref">RFC9000</a>]</span>) and have to use mutual authentication.<a href="#section-16.2-3" class="pilcrow">¶</a></p>
 <p id="section-16.2-4">The Network Configuration Access Control Model (NACM) <span>[<a href="#RFC8341" class="cite xref">RFC8341</a>]</span> provides the means to restrict access for particular NETCONF or RESTCONF users to a preconfigured subset of all available NETCONF or RESTCONF protocol operations and content.<a href="#section-16.2-4" class="pilcrow">¶</a></p>
-<p id="section-16.2-5">There are a number of data nodes defined in this YANG module that are writable/creatable/deletable (i.e., "config true", which is the default).  All writable data nodes are likely to be reasonably
-sensitive or vulnerable in some network environments.  Write operations (e.g., edit-config) and delete operations to these data nodes without proper protection or authentication can have a negative effect on network operations.  The following subtrees and data nodes have particular sensitivities/vulnerabilities:<a href="#section-16.2-5" class="pilcrow">¶</a></p>
+<p id="section-16.2-5">There are a number of data nodes defined in this YANG module that are writable/creatable/deletable (i.e., "config true", which is the default).  All writable data nodes are likely to be reasonably sensitive or vulnerable in some network environments.  Write operations (e.g., edit-config) and delete operations to these data nodes without proper protection or authentication can have a negative effect on network operations.  The following subtrees and data nodes have particular sensitivities/vulnerabilities:<a href="#section-16.2-5" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-16.2-6.1">
             <p id="section-16.2-6.1.1">There are no particularly sensitive writable data nodes.<a href="#section-16.2-6.1.1" class="pilcrow">¶</a></p>
@@ -5014,112 +4960,30 @@ sensitive or vulnerable in some network environments.  Write operations (e.g., e
 </div>
 </section>
 </div>
-<div id="example-configured-transport-augmentation-from-rfc-8639">
-<section id="appendix-A">
-      <h2 id="name-example-configured-transpor">
-<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-example-configured-transpor" class="section-name selfRef">Example Configured Transport Augmentation (from RFC 8639)</a>
-      </h2>
-<p id="appendix-A-1">This appendix provides a non-normative example of how the YANG module
-defined in Section 4 may be enhanced to incorporate the configuration
-parameters needed to support the transport connectivity process.
-This example is not intended to be a complete transport model.  In
-this example, connectivity via an imaginary transport type of "foo"
-is explored.  For more on the overall objectives behind configuring
-transport connectivity for a configured subscription, see
-Section 2.5.7.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
-<p id="appendix-A-2">The YANG module example defined in this appendix contains two main
-elements.  First is a transport identity "foo".  This transport
-identity allows a configuration agent to define "foo" as the selected
-type of transport for a subscription.  Second is a YANG case
-augmentation "foo", which is made to the
-"/subscriptions/subscription/receivers/receiver" node of Section 4.
-In this augmentation are the transport configuration parameters
-"address" and "port", which are necessary to make the connection to
-the receiver.<a href="#appendix-A-2" class="pilcrow">¶</a></p>
-<div class="breakable lang-yang sourcecode" id="appendix-A-3">
-<pre>
-module example-foo-subscribed-notifications {
-  yang-version 1.1;
-  namespace
-    "urn:example:foo-subscribed-notifications";
-
-  prefix fsn;
-
-  import ietf-subscribed-notifications {
-    prefix sn;
-  }
-  import ietf-inet-types {
-    prefix inet;
-  }
-
-  description
-    "Defines 'foo' as a supported type of configured transport for
-    subscribed event notifications.";
-
-  identity foo {
-    base sn:transport;
-    description
-      "Transport type 'foo' is available for use as a configured
-      subscription's transport protocol for subscribed
-      notifications.";
-  }
-
-  augment
-    "/sn:subscriptions/sn:subscription/sn:receivers/sn:receiver" {
-    when 'derived-from(../../../transport, "fsn:foo")';
-    description
-      "This augmentation makes transport parameters specific to 'foo'
-      available for a receiver.";
-    leaf address {
-      type inet:host;
-      mandatory true;
-      description
-        "Specifies the address to use for messages destined for a
-        receiver.";
-    }
-    leaf port {
-      type inet:port-number;
-      mandatory true;
-      description
-        "Specifies the port number to use for messages destined for a
-        receiver.";
-    }
-  }
-}
-
-              Figure 21: Example Transport Augmentation
-                  for the Fictitious Protocol "foo"
-</pre><a href="#appendix-A-3" class="pilcrow">¶</a>
-</div>
-<p id="appendix-A-4">This example YANG module for transport "foo" will not be seen in a
-real-world deployment.  For a real-world deployment supporting an
-actual transport technology, a similar YANG module must be defined.<a href="#appendix-A-4" class="pilcrow">¶</a></p>
-</section>
-</div>
 <div id="subscription-errors-from-rfc-8641">
-<section id="appendix-B">
+<section id="appendix-A">
       <h2 id="name-subscription-errors-from-rf">
-<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-subscription-errors-from-rf" class="section-name selfRef">Subscription Errors (from RFC 8641)</a>
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-subscription-errors-from-rf" class="section-name selfRef">Subscription Errors (from RFC 8641)</a>
       </h2>
 <div id="rpc-failures-1">
-<section id="appendix-B.1">
+<section id="appendix-A.1">
         <h3 id="name-rpc-failures-2">
-<a href="#appendix-B.1" class="section-number selfRef">B.1. </a><a href="#name-rpc-failures-2" class="section-name selfRef">RPC Failures</a>
+<a href="#appendix-A.1" class="section-number selfRef">A.1. </a><a href="#name-rpc-failures-2" class="section-name selfRef">RPC Failures</a>
         </h3>
-<p id="appendix-B.1-1">Rejection of an RPC for any reason is indicated via an RPC error
+<p id="appendix-A.1-1">Rejection of an RPC for any reason is indicated via an RPC error
 response from the publisher.  Valid RPC errors returned include both
 (1) existing transport-layer RPC error codes, such as those seen with
 NETCONF in <span>[<a href="#RFC6241" class="cite xref">RFC6241</a>]</span> and (2) subscription-specific errors, such as
 those defined in the YANG data model.  As a result, how subscription
-errors are encoded in an RPC error response is transport dependent.<a href="#appendix-B.1-1" class="pilcrow">¶</a></p>
-<p id="appendix-B.1-2">References to specific identities in the ietf-subscribed-
+errors are encoded in an RPC error response is transport dependent.<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
+<p id="appendix-A.1-2">References to specific identities in the ietf-subscribed-
 notifications YANG module <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span> or the ietf-yang-push YANG module
 may be returned as part of the error responses resulting from failed
 attempts at datastore subscription.  For errors defined as part of
 the ietf-subscribed-notifications YANG module, please refer to
 <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>.  The errors defined in this document, grouped per RPC, are
-as follows:<a href="#appendix-B.1-2" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-B.1-3">
+as follows:<a href="#appendix-A.1-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.1-3">
 <pre>
       establish-subscription          modify-subscription
       ---------------------------     ---------------------
@@ -5132,94 +4996,94 @@ as follows:<a href="#appendix-B.1-2" class="pilcrow">¶</a></p>
        sync-too-big                   ----------------------------
        unchanging-selection            no-such-subscription-resync
                                        sync-too-big
-</pre><a href="#appendix-B.1-3" class="pilcrow">¶</a>
+</pre><a href="#appendix-A.1-3" class="pilcrow">¶</a>
 </div>
-<p id="appendix-B.1-4">There is one final set of transport-independent RPC error elements
+<p id="appendix-A.1-4">There is one final set of transport-independent RPC error elements
 included in the YANG data model.  These are the four yang-data
-structures for failed datastore subscriptions:<a href="#appendix-B.1-4" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="appendix-B.1-5">
-<li id="appendix-B.1-5.1">
-            <p id="appendix-B.1-5.1.1">yang-data "establish-subscription-error-datastore": This <span class="bcp14">MUST</span> be
+structures for failed datastore subscriptions:<a href="#appendix-A.1-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="appendix-A.1-5">
+<li id="appendix-A.1-5.1">
+            <p id="appendix-A.1-5.1.1">yang-data "establish-subscription-error-datastore": This <span class="bcp14">MUST</span> be
 returned if information identifying the reason for an RPC error
 has not been placed elsewhere in the transport portion of a
 failed "establish-subscription" RPC response.  This <span class="bcp14">MUST</span> be sent
-if hints are included.<a href="#appendix-B.1-5.1.1" class="pilcrow">¶</a></p>
+if hints are included.<a href="#appendix-A.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-B.1-5.2">
-            <p id="appendix-B.1-5.2.1">yang-data "modify-subscription-error-datastore": This <span class="bcp14">MUST</span> be
+          <li id="appendix-A.1-5.2">
+            <p id="appendix-A.1-5.2.1">yang-data "modify-subscription-error-datastore": This <span class="bcp14">MUST</span> be
 returned if information identifying the reason for an RPC error
 has not been placed elsewhere in the transport portion of a
 failed "modify-subscription" RPC response.  This <span class="bcp14">MUST</span> be sent if
-hints are included.<a href="#appendix-B.1-5.2.1" class="pilcrow">¶</a></p>
+hints are included.<a href="#appendix-A.1-5.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-B.1-5.3">
-            <p id="appendix-B.1-5.3.1">yang-data "sn:delete-subscription-error": This <span class="bcp14">MUST</span> be returned
+          <li id="appendix-A.1-5.3">
+            <p id="appendix-A.1-5.3.1">yang-data "sn:delete-subscription-error": This <span class="bcp14">MUST</span> be returned
 if information identifying the reason for an RPC error has not
 been placed elsewhere in the transport portion of a failed
-"delete-subscription" or "kill-subscription" RPC response.<a href="#appendix-B.1-5.3.1" class="pilcrow">¶</a></p>
+"delete-subscription" or "kill-subscription" RPC response.<a href="#appendix-A.1-5.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-B.1-5.4">
-            <p id="appendix-B.1-5.4.1">yang-data "resync-subscription-error": This <span class="bcp14">MUST</span> be returned if
+          <li id="appendix-A.1-5.4">
+            <p id="appendix-A.1-5.4.1">yang-data "resync-subscription-error": This <span class="bcp14">MUST</span> be returned if
 information identifying the reason for an RPC error has not been
 placed elsewhere in the transport portion of a failed
-"resync-subscription" RPC response.<a href="#appendix-B.1-5.4.1" class="pilcrow">¶</a></p>
+"resync-subscription" RPC response.<a href="#appendix-A.1-5.4.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
 </div>
 <div id="failure-notifications">
-<section id="appendix-B.2">
+<section id="appendix-A.2">
         <h3 id="name-failure-notifications">
-<a href="#appendix-B.2" class="section-number selfRef">B.2. </a><a href="#name-failure-notifications" class="section-name selfRef">Failure Notifications</a>
+<a href="#appendix-A.2" class="section-number selfRef">A.2. </a><a href="#name-failure-notifications" class="section-name selfRef">Failure Notifications</a>
         </h3>
-<p id="appendix-B.2-1">A subscription may be unexpectedly terminated or suspended
+<p id="appendix-A.2-1">A subscription may be unexpectedly terminated or suspended
 independently of any RPC or configuration operation.  In such cases,
 indications of such a failure <span class="bcp14">MUST</span> be provided.  To accomplish this,
 a number of errors can be returned as part of the corresponding
 subscription state change notification.  For this purpose, the
 following error identities are introduced in this document, in
-addition to those that were already defined in <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>:<a href="#appendix-B.2-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-B.2-2">
+addition to those that were already defined in <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>:<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.2-2">
 <pre>
   subscription-terminated        subscription-suspended
   ---------------------------    ----------------------
   datastore-not-subscribable     period-unsupported
   unchanging-selection           update-too-big
                                   synchronization-size
-</pre><a href="#appendix-B.2-2" class="pilcrow">¶</a>
+</pre><a href="#appendix-A.2-2" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 </section>
 </div>
 <div id="Examples">
-<section id="appendix-C">
+<section id="appendix-B">
       <h2 id="name-examples">
-<a href="#appendix-C" class="section-number selfRef">Appendix C. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
+<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
       </h2>
-<p id="appendix-C-1">Notes on examples:<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+<p id="appendix-B-1">Notes on examples:<a href="#appendix-B-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C-2.1">
-          <p id="appendix-C-2.1.1">These examples have been given using a JSON encoding of the regular YANG-Push notification format, i.e., encoded using <span>[<a href="#RFC5277" class="cite xref">RFC5277</a>]</span>, but it is anticipated that these notifications could be defined to exclusively use the new format proposed by <span>[<a href="#I-D.netana-netconf-notif-envelope" class="cite xref">I-D.netana-netconf-notif-envelope</a>]</span>.<a href="#appendix-C-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="appendix-B-2.1">
+          <p id="appendix-B-2.1.1">These examples have been given using a JSON encoding of the regular YANG-Push notification format, i.e., encoded using <span>[<a href="#RFC5277" class="cite xref">RFC5277</a>]</span>, but it is anticipated that these notifications could be defined to exclusively use the new format proposed by <span>[<a href="#I-D.netana-netconf-notif-envelope" class="cite xref">I-D.netana-netconf-notif-envelope</a>]</span>.<a href="#appendix-B-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="appendix-C-2.2">
-          <p id="appendix-C-2.2.1">Some additional meta data fields, e.g., like those defined in <span>[<a href="#I-D.tgraf-netconf-notif-sequencing" class="cite xref">I-D.tgraf-netconf-notif-sequencing</a>]</span> would also likely be included, but have also been excluded to allow for slightly more concise examples.<a href="#appendix-C-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="appendix-B-2.2">
+          <p id="appendix-B-2.2.1">Some additional meta data fields, e.g., like those defined in <span>[<a href="#I-D.tgraf-netconf-notif-sequencing" class="cite xref">I-D.tgraf-netconf-notif-sequencing</a>]</span> would also likely be included, but have also been excluded to allow for slightly more concise examples.<a href="#appendix-B-2.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="appendix-C-2.3">
-          <p id="appendix-C-2.3.1">The examples include the <span>[<a href="#I-D.tgraf-netconf-yang-push-observation-time" class="cite xref">I-D.tgraf-netconf-yang-push-observation-time</a>]</span> field for the existing YANG-Push Notification format, and the proposed equivalent "observation-time" leaf for the new update notification format.<a href="#appendix-C-2.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="appendix-B-2.3">
+          <p id="appendix-B-2.3.1">The examples include the <span>[<a href="#I-D.tgraf-netconf-yang-push-observation-time" class="cite xref">I-D.tgraf-netconf-yang-push-observation-time</a>]</span> field for the existing YANG-Push Notification format, and the proposed equivalent "observation-time" leaf for the new update notification format.<a href="#appendix-B-2.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="appendix-C-2.4">
-          <p id="appendix-C-2.4.1">All these examples are created by hand, may contain errors, and may not parse correctly.<a href="#appendix-C-2.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="appendix-B-2.4">
+          <p id="appendix-B-2.4.1">All these examples are created by hand, may contain errors, and may not parse correctly.<a href="#appendix-B-2.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <div id="example-of-an-rfc8641-style-push-update-notification">
-<section id="appendix-C.1">
+<section id="appendix-B.1">
         <h3 id="name-example-of-an-style-push-up">
-<a href="#appendix-C.1" class="section-number selfRef">C.1. </a><a href="#name-example-of-an-style-push-up" class="section-name selfRef">Example of an <span class="cite xref">[RFC8641]</span> style push-update notification</a>
+<a href="#appendix-B.1" class="section-number selfRef">B.1. </a><a href="#name-example-of-an-style-push-up" class="section-name selfRef">Example of an <span class="cite xref">[RFC8641]</span> style push-update notification</a>
         </h3>
-<p id="appendix-C.1-1">This example illustrates a periodic update message for a subscription at "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces" that is returning data from two internal data providers, one of which is returning data for "interface-summary" and the other that is returning data for "interfaces".  The device resident management agents stitches the reply together from the two data providers into a single data tree before returning it in a single message.<a href="#appendix-C.1-1" class="pilcrow">¶</a></p>
-<p id="appendix-C.1-2">For the periodic message to be correct, and to allow it to replace any previous periodic message published on that subscription, it must include <strong>all</strong> data below the subscription path.  This may increase the total amount of internal IPC within the device and make the timestamps less accurate, since the observation timestamp only reports when the device starts polling the data providers.  If those providers are distributed across multiple processes and linecards then it may take a bit of time to complete the periodic on-change.<a href="#appendix-C.1-2" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-C.1-3">
+<p id="appendix-B.1-1">This example illustrates a periodic update message for a subscription at "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces" that is returning data from two internal data providers, one of which is returning data for "interface-summary" and the other that is returning data for "interfaces".  The device resident management agents stitches the reply together from the two data providers into a single data tree before returning it in a single message.<a href="#appendix-B.1-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.1-2">For the periodic message to be correct, and to allow it to replace any previous periodic message published on that subscription, it must include <strong>all</strong> data below the subscription path.  This may increase the total amount of internal IPC within the device and make the timestamps less accurate, since the observation timestamp only reports when the device starts polling the data providers.  If those providers are distributed across multiple processes and linecards then it may take a bit of time to complete the periodic on-change.<a href="#appendix-B.1-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.1-3">
 <pre>
 {
   "ietf-notification:notification": {
@@ -5271,18 +5135,18 @@ addition to those that were already defined in <span>[<a href="#RFC8639" class="
     }
   }
 }
-</pre><a href="#appendix-C.1-3" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.1-3" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="example-of-periodic-updates-using-the-new-style-update-message">
-<section id="appendix-C.2">
+<section id="appendix-B.2">
         <h3 id="name-example-of-periodic-updates">
-<a href="#appendix-C.2" class="section-number selfRef">C.2. </a><a href="#name-example-of-periodic-updates" class="section-name selfRef">Example of periodic updates using the new style update message</a>
+<a href="#appendix-B.2" class="section-number selfRef">B.2. </a><a href="#name-example-of-periodic-updates" class="section-name selfRef">Example of periodic updates using the new style update message</a>
         </h3>
-<p id="appendix-C.2-1">The subscription was made on "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces", but for efficiency reasons, the device has split the subscription into separate child subscriptions for the different data providers, and makes use of the new message format.<a href="#appendix-C.2-1" class="pilcrow">¶</a></p>
-<p id="appendix-C.2-2">Hence, this first periodic message is being published for the "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interface-summary" container, but it is encoded rooted relative to the schema for "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces".<a href="#appendix-C.2-2" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-C.2-3">
+<p id="appendix-B.2-1">The subscription was made on "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces", but for efficiency reasons, the device has split the subscription into separate child subscriptions for the different data providers, and makes use of the new message format.<a href="#appendix-B.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.2-2">Hence, this first periodic message is being published for the "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interface-summary" container, but it is encoded rooted relative to the schema for "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces".<a href="#appendix-B.2-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.2-3">
 <pre>
 {
   "ietf-notification:notification": {
@@ -5319,10 +5183,10 @@ addition to those that were already defined in <span>[<a href="#RFC8639" class="
     }
   }
 }
-</pre><a href="#appendix-C.2-3" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.2-3" class="pilcrow">¶</a>
 </div>
-<p id="appendix-C.2-4">The second periodic message is being published for the "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interfaces/interface" list, but again, it is encoded rooted relative to the schema for "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces".  This message has a separate observation time that represents the more accurate time that this periodic date was read.<a href="#appendix-C.2-4" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-C.2-5">
+<p id="appendix-B.2-4">The second periodic message is being published for the "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interfaces/interface" list, but again, it is encoded rooted relative to the schema for "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces".  This message has a separate observation time that represents the more accurate time that this periodic date was read.<a href="#appendix-B.2-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.2-5">
 <pre>
 {
   "ietf-notification:notification": {
@@ -5355,40 +5219,40 @@ addition to those that were already defined in <span>[<a href="#RFC8639" class="
     }
   }
 }
-</pre><a href="#appendix-C.2-5" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.2-5" class="pilcrow">¶</a>
 </div>
-<p id="appendix-C.2-6">Each child subscription would use the same period and anchor time as the configured subscription, possibly with a little bit of initial jitter to avoid all daemons attempting to publish the data at exactly the same time.<a href="#appendix-C.2-6" class="pilcrow">¶</a></p>
+<p id="appendix-B.2-6">Each child subscription would use the same period and anchor time as the configured subscription, possibly with a little bit of initial jitter to avoid all daemons attempting to publish the data at exactly the same time.<a href="#appendix-B.2-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="example-of-an-on-change-update-notification-using-the-new-style-update-message">
-<section id="appendix-C.3">
+<section id="appendix-B.3">
         <h3 id="name-example-of-an-on-change-upd">
-<a href="#appendix-C.3" class="section-number selfRef">C.3. </a><a href="#name-example-of-an-on-change-upd" class="section-name selfRef">Example of an on-change-update notification using the new style update message</a>
+<a href="#appendix-B.3" class="section-number selfRef">B.3. </a><a href="#name-example-of-an-on-change-upd" class="section-name selfRef">Example of an on-change-update notification using the new style update message</a>
         </h3>
-<p id="appendix-C.3-1">If the subscription is for on-change notifications, or periodic-and-on-change-notifications, then, if the interface state changed (specifically if the 'state' leaf of the interface changed state), and if the device was capable of generating on-change notifications, then you may see the following message.  A few points of notes here:<a href="#appendix-C.3-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.3-1">If the subscription is for on-change notifications, or periodic-and-on-change-notifications, then, if the interface state changed (specifically if the 'state' leaf of the interface changed state), and if the device was capable of generating on-change notifications, then you may see the following message.  A few points of notes here:<a href="#appendix-B.3-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.3-2.1">
-            <p id="appendix-C.3-2.1.1">The on-change notification contains <strong>all</strong> of the state at the "target-path"<a href="#appendix-C.3-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="appendix-B.3-2.1">
+            <p id="appendix-B.3-2.1.1">The on-change notification contains <strong>all</strong> of the state at the "target-path"<a href="#appendix-B.3-2.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.3-2.1.2.1">
-                <p id="appendix-C.3-2.1.2.1.1">Not present in the below example, but if the notification excluded some state under an interfaces list entry (e.g., the line-state leaf) then this would logically represent the implicit deletion of that field under the given list entry.<a href="#appendix-C.3-2.1.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="appendix-B.3-2.1.2.1">
+                <p id="appendix-B.3-2.1.2.1.1">Not present in the below example, but if the notification excluded some state under an interfaces list entry (e.g., the line-state leaf) then this would logically represent the implicit deletion of that field under the given list entry.<a href="#appendix-B.3-2.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.3-2.1.2.2">
-                <p id="appendix-C.3-2.1.2.2.1">In this example it is restricted to a single interface. It could also publish an on-change notification for all interfaces, by indicating a target-path without any keys specified.  TODO - Can it represent notifications for a subset of interfaces?<a href="#appendix-C.3-2.1.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-B.3-2.1.2.2">
+                <p id="appendix-B.3-2.1.2.2.1">In this example it is restricted to a single interface. It could also publish an on-change notification for all interfaces, by indicating a target-path without any keys specified.  TODO - Can it represent notifications for a subset of interfaces?<a href="#appendix-B.3-2.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li class="normal" id="appendix-C.3-2.2">
-            <p id="appendix-C.3-2.2.1">The schema of the change message is exactly the same as for the equivalent periodic message.  It doesn't use the YANG Patch format <span>[<a href="#RFC8072" class="cite xref">RFC8072</a>]</span> for on-change messages.<a href="#appendix-C.3-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="appendix-B.3-2.2">
+            <p id="appendix-B.3-2.2.1">The schema of the change message is exactly the same as for the equivalent periodic message.  It doesn't use the YANG Patch format <span>[<a href="#RFC8072" class="cite xref">RFC8072</a>]</span> for on-change messages.<a href="#appendix-B.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-C.3-2.3">
-            <p id="appendix-C.3-2.3.1">The "observation time" leaf represents when the system first observed the on-change event occurring.<a href="#appendix-C.3-2.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="appendix-B.3-2.3">
+            <p id="appendix-B.3-2.3.1">The "observation time" leaf represents when the system first observed the on-change event occurring.<a href="#appendix-B.3-2.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-C.3-2.4">
-            <p id="appendix-C.3-2.4.1">The on-change event doesn't differentiate the type of change to operational state.  The on-change-update snapshot type is used to indicate the creation of a new entry or some update to some existing state.  Basically, the message can be thought of as the state existing with some current value.<a href="#appendix-C.3-2.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="appendix-B.3-2.4">
+            <p id="appendix-B.3-2.4.1">The on-change event doesn't differentiate the type of change to operational state.  The on-change-update snapshot type is used to indicate the creation of a new entry or some update to some existing state.  Basically, the message can be thought of as the state existing with some current value.<a href="#appendix-B.3-2.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<div class="alignLeft art-text artwork" id="appendix-C.3-3">
+<div class="alignLeft art-text artwork" id="appendix-B.3-3">
 <pre>
 {
   "ietf-notification:notification": {
@@ -5416,22 +5280,22 @@ addition to those that were already defined in <span>[<a href="#RFC8639" class="
     }
   }
 }
-</pre><a href="#appendix-C.3-3" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.3-3" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="example-of-an-on-change-delete-notification-using-the-new-style-update-message">
-<section id="appendix-C.4">
+<section id="appendix-B.4">
         <h3 id="name-example-of-an-on-change-del">
-<a href="#appendix-C.4" class="section-number selfRef">C.4. </a><a href="#name-example-of-an-on-change-del" class="section-name selfRef">Example of an on-change-delete notification using the new style update message</a>
+<a href="#appendix-B.4" class="section-number selfRef">B.4. </a><a href="#name-example-of-an-on-change-del" class="section-name selfRef">Example of an on-change-delete notification using the new style update message</a>
         </h3>
-<p id="appendix-C.4-1">If the interface was deleted, and if the system was capable of reporting on-change events for the delete event, then an on-change delete message would be encoded as per the following message.  Of note:<a href="#appendix-C.4-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.4-1">If the interface was deleted, and if the system was capable of reporting on-change events for the delete event, then an on-change delete message would be encoded as per the following message.  Of note:<a href="#appendix-B.4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.4-2.1">
-            <p id="appendix-C.4-2.1.1">The on-change-delete snapshot type doesn't include a "datastore-snapshot", instead it represents a delete of the list entry at the path identified by the target-path, which is similar to a YANG Patch delete notification.<a href="#appendix-C.4-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="appendix-B.4-2.1">
+            <p id="appendix-B.4-2.1.1">The on-change-delete snapshot type doesn't include a "datastore-snapshot", instead it represents a delete of the list entry at the path identified by the target-path, which is similar to a YANG Patch delete notification.<a href="#appendix-B.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<div class="alignLeft art-text artwork" id="appendix-C.4-3">
+<div class="alignLeft art-text artwork" id="appendix-B.4-3">
 <pre>
 {
   "ietf-notification:notification": {
@@ -5447,25 +5311,25 @@ addition to those that were already defined in <span>[<a href="#RFC8639" class="
     }
   }
 }
-</pre><a href="#appendix-C.4-3" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.4-3" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="subscription-rpc-examples-from-rfc-8641">
-<section id="appendix-C.5">
+<section id="appendix-B.5">
         <h3 id="name-subscription-rpc-examples-f">
-<a href="#appendix-C.5" class="section-number selfRef">C.5. </a><a href="#name-subscription-rpc-examples-f" class="section-name selfRef">Subscription RPC examples (from RFC 8641)</a>
+<a href="#appendix-B.5" class="section-number selfRef">B.5. </a><a href="#name-subscription-rpc-examples-f" class="section-name selfRef">Subscription RPC examples (from RFC 8641)</a>
         </h3>
-<p id="appendix-C.5-1">YANG-Push subscriptions are established, modified, and deleted using
-RPCs augmented from <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>.<a href="#appendix-C.5-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.5-1">YANG-Push subscriptions are established, modified, and deleted using
+RPCs augmented from <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>.<a href="#appendix-B.5-1" class="pilcrow">¶</a></p>
 <div id="establish-subscription-rpc">
-<section id="appendix-C.5.1">
+<section id="appendix-B.5.1">
           <h4 id="name-establish-subscription-rpc">
-<a href="#appendix-C.5.1" class="section-number selfRef">C.5.1. </a><a href="#name-establish-subscription-rpc" class="section-name selfRef">"establish-subscription" RPC</a>
+<a href="#appendix-B.5.1" class="section-number selfRef">B.5.1. </a><a href="#name-establish-subscription-rpc" class="section-name selfRef">"establish-subscription" RPC</a>
           </h4>
-<p id="appendix-C.5.1-1">The subscriber sends an "establish-subscription" RPC with the
-parameters listed in Section 3.1.  An example might look like:<a href="#appendix-C.5.1-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-C.5.1-2">
+<p id="appendix-B.5.1-1">The subscriber sends an "establish-subscription" RPC with the
+parameters listed in Section 3.1.  An example might look like:<a href="#appendix-B.5.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.5.1-2">
 <pre>
  &lt;netconf:rpc message-id="101"
      xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
@@ -5487,11 +5351,11 @@ parameters listed in Section 3.1.  An example might look like:<a href="#appendix
  &lt;/netconf:rpc&gt;
 
                   Figure 10: "establish-subscription" RPC
-</pre><a href="#appendix-C.5.1-2" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.5.1-2" class="pilcrow">¶</a>
 </div>
-<p id="appendix-C.5.1-3">A positive response includes the "id" of the accepted subscription.
-In that case, a publisher may respond as follows:<a href="#appendix-C.5.1-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-C.5.1-4">
+<p id="appendix-B.5.1-3">A positive response includes the "id" of the accepted subscription.
+In that case, a publisher may respond as follows:<a href="#appendix-B.5.1-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.5.1-4">
 <pre>
  &lt;rpc-reply message-id="101"
     xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
@@ -5502,24 +5366,24 @@ In that case, a publisher may respond as follows:<a href="#appendix-C.5.1-3" cla
  &lt;/rpc-reply&gt;
 
          Figure 11: "establish-subscription" Positive RPC Response
-</pre><a href="#appendix-C.5.1-4" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.5.1-4" class="pilcrow">¶</a>
 </div>
-<p id="appendix-C.5.1-5">A subscription can be rejected for multiple reasons, including the
+<p id="appendix-B.5.1-5">A subscription can be rejected for multiple reasons, including the
 lack of authorization to establish a subscription, no capacity to
 serve the subscription at the publisher, or the inability of the
-publisher to select datastore content at the requested cadence.<a href="#appendix-C.5.1-5" class="pilcrow">¶</a></p>
-<p id="appendix-C.5.1-6">If a request is rejected because the publisher is not able to serve
+publisher to select datastore content at the requested cadence.<a href="#appendix-B.5.1-5" class="pilcrow">¶</a></p>
+<p id="appendix-B.5.1-6">If a request is rejected because the publisher is not able to serve
 it, the publisher <span class="bcp14">SHOULD</span> include in the returned error hints that
 help a subscriber understand what subscription parameters might have
 been accepted for the request.  These hints would be included in the
 yang-data structure "establish-subscription-error-datastore".
 However, even with these hints, there are no guarantees that
-subsequent requests will in fact be accepted.<a href="#appendix-C.5.1-6" class="pilcrow">¶</a></p>
-<p id="appendix-C.5.1-7">The specific parameters to be returned as part of the RPC error
+subsequent requests will in fact be accepted.<a href="#appendix-B.5.1-6" class="pilcrow">¶</a></p>
+<p id="appendix-B.5.1-7">The specific parameters to be returned as part of the RPC error
 response depend on the specific transport that is used to manage the
 subscription.  For NETCONF, those parameters are defined in
-<span>[<a href="#RFC8640" class="cite xref">RFC8640</a>]</span>.  For example, for the following NETCONF request:<a href="#appendix-C.5.1-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-C.5.1-8">
+<span>[<a href="#RFC8640" class="cite xref">RFC8640</a>]</span>.  For example, for the following NETCONF request:<a href="#appendix-B.5.1-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.5.1-8">
 <pre>
   &lt;rpc message-id="101"
       xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
@@ -5542,11 +5406,11 @@ subscription.  For NETCONF, those parameters are defined in
   &lt;/rpc&gt;
 
       Figure 12: "establish-subscription" Request: Example 2
-</pre><a href="#appendix-C.5.1-8" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.5.1-8" class="pilcrow">¶</a>
 </div>
-<p id="appendix-C.5.1-9">A publisher that cannot serve on-change updates but can serve
-periodic updates might return the following NETCONF response:<a href="#appendix-C.5.1-9" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-C.5.1-10">
+<p id="appendix-B.5.1-9">A publisher that cannot serve on-change updates but can serve
+periodic updates might return the following NETCONF response:<a href="#appendix-B.5.1-9" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.5.1-10">
 <pre>
  &lt;rpc-reply message-id="101"
    xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"
@@ -5565,30 +5429,30 @@ periodic updates might return the following NETCONF response:<a href="#appendix-
  &lt;/rpc-reply&gt;
 
        Figure 13: "establish-subscription" Error Response: Example 2
-</pre><a href="#appendix-C.5.1-10" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.5.1-10" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="delete-subscription-rpc">
-<section id="appendix-C.5.2">
+<section id="appendix-B.5.2">
           <h4 id="name-delete-subscription-rpc">
-<a href="#appendix-C.5.2" class="section-number selfRef">C.5.2. </a><a href="#name-delete-subscription-rpc" class="section-name selfRef">"delete-subscription" RPC</a>
+<a href="#appendix-B.5.2" class="section-number selfRef">B.5.2. </a><a href="#name-delete-subscription-rpc" class="section-name selfRef">"delete-subscription" RPC</a>
           </h4>
-<p id="appendix-C.5.2-1">To stop receiving updates from a subscription and effectively delete
+<p id="appendix-B.5.2-1">To stop receiving updates from a subscription and effectively delete
 a subscription that had previously been established using an
 "establish-subscription" RPC, a subscriber can send a
 "delete-subscription" RPC, which takes as its only input the
-subscription's "id".  This RPC is unmodified from <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>.<a href="#appendix-C.5.2-1" class="pilcrow">¶</a></p>
+subscription's "id".  This RPC is unmodified from <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>.<a href="#appendix-B.5.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="resync-subscription-rpc">
-<section id="appendix-C.5.3">
+<section id="appendix-B.5.3">
           <h4 id="name-resync-subscription-rpc">
-<a href="#appendix-C.5.3" class="section-number selfRef">C.5.3. </a><a href="#name-resync-subscription-rpc" class="section-name selfRef">"resync-subscription" RPC</a>
+<a href="#appendix-B.5.3" class="section-number selfRef">B.5.3. </a><a href="#name-resync-subscription-rpc" class="section-name selfRef">"resync-subscription" RPC</a>
           </h4>
-<p id="appendix-C.5.3-1">This RPC is supported only for on-change subscriptions previously
-established using an "establish-subscription" RPC.  For example:<a href="#appendix-C.5.3-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-C.5.3-2">
+<p id="appendix-B.5.3-1">This RPC is supported only for on-change subscriptions previously
+established using an "establish-subscription" RPC.  For example:<a href="#appendix-B.5.3-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-B.5.3-2">
 <pre>
   &lt;rpc message-id="103"
         xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
@@ -5599,13 +5463,13 @@ established using an "establish-subscription" RPC.  For example:<a href="#append
   &lt;/rpc&gt;
 
                   Figure 15: "resync-subscription"
-</pre><a href="#appendix-C.5.3-2" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.5.3-2" class="pilcrow">¶</a>
 </div>
-<p id="appendix-C.5.3-3">On receipt, a publisher must either (1) accept the request and
+<p id="appendix-B.5.3-3">On receipt, a publisher must either (1) accept the request and
 quickly follow with a "push-update" or (2) send an appropriate error
 in an RPC error response.  In its error response, the publisher <span class="bcp14">MAY</span>
 include, in the yang-data structure "resync-subscription-error",
-supplemental information about the reasons for the error.<a href="#appendix-C.5.3-3" class="pilcrow">¶</a></p>
+supplemental information about the reasons for the error.<a href="#appendix-B.5.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -5613,7 +5477,7 @@ supplemental information about the reasons for the error.<a href="#appendix-C.5.
 </section>
 </div>
 <div id="authors-addresses">
-<section id="appendix-D">
+<section id="appendix-C">
       <h2 id="name-authors-address">
 <a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
       </h2>
