@@ -271,22 +271,46 @@ module ietf-yp-lite {
       "Base identity to represent data encodings.";
   }
 
-  identity encode-xml {
+  identity xml {
     base encoding;
-    if-feature "encode-xml";
+    //if-feature "encode-xml";
     description
       "Encode data using XML as described in RFC 7950.";
     reference
       "RFC 7950: The YANG 1.1 Data Modeling Language";
   }
 
-  identity encode-json {
+  identity json {
     base encoding;
-    if-feature "encode-json";
+    //if-feature "encode-json";
     description
       "Encode data using JSON as described in RFC 7951.";
     reference
       "RFC 7951: JSON Encoding of Data Modeled with YANG";
+  }
+
+  identity cbor {
+    base encoding;
+    //if-feature "encode-json";
+    description
+      "Encode data using CBOR as described in RFC 9245,
+       without using YANG SIDs";
+    reference
+      "RFC 9245: Encoding of Data Modeled with YANG in the
+       Concise Binary Object Representation (CBOR).";
+  }
+
+  identity cbor-sids {
+    base encoding;
+    //if-feature "encode-json";
+    description
+      "Encode data using JSON as described in RFC 7951, using YANG
+       SIDs.";
+    reference
+      "RFC 9245: Encoding of Data Modeled with YANG in the
+       Concise Binary Object Representation (CBOR).
+
+       RFC 9595: YANG Schema Item iDentifier (YANG SID).";
   }
 
   /* Identities for transports */
@@ -1080,6 +1104,14 @@ container datastore-telemetry {
                 publisher is currently generating notification
                 messages intended for that receiver.";
             }
+
+            leaf encoding {
+              config false;
+              type encoding;
+              description
+                "The type of encoding for notification messages.";
+            }
+
             // TODO - Do we want the reset action?
             action reset {
               if-feature "configured";

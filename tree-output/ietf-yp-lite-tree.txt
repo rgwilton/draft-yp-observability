@@ -39,6 +39,7 @@ module: ietf-yp-lite
      |     |     +--ro excluded-event-records?
      |     |     |       yang:zero-based-counter64
      |     |     +--ro state                     enumeration
+     |     |     +--ro encoding?                 encoding
      |     |     +---x reset {configured}?
      |     |        +--ro output
      |     |           +--ro time    yang:date-and-time
