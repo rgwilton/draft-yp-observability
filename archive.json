@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-02T00:17:18.852883+00:00",
+  "timestamp": "2025-02-04T00:16:03.331252+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -190,7 +190,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2024-11-07T13:31:40Z",
-      "updatedAt": "2024-12-08T17:46:44Z",
+      "updatedAt": "2025-02-03T22:12:58Z",
       "baseRepository": "rgwilton/draft-yp-observability",
       "baseRefName": "main",
       "baseRefOid": "d5488db948318c4788c7b7aaffdd2648e2a6ce1d",
@@ -208,6 +208,13 @@
           "body": "are we ready to merge this PR and iterate from there?",
           "createdAt": "2024-12-08T17:46:44Z",
           "updatedAt": "2024-12-08T17:46:44Z"
+        },
+        {
+          "author": "jgcumming",
+          "authorAssociation": "NONE",
+          "body": "@rgwilton I've not had time to devote to this over the holiday period.  Feel free to merge and then continue and I'll add more changes to the merged version",
+          "createdAt": "2025-02-03T22:12:57Z",
+          "updatedAt": "2025-02-03T22:12:57Z"
         }
       ],
       "reviews": [
