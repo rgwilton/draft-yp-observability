@@ -1051,7 +1051,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Wilton</td>
-<td class="center">Expires 7 August 2025</td>
+<td class="center">Expires 8 August 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1064,12 +1064,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-wilton-netconf-yang-push-lite-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-02-03" class="published">3 February 2025</time>
+<time datetime="2025-02-04" class="published">4 February 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-08-07">7 August 2025</time></dd>
+<dd class="expires"><time datetime="2025-08-08">8 August 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1119,7 +1119,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 7 August 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 8 August 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1473,95 +1473,238 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-summary-of-open-issues-pote" class="section-name selfRef">Summary of Open Issues &amp; Potential Enhancements</a>
       </h2>
 <p id="section-3-1">This section lists some other potential issues and enhancements that should be discussed and considered as part of this work.  If there is continued interest in this work, i.e., it becomes adopted, then these should move to github issues.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3-2">
-<li id="section-3-2.1">
-          <p id="section-3-2.1.1">Document how sub-subscriptions can be used to split a higher level subscription into multiple smaller more efficient subscriptions for the device (that can be handled concurrently).<a href="#section-3-2.1.1" class="pilcrow">¶</a></p>
-</li>
-        <li id="section-3-2.2">
-          <p id="section-3-2.2.1">Currently the encoding and transport parameters are per subscription, but it may make more sense for these to be per receiver definition.  I.e., if you want to use different transports and encodings to the same receiver this should still be possible, but would require a second receiver to be defined with the same destination IP address, but a different name.  Currently, the newly proposed encoding format is configured per subscription (mirroring equivalent transport and encoding configuration), but alternatively it could be configured per receiver.<a href="#section-3-2.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li id="section-3-2.3">
-          <p id="section-3-2.3.1">We should consider how a subscription could support multiple subscription paths.  One potential tricky aspect of this is to determine the shared common ancestor path to all the subscriptions.  Related to this is whether XPath 1.0 is the best way of specifying these bind points, or whether it should be modelled as something closer to the NACM node-instance-identifier <span>[<a href="#RFC6536" class="cite xref">RFC6536</a>]</span>, but perhaps using something closer to the JSON style encoding of instance identifier <span>[<a href="#RFC7951" class="cite xref">RFC7951</a>]</span>, section 6.11; or JSON PATH <span>[<a href="#RFC9535" class="cite xref">RFC9535</a>]</span>.<a href="#section-3-2.3.1" class="pilcrow">¶</a></p>
-</li>
-        <li id="section-3-2.4">
-          <p id="section-3-2.4.1">We want to align on-change and periodic messages together using the same schema:<a href="#section-3-2.4.1" class="pilcrow">¶</a></p>
+<p id="section-3-2"><strong>At the moment, this list also reports more of the aspects that have changed relative to YANG Push, but the intention is that this would quickly be removed to only list open issues for discussion.  Please see <a href="#DifferencesFromYangPush" class="auto internal xref">Section 5.4</a> for a definitive list of how this differs compared to YANG Push.</strong><a href="#section-3-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3-3">
+<li id="section-3-3.1">
+          <p id="section-3-3.1.1">Further refinements on how a subscription can be decomposed internally into child subscriptions with the data returned for each child subscription:<a href="#section-3-3.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3-2.4.2.1">
-              <p id="section-3-2.4.2.1.1">Should on-change deletes be a separate message type, or just contain an empty datastore snapshot?  If it uses the same message then is a separate flag to indicate a delete necessary?<a href="#section-3-2.4.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-3-3.1.2.1">
+              <p id="section-3-3.1.2.1.1">Handling lists with separate producers of list entries.<a href="#section-3-3.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-3-2.4.2.2">
-              <p id="section-3-2.4.2.2.1">Should the data be encoded from the root of the tree, or relative to the subscription point?  If it is relative to the subscription point then what does<a href="#section-3-2.4.2.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3-3.1.2.2">
+              <p id="section-3-3.1.2.2.1">If a subscription is decomposed, then should the subscription started message for the configured subscription indicate how that subscription has been decomposed?<a href="#section-3-3.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-3.1.2.3">
+              <p id="section-3-3.1.2.3.1">Do we need to add an optional replay-end (i.e., after a sync-on-start) or collection-end (i.e., after every collection) notification so that clients can determine when data can be implicitly deleted.  (Rob: I think that we should add the latter, but make it a subscription config option to turn it on).<a href="#section-3-3.1.2.3.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </li>
-        <li id="section-3-2.5">
-          <p id="section-3-2.5.1">What level of subscription filtering do we need and want to support?  For example, I doubt that anyone allows for full XPath filtering of operational data subscriptions because they are likely to be very computationally expensive to implement.  Is there an easier way of expressing the filter requirements rather than using subtree filtering.  Note, this could be added in a future release.<a href="#section-3-2.5.1" class="pilcrow">¶</a></p>
+        <li id="section-3-3.2">
+          <p id="section-3-3.2.1">Constraints on supporting multiple receivers:<a href="#section-3-3.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.2.2.1">
+              <p id="section-3-3.2.2.1.1">Should they all have the same encoding? (I think so, the client can always set up different subscriptions if different receivers and subscriptions if different encodings are needed.)<a href="#section-3-3.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.6">
-          <p id="section-3-2.6.1">Do we need to fold in any text from RFC 8640? and RESTCONF.  I.e., there was this text in the one of the previous docs:   Bindings for subscribed event record delivery for NETCONF and RESTCONF are defined in <span>[<a href="#RFC8640" class="cite xref">RFC8640</a>]</span> and [RESTCONF-Notif], respectively.<a href="#section-3-2.6.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3-3.2.2.2">
+              <p id="section-3-3.2.2.2.1">Should we also constrain that they have the same transports? (Rob: Probably not)<a href="#section-3-3.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.7">
-          <p id="section-3-2.7.1">Handling lists with separate producers of list entries.<a href="#section-3-2.7.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3-3.2.2.3">
+              <p id="section-3-3.2.2.3.1">Lifecycle message should be sent per subscription, not per receiver (i.e., every receiver gets the same message (ignoring transport headers)):<a href="#section-3-3.2.2.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.2.2.3.2.1">
+                  <p id="section-3-3.2.2.3.2.1.1">Hence, every receiver gets the same sequence number in the message.  Otherwise, if separate lifecycle messages are sent to individual receivers then either those messages need to exclude sequence numbers of the sequence numbers will go out of sync (which I think will break the reason why Thomas introduced them in the first place).<a href="#section-3-3.2.2.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.8">
-          <p id="section-3-2.8.1">Do we need to allow a dynamic subscription to be modified?  If we do, then it would be better to change the establish-subscription RPC to have an optional existing subscription-id rather than define a separate RPC.  I would propose that such a modify-subscription would be equivalent to deleting and recreating a subscription other than reusing the same subscription-id.<a href="#section-3-2.8.1" class="pilcrow">¶</a></p>
+                <li class="normal" id="section-3-3.2.2.3.2.2">
+                  <p id="section-3-3.2.2.3.2.2.1">Or perhaps receiver removed can be a special case and a subscription-terminated is only sent to the receiver that is removed (because the sequence number doesn't matter - since it won't receive any new messages until another subscription-started).<a href="#section-3-3.2.2.3.2.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.9">
-          <p id="section-3-2.9.1">Should we allow for strings names rather than numeric ids for configured subscriptions?<a href="#section-3-2.9.1" class="pilcrow">¶</a></p>
+                <li class="normal" id="section-3-3.2.2.3.2.3">
+                  <p id="section-3-3.2.2.3.2.3.1">subscription-created notification could perhaps have an enum giving a reason for the notification (e.g., new subscription, receiver added).<a href="#section-3-3.2.2.3.2.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.10">
-          <p id="section-3-2.10.1">Should DSCP marking be configured under the receiver or the subscription?  Or perhaps in both places with DSCP marking at the subscription overriding a default set on the receiver?<a href="#section-3-2.10.1" class="pilcrow">¶</a></p>
+              </ul>
 </li>
-        <li id="section-3-2.11">
-          <p id="section-3-2.11.1">When a subscription is terminated, should be <span class="bcp14">MUST NOT</span> send any more notifications after the terminated message, or <span class="bcp14">SHOULD NOT</span>?  For a dynamic subscription, should the RPC be synchronous and not reply until it knows that all queues have been drained?<a href="#section-3-2.11.1" class="pilcrow">¶</a></p>
+          </ul>
 </li>
-        <li id="section-3-2.12">
-          <p id="section-3-2.12.1">If a subscription references a filter, then should that be included inline in the subscription started notification (as per the RFC 8641 text), or should it indicate that it is a referenced filter?<a href="#section-3-2.12.1" class="pilcrow">¶</a></p>
+        <li id="section-3-3.3">
+          <p id="section-3-3.3.1">Questions on subscription lifecycle management:<a href="#section-3-3.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.3.2.1">
+              <p id="section-3-3.3.2.1.1">The draft has already removed the suspend/resume logic and associated messages.<a href="#section-3-3.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.13">
-          <p id="section-3-2.13.1">Check agree that if a subscription has multiple receivers, then the encoding (and transport and dscp markings???) for all of those receivers must be the same.<a href="#section-3-2.13.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3-3.3.2.2">
+              <p id="section-3-3.3.2.2.1">The draft has already removed subscription-modified, and just kept subscription-created.<a href="#section-3-3.3.2.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.14">
-          <p id="section-3-2.14.1">We should allow devices to limit which datastores subscriptions can be made against (e.g., not candidate or factory-default as some obvious examples).  Should these be advertised in the capabilities?<a href="#section-3-2.14.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3-3.3.2.3">
+              <p id="section-3-3.3.2.3.1">Should subscription-started notification include a fingerprint of the schema that is covered by the subscription that would guaranteed to change if the subscription changes?  Would this also be impacted by a change to access control? (Rob: Probably not)<a href="#section-3-3.3.2.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.15">
-          <p id="section-3-2.15.1">If this work progresses we want to create bis versions of the transports so that they augment into the new data model paths.<a href="#section-3-2.15.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3-3.3.2.4">
+              <p id="section-3-3.3.2.4.1">If a subscription references a filter, then should that be included inline in the subscription started notification (as per the RFC 8641 text), or should it indicate that it is a referenced filter?<a href="#section-3-3.3.2.4.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.16">
-          <p id="section-3-2.16.1">I've introduced a new basic path filter<a href="#section-3-2.16.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3-3.3.2.5">
+              <p id="section-3-3.3.2.5.1">When a subscription is terminated, should it be <span class="bcp14">MUST NOT</span> send any more notifications after the terminated message, or <span class="bcp14">SHOULD NOT</span>?  For a dynamic subscription, should the RPC be synchronous and not reply until it knows that all queues have been drained?<a href="#section-3-3.3.2.5.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.17">
-          <p id="section-3-2.17.1">Add in an option path-prefix in the notification messages so they don't need to be encoded from the root.  Need to define semantics of how this works, e.g., this should probably be controlled via configuration.<a href="#section-3-2.17.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3-3.3.2.6">
+              <p id="section-3-3.3.2.6.1">Is a publisher allowed to arbitrarily send a sync-on-start resync, e.g., if it detects data loss, or should it always just terminate and reinitialize the susbcription?<a href="#section-3-3.3.2.6.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.18">
-          <p id="section-3-2.18.1">We allow multiple updates to be batched together in a single message (which is really for handling on-change messages).<a href="#section-3-2.18.1" class="pilcrow">¶</a></p>
+          </ul>
 </li>
-        <li id="section-3-2.19">
-          <p id="section-3-2.19.1">For on-change messages, a delete is inferred by replacing with a empty data node.<a href="#section-3-2.19.1" class="pilcrow">¶</a></p>
+        <li id="section-3-3.4">
+          <p id="section-3-3.4.1">Questions/comments on the notification message format:<a href="#section-3-3.4.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.4.2.1">
+              <p id="section-3-3.4.2.1.1">periodic and on-change notifications use the same new single update message.<a href="#section-3-3.4.2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.20">
-          <p id="section-3-2.20.1">Need to consider how NACM applies to YANG Push Lite, which may differ for dynamic vs configured subscription, but generally we want the permissions to be checked when the subscription is created rather than each time a path is accessed.<a href="#section-3-2.20.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3-3.4.2.2">
+              <p id="section-3-3.4.2.2.1">We also mandate use of the new envelope draft for encapsulating the notifications.  Do we want to REQUIRE use of hostname &amp; sequence-number? (I think we do).<a href="#section-3-3.4.2.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.21">
-          <p id="section-3-2.21.1">Is a publisher allowed to arbitrarily send a sync-on-start resync, e.g., if it detects data loss, or should it always just terminate and reinitialize the susbcription?<a href="#section-3-2.21.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3-3.4.2.3">
+              <p id="section-3-3.4.2.3.1">We allow a subscription to be decomposed into more specific subscriptions which are then used for the notification.<a href="#section-3-3.4.2.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.22">
-          <p id="section-3-2.22.1">For on-change, should a subscription be rejected (or not brought up) if there are no on-change notifiable nodes.<a href="#section-3-2.22.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3-3.4.2.4">
+              <p id="section-3-3.4.2.4.1">We allow multiple updates within a single message (primary use case is for the on-change case).  What about the timestamp, which is still just once per message (like gNMI)?  Should message bundling be optional/configurable to implement (if they all use a single shared timestamp)?<a href="#section-3-3.4.2.4.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.23">
-          <p id="section-3-2.23.1">Should we use the object terminology?  This may be better than data node subtree, or the equivalent, and could be better than introducing <em>bags</em>?<a href="#section-3-2.23.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3-3.4.2.5">
+              <p id="section-3-3.4.2.5.1">on-change deletes are implicit by an update that replaces an existing entry witha empty data node (e.g., "{}" in JSON)<a href="#section-3-3.4.2.5.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.24">
-          <p id="section-3-2.24.1">Should we mandate that all implementations <span class="bcp14">MUST</span> support configured subscriptions?  Currently the text indicates that both configured and dynamic are optional and only one must be implemented.<a href="#section-3-2.24.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3-3.4.2.6">
+              <p id="section-3-3.4.2.6.1">The update message also currently includes a path-prefix to allow (like gNMI) so that they don't necessarily need to be encoded from root, specifically, I think that this makes on-change messages nicer, since the on-change is rooted to the thing that is changing rather than the root of the tree.  We need to define semantics of how this works, e.g., this should probably be controlled via configuration.<a href="#section-3-3.4.2.6.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.4.2.6.2.1">
+                  <p id="section-3-3.4.2.6.2.1.1">This prefix path should use something like the NACM node-instance-identifier <span>[<a href="#RFC6536" class="cite xref">RFC6536</a>]</span> but JSONified (i.e., closer to the JSON style encoding of instance identifier <span>[<a href="#RFC7951" class="cite xref">RFC7951</a>]</span>), which should perhaps be done as separate draft, so it can be discussed independently)<a href="#section-3-3.4.2.6.2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-3-2.25">
-          <p id="section-3-2.25.1">Lifecycle events are defined in YANG Push (and currently in this draft) as being sent per (subscription, receiver) pair (e.g., when each new receiver is added, a subscription started notification is sent to each new receiver, similarly for the subscription-terminated message), but this will either cause gaps in the notification sequence number (e.g., in the notification-envelope draft), or it will require separate notification sequence numbers for each receiver.  Instead, I propose that the lifecycle notifications are <em>always</em> sent per subscription, i.e., the same notifications (with the same sequence numbers) are always sent to <em>all</em> receivers.  This would probably mean that we want to introduce a new receiver added and receiver removed notifications and use those instead of sending subscription-started/ended notifications.  Alternatively, we could merge the receiver-added with the subscription-stated message, but with fields to extra indication for the reason (e.g., that a new receiver has been added).<a href="#section-3-2.25.1" class="pilcrow">¶</a></p>
+              </ul>
 </li>
-        <li id="section-3-2.26">
-          <p id="section-3-2.26.1">If a subscription is decomposed, then should the subscription started message for the configured subscription indicate how that subscription has been decomposed?<a href="#section-3-2.26.1" class="pilcrow">¶</a></p>
+          </ul>
 </li>
-        <li id="section-3-2.27">
-          <p id="section-3-2.27.1">Add information to the subscription-started notification to fingerprint the schema that is covered by a subscription, and that should change if that covered schema changes.  Would this also be impacted, by a change to access control?<a href="#section-3-2.27.1" class="pilcrow">¶</a></p>
+        <li id="section-3-3.5">
+          <p id="section-3-3.5.1">Questions related to terminology:<a href="#section-3-3.5.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.5.2.1">
+              <p id="section-3-3.5.2.1.1">Should we use the object terminology?  This may be better than data node subtree, or the equivalent, and could be better than introducing <em>bags</em>?<a href="#section-3-3.5.2.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-3.6">
+          <p id="section-3-3.6.1">Questions/issues related to the configuration model:<a href="#section-3-3.6.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.6.2.1">
+              <p id="section-3-3.6.2.1.1">Note some of these apply or impact dynamic subscriptions as well.<a href="#section-3-3.6.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-3.6.2.2">
+              <p id="section-3-3.6.2.2.1">YP Lite is somewhat different (separate namespace, separate receivers, no event filters, some config has moved to a separate receivers list.)  See the data model and <a href="#DifferencesFromYangPush" class="auto internal xref">Section 5.4</a>.<a href="#section-3-3.6.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-3.6.2.3">
+              <p id="section-3-3.6.2.3.1">We should allow devices to limit which datastores subscriptions can be made against (e.g., not candidate or factory-default as some obvious examples).  Should these be advertised in the capabilities?<a href="#section-3-3.6.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-3.6.2.4">
+              <p id="section-3-3.6.2.4.1">Some other changes/proposed changes:<a href="#section-3-3.6.2.4.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.6.2.4.2.1">
+                  <p id="section-3-3.6.2.4.2.1.1">I want to reduce the number of features.  Also, in some cases we have both features are capability flags in oper.  Is is okay to have both.<a href="#section-3-3.6.2.4.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-3-3.6.2.4.2.2">
+                  <p id="section-3-3.6.2.4.2.2.1">I've renamed the encodings (e.g., from "encode-json" to just "json")<a href="#section-3-3.6.2.4.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-3-3.6.2.4.2.3">
+                  <p id="section-3-3.6.2.4.2.3.1">Probably want to get rid of the reset RPC.<a href="#section-3-3.6.2.4.2.3.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-3-3.6.2.4.2.4">
+                  <p id="section-3-3.6.2.4.2.4.1">Maybe further simplification of the receivers list under the subscription.  E.g., do we need stats per subscription per receiver, or just per subscription?  Do want stats across all subscriptions to a given receiver?<a href="#section-3-3.6.2.4.2.4.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-3-3.6.2.4.2.5">
+                  <p id="section-3-3.6.2.4.2.5.1">Subscription-ids are currently numeric values with the space split between configured and dynamic subscriptions, but I think that the config model would be cleaner if we used names for the configured subscriptions (and we could reserve a prefix "dyn-" for dynamic subscriptions).<a href="#section-3-3.6.2.4.2.5.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-3-3.6.2.4.2.6">
+                  <p id="section-3-3.6.2.4.2.6.1">Should DSCP marking be configured under the receiver or the subscription?  Or perhaps in both places with DSCP marking at the subscription overriding a default set on the receiver?<a href="#section-3-3.6.2.4.2.6.1" class="pilcrow">¶</a></p>
+</li>
+              </ul>
+</li>
+          </ul>
+</li>
+        <li id="section-3-3.7">
+          <p id="section-3-3.7.1">Questions/issues related to dynamic subscriptions:<a href="#section-3-3.7.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.7.2.1">
+              <p id="section-3-3.7.2.1.1">In YP Lite, dynamic subscriptions are designed to be closer to configured subscriptions and share more of the data model and lifecycle handling.  I.e., the primary differentiator is meant to be how they are instantiated.<a href="#section-3-3.7.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-3.7.2.2">
+              <p id="section-3-3.7.2.2.1">Do we want to change how RPC errors are reported?  E.g., change the RPC ok response to indicate whether the subscription was successfully created or not, or included extra error information.  Note NETCONF and RESTCONF already define how errors are encoded in XML and JSON (for RESTCONF only).<a href="#section-3-3.7.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-3.7.2.3">
+              <p id="section-3-3.7.2.3.1">Do we need to allow a dynamic subscription to be modified?  If we do, then it would be better to change the establish-subscription RPC to have an optional existing subscription-id rather than define a separate RPC.  However, my preference is that the existing subscription is deleted and recreated (or if we allow the client to specify the subscription-id then they could just overwrite the subscription)<a href="#section-3-3.7.2.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-3.8">
+          <p id="section-3-3.8.1">Questions related to implementation conformance:<a href="#section-3-3.8.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.8.2.1">
+              <p id="section-3-3.8.2.1.1">Should we mandate that all implementations <span class="bcp14">MUST</span> support configured subscriptions? Currently the text indicates that both configured and dynamic are optional and only one must be implemented.<a href="#section-3-3.8.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-3.8.2.2">
+              <p id="section-3-3.8.2.2.1">For on-change, should a subscription be rejected (or not brought up) if there are no on-change notifiable nodes?  Alternative is to offer implementation flexibility between these two approaches.<a href="#section-3-3.8.2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-3.9">
+          <p id="section-3-3.9.1">Issues/questions related to path filtering:<a href="#section-3-3.9.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.9.2.1">
+              <p id="section-3-3.9.2.1.1">I've introduced a new basic path filter for selecting filter paths for a subscription.  I.e., intended to represent the actual cut down version of xpaths that implementations use rather than full Xpath.  Do we want to mandate support for this?<a href="#section-3-3.9.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-3.9.2.2">
+              <p id="section-3-3.9.2.2.1">I've currently retained subtree filtering as the more advance form of filtering.<a href="#section-3-3.9.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-3.9.2.3">
+              <p id="section-3-3.9.2.3.1">I would propose that we remove support for XPath filtering (or otherwise, it should definitely go under a feature statement), and the draft should be clear that it is optional, and may have heavy performance issues, and implementations may end up not supporting the full subset of XPath.<a href="#section-3-3.9.2.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-3.10">
+          <p id="section-3-3.10.1">Issues/questions related to security and NACM filtering:<a href="#section-3-3.10.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.10.2.1">
+              <p id="section-3-3.10.2.1.1">Need to consider how NACM applies to YANG Push Lite, which may differ for dynamic vs configured subscription, but generally we want the permissions to be checked when the subscription is created rather than each time a path is accessed.<a href="#section-3-3.10.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-3.10.2.2">
+              <p id="section-3-3.10.2.2.1">Where should this be in the document (current it in the )<a href="#section-3-3.10.2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-3.11">
+          <p id="section-3-3.11.1">Issues/questions related to operational data:<a href="#section-3-3.11.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.11.2.1">
+              <p id="section-3-3.11.2.1.1">Should we define some additional operational data to help operators check that the telemetry infrastructure is performing correctly, to get an approximation of the load, etc. (Rob: probably, but lower priority)<a href="#section-3-3.11.2.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-3.12">
+          <p id="section-3-3.12.1">Issues/questions related to capabilties:<a href="#section-3-3.12.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.12.2.1">
+              <p id="section-3-3.12.2.1.1">Should this use a separate capabilities subtree from Yang Push (Rob: Probably)<a href="#section-3-3.12.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-3-3.12.2.2">
+              <p id="section-3-3.12.2.2.1">Should we define a base model in this draft for the capabilities (Rob: Probably, based on the existing capabilities but in a new namespace/path).<a href="#section-3-3.12.2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-3.13">
+          <p id="section-3-3.13.1">Process related issues/questions:<a href="#section-3-3.13.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.13.2.1">
+              <p id="section-3-3.13.2.1.1">If this work progresses we want to create bis versions of the transports so that they augment into the new data model paths.  Drafts that would need to be updated:<a href="#section-3-3.13.2.1.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.13.2.1.2.1">
+                  <p id="section-3-3.13.2.1.2.1.1"><span>[<a href="#I-D.draft-ietf-netconf-udp-notif" class="cite xref">I-D.draft-ietf-netconf-udp-notif</a>]</span> - only to augment new receiver path (and capabilities?)<a href="#section-3-3.13.2.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-3-3.13.2.1.2.2">
+                  <p id="section-3-3.13.2.1.2.2.1"><span>[<a href="#I-D.draft-ietf-netconf-http-client-server" class="cite xref">I-D.draft-ietf-netconf-http-client-server</a>]</span> - only to augment new receiver path (and capabilities?)<a href="#section-3-3.13.2.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              </ul>
+</li>
+            <li class="normal" id="section-3-3.13.2.2">
+              <p id="section-3-3.13.2.2.1">Do we need to fold in any text from RFC 8640? and RESTCONF.  I.e., there was this text in the one of the previous docs:   Bindings for subscribed event record delivery for NETCONF and RESTCONF are defined in <span>[<a href="#RFC8640" class="cite xref">RFC8640</a>]</span> and [RESTCONF-Notif], respectively.<a href="#section-3-3.13.2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+        <li id="section-3-3.14">
+          <p id="section-3-3.14.1">Examples related issues/questions:<a href="#section-3-3.14.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-3.14.2.1">
+              <p id="section-3-3.14.2.1.1">We need to update the examples to reflect changes in the models.<a href="#section-3-3.14.2.1.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
 </li>
       </ol>
 </section>
