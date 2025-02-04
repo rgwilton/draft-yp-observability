@@ -125,63 +125,136 @@ Hence, the authors of this draft would like to sincerely thank and acknowledge t
 
 This section lists some other potential issues and enhancements that should be discussed and considered as part of this work.  If there is continued interest in this work, i.e., it becomes adopted, then these should move to github issues.
 
-1. Document how sub-subscriptions can be used to split a higher level subscription into multiple smaller more efficient subscriptions for the device (that can be handled concurrently).
+**At the moment, this list also reports more of the aspects that have changed relative to YANG Push, but the intention is that this would quickly be removed to only list open issues for discussion.  Please see {{DifferencesFromYangPush}} for a definitive list of how this differs compared to YANG Push.**
 
-1. Currently the encoding and transport parameters are per subscription, but it may make more sense for these to be per receiver definition.  I.e., if you want to use different transports and encodings to the same receiver this should still be possible, but would require a second receiver to be defined with the same destination IP address, but a different name.  Currently, the newly proposed encoding format is configured per subscription (mirroring equivalent transport and encoding configuration), but alternatively it could be configured per receiver.
+1. Further refinements on how a subscription can be decomposed internally into child subscriptions with the data returned for each child subscription:
 
-1. We should consider how a subscription could support multiple subscription paths.  One potential tricky aspect of this is to determine the shared common ancestor path to all the subscriptions.  Related to this is whether XPath 1.0 is the best way of specifying these bind points, or whether it should be modelled as something closer to the NACM node-instance-identifier {{RFC6536}}, but perhaps using something closer to the JSON style encoding of instance identifier {{RFC7951}}, section 6.11; or JSON PATH {{RFC9535}}.
+   - Handling lists with separate producers of list entries.
 
-1. We want to align on-change and periodic messages together using the same schema:
+   - If a subscription is decomposed, then should the subscription started message for the configured subscription indicate how that subscription has been decomposed?
 
-   - Should on-change deletes be a separate message type, or just contain an empty datastore snapshot?  If it uses the same message then is a separate flag to indicate a delete necessary?
+   - Do we need to add an optional replay-end (i.e., after a sync-on-start) or collection-end (i.e., after every collection) notification so that clients can determine when data can be implicitly deleted.  (Rob: I think that we should add the latter, but make it a subscription config option to turn it on).
 
-   - Should the data be encoded from the root of the tree, or relative to the subscription point?  If it is relative to the subscription point then what does
+1. Constraints on supporting multiple receivers:
 
-1. What level of subscription filtering do we need and want to support?  For example, I doubt that anyone allows for full XPath filtering of operational data subscriptions because they are likely to be very computationally expensive to implement.  Is there an easier way of expressing the filter requirements rather than using subtree filtering.  Note, this could be added in a future release.
+   - Should they all have the same encoding? (I think so, the client can always set up different subscriptions if different receivers and subscriptions if different encodings are needed.)
 
-1. Do we need to fold in any text from RFC 8640? and RESTCONF.  I.e., there was this text in the one of the previous docs:   Bindings for subscribed event record delivery for NETCONF and RESTCONF are defined in {{RFC8640}} and [RESTCONF-Notif], respectively.
+   - Should we also constrain that they have the same transports? (Rob: Probably not)
 
-1. Handling lists with separate producers of list entries.
+   - Lifecycle message should be sent per subscription, not per receiver (i.e., every receiver gets the same message (ignoring transport headers)):
 
-1. Do we need to allow a dynamic subscription to be modified?  If we do, then it would be better to change the establish-subscription RPC to have an optional existing subscription-id rather than define a separate RPC.  I would propose that such a modify-subscription would be equivalent to deleting and recreating a subscription other than reusing the same subscription-id.
+     - Hence, every receiver gets the same sequence number in the message.  Otherwise, if separate lifecycle messages are sent to individual receivers then either those messages need to exclude sequence numbers of the sequence numbers will go out of sync (which I think will break the reason why Thomas introduced them in the first place).
 
-1. Should we allow for strings names rather than numeric ids for configured subscriptions?
+     - Or perhaps receiver removed can be a special case and a subscription-terminated is only sent to the receiver that is removed (because the sequence number doesn't matter - since it won't receive any new messages until another subscription-started).
 
-1. Should DSCP marking be configured under the receiver or the subscription?  Or perhaps in both places with DSCP marking at the subscription overriding a default set on the receiver?
+     - subscription-created notification could perhaps have an enum giving a reason for the notification (e.g., new subscription, receiver added).
 
-1. When a subscription is terminated, should be MUST NOT send any more notifications after the terminated message, or SHOULD NOT?  For a dynamic subscription, should the RPC be synchronous and not reply until it knows that all queues have been drained?
+1. Questions on subscription lifecycle management:
 
-1. If a subscription references a filter, then should that be included inline in the subscription started notification (as per the RFC 8641 text), or should it indicate that it is a referenced filter?
+   - The draft has already removed the suspend/resume logic and associated messages.
 
-1. Check agree that if a subscription has multiple receivers, then the encoding (and transport and dscp markings???) for all of those receivers must be the same.
+   - The draft has already removed subscription-modified, and just kept subscription-created.
 
-1. We should allow devices to limit which datastores subscriptions can be made against (e.g., not candidate or factory-default as some obvious examples).  Should these be advertised in the capabilities?
+   - Should subscription-started notification include a fingerprint of the schema that is covered by the subscription that would guaranteed to change if the subscription changes?  Would this also be impacted by a change to access control? (Rob: Probably not)
 
-1. If this work progresses we want to create bis versions of the transports so that they augment into the new data model paths.
+   - If a subscription references a filter, then should that be included inline in the subscription started notification (as per the RFC 8641 text), or should it indicate that it is a referenced filter?
 
-1. I've introduced a new basic path filter
+   - When a subscription is terminated, should it be MUST NOT send any more notifications after the terminated message, or SHOULD NOT?  For a dynamic subscription, should the RPC be synchronous and not reply until it knows that all queues have been drained?
 
-1. Add in an option path-prefix in the notification messages so they don't need to be encoded from the root.  Need to define semantics of how this works, e.g., this should probably be controlled via configuration.
+   - Is a publisher allowed to arbitrarily send a sync-on-start resync, e.g., if it detects data loss, or should it always just terminate and reinitialize the susbcription?
 
-1. We allow multiple updates to be batched together in a single message (which is really for handling on-change messages).
+1. Questions/comments on the notification message format:
 
-1. For on-change messages, a delete is inferred by replacing with a empty data node.
+   - periodic and on-change notifications use the same new single update message.
 
-1. Need to consider how NACM applies to YANG Push Lite, which may differ for dynamic vs configured subscription, but generally we want the permissions to be checked when the subscription is created rather than each time a path is accessed.
+   - We also mandate use of the new envelope draft for encapsulating the notifications.  Do we want to REQUIRE use of hostname & sequence-number? (I think we do).
 
-1. Is a publisher allowed to arbitrarily send a sync-on-start resync, e.g., if it detects data loss, or should it always just terminate and reinitialize the susbcription?
+   - We allow a subscription to be decomposed into more specific subscriptions which are then used for the notification.
 
-1. For on-change, should a subscription be rejected (or not brought up) if there are no on-change notifiable nodes.
+   - We allow multiple updates within a single message (primary use case is for the on-change case).  What about the timestamp, which is still just once per message (like gNMI)?  Should message bundling be optional/configurable to implement (if they all use a single shared timestamp)?
 
-1. Should we use the object terminology?  This may be better than data node subtree, or the equivalent, and could be better than introducing *bags*?
+   - on-change deletes are implicit by an update that replaces an existing entry witha empty data node (e.g., "{}" in JSON)
 
-1. Should we mandate that all implementations MUST support configured subscriptions?  Currently the text indicates that both configured and dynamic are optional and only one must be implemented.
+   - The update message also currently includes a path-prefix to allow (like gNMI) so that they don't necessarily need to be encoded from root, specifically, I think that this makes on-change messages nicer, since the on-change is rooted to the thing that is changing rather than the root of the tree.  We need to define semantics of how this works, e.g., this should probably be controlled via configuration.
 
-1. Lifecycle events are defined in YANG Push (and currently in this draft) as being sent per (subscription, receiver) pair (e.g., when each new receiver is added, a subscription started notification is sent to each new receiver, similarly for the subscription-terminated message), but this will either cause gaps in the notification sequence number (e.g., in the notification-envelope draft), or it will require separate notification sequence numbers for each receiver.  Instead, I propose that the lifecycle notifications are *always* sent per subscription, i.e., the same notifications (with the same sequence numbers) are always sent to *all* receivers.  This would probably mean that we want to introduce a new receiver added and receiver removed notifications and use those instead of sending subscription-started/ended notifications.  Alternatively, we could merge the receiver-added with the subscription-stated message, but with fields to extra indication for the reason (e.g., that a new receiver has been added).
+      - This prefix path should use something like the NACM node-instance-identifier {{RFC6536}} but JSONified (i.e., closer to the JSON style encoding of instance identifier {{RFC7951}}), which should perhaps be done as separate draft, so it can be discussed independently)
 
-1. If a subscription is decomposed, then should the subscription started message for the configured subscription indicate how that subscription has been decomposed?
+1. Questions related to terminology:
 
-1. Add information to the subscription-started notification to fingerprint the schema that is covered by a subscription, and that should change if that covered schema changes.  Would this also be impacted, by a change to access control?
+   - Should we use the object terminology?  This may be better than data node subtree, or the equivalent, and could be better than introducing *bags*?
+
+1. Questions/issues related to the configuration model:
+
+   - Note some of these apply or impact dynamic subscriptions as well.
+
+   - YP Lite is somewhat different (separate namespace, separate receivers, no event filters, some config has moved to a separate receivers list.)  See the data model and {{DifferencesFromYangPush}}.
+
+   - We should allow devices to limit which datastores subscriptions can be made against (e.g., not candidate or factory-default as some obvious examples).  Should these be advertised in the capabilities?
+
+   - Some other changes/proposed changes:
+
+      - I want to reduce the number of features.  Also, in some cases we have both features are capability flags in oper.  Is is okay to have both.
+
+      - I've renamed the encodings (e.g., from "encode-json" to just "json")
+
+      - Probably want to get rid of the reset RPC.
+
+      - Maybe further simplification of the receivers list under the subscription.  E.g., do we need stats per subscription per receiver, or just per subscription?  Do want stats across all subscriptions to a given receiver?
+
+      - Subscription-ids are currently numeric values with the space split between configured and dynamic subscriptions, but I think that the config model would be cleaner if we used names for the configured subscriptions (and we could reserve a prefix "dyn-" for dynamic subscriptions).
+
+      - Should DSCP marking be configured under the receiver or the subscription?  Or perhaps in both places with DSCP marking at the subscription overriding a default set on the receiver?
+
+1. Questions/issues related to dynamic subscriptions:
+
+   - In YP Lite, dynamic subscriptions are designed to be closer to configured subscriptions and share more of the data model and lifecycle handling.  I.e., the primary differentiator is meant to be how they are instantiated.
+
+   - Do we want to change how RPC errors are reported?  E.g., change the RPC ok response to indicate whether the subscription was successfully created or not, or included extra error information.  Note NETCONF and RESTCONF already define how errors are encoded in XML and JSON (for RESTCONF only).
+
+   - Do we need to allow a dynamic subscription to be modified?  If we do, then it would be better to change the establish-subscription RPC to have an optional existing subscription-id rather than define a separate RPC.  However, my preference is that the existing subscription is deleted and recreated (or if we allow the client to specify the subscription-id then they could just overwrite the subscription)
+
+1. Questions related to implementation conformance:
+
+   - Should we mandate that all implementations MUST support configured subscriptions? Currently the text indicates that both configured and dynamic are optional and only one must be implemented.
+
+   - For on-change, should a subscription be rejected (or not brought up) if there are no on-change notifiable nodes?  Alternative is to offer implementation flexibility between these two approaches.
+
+1. Issues/questions related to path filtering:
+
+   - I've introduced a new basic path filter for selecting filter paths for a subscription.  I.e., intended to represent the actual cut down version of xpaths that implementations use rather than full Xpath.  Do we want to mandate support for this?
+
+   - I've currently retained subtree filtering as the more advance form of filtering.
+
+   - I would propose that we remove support for XPath filtering (or otherwise, it should definitely go under a feature statement), and the draft should be clear that it is optional, and may have heavy performance issues, and implementations may end up not supporting the full subset of XPath.
+
+1. Issues/questions related to security and NACM filtering:
+
+   - Need to consider how NACM applies to YANG Push Lite, which may differ for dynamic vs configured subscription, but generally we want the permissions to be checked when the subscription is created rather than each time a path is accessed.
+
+   - Where should this be in the document (current it in the )
+
+1. Issues/questions related to operational data:
+
+   - Should we define some additional operational data to help operators check that the telemetry infrastructure is performing correctly, to get an approximation of the load, etc. (Rob: probably, but lower priority)
+
+1. Issues/questions related to capabilties:
+
+   - Should this use a separate capabilities subtree from Yang Push (Rob: Probably)
+
+   - Should we define a base model in this draft for the capabilities (Rob: Probably, based on the existing capabilities but in a new namespace/path).
+
+1. Process related issues/questions:
+
+   - If this work progresses we want to create bis versions of the transports so that they augment into the new data model paths.  Drafts that would need to be updated:
+
+       - {{I-D.draft-ietf-netconf-udp-notif}} - only to augment new receiver path (and capabilities?)
+       - {{I-D.draft-ietf-netconf-http-client-server}} - only to augment new receiver path (and capabilities?)
+
+   - Do we need to fold in any text from RFC 8640? and RESTCONF.  I.e., there was this text in the one of the previous docs:   Bindings for subscribed event record delivery for NETCONF and RESTCONF are defined in {{RFC8640}} and [RESTCONF-Notif], respectively.
+
+1. Examples related issues/questions:
+
+   - We need to update the examples to reflect changes in the models.
 
 # Conventions {#conventions}
 
@@ -247,7 +320,6 @@ There are two ways in which this may be useful:
 1. For data that is generally polled on a periodic basis (e.g., once every 10 minutes) and put into a time series database, then it may be helpful for some data trees to also get more immediate notifications that the data has changed.  Hence, a combined periodic and on-change subscription, potentially with some dampening, would facilitate more frequent notifications of changes of the state, to reduce the need of having to always wait for the next periodic event.
 
 Hence, this document introduces the fairly intuitive "periodic-and-on-change" update trigger that creates a combined periodic and on-change subscription, and allows the same parameters to be configured.  For some use cases, e.g., where a time-series database is being updated, the new encoding format proposed previously may be most useful.
-
 
 ## Functional changes between YANG Push Lite and YANG Push {#DifferencesFromYangPush}
 
