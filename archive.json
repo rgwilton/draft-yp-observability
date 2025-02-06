@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-04T00:16:03.331252+00:00",
+  "timestamp": "2025-02-06T00:16:32.994467+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -190,7 +190,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2024-11-07T13:31:40Z",
-      "updatedAt": "2025-02-03T22:12:58Z",
+      "updatedAt": "2025-02-04T09:58:02Z",
       "baseRepository": "rgwilton/draft-yp-observability",
       "baseRefName": "main",
       "baseRefOid": "d5488db948318c4788c7b7aaffdd2648e2a6ce1d",
@@ -215,6 +215,13 @@
           "body": "@rgwilton I've not had time to devote to this over the holiday period.  Feel free to merge and then continue and I'll add more changes to the merged version",
           "createdAt": "2025-02-03T22:12:57Z",
           "updatedAt": "2025-02-03T22:12:57Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "I'll need to manually merge this in because I have iterated significantly on the document.  The latest version is on the main branch in [draft-wilton-netconf-yang-push-lite.md](https://github.com/rgwilton/draft-yp-observability/blob/main/draft-wilton-netconf-yang-push-lite.md).\r\n\r\nAnd you can see the generated document here:\r\nhttps://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yang-push-lite.html\r\n\r\nI would like to check whether you are still okay with this as a starting point and for me to add your names to this draft?",
+          "createdAt": "2025-02-04T09:58:00Z",
+          "updatedAt": "2025-02-04T09:58:00Z"
         }
       ],
       "reviews": [
