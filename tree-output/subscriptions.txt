@@ -16,26 +16,25 @@ module: ietf-yp-lite
            |           |  +--rw subtree?   <anydata> {ypl:subtree}?
            |           +--:(xpaths)
            |              +--rw xpaths*    yang:xpath1.0 {ypl:xpath}?
-           +--rw dscp?                            inet:dscp {dscp}?
+           +--rw update-trigger
+           |  +--rw periodic!
+           |  |  +--rw period         centiseconds
+           |  |  +--rw anchor-time?   yang:date-and-time
+           |  +--rw on-change! {on-change}?
+           |     +--rw sync-on-start?   boolean
            +--rw purpose?                         string
            |       {configured}?
            +--ro configured-subscription-state?   enumeration
            |       {configured}?
            +--rw receivers
-           |  +--rw receiver* [name]
-           |     +--rw name                      leafref
-           |     +--ro sent-event-records?
-           |     |       yang:zero-based-counter64
-           |     +--ro excluded-event-records?
-           |     |       yang:zero-based-counter64
-           |     +--ro state                     enumeration
-           |     +--ro encoding?                 encoding
-           |     +---x reset {configured}?
-           |        +--ro output
-           |           +--ro time    yang:date-and-time
-           +--rw update-trigger
-              +--rw periodic!
-              |  +--rw period         centiseconds
-              |  +--rw anchor-time?   yang:date-and-time
-              +--rw on-change! {on-change}?
-                 +--rw sync-on-start?   boolean
+              +--rw receiver* [name]
+                 +--rw name                      leafref
+                 +--ro sent-event-records?
+                 |       yang:zero-based-counter64
+                 +--ro excluded-event-records?
+                 |       yang:zero-based-counter64
+                 +--ro state                     enumeration
+                 +--ro encoding?                 encoding
+                 +---x reset {configured}?
+                    +--ro output
+                       +--ro time    yang:date-and-time

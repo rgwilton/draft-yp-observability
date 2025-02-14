@@ -26,34 +26,34 @@ module: ietf-yp-lite
      |     |           |  +--rw subtree?   <anydata> {ypl:subtree}?
      |     |           +--:(xpaths)
      |     |              +--rw xpaths*    yang:xpath1.0 {ypl:xpath}?
-     |     +--rw update-trigger
-     |     |  +--rw periodic!
-     |     |  |  +--rw period         centiseconds
-     |     |  |  +--rw anchor-time?   yang:date-and-time
-     |     |  +--rw on-change! {on-change}?
-     |     |     +--rw sync-on-start?   boolean
      |     +--rw purpose?                         string
      |     |       {configured}?
      |     +--ro configured-subscription-state?   enumeration
      |     |       {configured}?
      |     +--rw receivers
-     |        +--rw receiver* [name]
-     |           +--rw name                      leafref
-     |           +--ro sent-event-records?
-     |           |       yang:zero-based-counter64
-     |           +--ro excluded-event-records?
-     |           |       yang:zero-based-counter64
-     |           +--ro state                     enumeration
-     |           +--ro encoding?                 encoding
-     |           +---x reset {configured}?
-     |              +--ro output
-     |                 +--ro time    yang:date-and-time
-     +--rw receivers {configured}?
+     |     |  +--rw receiver* [name]
+     |     |     +--rw name                      leafref
+     |     |     +--ro sent-event-records?
+     |     |     |       yang:zero-based-counter64
+     |     |     +--ro excluded-event-records?
+     |     |     |       yang:zero-based-counter64
+     |     |     +--ro state                     enumeration
+     |     |     +--ro encoding?                 encoding
+     |     |     +---x reset {configured}?
+     |     |        +--ro output
+     |     |           +--ro time    yang:date-and-time
+     |     +--rw update-trigger
+     |        +--rw periodic!
+     |        |  +--rw period         centiseconds
+     |        |  +--rw anchor-time?   yang:date-and-time
+     |        +--rw on-change! {on-change}?
+     |           +--rw sync-on-start?   boolean
+     +--rw receivers
         +--rw receiver* [name]
            +--rw name                      string
            +--rw encoding?                 encoding
            +--rw dscp?                     inet:dscp
-           +--rw (notification-message-origin)?
+           +--rw (notification-message-origin)? {configured}?
            |  +--:(interface-originated)
            |  |  +--rw source-interface?   if:interface-ref
            |  |          {interface-designation}?
@@ -63,7 +63,7 @@ module: ietf-yp-lite
            +--rw (transport-type)
 
   rpcs:
-    +---x establish-subscription {dynamic}?
+    +---x establish-subscription
     |  +---w input
     |  |  +---w target
     |  |  |  +---w datastore?             identityref
@@ -78,20 +78,14 @@ module: ietf-yp-lite
     |  |  |           |  +---w subtree?   <anydata> {ypl:subtree}?
     |  |  |           +--:(xpaths)
     |  |  |              +---w xpaths*    yang:xpath1.0 {ypl:xpath}?
-    |  |  +---w update-trigger
-    |  |  |  +---w periodic!
-    |  |  |  |  +---w period         centiseconds
-    |  |  |  |  +---w anchor-time?   yang:date-and-time
-    |  |  |  +---w on-change! {on-change}?
-    |  |  |     +---w sync-on-start?   boolean
-    |  |  +---w encoding?         encoding
-    |  |  +---w dscp?             inet:dscp
+    |  |  +---w dscp?       inet:dscp
+    |  |  +---w encoding?   encoding
     |  +--ro output
     |     +--ro id    subscription-id
-    +---x delete-subscription {dynamic}?
+    +---x delete-subscription
     |  +---w input
     |     +---w id    subscription-id
-    +---x kill-subscription {dynamic}?
+    +---x kill-subscription
        +---w input
           +---w id    subscription-id
 
@@ -101,7 +95,7 @@ module: ietf-yp-lite
     +---n update-completed
     |  +--ro id    subscription-id
     +---n subscription-started
-    |  +--ro id                subscription-id
+    |  +--ro id         subscription-id
     |  +--ro target
     |  |  +--ro datastore?             identityref
     |  |  +--ro (filter)?
@@ -115,12 +109,7 @@ module: ietf-yp-lite
     |  |           |  +--ro subtree?   <anydata> {ypl:subtree}?
     |  |           +--:(xpaths)
     |  |              +--ro xpaths*    yang:xpath1.0 {ypl:xpath}?
-    |  +--ro update-trigger
-    |     +--ro periodic!
-    |     |  +--ro period         centiseconds
-    |     |  +--ro anchor-time?   yang:date-and-time
-    |     +--ro on-change! {on-change}?
-    |        +--ro sync-on-start?   boolean
+    |  +--ro purpose?   string {configured}?
     +---n subscription-terminated
     |  +--ro id        subscription-id
     |  +--ro reason    identityref

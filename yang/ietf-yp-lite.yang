@@ -87,11 +87,11 @@ module ietf-yp-lite {
        supported.";
   }
 
-  feature dscp {
+  feature dynamic {
     description
-      "This feature indicates that a publisher supports the ability
-       to set the Differentiated Services Code Point (DSCP) value in
-       outgoing packets.";
+      "This feature indicates that dynamic establishment of
+       subscriptions is
+       supported.";
   }
 
   feature encode-json {
@@ -172,7 +172,6 @@ module ietf-yp-lite {
 
   identity dscp-unavailable {
     base establish-subscription-error;
-    if-feature "dscp";
     description
       "The publisher is unable to mark notification messages with
        prioritization information in a way that will be respected
@@ -368,13 +367,12 @@ module ietf-yp-lite {
    * GROUPINGS
    */
 
-  grouping update-qos {
+  grouping dscp {
     description
       "This grouping describes QoS information concerning a
        subscription.  This information is passed to lower layers
        for transport prioritization and treatment.";
     leaf dscp {
-      if-feature "dscp";
       type inet:dscp;
       default "0";
       description
@@ -383,63 +381,6 @@ module ietf-yp-lite {
          results of the subscription.  This transport priority is
          shared for all receivers of a given subscription.";
     }
-  }
-
-  grouping subscription-policy-modifiable {
-    description
-      "This grouping describes all objects that may be changed
-       in a subscription.";
-    container target {
-      description
-        "Identifies the source of information against which a
-         subscription is being applied as well as specifics on the
-         subset of information desired from that source.";
-      uses datastore-criteria;
-
-    }
-  }
-
-  grouping subscription-policy-dynamic {
-    description
-      "This grouping describes the only information concerning a
-       subscription that can be passed over the RPCs defined in this
-       data model.";
-    uses subscription-policy-modifiable;
-    // TODO - The description should be updated to be hierarchical.
-    uses update-qos;
-  }
-
-  grouping subscription-policy {
-    description
-      "This grouping describes the full set of policy information
-       concerning both dynamic and configured subscriptions, with the
-       exclusion of both receivers and networking information
-       specific to the publisher, such as what interface should be
-       used to transmit notification messages.";
-    uses subscription-policy-dynamic;
-
-    leaf purpose {
-      if-feature "configured";
-      type string;
-      description
-        "Open text allowing a configuring entity to embed the
-         originator or other specifics of this subscription.";
-    }
-  }
-
-grouping datastore-criteria {
-    description
-      "A grouping to define criteria for which selected objects from
-       a targeted datastore should be included in push updates.";
-    leaf datastore {
-      type identityref {
-        base ds:datastore;
-      }
-      default "ds:operational";
-      description
-        "Datastore from which to retrieve data, defaults to operational";
-    }
-    uses filter-objects;
   }
 
   grouping filter-types {
@@ -510,41 +451,9 @@ grouping datastore-criteria {
     }
   }
 
-  grouping filter-objects {
+  grouping update-policy {
     description
-      "This grouping defines a selector for objects from a
-       datastore.";
-    choice filter {
-      description
-        "The source of the selection filter applied to the
-         subscription.  This will either (1) come referenced from a
-         global list or (2) be provided in the subscription itself.";
-      case by-reference {
-        description
-          "Incorporates a filter that has been configured
-           separately.";
-        leaf filter-ref {
-          type filter-ref;
-          mandatory true;
-          description
-            "References an existing selection filter that is to be
-             applied to the subscription.";
-        }
-      }
-      case within-subscription {
-        description
-          "A local definition allows a filter to have the same
-           lifecycle as the subscription.";
-        uses filter-types;
-      }
-    }
-  }
-
-  grouping update-policy-modifiable {
-    description
-      "This grouping describes the datastore-specific subscription
-       conditions that can be changed during the lifetime of the
-       subscription.";
+      "This grouping describes the susbcription update policy";
 
     container update-trigger {
       description
@@ -584,19 +493,7 @@ grouping datastore-criteria {
           "The publisher is requested to notify the receiver
             regarding changes in values in the datastore subset as
             defined by a selection filter.";
-      }
-    }
-  }
 
-  grouping update-policy {
-    description
-      "This grouping describes the datastore-specific subscription
-       conditions of a subscription.";
-    uses update-policy-modifiable {
-      augment "update-trigger/on-change" {
-        description
-          "Includes objects that are not modifiable once a
-           subscription is established.";
         leaf sync-on-start {
           type boolean;
           default "true";
@@ -619,11 +516,61 @@ grouping datastore-criteria {
     }
   }
 
+  grouping subscription-common {
+    description
+      "Common settings that are shared between dynamic and
+       configured subscriptions.";
+
+    container target {
+      description
+        "Identifies the source of information against which a
+         subscription is being applied as well as specifics on the
+         subset of information desired from that source.";
+      leaf datastore {
+        type identityref {
+          base ds:datastore;
+        }
+        default "ds:operational";
+        description
+          "Datastore from which to retrieve data, defaults to operational";
+      }
+
+      choice filter {
+        description
+          "The source of the selection filter applied to the
+          subscription.  This will either (1) come referenced from a
+          global list or (2) be provided in the subscription itself.";
+        case by-reference {
+          description
+            "Incorporates a filter that has been configured
+            separately.";
+          leaf filter-ref {
+            type filter-ref;
+            mandatory true;
+            description
+              "References an existing selection filter that is to be
+              applied to the subscription.";
+          }
+        }
+        case within-subscription {
+          description
+            "A local definition allows a filter to have the same
+            lifecycle as the subscription.";
+          uses filter-types;
+        }
+      }
+    }
+
+    uses update-policy;
+  }
+
+
   /*
    * RPCs
    */
 
   rpc establish-subscription {
+    if-feature "dynamic";
     description
       "This RPC allows a subscriber to create (and possibly
        negotiate) a subscription on its own behalf.  If successful,
@@ -637,7 +584,8 @@ grouping datastore-criteria {
        likelihood of succeeding in a subsequent
        'establish-subscription' request.";
     input {
-      uses subscription-policy-dynamic;
+      uses subscription-common;
+
       leaf encoding {
         type encoding;
         description
@@ -645,6 +593,9 @@ grouping datastore-criteria {
            included as part of the RPC, the encoding MUST be set by
            the publisher to be the encoding used by this RPC.";
       }
+
+      uses dscp;
+
     }
     output {
       leaf id {
@@ -687,6 +638,7 @@ grouping datastore-criteria {
   }
 
   rpc delete-subscription {
+    if-feature "dynamic";
     description
       "This RPC allows a subscriber to delete a subscription that
        was previously created by that same subscriber using the
@@ -707,13 +659,10 @@ grouping datastore-criteria {
           "Identifier of the dynamic subscription that is to be deleted.";
       }
     }
-    // TODO - Add result.
-    // output {
-
-    // }
   }
 
   rpc kill-subscription {
+    if-feature "dynamic";
     nacm:default-deny-all;
     description
       "This RPC allows an operator to delete a dynamic subscription
@@ -803,7 +752,7 @@ grouping datastore-criteria {
       description
         "This references the affected subscription.";
     }
-    uses subscription-policy;
+    uses subscription-common;
   }
 
   notification subscription-terminated {
@@ -849,7 +798,7 @@ grouping datastore-criteria {
       description
         "Specifies the common prefix that all other paths and data
          are encoded relative to.
-         
+
          TODO - This should be a JSONified instance data path.";
     }
 
@@ -960,6 +909,19 @@ container datastore-telemetry {
         "Contains a list of configurable filters that can be applied to
         subscriptions.  This facilitates the reuse of complex filters
         once defined.";
+
+      list filter {
+        key "name";
+        description
+          "A list of preconfigured filters that can be applied
+          to datastore subscriptions.";
+        leaf name {
+          type string;
+          description
+            "A unique name to identify the selection filters.";
+        }
+        uses filter-types;
+      }
     }
     container subscriptions {
       description
@@ -986,7 +948,16 @@ container datastore-telemetry {
             "Identifier of a subscription; unique in a given
             publisher.";
         }
-        uses subscription-policy;
+        uses subscription-common;
+
+        leaf purpose {
+          if-feature "configured";
+          type string;
+          description
+            "Open text allowing a configuring entity to embed the
+            originator or other specifics of this subscription.";
+        }
+
         leaf configured-subscription-state {
           if-feature "configured";
           type enumeration {
@@ -1018,6 +989,7 @@ container datastore-telemetry {
             channel or RPC.  The value indicates the state of the
             subscription as established by the publisher.";
         }
+
         container receivers {
           description
             "Set of receivers in a subscription.";
@@ -1136,6 +1108,7 @@ container datastore-telemetry {
     container receivers {
       description
         "A container for all instances of receivers.";
+      if-feature "configured";
 
       list receiver {
         key "name";
@@ -1160,10 +1133,9 @@ container datastore-telemetry {
               will be the default encoding for an underlying transport.";
         }
 
-        uses update-qos;
+        uses dscp;
 
         choice notification-message-origin {
-          if-feature "configured";
           description
             "Identifies the egress interface on the publisher
             from which notification messages are to be sent.";
@@ -1215,31 +1187,5 @@ container datastore-telemetry {
           "A list of all receiver instances.";
       }
     }
-  }
-
-  augment "/datastore-telemetry/filters" {
-    description
-      "This augmentation allows the datastore to be included as part
-       of the filtering criteria for a subscription.";
-    list filter {
-      key "name";
-      description
-        "A list of preconfigured filters that can be applied
-         to datastore subscriptions.";
-      leaf name {
-        type string;
-        description
-          "A unique name to identify the selection filters.";
-      }
-      uses filter-types;
-    }
-  }
-
-  augment "/datastore-telemetry/subscriptions/subscription" {
-    description
-      "This augmentation adds objects to a subscription that are
-       specific to a datastore subscription, i.e., a subscription to
-       a stream of datastore node updates.";
-    uses update-policy;
   }
 }

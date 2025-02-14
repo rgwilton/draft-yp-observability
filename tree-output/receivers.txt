@@ -1,11 +1,11 @@
 module: ietf-yp-lite
   +--rw datastore-telemetry
-     +--rw receivers
+     +--rw receivers {configured}?
         +--rw receiver* [name]
            +--rw name                      string
            +--rw encoding?                 encoding
-           +--rw dscp?                     inet:dscp {dscp}?
-           +--rw (notification-message-origin)? {configured}?
+           +--rw dscp?                     inet:dscp
+           +--rw (notification-message-origin)?
            |  +--:(interface-originated)
            |  |  +--rw source-interface?   if:interface-ref
            |  |          {interface-designation}?

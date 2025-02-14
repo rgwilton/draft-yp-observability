@@ -1,5 +1,5 @@
     +---n subscription-started
-    |  +--ro id         subscription-id
+    |  +--ro id                subscription-id
     |  +--ro target
     |  |  +--ro datastore?             identityref
     |  |  +--ro (filter)?
@@ -13,5 +13,9 @@
     |  |           |  +--ro subtree?   <anydata> {ypl:subtree}?
     |  |           +--:(xpaths)
     |  |              +--ro xpaths*    yang:xpath1.0 {ypl:xpath}?
-    |  +--ro dscp?      inet:dscp {dscp}?
-    |  +--ro purpose?   string {configured}?
+    |  +--ro update-trigger
+    |     +--ro periodic!
+    |     |  +--ro period         centiseconds
+    |     |  +--ro anchor-time?   yang:date-and-time
+    |     +--ro on-change! {on-change}?
+    |        +--ro sync-on-start?   boolean
