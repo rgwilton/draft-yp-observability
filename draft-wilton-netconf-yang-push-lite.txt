@@ -2,10 +2,19 @@
 
 
 
-Network Configuration                                          R. Wilton
+Network Configuration                                     R. Wilton, Ed.
 Internet-Draft                                             Cisco Systems
-Intended status: Standards Track                        14 February 2025
-Expires: 18 August 2025
+Intended status: Standards Track                               H. Keller
+Expires: 23 August 2025                                Deuetsche Telekom
+                                                               B. Claise
+                                                                  Huawei
+                                                                E. Aries
+                                                                 Juniper
+                                                              J. Cumming
+                                                                   Nokia
+                                                                 T. Graf
+                                                                Swisscom
+                                                        19 February 2025
 
 
                YANG Datastore Telemetry (YANG Push Lite)
@@ -51,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 18 August 2025.
+   This Internet-Draft will expire on 23 August 2025.
 
 Copyright Notice
 
@@ -85,7 +94,7 @@ Table of Contents
    6.  YANG Push Lite Overview
      6.1.  Relationship to RFC 5277
    7.  Definitions
-   8.  Sensor paths and selection filters
+   8.  Subscription paths and selection filters
      8.1.  The "filters" Container
      8.2.  Decomposing Subscription Filters
    9.  Datastore Event Streams
@@ -95,7 +104,7 @@ Table of Contents
      9.4.  On-Change events
        9.4.1.  On-Change Notifiable Datastore Nodes
        9.4.2.  On-Change Considerations
-     9.5.  Combined period and on-change subscriptions
+     9.5.  Combined periodic and on-change subscriptions
      9.6.  Streaming Update Examples
    10. Receivers, Transports, and Encodings
      10.1.  Receivers for Configured Subscriptions
@@ -156,7 +165,7 @@ Table of Contents
        B.5.1.  "establish-subscription" RPC
        B.5.2.  "delete-subscription" RPC
        B.5.3.  "resync-subscription" RPC
-   Author's Address
+   Authors' Addresses
 
 1.  Document Status
 
@@ -276,7 +285,23 @@ Table of Contents
 
         *  Is a publisher allowed to arbitrarily send a sync-on-start
            resync, e.g., if it detects data loss, or should it always
-           just terminate and reinitialize the susbcription?
+           just terminate and reinitialize the subscription?
+
+        *  Should we name subscription-terminated to subscription-
+           stopped?
+
+        *  If the parameters for a subscription change in any way (e.g.,
+           the config changes for a configured subscription, or a
+           referenced filter changes in a dynamic subscription) then do
+           we want to say that the subscription MUST be killed and
+           recreated.  I.e., with subscription-terminated/subscription-
+           started notifications?  (Section 11)
+
+        *  Should we have an RPC/Action to reset a receiver or a
+           subscription?  E.g., discussed in section 11.1.5.
+
+        *  Should we support configurable keepalives?  I presume that
+           this means for an on-change only subscription.
 
    4.   Questions/comments on the notification message format:
 
@@ -297,7 +322,12 @@ Table of Contents
            (if they all use a single shared timestamp)?
 
         *  on-change deletes are implicit by an update that replaces an
-           existing entry witha empty data node (e.g., "{}" in JSON)
+           existing entry with an empty data node (e.g., "{}" in JSON)
+
+           -  An alternative choice here could be an explicit delete
+              flag, we need to decide which would be simpler/better.
+
+        *  on-change
 
         *  The update message also currently includes a path-prefix to
            allow (like gNMI) so that they don't necessarily need to be
@@ -312,6 +342,9 @@ Table of Contents
               to the JSON style encoding of instance identifier
               [RFC7951]), which should perhaps be done as separate
               draft, so it can be discussed independently)
+
+        *  Do we keep the "incomplete" update flag?  Otherwise how would
+           a publisher indicate that a message was not complete.
 
    5.   Questions related to terminology:
 
@@ -334,11 +367,16 @@ Table of Contents
            factory-default as some obvious examples).  Should these be
            advertised in the capabilities?
 
+        *  (James) Should we even document the data model in this
+           document at all, or should it be in a separate document?
+
         *  Some other changes/proposed changes:
 
            -  I want to reduce the number of features.  Also, in some
-              cases we have both features are capability flags in oper.
-              Is is okay to have both.
+              cases we have both features and equivalent capability
+              flags in oper.  Is is okay to have both, or should we only
+              focus on capabilities, or perhaps end up with a mix of
+              both?
 
            -  I've renamed the encodings (e.g., from "encode-json" to
               just "json")
@@ -383,6 +421,13 @@ Table of Contents
            if we allow the client to specify the subscription-id then
            they could just overwrite the subscription)
 
+        *  For operational data, should be list dynamic receivers in the
+           receiver list so that they are handled the same as configured
+           subscription?  Or should the information for them be inlined
+           in the subscriptions container?
+
+        *  Proposal is to make specifying an encoding mandatory.
+
    8.   Questions related to implementation conformance:
 
         *  Should we mandate that all implementations MUST support
@@ -390,77 +435,127 @@ Table of Contents
            both configured and dynamic are optional and only one must be
            implemented.
 
+           -  Do we advertise that conformance via capabilities and/or
+              YANG features (both for configured and dynamic
+              subscriptions)?  This might be a case, where the use of
+              features is reasonable.
+
         *  For on-change, should a subscription be rejected (or not
            brought up) if there are no on-change notifiable nodes?
            Alternative is to offer implementation flexibility between
            these two approaches.
 
+        *  Do we mandate that all implementations SHOULD support
+           particular encodings (e.g., JSON, or JSON and CBOR)?
+
    9.   Issues/questions related to path filtering:
 
         *  I've introduced a new basic path filter for selecting filter
-           paths for a subscription.  I.e., intended to represent the
-           actual cut down version of xpaths that implementations use
-           rather than full Xpath.  Do we want to mandate support for
-           this?
+           paths for a subscription.  I.e., intended to represent
+           something closer to the actual cut down version of xpaths
+           that implementations use rather than full Xpath.  Do we want
+           to mandate support for this?
+
+           -  Can this path be more JSON instance data like (i.e., using
+              module-name rather than XML namespaces)?
+
+           -  This path should support at least support exact match and
+              wildcard match of keys (perhaps with some restrictions).
+
+           -  Regex matching of keys is probably also a good idea (but
+              would this be YANG's Regex or the new IETF draft for a
+              basic regex language).
+
+           -  Do we want to allow any more filtering (e.g., single level
+              inclusion/exclusion list), or do we punt that subtree
+              filters (which can end up being arbitrarily complex).
+              E.g., Holger's example of only getting entries from a list
+              if they are in a particular state.
 
         *  I've currently retained subtree filtering as the more advance
            form of filtering.
 
         *  I would propose that we remove support for XPath filtering
-           (or otherwise, it should definitely go under a feature
-           statement), and the draft should be clear that it is
-           optional, and may have heavy performance issues, and
-           implementations may end up not supporting the full subset of
-           XPath.
+           from this draft (since an implemnentation could always
+           augment it back in, or it could in an extension draft), and
+           vendor implementations generally don't implement XPath
+           filtering consistently or fully, and it has the potential to
+           allow for subscriptions that would be very hard to implement
+           in a performant way, and hard to police the performance
+           impact.  If we do retain it, then it should go under a
+           feature statement and be entirely optional to implement.
 
-   10.  Issues/questions related to security and NACM filtering:
+   10.  Issues/questions related to transports:
 
-        *  Need to consider how NACM applies to YANG Push Lite, which
-           may differ for dynamic vs configured subscription, but
-           generally we want the permissions to be checked when the
-           subscription is created rather than each time a path is
-           accessed.
+   *  Section 10.2 lists quite a lot of rules on what are valid
+      transports and what negotation/etc is required.  I think we need
+      to check whether we can weaken some of these (although it is
+      possible that these were imposed during a transport directorate
+      review).
 
-        *  Where should this be in the document (current it in the )
+   1.  Issues/questions related to security and NACM filtering:
 
-   11.  Issues/questions related to operational data:
+       *  Need to consider how NACM applies to YANG Push Lite, which may
+          differ for dynamic vs configured subscription, but generally
+          we want the permissions to be checked when the subscription is
+          created rather than each time a path is accessed.
 
-        *  Should we define some additional operational data to help
-           operators check that the telemetry infrastructure is
-           performing correctly, to get an approximation of the load,
-           etc.  (Rob: probably, but lower priority)
+       *  Where should this be in the document (current it in the
+          security considerations section)
 
-   12.  Issues/questions related to capabilties:
+       *  (James) Take out tight binding to NACM from YANG Push Lite
+          altogether.  I.e., decouple YANG Push Lite from what security
+          mechanism is being used.
 
-        *  Should this use a separate capabilities subtree from Yang
-           Push (Rob: Probably)
+          -  (Rob) Another choice could be to use NACM as an example
+             rather than the only way.
 
-        *  Should we define a base model in this draft for the
-           capabilities (Rob: Probably, based on the existing
-           capabilities but in a new namespace/path).
+          -  Do we want to retain the the current text in {#events}
+             introduction related to terminating a subscription if
+             permissions change?
 
-   13.  Process related issues/questions:
+   2.  Issues/questions related to operational data:
 
-        *  If this work progresses we want to create bis versions of the
-           transports so that they augment into the new data model
-           paths.  Drafts that would need to be updated:
+       *  Should we define some additional operational data to help
+          operators check that the telemetry infrastructure is
+          performing correctly, to get an approximation of the load,
+          etc.  (Rob: probably, but lower priority)
 
-           -  [I-D.draft-ietf-netconf-udp-notif] - only to augment new
-              receiver path (and capabilities?)
+       *  Should dynamic subscriptions use the same receivers structure
+          as for configured subscriptions, or should they be inline in
+          the configured subscription?
 
-           -  [I-D.draft-ietf-netconf-http-client-server] - only to
-              augment new receiver path (and capabilities?)
+   3.  Issues/questions related to capabilities:
 
-        *  Do we need to fold in any text from RFC 8640? and RESTCONF.
-           I.e., there was this text in the one of the previous docs:
-           Bindings for subscribed event record delivery for NETCONF and
-           RESTCONF are defined in [RFC8640] and [RESTCONF-Notif],
-           respectively.
+       *  Should this use a separate capabilities subtree from Yang Push
+          (Rob: Probably)
 
-   14.  Examples related issues/questions:
+       *  Should we define a base model in this draft for the
+          capabilities (Rob: Probably, based on the existing
+          capabilities but in a new namespace/path).
 
-        *  We need to update the examples to reflect changes in the
-           models.
+   4.  Process related issues/questions:
+
+       *  If this work progresses we want to create bis versions of the
+          transports so that they augment into the new data model paths.
+          Drafts that would need to be updated:
+
+          -  [I-D.draft-ietf-netconf-udp-notif] - only to augment new
+             receiver path (and capabilities?)
+
+          -  [I-D.draft-ietf-netconf-http-client-server] - only to
+             augment new receiver path (and capabilities?)
+
+       *  Do we need to fold in any text from RFC 8640? and RESTCONF.
+          I.e., there was this text in the one of the previous docs:
+          Bindings for subscribed event record delivery for NETCONF and
+          RESTCONF are defined in [RFC8640] and [RESTCONF-Notif],
+          respectively.
+
+   5.  Examples related issues/questions:
+
+       *  We need to update the examples to reflect changes in the
+          models.
 
 4.  Conventions
 
@@ -625,7 +720,7 @@ Table of Contents
 5.3.1.  Combined periodic and on-change subscription
 
    Sometimes it is helpful to have a single subscription that covers
-   both periodic and on-change notifications (perhaps with dampening).
+   both periodic and on-change notifications.
 
    There are two ways in which this may be useful:
 
@@ -641,10 +736,9 @@ Table of Contents
        every 10 minutes) and put into a time series database, then it
        may be helpful for some data trees to also get more immediate
        notifications that the data has changed.  Hence, a combined
-       periodic and on-change subscription, potentially with some
-       dampening, would facilitate more frequent notifications of
-       changes of the state, to reduce the need of having to always wait
-       for the next periodic event.
+       periodic and on-change subscription, would facilitate more
+       frequent notifications of changes of the state, to reduce the
+       need of having to always wait for the next periodic event.
 
    Hence, this document introduces the fairly intuitive "periodic-and-
    on-change" update trigger that creates a combined periodic and on-
@@ -667,10 +761,14 @@ Table of Contents
    development of the document and solution then please point them out
    to the authors and the working group._
 
+   *TODO, this section should probably end up in an appendix, but it is
+   more helpful to keep it here during the initial stages of trying to
+   build consensus.*
+
 5.4.1.  Changed Functionality
 
-   This section documents behavior that exist in both YANG Push and YANG
-   Push Lite, but the behavior differs between the two:
+   This section documents behavior that exists in both YANG Push and
+   YANG Push Lite, but the behavior differs between the two:
 
    *  All YANG Push Lite notifications messages use
       [I-D.draft-netana-netconf-notif-envelope] rather than [RFC5277]
@@ -702,14 +800,13 @@ Table of Contents
       clients in a similar fashion and to support combined periodic and
       on-change subscriptions.
 
-   *  On-change dampening.  Rather than dampening being controlled by
-      the client, the publisher is allows to rate-limit how frequently
-      on-change events may be delivered for a particular data node that
-      is changing rapidly.  In addition, if the state of a data node
-      changes and then reverts back to the previous state within a
-      dampening period, then the publisher is not required to notify the
-      client of the change, it can be entirely suppressed.  See
-      Section 9.4.1 for further details.
+   *  On-change dampening:
+
+      -  Client configurable on-change dampening has been removed.
+
+      -  However, YANG Push Lite allows a publisher to limit the rate at
+         which a data node is sampled for on-change notifications.  See
+         Section 9.4.1 for further details.
 
    *  Dynamic subscriptions are no longer mandatory to implement, either
       or both of Configured and Dynamic Subscriptions may be implemented
@@ -732,6 +829,11 @@ Table of Contents
    *  The encoding identities have been extended with CBOR encodings,
       and the "encoding-" prefix has been removed (so that there is a
       better on the wire representation).
+
+   *  YANG Push Lite allows for a publisher to provide an eventually
+      consistent distributed view of the operational datastore, rather
+      than a fully consistent datastore where on-change updates are sent
+      as logic diffs to that datastore.
 
 5.4.2.  Removed Functionality
 
@@ -790,6 +892,9 @@ Table of Contents
    *  TODO - More operational data on the subscription load and
       performance.
 
+   *  All YANG Push Lite configuration is under a new _datastore-
+      telemetry_ presence container
+
 6.  YANG Push Lite Overview
 
    This document specifies a lightweight telemetry solution that
@@ -802,13 +907,15 @@ Table of Contents
 
    A YANG Push lite subscription comprises:
 
-   *  a target datastore for the subscription, as per [RFC8342].
+   *  a target datastore for the subscription, where the monitored
+      subscription data is logically sourced from.
 
-   *  a set of selection filters to choose which datastore nodes the
-      subscription is monitoring or sampling, as described in Section 8.
+   *  a set of selection filters to choose which datastore nodes from
+      the target datstore the subscription is monitoring or sampling, as
+      described in Section 8.
 
-   *  a choice of how update event notifications for a datastore's data
-      nodes are triggered.  I.e., either periodic sampling of the
+   *  a choice of how update event notifications for the datastore's
+      data nodes are triggered.  I.e., either periodic sampling of the
       current state, on-change event-driven, or both.  These are
       described in *TODO, add reference*.
 
@@ -842,7 +949,8 @@ Table of Contents
 
    NACM [RFC8341] based access control is used to ensure the receivers
    only get access to the information for which they are allowed.  This
-   is further described in Section 16.
+   is further described in Section 16. *TODO Do we need to tie YANG Push
+   Lite to NACM?*
 
    While the functionality defined in this document is transport
    agnostic, transports like the Network Configuration Protocol
@@ -853,7 +961,9 @@ Table of Contents
    configure the subscription, and other transports, e.g.,
    [I-D.draft-ietf-netconf-udp-notif] defines a simple UDP based
    transport for Push notifications.  Transport considerations are
-   described in Section 10.2.
+   described in Section 10.2. *TODO the reference to draft-ietf-netconf-
+   udp-notif isn't right, it wouldn't be that draft, but a -bis version
+   of it.  James is querying whether we need this at all*
 
    *TODO Introduce capabilities and operational monitoring*
 
@@ -999,7 +1109,7 @@ Table of Contents
    All _YANG tree diagrams_ used in this document follow the notation
    defined in [RFC8340].
 
-8.  Sensor paths and selection filters
+8.  Subscription paths and selection filters
 
    A key part of a subscription is to select which data nodes should be
    monitored, and so a subscription must specify both the selection
@@ -1071,7 +1181,7 @@ Table of Contents
    Section 15.
 
    module: ietf-yp-lite
-     +--rw datastore-telemetry
+     +--rw datastore-telemetry!
         +--rw filters
            +--rw filter* [name]
               +--rw name             string
@@ -1176,8 +1286,10 @@ Table of Contents
    subscription and event stream access is no longer permitted, then the
    subscription MUST be terminated. *TODO, check this*
 
-   Event records SHALL be delivered to a receiver in the order in which
-   they were generated.
+   Event records SHALL be sent to a receiver in the order in which they
+   were generated.  I.e., the publisher MUST not reorder the events when
+   enqueuing notifications on the transport session, but there is no
+   guarantee of delivery order.
 
 9.1.  Event Records
 
@@ -1258,7 +1370,7 @@ Table of Contents
    tree diagram:
 
    module: ietf-yp-lite
-     +--rw datastore-telemetry
+     +--rw datastore-telemetry!
         +--rw subscriptions
            +--rw subscription* [id]
               +--rw update-trigger
@@ -1311,11 +1423,12 @@ Table of Contents
 
    In an on-change subscription, _update_ records indicate updated
    values or when a monitored data node or list node has been deleted.
-   _update_ records SHOULD be generated at the same subtree as
-   equivalent periodic subscription rather than only the specific data
-   node that is on-change notifiable.  The goal is to ensure that the
-   _update_ message contains a consistent set of data on the
-   subscription path.
+   An _update_ record is sent whenever a change in the subscribed
+   information is detected. _update_ records SHOULD be generated at the
+   same subtree as equivalent periodic subscription rather than only the
+   specific data node that is on-change notifiable.  The goal is to
+   ensure that the _update_ message contains a consistent set of data on
+   the subscription path.
 
    Each entry in the _updates_ list identifies a data node (i.e., list
    entry, container, leaf or leaf-list), via the _target-path_ that
@@ -1334,14 +1447,14 @@ Table of Contents
       interface may be removed.  In this case, the _target path_
       identifies the list entry that is being deleted, but the data
       returned is just an empty object {}, which replaces all the
-      existing data for that object in the receiver.
+      existing data for that object in the receiver. *TODO, is this
+      better an a delete flag?*
 
-   For on-change subscriptions, an update trigger occurs whenever a
-   change in the subscribed information is detected.  The following
-   additional parameters are included:
+   On-change subscriptions also support the following additional
+   parameters:
 
    *  _sync-on-start_ defines whether or not a complete snapshot of all
-      subscribed data is sent at the beginning of a subscription.  Such
+      subscribed data is sent at the start of a subscription.  Such
       early synchronization establishes the frame of reference for
       subsequent updates.
 
@@ -1363,12 +1476,14 @@ Table of Contents
    In addition, publishers are not required to notify every change or
    value for an on-change monitored data node.  Instead, publishers MAY
    limit the rate at which changes are reported for a given data node,
-   suppressing further updates for a short time interval.  If a data
-   node changes value and then reverts back to the original value then
-   the publisher MAY suppress reporting the change entirely.  However,
-   if the data node changes to a new value for a longer period than any
-   internal dampening interval, then the change and latest state MUST be
-   reported to the receiver.
+   i.e., effectively deciding the interval at which an underlying value
+   is sampled.  If a data node changes value and then reverts back to
+   the original value within a sample interval then the publisher MAY
+   not detect the change and it would go unreported.  However, if the
+   data node changes to a new value after it has been sampled, then the
+   change and latest state are reported to the receiver.  In addition,
+   if a client was to query the value (e.g., through a NETCONF get-data
+   RPC) then they MUST see the same observed value as would be notified.
 
    To give an example, if the interface link state reported by hardware
    is changing state hundreds of times per second, then it would be
@@ -1419,10 +1534,10 @@ Table of Contents
    which on-change is not supported.  In the case of a configured
    subscription, the publisher MAY suspend the subscription.
 
-9.5.  Combined period and on-change subscriptions
+9.5.  Combined periodic and on-change subscriptions
 
    A single subscription may created to generate notifications both when
-   changes occur and when changes occur.  Such subscriptions are
+   changes occur and on a periodic cadence.  Such subscriptions are
    equivalent to having separate periodic and on-change subscriptions on
    the same path, except that they share the same subscription-id and
    filter paths.
@@ -1524,8 +1639,8 @@ Table of Contents
          _supports-vrf_ feature. *TODO - do we also support inferring
          the VRF from the source interface?*
 
-      If none of the above parameters are set, notification messages
-      egress the publisher's default interface.
+   “If none of the above parameters are set, the publisher MAY decide
+   which interface(s) to source notifications from.
 
 10.1.  Receivers for Configured Subscriptions
 
@@ -1542,7 +1657,7 @@ Table of Contents
    YANG module in Section 15.2.
 
    module: ietf-yp-lite
-     +--rw datastore-telemetry
+     +--rw datastore-telemetry!
         +--rw receivers {configured}?
            +--rw receiver* [name]
               +--rw name                      string
@@ -1633,37 +1748,30 @@ Table of Contents
    two. *TODO, do we want this text, I have already weakened this from
    the MUST in Yang Push.*
 
-   A secure transport is RECOMMENDED.  For dynamic subscriptions, the
-   publisher MUST ensure that the receiver has sufficient authorization
-   to perform the function it is requesting against the specific subset
-   of content involved. *TODO, is this transport level authorization, or
-   NACM based authorization (in which case, it should not be stated
-   here, since it is application specific rather than being transport
-   specific).*
+   Any transport specification MUST provide an option for securing the
+   notifications, e.g., through use of transport layer encryption.
+
+   A secure transport is RECOMMENDED.
+
+   Any transport specification SHOULD ensure that the receiver
+   application can be notified of the subscription-started lifecycle
+   notification before any associated _update_ messages.
 
    A specification for a transport built upon this document can choose
    whether to use of the same logical channel for the RPCs and the event
    records.  However, the _update_ records and the subscription state
-   change notifications MUST be sent on the same transport session to
-   ensure properly ordered delivery.
+   change notifications SHOULD be sent on the same transport session.
 
    If a transport can only support some encodings, then it MUST identify
    what encodings are supported.  If a configured subscription's
    transport allows different encodings, the specification MUST identify
-   the default encoding. *TODO, would it be easier to always require the
-   encoding to be specified?*
-
-   Any transport specific impacts to the lifecycle of configured or
-   dynamic subscriptions MUST be documented.  E.g., the point at which a
-   subscription can be determined as being established. *TODO, do we
-   need this paragraph, if the behavior is meant to be transport
-   specific that why does anything need to be said at all?  And if the
-   transport wants to change the behavior then, by definition, that must
-   be documented in the transport specification anyway.*
+   the default encoding. *TODO, I think we can strike this one.
+   Transport encodings should be advertised via the capabilities module,
+   and a default encoding isn't needed if we require that it is always
+   specified.*
 
    Additional transport requirements may be dictated by the choice of
-   transport used with a subscription.  For an example of such
-   requirements, see [RFC8640].
+   transport used with a subscription.
 
 10.2.2.  DSCP Marking
 
@@ -1766,7 +1874,9 @@ Table of Contents
       configuration.  Being tied to configuration operations implies
       that (1) configured subscriptions can be configured to persist
       across reboots and (2) a configured subscription can persist even
-      when its publisher is fully disconnected from any network.
+      when its publisher is fully disconnected from any network. *TODO,
+      the configured subscription doesn't really persist, since it is
+      torn down and re-created.  This explanation needs to be improved.*
 
    *  Configured subscriptions can be modified by any configuration
       client with write permission on the configuration of the
@@ -1789,6 +1899,10 @@ Table of Contents
    notification messages for any dynamic subscription, or for one or
    more receivers of a configured subscription.  Such termination or
    suspension is driven by internal considerations of the publisher.
+
+   **TODO, do we want to add text that if a subscription is ever changes
+   (config or dynamic (e.g., referenced filter)) then the subscription
+   MUST be terminated and restarted.
 
 11.1.  Configured Subscriptions
 
@@ -1834,7 +1948,9 @@ Table of Contents
       configured subscription.
 
    Multiple configured subscriptions MUST be supportable over a single
-   transport session.
+   transport session. *TODO, James is suggesting that this should be
+   MAY, either way, I think that this should move to be under the
+   transport considerations section of the document.*
 
    Below is a tree diagram for the "subscriptions" container.  All
    objects contained in this tree are described in the YANG module in
@@ -1843,7 +1959,7 @@ Table of Contents
    subscriptions.
 
    module: ietf-yp-lite
-     +--rw datastore-telemetry
+     +--rw datastore-telemetry!
         +--rw subscriptions
            +--rw subscription* [id]
               +--rw id                               subscription-id
@@ -2057,6 +2173,9 @@ Table of Contents
    subscription state change notification _subscription-terminated_ is
    sent to that receiver if that receiver is active or suspended.
 
+   *TODO Do we want a common here about tearing down a subscription, or
+   is having it in the common section sufficient?*
+
 11.1.4.  Deleting a Configured Subscription
 
    Configured subscriptions can be deleted via configuration.  After a
@@ -2065,6 +2184,12 @@ Table of Contents
    publisher sends _subscription-terminated_ notification to all of the
    subscription's receivers to indicate that the subscription is no
    longer active.
+
+   *TODO, do we need a comment about closing the transport session if
+   there are no more subscription to that receiver?  Possibly the
+   Transports section of the document should have a section that
+   describes the lifecycle of a transport session (or will that end up
+   differing between configured and dyanmic subscriptions?)*
 
 11.1.5.  Resetting a Configured Subscription's Receiver
 
@@ -2092,10 +2217,7 @@ Table of Contents
 
    Dynamic subscriptions are managed via protocol operations (in the
    form of RPCs, per [RFC7950], Section 7.14) made against targets
-   located in the publisher.  These RPCs have been designed extensibly
-   so that they may be augmented for subscription targets beyond event
-   streams.  For examples of such augmentations, see the RPC
-   augmentations in the YANG data model provided in [RFC8641].
+   located in the publisher.
 
 11.2.1.  Dynamic Subscription State Machine
 
@@ -2151,15 +2273,8 @@ Table of Contents
 
    The input parameters of the operation are:
 
-   o A "stream" name, which identifies the targeted event stream against
-   which the subscription is applied.
-
    o An event stream filter, which may reduce the set of event records
    pushed.
-
-   o If the transport used by the RPC supports multiple encodings, an
-   optional "encoding" for the event records pushed.  If no "encoding"
-   is included, the encoding of the RPC MUST be used.
 
    If the publisher can satisfy the "establish-subscription" request, it
    replies with an identifier for the subscription and then immediately
@@ -2237,10 +2352,11 @@ Table of Contents
    related to the subscription after the _subscription-terminated_
    notification and
 
-   *TODO, I think that we should relax this to a SHOULD* If the
-   publisher accepts the request and the publisher has indicated
-   success, the publisher MUST NOT send any more notification messages
-   for this subscription.
+   *TODO, I think that we should relax this to a SHOULD, but also this
+   should be common with configured subscriptions, so perhaps not in
+   this section.* If the publisher accepts the request and the publisher
+   has indicated success, the publisher SHOULD NOT send any more
+   notification messages for this subscription.
 
 11.2.4.  Killing a Dynamic Subscription
 
@@ -2306,6 +2422,9 @@ Table of Contents
 
 11.3.  Implementation Considerations (from RFC 8639)
 
+   *TODO, we should rework this to strings for subscription names
+   instead*
+
    To support deployments that include both configured and dynamic
    subscriptions, it is recommended that the subscription "id" domain be
    split into static and dynamic halves.  This will eliminate the
@@ -2319,7 +2438,7 @@ Table of Contents
 
    If a subscription is unable to marshal a series of filtered event
    records into transmittable notification messages, the receiver should
-   be suspended with the reason "unsupportable-volume".
+   be terminated with the reason "XXX TBD (Was unsupportable volume)".
 
    For configured subscriptions, operations are performed against the
    set of receivers using the subscription "id" as a handle for that
@@ -2739,7 +2858,7 @@ Table of Contents
    here?*
 
    module: ietf-yp-lite
-     +--rw datastore-telemetry
+     +--rw datastore-telemetry!
         +--rw filters
         |  +--rw filter* [name]
         |     +--rw name             string
@@ -3789,11 +3908,12 @@ Table of Contents
        }
      }
 
-     /*
-      * DATA NODES
-      */
+   /*
+     * DATA NODES
+     */
 
    container datastore-telemetry {
+     presence "Enables datastore telemetry";
        container filters {
          description
            "Contains a list of configurable filters that can be applied to
@@ -4157,9 +4277,7 @@ Table of Contents
    sent, so that clients do not get confused into thinking that an
    update was lost.  For an on-change subscription, a "push-update"
    notification MUST NOT be sent, so that clients remain unaware of
-   changes made to nodes they don't have read-access for.  By the same
-   token, changes to objects that are filtered MUST NOT affect any
-   dampening intervals.
+   changes made to nodes they don't have read-access for.
 
    A publisher MAY choose to reject an "establish-subscription" request
    that selects nonexistent data or data that a receiver is not allowed
@@ -4951,7 +5069,6 @@ B.5.1.  "establish-subscription" RPC
            /ex:foo
          </yp:datastore-xpath-filter>
          <yp:on-change>
-           <yp:dampening-period>100</yp:dampening-period>
          </yp:on-change>
        </establish-subscription>
      </rpc>
@@ -5008,8 +5125,33 @@ B.5.3.  "resync-subscription" RPC
    include, in the yang-data structure "resync-subscription-error",
    supplemental information about the reasons for the error.
 
-Author's Address
+Authors' Addresses
 
-   Robert Wilton
+   Robert Wilton (editor)
    Cisco Systems
    Email: rwilton@cisco.com
+
+
+   Holger Keller
+   Deuetsche Telekom
+   Email: Holger.Keller@telekom.de
+
+
+   Benoit Claise
+   Huawei
+   Email: benoit.claise@huawei.com
+
+
+   Ebben Aries
+   Juniper
+   Email: Ebben Aries <exa@juniper.net>
+
+
+   James Cumming
+   Nokia
+   Email: james.cumming@nokia.com
+
+
+   Thomas Graf
+   Swisscom
+   Email: Thomas.Graf@swisscom.com
