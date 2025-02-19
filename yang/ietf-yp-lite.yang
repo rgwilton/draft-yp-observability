@@ -899,11 +899,12 @@ module ietf-yp-lite {
     }
   }
 
-  /*
-   * DATA NODES
-   */
+/*
+  * DATA NODES
+  */
 
 container datastore-telemetry {
+  presence "Enables datastore telemetry";
     container filters {
       description
         "Contains a list of configurable filters that can be applied to

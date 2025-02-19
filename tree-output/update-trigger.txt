@@ -1,5 +1,5 @@
 module: ietf-yp-lite
-  +--rw datastore-telemetry
+  +--rw datastore-telemetry!
      +--rw subscriptions
         +--rw subscription* [id]
            +--rw update-trigger

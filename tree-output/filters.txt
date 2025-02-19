@@ -1,5 +1,5 @@
 module: ietf-yp-lite
-  +--rw datastore-telemetry
+  +--rw datastore-telemetry!
      +--rw filters
         +--rw filter* [name]
            +--rw name             string

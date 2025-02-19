@@ -1,5 +1,5 @@
 module: ietf-yp-lite
-  +--rw datastore-telemetry
+  +--rw datastore-telemetry!
      +--rw receivers {configured}?
         +--rw receiver* [name]
            +--rw name                      string
