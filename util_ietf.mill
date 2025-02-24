@@ -155,10 +155,51 @@ trait IETF extends Module {
     PathRef(Task.dest / "venv")
   }
 
-  val treeDir = millSourcePath / "tree-output"
+  val treeDir = millSourcePath / "generated-tree-output"
 
   def yangTrees: Seq[(Seq[String], String, Option[String])] = Seq()
   def yangSourceDir = os.RelPath("yang")
+  def yangSources = Task.Source("yang")
+
+  def yangCompiles: Seq[Seq[String]] = Seq()
+
+  def validateYangCompiles = Task {
+    val pyang = python3Venv().path / "bin" / "pyang"
+
+    for (yangFiles <- yangCompiles) {
+      val yangFilePaths = os.list(yangSources().path).filter { file =>
+        yangFiles.contains(file.last)
+      }
+      //val yangFilePaths = yangFiles.map(file => millSourcePath / yangSourceDir / file)
+
+      // Check using pyang
+      val cmdRes = 
+        os.call((pyang, "--ietf", "--strict", "-p", allYangDeps(), yangFilePaths),
+                mergeErrIntoOut = true, check = false)
+      if (cmdRes.exitCode == 0) {
+        println(s"pyang compilation for ${yangFiles.mkString("(",", ", ")")} clean")
+      } else {
+        println(s"pyang compilation warnings/errors for ${yangFiles.mkString("(",", ", ")")}:\n${cmdRes.out.text()}")
+      }
+
+      // Try using yanglint, if available
+      try {
+        val cmdRes = 
+          os.call(("yanglint", "-i", "-p", allYangDeps(), yangFilePaths),
+                  mergeErrIntoOut = true, check = false)
+        if (cmdRes.exitCode == 0) {
+          println(s"yanglint compilation for ${yangFiles.mkString("(",", ", ")")} clean")
+        } else {
+          println(s"yanglint compilation warnings/errors for ${yangFiles.mkString("(",", ", ")")}:\n${cmdRes.out.text()}")
+        }
+      } catch {
+        case e: Exception =>
+          println(s"Skipping yanglint: yanglint not available on path: ${e.getMessage}")
+      }
+    }
+
+    PathRef(Task.dest)
+  }
 
   // Generate the tree output for all YANG modules.
   def buildYangTree(pyang: os.Path,
@@ -246,6 +287,7 @@ trait IETF extends Module {
   def make = Task {
     buildAllYangTrees()
     extractAllTreeSnippets()
+    validateYangCompiles()
     val sources = draft().path
     os.proc("make", "fix-lint", "all").call(cwd = millSourcePath)
   }

@@ -699,7 +699,7 @@ The "filters" container maintains a list of all datastore subscription filters t
 Below is a tree diagram for the "filters" container.  All objects contained in this tree are described in the YANG module in {{ietf-yp-lite-yang}}.
 
 ~~~~ yangtree
-{::include tree-output/filters.txt}
+{::include generated-tree-output/filters.txt}
 ~~~~
 {: align="left" title="'datastore-telemetry/filters' container", #FilterContainerYangTree }
 
@@ -744,7 +744,7 @@ The update notification is encoded using {{I-D.draft-netana-netconf-notif-envelo
 The schema for this notifications is given in the following tree diagram:
 
 ~~~~ yangtree
-{::include tree-output/update-notification.txt}
+{::include generated-tree-output/update-notification.txt}
 ~~~~
 {: align="left" title="'update' notification"}
 
@@ -773,7 +773,7 @@ Subscription can either be based on sampling the requested data on a periodic ca
 The schema for the update-trigger container is given in the following tree diagram:
 
 ~~~~ yangtree
-{::include tree-output/update-trigger.txt}
+{::include generated-tree-output/update-trigger.txt}
 ~~~~
 {: align="left" title="'update-trigger' container"}
 
@@ -932,7 +932,7 @@ Configured subscriptions MAY have multiple receivers, but they MUST have the sam
 Below is a tree diagram for *datastore-telemetry/receivers* container.  All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.
 
 ~~~~ yangtree
-{::include tree-output/receivers.txt}
+{::include generated-tree-output/receivers.txt}
 ~~~~
 {: align="left" title="datastore-telemetry/receivers container" #ReceiversYangTree }
 
@@ -1062,7 +1062,7 @@ Multiple configured subscriptions MUST be supportable over a single transport se
 Below is a tree diagram for the "subscriptions" container.  All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.  In the operational datastore {{RFC8342}}, the "subscription" list contains entries both for configured and dynamic subscriptions.
 
 ~~~~ yangtree
-{::include tree-output/subscriptions.txt}
+{::include generated-tree-output/subscriptions.txt}
 ~~~~
 {: title="subscriptions container Tree Diagram" #SubscriptionYangTree }
 
@@ -1226,7 +1226,7 @@ If the publisher can satisfy the "establish-subscription" request, it replies wi
 Below is a tree diagram for "establish-subscription".  All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.
 
 ~~~~ yangtree
-{::include tree-output/establish-subscription.txt}
+{::include generated-tree-output/establish-subscription.txt}
 ~~~~
 {: align="left" title="establish-subscription YANG RPC" #EstablishSubscriptionYangTree }
 
@@ -1440,7 +1440,7 @@ referenced filter under the "within-subscription" subtree.
 Below is the tree diagram for "subscription-started".  All objects contained in this tree diagram are described in the YANG module in {{yp-lite-yang-module}}.
 
 ~~~~ yangtree
-{::include tree-output/subscription-started.txt}
+{::include generated-tree-output/subscription-started.txt}
 ~~~~
 {: align="left" title="subscription-started Notification Tree Diagram"}
 
@@ -1473,7 +1473,7 @@ The subscription terminated notification may be sent to a receiver for any of th
 Below is a tree diagram for "subscription-terminated".  All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.
 
 ~~~~ yangtree
-{::include tree-output/subscription-terminated.txt}
+{::include generated-tree-output/subscription-terminated.txt}
 ~~~~
 {: align="left" title="subscription-terminated Notification Tree Diagram"}
 
@@ -1642,7 +1642,7 @@ Note, this output does not include support for any transport configuration, and 
 **TODO What about capabilities?  Perhaps further explanation is needed here?**
 
 ~~~~ yangtree
-{::include tree-output/ietf-yp-lite-tree.txt}
+{::include generated-tree-output/ietf-yp-lite-tree.txt}
 ~~~~
 {: align="left" title="YANG tree for YANG Push Lite Module Tree Output "}
 

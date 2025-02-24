@@ -8,10 +8,11 @@ object `package` extends RootModule with IETF {
 
   val rfcDeps = List(
     8525, // Replaces 7895
-    8072, 8639, 8641, 9196, 9640, 9641, 9642, 9643, 9645
+    8072, 8341, 8342, 8343, 8344, 8529, 8525, 8639, 8641, 9196, 9640, 9641, 9642, 9643, 9645
   )
 
   def draftDeps = Agg(
+    "draft-ietf-netmod-rfc6991-bis-17",
     "draft-ietf-netconf-https-notif-15",
     "draft-ietf-netconf-udp-notif-18", // was -16
     "draft-ietf-netconf-udp-client-server-05",
@@ -39,6 +40,10 @@ object `package` extends RootModule with IETF {
   def excludedModules = Set(
     "ietf-https-notif-transport@2024-02-01.yang",
     "ietf-yang-library-rfc7895-augmentedby.yang"
+  )
+
+  def yangCompiles = Seq(
+    (Seq("ietf-yp-lite.yang"))
   )
 
   def yangTrees = Seq(

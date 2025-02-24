@@ -905,6 +905,8 @@ module ietf-yp-lite {
 
 container datastore-telemetry {
   presence "Enables datastore telemetry";
+  description
+    "YANG Push Lite Datastore Telemetry Configuration and State.";
     container filters {
       description
         "Contains a list of configurable filters that can be applied to
@@ -1079,8 +1081,8 @@ container datastore-telemetry {
             }
 
             leaf encoding {
-              config false;
               type encoding;
+              config false;
               description
                 "The type of encoding for notification messages.";
             }
@@ -1107,9 +1109,9 @@ container datastore-telemetry {
       }
     }
     container receivers {
+      if-feature "configured";
       description
         "A container for all instances of receivers.";
-      if-feature "configured";
 
       list receiver {
         key "name";
