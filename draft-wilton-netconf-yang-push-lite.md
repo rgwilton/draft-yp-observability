@@ -155,19 +155,33 @@ This section lists some other potential issues and enhancements that should be d
 
    - If a subscription is decomposed, then should the subscription started message for the configured subscription indicate how that subscription has been decomposed?
 
-   - Do we need to add an optional replay-end (i.e., after a sync-on-start) or collection-end (i.e., after every collection) notification so that clients can determine when data can be implicitly deleted.  (Rob: I think that we should add the latter, but make it a subscription config option to turn it on).
+   - Do we need to add an optional replay-end (i.e., after a sync-on-start) or collection-end (i.e., after every collection) notification so that clients can determine when data can be implicitly deleted.
+     - Rob: I think that we should add the latter, but make it a subscription config option to turn it on.
+     - Holger, strong support for adding this, often requested.
+     - Thomas, yes we need this, but need to determine whether this is per subscription or per publisher.
 
 1. Constraints on supporting multiple receivers:
 
-   - Should they all have the same encoding? (I think so, the client can always set up different subscriptions if different receivers and subscriptions if different encodings are needed.)
+   - For a single subscription with multiple receivers have the same encoding? (I think so, the client can always set up different subscriptions if different receivers and subscriptions if different encodings are needed.)
+     - encoding/dscp moves under the publisher.
+     - Thomas/Benoit - should have flexibility.
+     - Rob - no.
+     - For further discussion.
+     - Also check with Nokia & Huawei on whether they can support this anyway.
 
    - Should we also constrain that they have the same transports? (Rob: Probably not)
+     - Only reason for needing this would be a migration.
+     - Thomas is worried during a migration on performance impact.
 
    - Lifecycle message should be sent per subscription, not per receiver (i.e., every receiver gets the same message (ignoring transport headers)):
+     - Consensus agreed this is the right thing to do.
 
      - Hence, every receiver gets the same sequence number in the message.  Otherwise, if separate lifecycle messages are sent to individual receivers then either those messages need to exclude sequence numbers of the sequence numbers will go out of sync (which I think will break the reason why Thomas introduced them in the first place).
+       - There seems to be some consensus around the messages being at subscription level
 
      - Or perhaps receiver removed can be a special case and a subscription-terminated is only sent to the receiver that is removed (because the sequence number doesn't matter - since it won't receive any new messages until another subscription-started).
+
+         - Park this question for further discussion.
 
      - subscription-created notification could perhaps have an enum giving a reason for the notification (e.g., new subscription, receiver added).
 
@@ -177,29 +191,80 @@ This section lists some other potential issues and enhancements that should be d
 
    - The draft has already removed subscription-modified, and just kept subscription-created.
 
-   - Should subscription-started notification include a fingerprint of the schema that is covered by the subscription that would guaranteed to change if the subscription changes?  Would this also be impacted by a change to access control? (Rob: Probably not)
+     - Thomas, check for implementations.
+     - Useful to keep the transport up.
+     - Consensus if for it to be removed.
+
+   - Should subscription-started notification include a fingerprint of the schema that is covered by the subscription that would guaranteed to change if the subscription changes?
+     - Rob: I think that we should do this (i.e., as optimized version of content-id)
+     - Would this also be impacted by a change to access control? (Rob: Probably not)
+     - Thomas would like to align to the same mechanism in YANG Push.
+     - Should discuss all of this together.  IETF 122 discussion.
+
 
    - If a subscription references a filter, then should that be included inline in the subscription started notification (as per the RFC 8641 text), or should it indicate that it is a referenced filter?
+     - Thomas: Do we need referenced filters at all?  Subscriptions could be simplified if everything was done inline.
+     - gNMI is only done inline.
+     - Juniper also supports filters.
+     - Thomas try to simplify as much as possible, then do we need templating?
 
    - When a subscription is terminated, should it be MUST NOT send any more notifications after the terminated message, or SHOULD NOT?  For a dynamic subscription, should the RPC be synchronous and not reply until it knows that all queues have been drained?
+      - Holger, Thomas, Benoit: MUST NOT
+      - James: SHOULD NOT
+      - MUST NOT is clearer from an implementation POV, but probably doesn't really matter.
+      - What does the receiver do when it gets this message anyway.
+
 
    - Is a publisher allowed to arbitrarily send a sync-on-start resync, e.g., if it detects data loss, or should it always just terminate and reinitialize the subscription?
+    - Holger, terminate & recreate.
+    - gNMI, not specified.
+    - Thomas: Keep this as implementation detail.
+    - Sequence-id indicates that a client is dropping message anyway.
+    - Receiver can already monitor and see that there is a problem anyway.
 
    - Should we name subscription-terminated to subscription-stopped?
+     - Holger, no reason to change
+     - Rob, note we will be in a different namespace anyway.  Does terminated indicate too much finality for a configured subscription, or doesn't this matter?
+     - No reason to change, keep as is.
 
    - If the parameters for a subscription change in any way (e.g., the config changes for a configured subscription, or a referenced filter changes in a dynamic subscription) then do we want to say that the subscription MUST be killed and recreated.  I.e., with subscription-terminated/subscription-started notifications? (Section 11)
+     - Holger, kill/re-create.
+     - Collector would need to no.
+     - Ebben: Includes addition or deletion of the path.
+     - Benoit: Which parameters are changing, this could impact.  It depends.  Maybe forcing it down keeps it simple.  Would need further definition of what parameters would cause this to be pulled down.
+     - Locally relevant, e.g., modifying transport parameters doesn't force a change.
+     - Benoit: If you are not sure what you are doing you must recreate.
 
    - Should we have an RPC/Action to reset a receiver or a subscription?  E.g., discussed in section 11.1.5.
+      - Holger yes.
+      - Benoit: What is the advantage here?
+      - Ebben: Like clearing a BGP neighbour.
+      - Thomas: agnostic to this.
+      - Probably keep this in for the moment.
 
    - Should we support configurable keepalives?  I presume that this means for an on-change only subscription.
+     - Holger, yes, this will be needed.
+     - Rob, should this be solved in the transport layer rather than application layer.
+     - Thomas, no thinking of a subscription level keepalive.  If we do keepalives then do it at the application level and do it as far as the collection process.  Only thinking for on-change subscriptions.
+     - Thomas thinking of doing this per publisher-id.
+     - Benoit: Who is going to receive this keepalive
+     - Thomas: Message broker.
+     - Thomas: at a minimum joint period and on-change subscription.  A keepalive is one further optimization.
+     - Ebben: Is this just a small message, Rob: yes.
+     - Benoit: Is this the right way of solving this (i.e., in the protocol itself)
+     - Open for further discussion.
 
 1. Questions/comments on the notification message format:
 
    - periodic and on-change notifications use the same new single update message.
+     - Agreed.
 
    - We also mandate use of the new envelope draft for encapsulating the notifications.  Do we want to REQUIRE use of hostname & sequence-number? (I think we do).
+     - Agreed on new envelope format.
+     - Benoit: Why is this is optional in the envelope?  Why not make it mandatory in the envelope.
+     - Generally thinking is that we should make this mandated here and in envelope.
 
-   - We allow a subscription to be decomposed into more specific subscriptions which are then used for the notification.
+c subscriptions which are then used for the notification.
 
    - We allow multiple updates within a single message (primary use case is for the on-change case).  What about the timestamp, which is still just once per message (like gNMI)?  Should message bundling be optional/configurable to implement (if they all use a single shared timestamp)?
 
@@ -215,9 +280,14 @@ This section lists some other potential issues and enhancements that should be d
 
    - Do we keep the "incomplete" update flag?  Otherwise how would a publisher indicate that a message was not complete.
 
+     - Thomas: We should keep this.
+
+
 1. Questions related to terminology:
 
    - Should we use the object terminology?  This may be better than data node subtree, or the equivalent, and could be better than introducing *bags*?
+     - Holger: should try and use same terminology as existing YANG Push RFCs.
+
 
 1. Questions/issues related to the configuration model:
 
@@ -236,20 +306,29 @@ This section lists some other potential issues and enhancements that should be d
       - I've renamed the encodings (e.g., from "encode-json" to just "json")
 
       - Probably want to get rid of the reset RPC.
+         - Holger: No, we want to keep this because it is easier that forcing a config change.
+         - Rob: Okay, presumably needs some rate-limit protection (to avoid DoS attacks).
 
       - Maybe further simplification of the receivers list under the subscription.  E.g., do we need stats per subscription per receiver, or just per subscription?  Do want stats across all subscriptions to a given receiver?
+        - Holger: Stats per subscription should be sufficient.  No need for per subscription/pre-receiver stats (which would allow the data model to be simplified a little bit).
 
       - Subscription-ids are currently numeric values with the space split between configured and dynamic subscriptions, but I think that the config model would be cleaner if we used names for the configured subscriptions (and we could reserve a prefix "dyn-" for dynamic subscriptions).
+        - Holger, Rob: Strong preference to names.
+        - Thomas, keep ids, but rename purpose to name.  Also give receivers an ids and be keyed this.
 
       - Should DSCP marking be configured under the receiver or the subscription?  Or perhaps in both places with DSCP marking at the subscription overriding a default set on the receiver?
+        - Consensus: Should just be under the receiver.
 
 1. Questions/issues related to dynamic subscriptions:
 
    - In YP Lite, dynamic subscriptions are designed to be closer to configured subscriptions and share more of the data model and lifecycle handling.  I.e., the primary differentiator is meant to be how they are instantiated.
+     - James, Rob: More alignment is better.
 
    - Do we want to change how RPC errors are reported?  E.g., change the RPC ok response to indicate whether the subscription was successfully created or not, or included extra error information.  Note NETCONF and RESTCONF already define how errors are encoded in XML and JSON (for RESTCONF only).
 
    - Do we need to allow a dynamic subscription to be modified?  If we do, then it would be better to change the establish-subscription RPC to have an optional existing subscription-id rather than define a separate RPC.  However, my preference is that the existing subscription is deleted and recreated (or if we allow the client to specify the subscription-id then they could just overwrite the subscription)
+     - Holger: Overwrite is a neat idea, but delete/recreate would also be sufficient.
+     - Rob: Related to this, do we allow the client to optionally name dynamic subscriptions (what is config and dynamic subscription names collide)?
 
    - For operational data, should be list dynamic receivers in the receiver list so that they are handled the same as configured subscription?  Or should the information for them be inlined in the subscriptions container?
 
@@ -262,8 +341,12 @@ This section lists some other potential issues and enhancements that should be d
      - Do we advertise that conformance via capabilities and/or YANG features (both for configured and dynamic subscriptions)?  This might be a case, where the use of features is reasonable.
 
    - For on-change, should a subscription be rejected (or not brought up) if there are no on-change notifiable nodes?  Alternative is to offer implementation flexibility between these two approaches.
+     - Holger: Prefer for the subscription to be rejected.
 
    - Do we mandate that all implementations SHOULD support particular encodings (e.g., JSON, or JSON and CBOR)?
+      - Holger: MUST for JSON, SHOULD t.b.d.,
+      - James: MAY for all.
+      - Rob: SHOULD for JSON & CBOR (because JSON may not be popular in future ...)
 
 1. Issues/questions related to path filtering:
 
