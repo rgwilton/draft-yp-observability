@@ -1,0 +1,254 @@
+package build
+import mill._
+
+trait IETF extends Module {
+  def draftDeps: Agg[String] = Agg()
+  def draft: Target[PathRef]
+  def yang = Task.Source { "yang" }
+
+  def fetchDrafts = Task {
+    def url(draft: String) = s"https://www.ietf.org/archive/id/$draft.txt"
+    for (draft <- draftDeps) {
+      os.write(Task.dest / s"$draft.txt", requests.get(url(draft)))
+    }
+    PathRef(Task.dest)
+  }
+
+  val DraftNameValue = "(draft-[-a-z0-9]+)-([0-9]+)".r
+  def checkDraftLatest() = Task.Command {
+    def url(name: String) = 
+      s"https://datatracker.ietf.org/api/v1/doc/document/$name?format=json"
+    var outOfDate = 0
+    for (draft <- draftDeps) {
+      draft match {
+        case DraftNameValue(name, version) =>
+          try {
+            val res = requests.get(url(name))
+            val latest = ujson.read(res.text())("rev").str.toInt
+            def current = version.toInt
+            if (latest > current) {
+              outOfDate += 1
+              println(s"Warning: $name latest revsion is $latest, using $current")
+            } 
+          } catch {
+            case e: Exception =>
+              println(s"Error: $name: ${e.getMessage}")
+           }
+      }
+    }
+    if (outOfDate == 0) {
+      println("All drafts are current")
+    }
+  }
+
+  def rfcDeps: Agg[Int] = Agg()
+
+  def fetchRFCs = Task {
+    def url(rfcNo: Int) = s"https://www.rfc-editor.org/rfc/rfc$rfcNo.txt"
+    for (rfc <- rfcDeps) {
+      os.write(Task.dest /  s"rfc$rfc.txt", requests.get(url(rfc)))
+    }
+    PathRef(Task.dest)
+  }
+
+  def ianaDeps: Agg[String] = Agg()
+
+  def fetchIANA = Task {
+    def url(ianaYangModule: String) = 
+      s"https://www.iana.org/assignments/yang-parameters/$ianaYangModule"
+    for (ianaYangModule <- ianaDeps) {
+      os.write(Task.dest / ianaYangModule, requests.get(url(ianaYangModule)))
+    }
+    PathRef(Task.dest)
+  }
+
+  def fetchAll = Task {
+    fetchDrafts()
+    fetchRFCs()
+    fetchIANA()
+  }
+
+  def extractedFileRenames = Map[String, String]()
+  def excludedModules: Set[String] = Set()
+
+  def fetchRfcStrip = Task {
+    def url = 
+      "https://raw.githubusercontent.com/mbj4668/rfcstrip/refs/heads/master/rfcstrip"
+    os.write(Task.dest /  "rfcstrip", requests.get(url))
+    PathRef(Task.dest / "rfcstrip")
+  }
+
+  def extractYANG = Task {
+    val rfcstrip = fetchRfcStrip().path
+    for (docPath <- os.walk(fetchDrafts().path) ++ os.walk(fetchRFCs().path)) {
+      val cmdRes =
+        os.call(("sh", rfcstrip, "-d", Task.dest, docPath))
+      if (cmdRes.exitCode != 0)
+        println(s"Error: ${cmdRes.out.text()}")
+      //else
+      //  println(s"YANG extracted $docPath to ${Task.dest}")
+    }
+
+    // Rename files as needed.
+    for ((oldName ,newName) <- extractedFileRenames
+         if os.exists(Task.dest / oldName)) {
+      os.move(Task.dest / oldName, Task.dest / newName)
+    }
+
+    // Remove examples, non YANG files, and any other exclusions.
+    def exclusions = excludedModules
+
+    for (destPath <- os.walk(Task.dest)) {
+      if (exclusions.contains(destPath.last) ||
+          destPath.last.startsWith("example-") ||
+          destPath.last.startsWith("ex-") ||
+          destPath.last.startsWith("example_") ||
+          destPath.ext != "yang") {
+        os.remove(destPath)
+      }
+    }
+
+    PathRef(Task.dest)
+  }
+
+  def patchDir = Task.Source { "patches" }
+
+  def allYangDeps = Task {
+    // Copy in extracted YANG modules, excluding any exclusions or example modules.
+    for (modulePath <- os.walk(extractYANG().path)) {
+      os.copy(modulePath, Task.dest / modulePath.last)
+    }
+
+    // Copy in any IANA YANG modules
+    for (ianaModulePath <- os.walk(fetchIANA().path)) {
+      os.copy(ianaModulePath, Task.dest / ianaModulePath.last)
+    }
+
+    // Apply any patches in $patchDir.
+    if (os.exists(patchDir().path)) {
+      for (patchFile <- os.list(patchDir().path)) {
+        if (patchFile.ext == "diff") {
+          val tgtName = patchFile.baseName
+          if (os.exists(Task.dest / tgtName)) {
+            val cmdRes = 
+              os.call(("patch", Task.dest / tgtName, "-i", patchFile.toString))
+            if (cmdRes.exitCode != 0)
+              println(s"Error: ${cmdRes.out.text()}")
+            // else
+            //   println(s"Patch applied to $tgtName")
+          } else {
+            println(s"Skipping patch for $tgtName, file not found")
+          }
+        }
+      }
+    }
+
+    PathRef(Task.dest)
+  }
+
+  // Setup a python virtual environment with pyang installed.
+  def python3Venv = Task {
+    os.call(("python3", "-m", "venv", Task.dest / "venv"))
+    val python = Task.dest / "venv/bin/python3"
+    os.call((python, "-m", "pip", "install", "pyang"))
+
+    PathRef(Task.dest / "venv")
+  }
+
+  val treeDir = millSourcePath / "tree-output"
+
+  def yangTrees: Seq[(Seq[String], String, Option[String])] = Seq()
+  def yangSourceDir = os.RelPath("yang")
+
+  // Generate the tree output for all YANG modules.
+  def buildYangTree(pyang: os.Path,
+                    yangDeps: os.Path,
+                    yangFiles: Seq[os.Path],
+                    target: os.Path,
+                    treePath: Option[String] = None) = {
+    //val yangFiles = os.list(yang().path).filter(_.ext == "yang")
+    val treeOpts = treePath match {
+      case Some(path) => Seq("--tree-path", path)
+      case None => Seq()
+    }
+
+    val cmdRes = 
+      os.call((pyang,
+               "-f", "tree",
+               /*"--ietf", "--strict",*/
+               "-p", yangDeps,
+               "-o", target,
+               "--tree-line-length=69",
+               treeOpts,
+               yangFiles))
+    if (cmdRes.exitCode != 0)
+      println(s"Error: ${cmdRes.out.text()}")
+  }
+
+  def buildAllYangTrees = Task {
+    val pyang = python3Venv().path / "bin" / "pyang"
+    val cmdRes = os.call((pyang, "--version"))
+    if (cmdRes.exitCode == 0)
+      os.write(Task.dest / "pyang-version.txt", cmdRes.out.text())
+
+    val depsPath = allYangDeps().path
+    
+    for ((yangFiles, target, treePath) <- yangTrees) {
+      val yangFilePaths = yangFiles.map(file => millSourcePath / yangSourceDir / file)
+      buildYangTree(pyang, depsPath, yangFilePaths, Task.dest / target, treePath)
+
+      os.makeDir.all(treeDir)
+      os.copy.over(Task.dest / target, treeDir / target)
+      val len = os.read.lines(treeDir / target).length
+      val bytes = os.size(treeDir / target)
+      println(
+        s"Tree output written to $target; $len lines, $bytes bytes"
+      )
+    }
+
+    PathRef(Task.dest)
+  }
+
+  def yangTreeSnippets:Seq[(String, String, String, String)] = Seq()
+
+  def extractSnippet(output: String, start: String, end: String, outputFile: os.Path) = {
+    val filePath = outputFile
+    val s = s".*$start.*"
+    val e = s".*$end.*"
+    val selectedOutputLines =
+      output
+        .split("\n")
+        .dropWhile(!_.matches(s))
+        .takeWhile(!_.matches(e))
+    val selectedOutput = selectedOutputLines.mkString("\n")
+    os.write.over(filePath, selectedOutput)
+    PathRef(filePath)
+  }
+
+  def extractAllTreeSnippets = Task {
+    buildAllYangTrees()
+    for ((treeFile, start, end, target) <- yangTreeSnippets) {
+      val treeOutput = os.read(treeDir / treeFile)
+      extractSnippet(treeOutput, start, end, Task.dest / target)
+
+      os.makeDir.all(treeDir)
+      os.copy.over(Task.dest / target, treeDir / target)
+      val len = os.read.lines(treeDir / target).length
+      val bytes = os.size(treeDir / target)
+      println(
+        s"Tree snippet written to $target; $len lines, $bytes bytes"
+      )
+    }
+
+    PathRef(Task.dest)
+  }
+
+  def make = Task {
+    buildAllYangTrees()
+    extractAllTreeSnippets()
+    val sources = draft().path
+    os.proc("make", "fix-lint", "all").call(cwd = millSourcePath)
+  }
+
+}
+

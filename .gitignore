@@ -16,6 +16,7 @@ draft-*.txt
 /.venv/
 /.vscode/
 /lib
+/out
 /node_modules/
 /versioned/
 Gemfile.lock
