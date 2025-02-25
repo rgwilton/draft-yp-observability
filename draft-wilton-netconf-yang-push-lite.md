@@ -1490,7 +1490,7 @@ After the "replay-completed" notification has been sent, additional event record
 Below is a tree diagram for "replay-completed".  All objects contained in this tree are described in the YANG module in Section 4.
 
 ~~~~ yangtree
-{::include tree-output/replay-completed.txt}
+{::include generated-tree-output/replay-completed.txt}
 ~~~~
 {: align="left" title="replay-completed Notification Tree Diagram"}
 
