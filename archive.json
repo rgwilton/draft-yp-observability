@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-25T00:18:54.108836+00:00",
+  "timestamp": "2025-02-27T00:16:57.145963+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -259,6 +259,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 7,
+      "id": "PR_kwDOM-PT7s6MgDJ1",
+      "title": "Fix replay-completed.txt reference",
+      "url": "https://github.com/rgwilton/draft-yp-observability/pull/7",
+      "state": "OPEN",
+      "author": "earies",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-02-25T16:30:21Z",
+      "updatedAt": "2025-02-25T16:30:21Z",
+      "baseRepository": "rgwilton/draft-yp-observability",
+      "baseRefName": "main",
+      "baseRefOid": "b6c6f5d6672256754673adf0f8c483cb884c9969",
+      "headRepository": "earies/draft-yp-observability",
+      "headRefName": "replay-completed",
+      "headRefOid": "2862f6a5a6a1d02d670d8f31dfe7c4414b32585b",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
