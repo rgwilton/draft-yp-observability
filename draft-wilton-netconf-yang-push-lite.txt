@@ -5925,7 +5925,7 @@ Authors' Addresses
 
    Ebben Aries
    Juniper
-   Email: Ebben Aries <exa@juniper.net>
+   Email: Ebben Aries exa@juniper.net
 
 
    James Cumming
