@@ -16,9 +16,9 @@ object `package` extends RootModule with IETF {
   def draftDeps = Agg(
     "draft-ietf-netmod-rfc6991-bis-17",
     "draft-ietf-netconf-https-notif-15",
-    "draft-ietf-netconf-udp-notif-19",
+    "draft-ietf-netconf-udp-notif-20",
     "draft-ietf-netconf-udp-client-server-06",
-    "draft-ietf-netconf-distributed-notif-11",
+    "draft-ietf-netconf-distributed-notif-13",
     "draft-ietf-netconf-http-client-server-25",
     "draft-ietf-netconf-yang-notifications-versioning-07",
     "draft-ietf-netconf-yang-library-augmentedby-01",

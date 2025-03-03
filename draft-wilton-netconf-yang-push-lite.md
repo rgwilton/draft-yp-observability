@@ -381,7 +381,7 @@ The rules for constructing a YPath are:
 
 - A YPath is a sequence of data tree path segment separated by a '/' character.  If the path starts with a '/' then it is absolute path from the root of the schema, otherwise it is a relative path, where the context of the relative path must be declared.
 
-- Constraints on key values may be specified within a single pair of '[' ']' brackets, where:
+- Constraints on key values may be specified within a single pair of '\[' '\]' brackets, where:
 
   - keys may be given in any order, and may be omitted, in which case they match any value.  Key matches are separated by a comma (,) with optional space character either side.
 
@@ -399,9 +399,9 @@ Some examples of YPaths:
 
 - */example:multi-keys-list\[first-key='foo', second-key=r'bar.\*'\]* - which identifies all entries in the 'multi-keys-list, where the first-key matches foo, and the second-key starts with bar.
 
-- */ietf-interfaces:interfaces/interface* - which identifies the *interface* list data node in the ietf-interfacess module for all interfaces.  I.e., the interface list 'name' key is unrestricted.
+- */ietf-interfaces:interfaces/interface* - which identifies the *interface* list data node in the ietf-interfaces module for all interfaces.  I.e., the interface list 'name' key is unrestricted.
 
-- */ietf-interfaces:interfaces/interface[]* - alternative format of the previous YPath.
+- */ietf-interfaces:interfaces/interface\[\]* - alternative form of the previous YPath.
 
 ## The "filters" Container
 
