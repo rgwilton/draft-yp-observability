@@ -5,6 +5,7 @@ module: ietf-yp-lite
            +--rw name                      string
            +--rw encoding?                 encoding
            +--rw dscp?                     inet:dscp
+           +---x reset
            +--rw (notification-message-origin)?
            |  +--:(interface-originated)
            |  |  +--rw source-interface?   if:interface-ref

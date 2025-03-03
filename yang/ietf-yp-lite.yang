@@ -57,18 +57,19 @@ module ietf-yp-lite {
      described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
      they appear in all capitals, as shown here.
 
-     Copyright (c) 2024 IETF Trust and the persons identified as
+     Copyright (c) 2025 IETF Trust and the persons identified as
      authors of the code.  All rights reserved.
 
      Redistribution and use in source and binary forms, with or
      without modification, is permitted pursuant to, and subject to
-     the license terms contained in, the Simplified BSD License set
+     the license terms contained in, the Revised BSD License set
      forth in Section 4.c of the IETF Trust's Legal Provisions
      Relating to IETF Documents
      (https://trustee.ietf.org/license-info).
 
-     This version of this YANG module is part of XXX; see the
-     RFC itself for full legal notices.";
+     This version of this YANG module is part of RFC XXXX
+     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+     for full legal notices.";
 
   revision 2024-11-11 {
     description
@@ -92,18 +93,6 @@ module ietf-yp-lite {
       "This feature indicates that dynamic establishment of
        subscriptions is
        supported.";
-  }
-
-  feature encode-json {
-    description
-      "This feature indicates that JSON encoding of notification
-       messages is supported.";
-  }
-
-  feature encode-xml {
-    description
-      "This feature indicates that XML encoding of notification
-       messages is supported.";
   }
 
   feature interface-designation {
@@ -270,27 +259,24 @@ module ietf-yp-lite {
       "Base identity to represent data encodings.";
   }
 
-  identity xml {
-    base encoding;
-    //if-feature "encode-xml";
-    description
-      "Encode data using XML as described in RFC 7950.";
-    reference
-      "RFC 7950: The YANG 1.1 Data Modeling Language";
-  }
-
   identity json {
     base encoding;
-    //if-feature "encode-json";
     description
       "Encode data using JSON as described in RFC 7951.";
     reference
       "RFC 7951: JSON Encoding of Data Modeled with YANG";
   }
 
+  identity xml {
+    base encoding;
+    description
+      "Encode data using XML as described in RFC 7950.";
+    reference
+      "RFC 7950: The YANG 1.1 Data Modeling Language";
+  }
+
   identity cbor {
     base encoding;
-    //if-feature "encode-json";
     description
       "Encode data using CBOR as described in RFC 9245,
        without using YANG SIDs";
@@ -301,7 +287,6 @@ module ietf-yp-lite {
 
   identity cbor-sids {
     base encoding;
-    //if-feature "encode-json";
     description
       "Encode data using JSON as described in RFC 7951, using YANG
        SIDs.";
@@ -320,9 +305,18 @@ module ietf-yp-lite {
        passing notification messages.";
   }
 
+
   /*
    * TYPEDEFs
    */
+
+  typedef ypath {
+    type string {
+      length "1..max";
+    }
+    description
+      "A type for YANG instance data paths.";
+  }
 
   typedef encoding {
     type identityref {
@@ -347,7 +341,8 @@ module ietf-yp-lite {
        to a receiver.";
   }
 
-// TODO - Consider changes to list keys or reordering of user-ordered lists.
+// TODO - Consider changes to list keys or reordering of
+//        user-ordered lists.
 
   typedef filter-ref {
     type leafref {
@@ -361,6 +356,82 @@ module ietf-yp-lite {
     type uint32;
     description
       "A period of time, measured in units of 0.01 seconds.";
+  }
+
+  typedef subscription-type {
+    type enumeration {
+      enum configured {
+        description
+          "A subscription that is created and managed via
+           configuration.";
+      }
+      enum dynamic {
+        description
+          "A subscription that is created and managed via RPC
+           primitives.";
+      }
+    }
+    description
+      "Indicate the type of subscription.";
+  }
+
+  typedef subscription-status {
+    type enumeration {
+      enum invalid {
+        description
+          "The subscription as a whole is unsupportable with its
+          current parameters.";
+      }
+      enum inactive {
+        description
+          "The subscription is supportable with its current
+          parameters, but it is not currently connected to any
+          connected receivers";
+      }
+      enum active {
+        description
+          "The subscription is actively running, and is connected
+           to at least one receiver.
+
+           A subscription-started notification must have been sent
+           for a subscription to be in this state, and the receiver
+           will receive update notifications, as per the
+           update-trigger selection.";
+      }
+    }
+    description
+      "Indicates the status of a subscription";
+  }
+
+  typedef receiver-status {
+    type enumeration {
+      enum disconnected {
+        description
+          "The publish is not currently connected to the receiver.
+
+           Nornally, this is because there are no active
+           subscriptions for this receiver.";
+      }
+      enum connecting {
+        description
+          "The publisher is actively trying to connect to the
+           receiver.  This implies that there is at least one active
+           subscription for this receiver.
+
+           A receiver in connecting state may indicate that the
+           transport or associated security session could not be
+           established, and the publisher is periodically trying to
+           establish the connection.";
+      }
+      enum connected {
+        description
+          "The publisher has successfully connected to the receiver
+           and at least one active subscription is using this
+           receiver.";
+      }
+    }
+    description
+      "Indicates the status of a receiver";
   }
 
   /*
@@ -392,7 +463,7 @@ module ietf-yp-lite {
         "The content filter specification for this request.";
 
       leaf-list paths {
-        type string;
+        type ypath;
         description
           "A basic path filter that allows wildcard, regex, or
            fixed value for list keys.  Each format is TODO";
@@ -532,14 +603,16 @@ module ietf-yp-lite {
         }
         default "ds:operational";
         description
-          "Datastore from which to retrieve data, defaults to operational";
+          "Datastore from which to retrieve data, defaults to
+           operational";
       }
 
       choice filter {
         description
           "The source of the selection filter applied to the
-          subscription.  This will either (1) come referenced from a
-          global list or (2) be provided in the subscription itself.";
+           subscription.  This will either (1) come referenced from
+           a global list or (2) be provided in the subscription
+           itself.";
         case by-reference {
           description
             "Incorporates a filter that has been configured
@@ -588,10 +661,9 @@ module ietf-yp-lite {
 
       leaf encoding {
         type encoding;
+        mandatory true;
         description
-          "The type of encoding for the subscribed data.  If not
-           included as part of the RPC, the encoding MUST be set by
-           the publisher to be the encoding used by this RPC.";
+          "The encoding to use for the subscription notifications.";
       }
 
       uses dscp;
@@ -656,7 +728,8 @@ module ietf-yp-lite {
         type subscription-id;
         mandatory true;
         description
-          "Identifier of the dynamic subscription that is to be deleted.";
+          "Identifier of the dynamic subscription that is to be
+           deleted.";
       }
     }
   }
@@ -669,8 +742,8 @@ module ietf-yp-lite {
        without restrictions on the originating subscriber or
        underlying transport session.
 
-       Only dynamic subscriptions, i.e., those that were created using
-       'establish-subscription', may be deleted via this RPC.
+       Only dynamic subscriptions, i.e., those that were created
+       using 'establish-subscription', may be deleted via this RPC.
 
        If an error occurs, the server replies with an 'rpc-error'
        where the 'error-info' field MAY contain a
@@ -680,7 +753,8 @@ module ietf-yp-lite {
         type subscription-id;
         mandatory true;
         description
-          "Identifier of the dynamic subscription that is to be deleted.";
+          "Identifier of the dynamic subscription that is to be
+           deleted.";
       }
     }
   }
@@ -710,9 +784,10 @@ module ietf-yp-lite {
    * NOTIFICATIONS
    */
 
-  // TODO - Need to signal when an initial replay has completed, or possibly
-  //        when any period subscription has completed.  TODO, need to think
-  //        about list key entries that are no longer present.
+  // TODO - Need to signal when an initial replay has completed, or
+  //        possibly when any period subscription has completed.
+  // TODO - Need to think about list key entries that are no longer
+  //        present.
   notification replay-completed {
     //ypl:subscription-state-notification;
     //if-feature "replay";
@@ -727,12 +802,12 @@ module ietf-yp-lite {
     }
   }
 
-  notification update-completed {
+  notification update-complete {
     //ypl:subscription-state-notification;
     //if-feature "replay";
     description
-      "This notification is sent to indicate that all of the replay
-       notifications have been sent.";
+      "This notification indicates the end of a periodic collection,
+       and can be used to purge old state";
     leaf id {
       type subscription-id;
       mandatory true;
@@ -744,8 +819,8 @@ module ietf-yp-lite {
   notification subscription-started {
     //ypl:subscription-state-notification;
     description
-      "This notification indicates that a configured subscription has
-       started and notifications will now be sent.";
+      "This notification indicates that a configured subscription
+       has started and notifications will now be sent.";
     leaf id {
       type subscription-id;
       mandatory true;
@@ -772,20 +847,22 @@ module ietf-yp-lite {
       }
       mandatory true;
       description
-        "Identifies the condition that resulted in the termination.";
+        "Identifies the condition that resulted in the
+         termination.";
     }
   }
 
   notification update {
     description
-      "This notification contains a push update that in turn contains
-       data subscribed to via a subscription.  In the case of a
-       periodic subscription, this notification is sent for periodic
-       updates.  It can also be used for synchronization updates of
-       an on-change subscription.  This notification shall only be
-       sent to receivers of a subscription.  It does not constitute
-       a general-purpose notification that would be subscribable as
-       part of the NETCONF event stream by any receiver.";
+      "This notification contains a push update that in turn
+       contains data subscribed to via a subscription.  In the case
+       of a periodic subscription, this notification is sent for
+       periodic updates.  It can also be used for synchronization
+       updates of an on-change subscription.  This notification
+       shall only be sent to receivers of a subscription.  It does
+       not constitute a general-purpose notification that would be
+       subscribable as part of the NETCONF event stream by any
+       receiver.";
     leaf id {
       type subscription-id;
       description
@@ -841,7 +918,8 @@ module ietf-yp-lite {
         }
       }
       description
-        "This indicates the type of notification message that is being sent.";
+        "This indicates the type of notification message that is
+         being sent.";
     }
 
     // Could add observation time here.
@@ -854,9 +932,9 @@ module ietf-yp-lite {
     list updates {
       key "target-path";
       description
-        "This list contains the updated data.  It constitutes a snapshot
-         at the time of update of the set of data that has been
-         subscribed to.  The snapshot corresponds to the same
+        "This list contains the updated data.  It constitutes a
+         snapshot at the time of update of the set of data that has
+         been subscribed to.  The snapshot corresponds to the same
          snapshot that would be returned in a corresponding 'get'
          operation with the same selection filter parameters
          applied.";
@@ -864,16 +942,16 @@ module ietf-yp-lite {
       leaf target-path {
         type string;
         description
-          "The target path of the data that is being replaced, i.e., 
+          "The target path of the data that is being replaced, i.e.,
            updated or deleted.  The path is given relative to the
            path-prefix.";
       }
 
       anydata data {
         description
-          "This contains the updated data.  It constitutes a snapshot
-          at the time of update of the set of data that has been
-          subscribed to.  The snapshot corresponds to the same
+          "This contains the updated data.  It constitutes a
+          snapshot at the time of update of the set of data that has
+          been subscribed to.  The snapshot corresponds to the same
           snapshot that would be returned in a corresponding 'get'
           operation with the same selection filter parameters
           applied.
@@ -889,13 +967,10 @@ module ietf-yp-lite {
     leaf incomplete {
       type empty;
       description
-        "This is a flag that indicates that not all datastore
-        nodes subscribed to are included with this update.  Receivers
-        of this data SHOULD NOT assume that any missing data has been
-        implicitly deleted.
-
-        TODO - Do we still want this flag, or would it be
-        better to notify this event out of band?";
+        "This is a flag that indicates that not all datastore nodes
+         subscribed to are included with this update. Receivers of
+         this data SHOULD NOT assume that any missing data has been
+         implicitly deleted.";
     }
   }
 
@@ -909,9 +984,9 @@ container datastore-telemetry {
     "YANG Push Lite Datastore Telemetry Configuration and State.";
     container filters {
       description
-        "Contains a list of configurable filters that can be applied to
-        subscriptions.  This facilitates the reuse of complex filters
-        once defined.";
+        "Contains a list of configurable filters that can be applied
+         to subscriptions.  This facilitates the reuse of complex
+         filters once defined.";
 
       list filter {
         key "name";
@@ -961,65 +1036,63 @@ container datastore-telemetry {
             originator or other specifics of this subscription.";
         }
 
-        leaf configured-subscription-state {
-          if-feature "configured";
-          type enumeration {
-            enum valid {
-              value 1;
-              description
-                "The subscription is supportable with its current
-                parameters.";
-            }
-            enum invalid {
-              value 2;
-              description
-                "The subscription as a whole is unsupportable with its
-                current parameters.";
-            }
-            enum concluded {
-              value 3;
-              description
-                "A subscription is inactive, as it has hit a
-                stop time.  It no longer has receivers in the
-                'active' or 'suspended' state, but the subscription
-                has not yet been removed from configuration.";
-            }
-          }
+        leaf status {
+          type subscription-status;
           config false;
           description
-            "The presence of this leaf indicates that the subscription
-            originated from configuration, not through a control
-            channel or RPC.  The value indicates the state of the
-            subscription as established by the publisher.";
+            "The presence of this leaf indicates that the
+             subscription originated from configuration, not through
+             a controlchannel or RPC.  The value indicates the state
+             of the subscription as established by the publisher.";
         }
 
-        container receivers {
+        list receivers {
+          key "name";
+          min-elements 1;
           description
-            "Set of receivers in a subscription.";
-          list receiver {
-            key "name";
-            min-elements 1;
-            description
-              "A host intended as a recipient for the notification
-              messages of a subscription.  For configured
-              subscriptions, transport-specific network parameters
-              (or a leafref to those parameters) may be augmented to a
-              specific receiver in this list.";
-            leaf name {
-              type leafref {
-                path "/datastore-telemetry/receivers/receiver/name";
-              }
-              description
-                "Identifies a unique receiver for a subscription.";
+            "A host intended as a recipient for the notification
+            messages of a subscription.  For configured
+            subscriptions, transport-specific network parameters
+            (or a leafref to those parameters) may be augmented to a
+            specific receiver in this list.";
+          leaf name {
+            type leafref {
+              path "/datastore-telemetry/receivers/receiver/name";
             }
+            description
+              "Identifies a unique receiver for a subscription.";
+          }
+
+          leaf encoding {
+            type encoding;
+            config false;
+            description
+              "The type of encoding for notification messages.";
+          }
+
+          leaf status {
+            type receiver-status;
+            config false;
+            description
+              "Specifies the connection status of the receiver.
+               I.e., whether a conenction has been sucessfully
+              established";
+          }
+
+          container statistics {
+            config false;
+            description
+              "Statistics related to the number of messages sent to
+              the receiver.";
+
             leaf sent-event-records {
               type yang:zero-based-counter64;
               config false;
               description
-                "The number of event records sent to the receiver.  The
-                count is initialized when a dynamic subscription is
-                established or when a configured receiver
-                transitions to the 'valid' state.";
+                "The number of event records sent to the receiver.
+                 The count is initialized when a dynamic
+                 subscription is established or when a configured
+                 receiver transitions to the 'valid' state.";
             }
             leaf excluded-event-records {
               type yang:zero-based-counter64;
@@ -1031,87 +1104,23 @@ container datastore-telemetry {
                 This count is set to zero each time
                 'sent-event-records' is initialized.";
             }
-            leaf state {
-              type enumeration {
-                enum active {
-                  value 1;
-                  description
-                    "The receiver is currently being sent any
-                    applicable notification messages for the
-                    subscription.";
-                }
-                enum suspended {
-                  value 2;
-                  description
-                    "The receiver state is 'suspended', so the
-                    publisher is currently unable to provide
-                    notification messages for the subscription.";
-                }
-                enum connecting {
-                  value 3;
-                  if-feature "configured";
-                  description
-                    "A subscription has been configured, but a
-                    'subscription-started' subscription state change
-                    notification needs to be successfully received
-                    before notification messages are sent.
-
-                    If the 'reset' action is invoked for a receiver of
-                    an active configured subscription, the state
-                    must be moved to 'connecting'.";
-                }
-                enum disconnected {
-                  value 4;
-                  if-feature "configured";
-                  description
-                    "A subscription has failed to send a
-                    'subscription-started' state change to the
-                    receiver.  Additional connection attempts are not
-                    currently being made.";
-                }
-              }
-              config false;
-              mandatory true;
-              description
-                "Specifies the state of a subscription from the
-                perspective of a particular receiver.  With this
-                information, it is possible to determine whether a
-                publisher is currently generating notification
-                messages intended for that receiver.";
-            }
-
-            leaf encoding {
-              type encoding;
-              config false;
-              description
-                "The type of encoding for notification messages.";
-            }
-
-            // TODO - Do we want the reset action?
-            action reset {
-              if-feature "configured";
-              description
-                "Allows the reset of this configured subscription's
-                receiver to the 'connecting' state.  This enables the
-                connection process to be reinitiated.";
-              output {
-                leaf time {
-                  type yang:date-and-time;
-                  mandatory true;
-                  description
-                    "Time at which a publisher returned the receiver to
-                    the 'connecting' state.";
-                }
-              }
-            }
           }
+        }
+
+        action reset {
+          if-feature "configured";
+          description
+            "Reset the subscription.
+            
+             This action will cause a new subscription-started
+             message to be sent for the subscription";
         }
       }
     }
     container receivers {
       if-feature "configured";
       description
-        "A container for all instances of receivers.";
+        "A container for all instances of configured receivers.";
 
       list receiver {
         key "name";
@@ -1129,14 +1138,25 @@ container datastore-telemetry {
           type encoding;
           description
             "The type of encoding for notification messages.  For a
-              dynamic subscription, if not included as part of an
-              'establish-subscription' RPC, the encoding will be populated
-              with the encoding used by that RPC.  For a configured
-              subscription, if not explicitly configured, the encoding
-              will be the default encoding for an underlying transport.";
+             dynamic subscription, if not included as part of an
+             'establish-subscription' RPC, the encoding will be
+             populated with the encoding used by that RPC.  For a
+             configured subscription, if not explicitly configured,
+             the encoding will be the default encoding for an
+             underlying transport.";
         }
 
         uses dscp;
+
+        action reset {
+          description
+            "Resets all configured subscriptions that reference
+             this receiver.
+
+             This action is directly equivalent to invoking the 
+             'reset' action on all subscriptions that references
+             this receiver configuration.";
+        }
 
         choice notification-message-origin {
           description
@@ -1150,7 +1170,8 @@ container datastore-telemetry {
               if-feature "interface-designation";
               type if:interface-ref;
               description
-                "References the interface for notification messages.";
+                "References the interface for notification
+                 messages.";
             }
           }
           case address-originated {
@@ -1161,7 +1182,9 @@ container datastore-telemetry {
             leaf source-vrf {
               if-feature "supports-vrf";
               type leafref {
-                path "/ni:network-instances/ni:network-instance/ni:name";
+                path
+                  '/ni:network-instances/ni:network-instance/' 
+                  + 'ni:name';
               }
               description
                 "VRF from which notification messages should egress a
@@ -1182,8 +1205,8 @@ container datastore-telemetry {
           mandatory true;
           description
             "Choice of different types of transports used to
-              send notifications.  The 'case' statements must
-              be augmented in by other modules.";
+             send notifications.  The 'case' statements must
+             be augmented in by other modules.";
         }
 
         description

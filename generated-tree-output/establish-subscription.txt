@@ -8,7 +8,7 @@
     |  |  |     +--:(within-subscription)
     |  |  |        +---w (filter-spec)?
     |  |  |           +--:(paths)
-    |  |  |           |  +---w paths*     string
+    |  |  |           |  +---w paths*     ypath
     |  |  |           +--:(subtree)
     |  |  |           |  +---w subtree?   <anydata> {ypl:subtree}?
     |  |  |           +--:(xpaths)
@@ -19,7 +19,7 @@
     |  |  |  |  +---w anchor-time?   yang:date-and-time
     |  |  |  +---w on-change! {on-change}?
     |  |  |     +---w sync-on-start?   boolean
-    |  |  +---w encoding?         encoding
+    |  |  +---w encoding          encoding
     |  |  +---w dscp?             inet:dscp
     |  +--ro output
     |     +--ro id    subscription-id

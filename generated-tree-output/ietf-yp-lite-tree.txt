@@ -5,14 +5,14 @@ module: ietf-yp-lite
      |     +--rw name             string
      |     +--rw (filter-spec)?
      |        +--:(paths)
-     |        |  +--rw paths*     string
+     |        |  +--rw paths*     ypath
      |        +--:(subtree)
      |        |  +--rw subtree?   <anydata> {ypl:subtree}?
      |        +--:(xpaths)
      |           +--rw xpaths*    yang:xpath1.0 {ypl:xpath}?
      +--rw subscriptions
      |  +--rw subscription* [id]
-     |     +--rw id                               subscription-id
+     |     +--rw id                subscription-id
      |     +--rw target
      |     |  +--rw datastore?             identityref
      |     |  +--rw (filter)?
@@ -21,7 +21,7 @@ module: ietf-yp-lite
      |     |     +--:(within-subscription)
      |     |        +--rw (filter-spec)?
      |     |           +--:(paths)
-     |     |           |  +--rw paths*     string
+     |     |           |  +--rw paths*     ypath
      |     |           +--:(subtree)
      |     |           |  +--rw subtree?   <anydata> {ypl:subtree}?
      |     |           +--:(xpaths)
@@ -32,27 +32,25 @@ module: ietf-yp-lite
      |     |  |  +--rw anchor-time?   yang:date-and-time
      |     |  +--rw on-change! {on-change}?
      |     |     +--rw sync-on-start?   boolean
-     |     +--rw purpose?                         string
-     |     |       {configured}?
-     |     +--ro configured-subscription-state?   enumeration
-     |     |       {configured}?
-     |     +--rw receivers
-     |        +--rw receiver* [name]
-     |           +--rw name                      leafref
-     |           +--ro sent-event-records?
-     |           |       yang:zero-based-counter64
-     |           +--ro excluded-event-records?
-     |           |       yang:zero-based-counter64
-     |           +--ro state                     enumeration
-     |           +--ro encoding?                 encoding
-     |           +---x reset {configured}?
-     |              +--ro output
-     |                 +--ro time    yang:date-and-time
+     |     +--rw purpose?          string {configured}?
+     |     +--ro status?           subscription-status
+     |     +--rw receivers* [name]
+     |     |  +--rw name
+     |     |  |       -> /datastore-telemetry/receivers/receiver/name
+     |     |  +--ro encoding?     encoding
+     |     |  +--ro status?       receiver-status
+     |     |  +--ro statistics
+     |     |     +--ro sent-event-records?
+     |     |     |       yang:zero-based-counter64
+     |     |     +--ro excluded-event-records?
+     |     |             yang:zero-based-counter64
+     |     +---x reset {configured}?
      +--rw receivers {configured}?
         +--rw receiver* [name]
            +--rw name                      string
            +--rw encoding?                 encoding
            +--rw dscp?                     inet:dscp
+           +---x reset
            +--rw (notification-message-origin)?
            |  +--:(interface-originated)
            |  |  +--rw source-interface?   if:interface-ref
@@ -73,7 +71,7 @@ module: ietf-yp-lite
     |  |  |     +--:(within-subscription)
     |  |  |        +---w (filter-spec)?
     |  |  |           +--:(paths)
-    |  |  |           |  +---w paths*     string
+    |  |  |           |  +---w paths*     ypath
     |  |  |           +--:(subtree)
     |  |  |           |  +---w subtree?   <anydata> {ypl:subtree}?
     |  |  |           +--:(xpaths)
@@ -84,7 +82,7 @@ module: ietf-yp-lite
     |  |  |  |  +---w anchor-time?   yang:date-and-time
     |  |  |  +---w on-change! {on-change}?
     |  |  |     +---w sync-on-start?   boolean
-    |  |  +---w encoding?         encoding
+    |  |  +---w encoding          encoding
     |  |  +---w dscp?             inet:dscp
     |  +--ro output
     |     +--ro id    subscription-id
@@ -98,7 +96,7 @@ module: ietf-yp-lite
   notifications:
     +---n replay-completed
     |  +--ro id    subscription-id
-    +---n update-completed
+    +---n update-complete
     |  +--ro id    subscription-id
     +---n subscription-started
     |  +--ro id                subscription-id
@@ -110,7 +108,7 @@ module: ietf-yp-lite
     |  |     +--:(within-subscription)
     |  |        +--ro (filter-spec)?
     |  |           +--:(paths)
-    |  |           |  +--ro paths*     string
+    |  |           |  +--ro paths*     ypath
     |  |           +--:(subtree)
     |  |           |  +--ro subtree?   <anydata> {ypl:subtree}?
     |  |           +--:(xpaths)

@@ -2,10 +2,17 @@ package build
 import mill._
 
 trait IETF extends Module {
-  def draftDeps: Agg[String] = Agg()
   def draft: Target[PathRef]
   def yang = Task.Source { "yang" }
 
+  /**
+    * All drafts that we need to fetch and extract YANG from.
+    */
+  def draftDeps: Agg[String] = Agg()
+
+  /**
+    * Fetch specific text draft versions from the IETF archive (using draftDeps)
+    */
   def fetchDrafts = Task {
     def url(draft: String) = s"https://www.ietf.org/archive/id/$draft.txt"
     for (draft <- draftDeps) {
@@ -14,8 +21,10 @@ trait IETF extends Module {
     PathRef(Task.dest)
   }
 
-  val DraftNameValue = "(draft-[-a-z0-9]+)-([0-9]+)".r
+  // Report if any drafts are not at the latest revision.
+  // Must be run manually.
   def checkDraftLatest() = Task.Command {
+    val DraftNameValue = "(draft-[-a-z0-9]+)-([0-9]+)".r
     def url(name: String) = 
       s"https://datatracker.ietf.org/api/v1/doc/document/$name?format=json"
     var outOfDate = 0
@@ -146,6 +155,7 @@ trait IETF extends Module {
     PathRef(Task.dest)
   }
 
+
   // Setup a python virtual environment with pyang installed.
   def python3Venv = Task {
     os.call(("python3", "-m", "venv", Task.dest / "venv"))
@@ -174,7 +184,10 @@ trait IETF extends Module {
 
       // Check using pyang
       val cmdRes = 
-        os.call((pyang, "--ietf", "--strict", "-p", allYangDeps(), yangFilePaths),
+        os.call((pyang,
+                "--ietf", "--strict", "--max-line-length=69", "-Werror",
+                "-p", allYangDeps(),
+                yangFilePaths),
                 mergeErrIntoOut = true, check = false)
       if (cmdRes.exitCode == 0) {
         println(s"pyang compilation for ${yangFiles.mkString("(",", ", ")")} clean")
@@ -201,9 +214,54 @@ trait IETF extends Module {
     PathRef(Task.dest)
   }
 
+
+  def examples = Task.Source { millSourcePath / "examples" }
+  def exampleYangNotifs = Task.Source { examples().path / "yang-notifications" }
+
+  def validateYangInstanceData = Task {
+
+    // Process all notification files
+    for (notifFile <- os.list(exampleYangNotifs().path)
+         if notifFile.last.endsWith("notification.json")) {
+      val yangFilePaths = os.list(yangSources().path).filter(_.ext == "yang")
+
+      val prefix = notifFile.last.dropRight("-notification.json".length)
+      val operPath = exampleYangNotifs().path / s"${prefix}-operational.json"
+      val operDsFlags = 
+        if (os.exists(operPath)) {
+          Seq(s"--operational=$operPath")
+        } else 
+          Seq()
+
+      // Try using yanglint, if available
+      try {
+        val cmdRes = 
+          os.call(("yanglint",
+                   "-i",
+                   "--type", "notif",
+                   "-p", allYangDeps(),
+                   operDsFlags,
+                   yangFilePaths,
+                   notifFile),
+                  mergeErrIntoOut = true, check = false)
+        if (cmdRes.exitCode == 0) {
+          println(s"yanglint validated $notifFile")
+        } else {
+          println(s"yanglint warnings/errors for $notifFile:\n${cmdRes.out.text()}")
+        }
+      } catch {
+        case e: Exception =>
+          println(s"Skipping yanglint validation: yanglint not available on path: ${e.getMessage}")
+      }
+    }
+
+    PathRef(Task.dest)
+  }
+
+
   // Generate the tree output for all YANG modules.
   def buildYangTree(pyang: os.Path,
-                    yangDeps: os.Path,
+                    yangDeps: Seq[os.Path],
                     yangFiles: Seq[os.Path],
                     target: os.Path,
                     treePath: Option[String] = None) = {
@@ -216,8 +274,7 @@ trait IETF extends Module {
     val cmdRes = 
       os.call((pyang,
                "-f", "tree",
-               /*"--ietf", "--strict",*/
-               "-p", yangDeps,
+               "-p", yangDeps.mkString(":"),
                "-o", target,
                "--tree-line-length=69",
                treeOpts,
@@ -226,17 +283,23 @@ trait IETF extends Module {
       println(s"Error: ${cmdRes.out.text()}")
   }
 
+
   def buildAllYangTrees = Task {
     val pyang = python3Venv().path / "bin" / "pyang"
     val cmdRes = os.call((pyang, "--version"))
     if (cmdRes.exitCode == 0)
       os.write(Task.dest / "pyang-version.txt", cmdRes.out.text())
 
-    val depsPath = allYangDeps().path
-    
+    val deps = Seq(allYangDeps().path, yang().path)
+
+    //val depFiles = os.list(depsPath).filter(_.ext == "yang")
+    //val yangFiles = os.list(yang().path).filter(_.ext == "yang")
+    val allYangFiles = 
+      deps.flatMap(depPath => os.list(depPath).filter(_.ext == "yang"))
+
     for ((yangFiles, target, treePath) <- yangTrees) {
-      val yangFilePaths = yangFiles.map(file => millSourcePath / yangSourceDir / file)
-      buildYangTree(pyang, depsPath, yangFilePaths, Task.dest / target, treePath)
+      val yangFilePaths = yangFiles.map(file => allYangFiles.find(_.last == file).get)
+      buildYangTree(pyang, deps, yangFilePaths, Task.dest / target, treePath)
 
       os.makeDir.all(treeDir)
       os.copy.over(Task.dest / target, treeDir / target)
@@ -249,6 +312,7 @@ trait IETF extends Module {
 
     PathRef(Task.dest)
   }
+
 
   def yangTreeSnippets:Seq[(String, String, String, String)] = Seq()
 
@@ -288,6 +352,8 @@ trait IETF extends Module {
     buildAllYangTrees()
     extractAllTreeSnippets()
     validateYangCompiles()
+    examples()
+    yangSources()
     val sources = draft().path
     os.proc("make", "fix-lint", "all").call(cwd = millSourcePath)
   }

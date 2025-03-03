@@ -5,7 +5,7 @@ module: ietf-yp-lite
            +--rw name             string
            +--rw (filter-spec)?
               +--:(paths)
-              |  +--rw paths*     string
+              |  +--rw paths*     ypath
               +--:(subtree)
               |  +--rw subtree?   <anydata> {ypl:subtree}?
               +--:(xpaths)

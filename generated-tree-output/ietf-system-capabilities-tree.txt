@@ -1,0 +1,35 @@
+module: ietf-system-capabilities
+  +--ro system-capabilities
+     +--ro datastore-capabilities* [datastore]
+     |  +--ro datastore
+     |  |       -> /yanglib:yang-library/datastore/name
+     |  +--ro per-node-capabilities* []
+     |     +--ro (node-selection)?
+     |     |  +--:(node-selector)
+     |     |     +--ro node-selector?
+     |     |             nacm:node-instance-identifier
+     |     +--ro yplc:datastore-telemetry
+     |        +--ro yplc:periodic-notifications-supported?
+     |        |       notification-support
+     |        +--ro (yplc:update-period)?
+     |        |  +--:(yplc:minimum-update-period)
+     |        |  |  +--ro yplc:minimum-update-period?        uint32
+     |        |  +--:(yplc:supported-update-period)
+     |        |     +--ro yplc:supported-update-period*      uint32
+     |        +--ro yplc:on-change-supported?
+     |                notification-support
+     +--ro yplc:datastore-telemetry
+        +--ro yplc:periodic-notifications-supported?
+        |       notification-support
+        +--ro (yplc:update-period)?
+        |  +--:(yplc:minimum-update-period)
+        |  |  +--ro yplc:minimum-update-period?        uint32
+        |  +--:(yplc:supported-update-period)
+        |     +--ro yplc:supported-update-period*      uint32
+        +--ro yplc:on-change-supported?
+        |       notification-support
+        +--ro yplc:transport
+           +--ro yplc:transport-capability* [transport-protocol]
+              +--ro yplc:transport-protocol    identityref
+              +--ro yplc:security-protocol?    identityref
+              +--ro yplc:encoding-format*      identityref

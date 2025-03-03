@@ -8,7 +8,7 @@
     |  |     +--:(within-subscription)
     |  |        +--ro (filter-spec)?
     |  |           +--:(paths)
-    |  |           |  +--ro paths*     string
+    |  |           |  +--ro paths*     ypath
     |  |           +--:(subtree)
     |  |           |  +--ro subtree?   <anydata> {ypl:subtree}?
     |  |           +--:(xpaths)
