@@ -6,6 +6,10 @@
 *.upload
 *~
 .tags
+/.bsp/
+/.metals/
+/.scala-build/
+/out/
 /*-[0-9][0-9].xml
 /.*.mk
 /.gems/
