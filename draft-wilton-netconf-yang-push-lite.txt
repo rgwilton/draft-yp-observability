@@ -801,10 +801,10 @@ Table of Contents
       first-key matches foo, and the second-key starts with bar.
 
    *  _/ietf-interfaces:interfaces/interface_ - which identifies the
-      _interface_ list data node in the ietf-interfacess module for all
+      _interface_ list data node in the ietf-interfaces module for all
       interfaces.  I.e., the interface list 'name' key is unrestricted.
 
-   *  _/ietf-interfaces:interfaces/interface[]_ - alternative format of
+   *  _/ietf-interfaces:interfaces/interface[]_ - alternative form of
       the previous YPath.
 
 6.2.  The "filters" Container
