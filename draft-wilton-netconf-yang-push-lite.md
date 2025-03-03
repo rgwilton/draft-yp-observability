@@ -41,7 +41,7 @@ author:
  -
     fullname: Ebben Aries
     organization: Juniper
-    email: Ebben Aries <exa@juniper.net>
+    email: Ebben Aries exa@juniper.net
  -
     fullname: James Cumming
     organization: Nokia
