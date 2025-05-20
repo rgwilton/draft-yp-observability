@@ -1,5 +1,6 @@
     +---x establish-subscription {dynamic}?
     |  +---w input
+    |  |  +---w name?             subscription-name
     |  |  +---w target
     |  |  |  +---w datastore?             identityref
     |  |  |  +---w (filter)?

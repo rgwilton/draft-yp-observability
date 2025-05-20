@@ -1,5 +1,6 @@
     +---n subscription-started
     |  +--ro id                subscription-id
+    |  +--ro name?             subscription-name
     |  +--ro target
     |  |  +--ro datastore?             identityref
     |  |  +--ro (filter)?

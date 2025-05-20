@@ -326,6 +326,14 @@ module ietf-yp-lite {
       "Specifies a data encoding, e.g., for a data subscription.";
   }
 
+  typedef subscription-name {
+    type string {
+      length "1..255";
+    } 
+    description
+      "A user friendly name for a subscription.";
+  }
+
   typedef subscription-id {
     type uint32;
     description
@@ -591,6 +599,12 @@ module ietf-yp-lite {
     description
       "Common settings that are shared between dynamic and
        configured subscriptions.";
+
+    leaf name {
+      type subscription-name;
+      description
+        "The client provided name for the subscription.";
+    }
 
     container target {
       description
@@ -1010,7 +1024,7 @@ container datastore-telemetry {
         RPC primitives as well as subscriptions that have been
         established via configuration.";
       list subscription {
-        key "id";
+        key "name";
         description
           "The identity and specific parameters of a subscription.
           Subscriptions in this list can be created using a control
@@ -1020,16 +1034,19 @@ container datastore-telemetry {
           are used to delete a subscription, a
           'subscription-terminated' message is sent to any active or
           suspended receivers.";
+
         leaf id {
           type subscription-id;
+          config false;
+          mandatory true;
           description
-            "Identifier of a subscription; unique in a given
-            publisher.";
+            "Publisher allocated identifier for a subscription;
+              Unique in a given publisher.";
         }
+
         uses subscription-common;
 
         leaf purpose {
-          if-feature "configured";
           type string;
           description
             "Open text allowing a configuring entity to embed the
@@ -1070,14 +1087,14 @@ container datastore-telemetry {
               "The type of encoding for notification messages.";
           }
 
-          leaf status {
-            type receiver-status;
-            config false;
-            description
-              "Specifies the connection status of the receiver.
-               I.e., whether a conenction has been sucessfully
-              established";
-          }
+          // leaf status {
+          //   type receiver-status;
+          //   config false;
+          //   description
+          //     "Specifies the connection status of the receiver.
+          //      I.e., whether a conenction has been sucessfully
+          //     established";
+          // }
 
           container statistics {
             config false;

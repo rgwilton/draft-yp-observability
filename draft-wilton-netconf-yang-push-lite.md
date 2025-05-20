@@ -41,7 +41,7 @@ author:
  -
     fullname: Ebben Aries
     organization: Juniper
-    email: Ebben Aries exa@juniper.net
+    email: exa@juniper.net
  -
     fullname: James Cumming
     organization: Nokia
@@ -219,7 +219,7 @@ This document is primarily intended to be a lightweight alternative for {{RFC863
 
 YANG Push Lite is defined using a separate module namespace, and hence can be implemented independently or, if desired, alongside {{RFC8639}} and {{RFC8641}}, and the various extensions to YANG Push.
 
-A more complete description of the main differences in YANG Push Lite compares to {{RFC8639}} and {{RFC8641}} is given in {#DifferencesFromYangPush}.
+A more complete description of the main differences in YANG Push Lite compares to {{RFC8639}} and {{RFC8641}} is given in {{DifferencesFromYangPush}}.
 
 ### {{I-D.draft-netana-netconf-notif-envelope}} and RFC 5277
 
@@ -1975,6 +1975,8 @@ The issues are ordered/grouped by the sections in the current document.  I.e., t
 
 1. Do we need to fold in any text from RFC 8640? and RESTCONF.  I.e., there was this text in the one of the previous docs:   Bindings for subscribed event record delivery for NETCONF and RESTCONF are defined in {{RFC8640}} and **RESTCONF-Notif**, respectively.
    - Rob: If text is needed for NETCONF and/or RESTCONF then I suspect that it would be better added to this document than to require small separate documents (as was done before).
+
+1. What is the right name.  Should we be calling this Yang Push 2 (YPv2) to more clearly indicate that this is intended to be a replacement for Yang Push?  We need to be slightly careful in that this is only specifying implementing a subset of the functionality.
 
 ## Issue related to Terminology/Definitions:
 

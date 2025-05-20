@@ -1,19 +1,25 @@
+//| mill-version: 1.0.0-M1-13-54815e
+//| mill-jvm-version: temurin:21.0.1
+//| mvnDeps:
+//| - uk.org.wilton::ietf-yang-mill-plugin::0.0.2
+
 package build
 
 import mill._
-import $file.util_ietf._
+import uk.org.wilton.ietf.yang.mill.plugin._
+//import $file.util_ietf._
 
-object `package` extends RootModule with IETF {
+object `package` extends IETF {
   def draft = Task.Source { "draft-wilton-netconf-yang-push-lite.md" }
 
   // All RFCs that we need to extract YANG from.
-  val rfcDeps = List(
+  def rfcDeps = List(
     8525, // Replaces 7895
-    8072, 8341, 8342, 8343, 8344, 8529, 8525, 8639, 8641, 9196, 9640, 9641, 9642, 9643, 9645,
+    8072, 8341, 8342, 8343, 8344, 8529, 8639, 8641, 9196, 9640, 9641, 9642, 9643, 9645,
   )
 
   // All drafts that we need to extract YANG from.
-  def draftDeps = Agg(
+  def draftDeps = Seq(
     "draft-ietf-netmod-rfc6991-bis-17",
     "draft-ietf-netconf-https-notif-15",
     "draft-ietf-netconf-udp-notif-20",
@@ -21,7 +27,7 @@ object `package` extends RootModule with IETF {
     "draft-ietf-netconf-distributed-notif-13",
     "draft-ietf-netconf-http-client-server-25",
     "draft-ietf-netconf-yang-notifications-versioning-07",
-    "draft-ietf-netconf-yang-library-augmentedby-01",
+    "draft-ietf-netconf-yang-library-augmentedby-02",
     "draft-ietf-netmod-yang-module-versioning-13",
     "draft-ietf-netmod-yang-semver-20",
     "draft-netana-netconf-yp-transport-capabilities-01",
@@ -29,7 +35,7 @@ object `package` extends RootModule with IETF {
   )
 
   // IANA YANG dependencies.
-  def ianaDeps = Agg(
+  def ianaDeps = Seq(
     "iana-tls-cipher-suite-algs@2024-10-16.yang"
   )
 
