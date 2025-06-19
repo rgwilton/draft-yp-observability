@@ -1,3 +1,4 @@
     +---n subscription-terminated
+    |  +--ro name      subscription-name
     |  +--ro id        subscription-id
     |  +--ro reason    identityref

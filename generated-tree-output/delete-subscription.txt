@@ -1,3 +1,3 @@
     +---x delete-subscription {dynamic}?
     |  +---w input
-    |     +---w id    subscription-id
+    |     +---w name    subscription-name

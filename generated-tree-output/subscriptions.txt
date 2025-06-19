@@ -2,8 +2,8 @@ module: ietf-yp-lite
   +--rw datastore-telemetry!
      +--rw subscriptions
         +--rw subscription* [name]
-           +--ro id                subscription-id
            +--rw name              subscription-name
+           +--rw purpose?          string
            +--rw target
            |  +--rw datastore?             identityref
            |  +--rw (filter)?
@@ -23,15 +23,15 @@ module: ietf-yp-lite
            |  |  +--rw anchor-time?   yang:date-and-time
            |  +--rw on-change! {on-change}?
            |     +--rw sync-on-start?   boolean
-           +--rw purpose?          string
-           +--ro status?           subscription-status
            +--rw receivers* [name]
            |  +--rw name
            |  |       -> /datastore-telemetry/receivers/receiver/name
-           |  +--ro encoding?     encoding
-           |  +--ro statistics
-           |     +--ro sent-event-records?
-           |     |       yang:zero-based-counter64
-           |     +--ro excluded-event-records?
-           |             yang:zero-based-counter64
+           |  +--ro status?   enumeration
+           +--ro id                subscription-id
+           +--ro status?           subscription-status
+           +--ro statistics
+           |  +--ro update-record-count?
+           |  |       yang:zero-based-counter64
+           |  +--ro excluded-event-records?
+           |          yang:zero-based-counter64
            +---x reset {configured}?

@@ -1,6 +1,7 @@
     +---n subscription-started
     |  +--ro id                subscription-id
-    |  +--ro name?             subscription-name
+    |  +--ro name              subscription-name
+    |  +--ro purpose?          string
     |  +--ro target
     |  |  +--ro datastore?             identityref
     |  |  +--ro (filter)?

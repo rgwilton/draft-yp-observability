@@ -347,7 +347,7 @@ This document introduces the following terms:
 
 - *Subscription Identifier*: A numerical identifier for a configured or dynamic subscription.  Also referred to as the subscription-id.
 
-- *YANG-Push-Lite*: The light weight subscription and push mechanism for datastore updates that is specified in this document.
+- *YANG-Push-Lite*: The light weight subscription and push mechanism for datastore updates that is specified in this document. **Add comment**
 
 All *YANG tree diagrams* used in this document follow the notation defined in {{RFC8340}}.
 
@@ -405,7 +405,7 @@ Some examples of YPaths:
 
 ## The "filters" Container
 
-The "filters" container maintains a list of all datastore subhttps://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yp-observability.html scription filters that persist outside the lifecycle of a single subscription.  This enables predefined filters that may be referenced by more than one configured or dynamic subscription.
+The "filters" container maintains a list of all datastore subscription filters that persist outside the lifecycle of a single subscription.  This enables predefined filters that may be referenced by more than one configured or dynamic subscription.
 
 Below is a tree diagram for the "filters" container.  All objects contained in this tree are described in the YANG module in {{ietf-yp-lite-yang}}.
 
@@ -626,57 +626,112 @@ the same subscription.
 # Receivers, Transports, and Encodings {#ReceiversEtAl}
 
 ## Receivers
-Every subscription is associated with one or more receivers, which each identify the destination host where all the subscription notifications are sent.  Each receiver has the following associated properties:
+Every subscription is associated with one or more receivers, which each identify the destination host, transport and encoding settings, where all notifications for a subscription are sent.
 
-- a *name* to identify and reference the receiver in configured subscriptions.
+For configured subscriptions there is no explicit association with an existing transport session, and hence the properties associated with the receiver are explicitly configured, as described in {{ConfiguredReceivers}}.
 
-- a *transport*, which identifies the transport protocol to use to
-  connect with all subscription receivers.
+For dynamic subscriptions, the receiver, and most associated properties are implicit from the session on which the dynamic subscription was initiated, as described in {{DynamicSubscriptionReceivers}}.
 
-  - Optional transport-specific related parameters, e.g., DSCP.  There are likely to be various data nodes related to establishing appropriate security and encryption.
+### Receivers for Configured Subscriptions {#ConfiguredReceivers}
 
-- an *encoding* to encode all YANG notification messages to the receiver, i.e., see {{Encodings}}.
+For configured subscriptions, receivers are configured independently from the subscriptions and then referenced from the subscription configuration.
 
-- optional parameters to identify where traffic should egress the publisher:
+Configured subscriptions MAY have multiple receivers.  Multiple receivers facilitate redundancy at the receivers.  Each receiver MAY be configured with different transports and associated transport settings, but they MUST all share the same encoding.  All subscription notifications, including lifecycle notifications, are sent to all receivers except for the receiver-disconnected notification, which is only sent to the affected receiver, and only if the subscription remains active because of other active receivers.
 
-  - a *source-interface*, which identifies the egress interface to use from the publisher.
+are sent to all receivers except for the notification that a receiver is been disconnected, but other receivers and active and hence the subscription is still active.
 
-  - a *source-address* address, which identifies the IP address to stamp on notification messages destined for the receiver.
+Below is a tree diagram for *datastore-telemetry/receivers* container. All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.
 
-  - a *source-vrf*, which identifies the Virtual Routing and Forwarding (VRF) instance on which to reach receivers.  This VRF is a network instance as defined in {{RFC8529}}.  Publisher support for VRFs is optional and advertised using the *supports-vrf* feature. **TODO - do we also support inferring the VRF from the source interface?**
-
-“If none of the above parameters are set, the publisher MAY decide which interface(s) to source notifications from.
-
-### Receivers for Configured Subscriptions
-
-For configured subscriptions, receivers are configured independently from the subscriptions and then referenced from the subscription.
-
-Configured subscriptions MAY have multiple receivers, but they MUST have the same encoding.  Multiple receivers facilitate redundancy at the receivers.
-
-Below is a tree diagram for *datastore-telemetry/receivers* container.  All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.
+These parameters identify how to connect to each receiver.  For each subscription, the publisher uses the referenced receiver configuration to establish transport connectivity to the receiver.
 
 ~~~~ yangtree
 {::include generated-tree-output/receivers.txt}
 ~~~~
 {: align="left" title="datastore-telemetry/receivers container" #ReceiversYangTree }
 
-Because there is no explicit association with an existing transport session, configuration operations include additional parameters beyond those of dynamic subscriptions.  These parameters identify each receiver, how to connect with that receiver, and possibly whether the notification messages need to come from a specific egress interface on the publisher.  Receiver-specific transport connectivity parameters MUST be configured via transport-specific augmentations to this specification.  See Section 2.5.7 for details.
+Each configured receiver has the following associated properties:
 
-This specification is transport independent.  However, supporting a configured subscription will normally require the establishment of transport connectivity.  Some parameters used for this transport connectivity establishment are transport specific.  As a result, the
-YANG module defined in {{yp-lite-yang-module}} is not able to directly define and expose these transport parameters.
+- a *name* to identify and reference the receiver in the subscription configuration.
 
-It is necessary for an implementation to support the connection establishment process.  To support this function, the YANG data model defined in this document includes a YANG choice node where transport-specific parameters for a particular receiver may be augmented.  This node is */datastore-telemetry/receivers/receiver/transport-type*.
+- a *transport*, which identifies the transport protocol to use for all connections to the receiver.
 
-A publisher supporting configured subscriptions must obviously support at least one YANG data model that augments transport connectivity parameters on
-*/datastore-telemetry/receivers/receiver/transport-type*.  For an example of such an augmentation, see {{I-D.draft-ietf-netconf-udp-notif}} **TODO, fix this to a UDP bis document**
+  - optional transport-specific related parameters, e.g., DSCP.  There are likely to be various data nodes related to establishing appropriate security and encryption.
 
-### Receivers for Dynamic Subscriptions
+- an *encoding* to encode all YANG notification messages to the receiver, i.e., see {{Encodings}}.
+
+- optional parameters to identify where traffic should egress the publisher:
+
+  - a *source-interface*, identifying the egress interface to use from the publisher, implicitly choosing the source IP address and VRF.
+
+  - a *source-vrf*, identifying the Virtual Routing and Forwarding (VRF) instance on which to reach receivers.  This VRF is a network instance as defined in {{RFC8529}}.  Publisher support for VRFs is optional and advertised using the *supports-vrf* feature.
+
+  - a *source-address* address, identifying the IP address to source notification messages from.
+
+  If none of the above parameters are set, the publisher MAY choose which interface(s) and address(es) to source subscription notifications from.
+
+
+
+This specification is transport independent, e.g., see {{transports}}, and thus the YANG module defined in {{yp-lite-yang-module}} cannot directly define and expose these transport parameters.  Instead, receiver-specific transport connectivity parameters MUST be configured via transport-specific augmentations to the YANG choice node */datastore-telemetry/receivers/receiver/transport-type*.
+
+A publisher supporting configured subscriptions must obviously support at least one YANG data model that augments transport connectivity parameters onto
+*/datastore-telemetry/receivers/receiver/transport-type*.  For an example of such an augmentation, see {{I-D.draft-ietf-netconf-udp-notif}}. **TODO, update this reference to a UDP bis document**
+
+### Receivers for Dynamic Subscriptions {#DynamicSubscriptionReceivers}
 
 For dynamic subscriptions, each subscription has a single receiver that is implicit from the host that initiated the *establish-subscription* RPC, reusing the same transport session for all the subscription notifications.
 
-Hence most receiver parameters for a dynamic subscription are implicitly determined, and cannot be explicitly controlled.
+Hence most receiver parameters for a dynamic subscription, e.g., related to the transport, are implicitly determined and cannot be explicitly controlled.
 
 Dynamic subscriptions MUST specify an encoding (see {{Encodings}}) and MAY specify DSCP Marking (see {{DSCP}}) for the telemetry notifications in the *establish-subscription* RPC (see {{EstablishSubscriptionYangTree}}).
+
+**Potential Future - we could allow a dynamic subscription to choose a configured receiver as the receiver for notifications.  E.g., this could be helpful to allow a client to temporarily debug an issue by allowing additional information to be sent to an existing telemetry collector.**
+
+### Receiver Session States and State Machine
+
+Each subscription will need to establish a subcription to the specified receiver.  Multiple subscriptions may share one or more transport sessions to the same receiver,
+
+A receiver in YANG Push Lite can be in one of the following states:
+
+- **Configured**: The receiver has been configured on the publisher, but the receiver is not referenced by any valid subscriptions and hence there is no attempt to establish a connection to the receiver.
+
+- **Connecting**: The receiver has at least one associated subscription and the publisher is attempting to establish a transport session and complete any required security exchanges, but this process has not yet succeeded.
+
+- **Active**: The receiver has at least one associated subscription, a transport session has been established (if required), security exchanges have successfully completed, and the publisher is able to send notifications to the receiver.
+
+The state transitions for a receiver are illustrated below:
+
+~~~~
+                    .-------------------.
+                    |                   |
+                    |    Disconnected   |
+                    |                   |
+                    '-------------------'
+                            |  ^
+  Receiver is referenced by |  |  No configured subscriptions
+  1 or more subscriptions   |  |  reference the receiver
+                            v  |
+                    .-------------------.
+                    |                   |
+                    |    Connecting     |
+                    |                   |
+                    '-------------------'
+                            |  ^
+  Transport and/or security |  | Transport or securty session
+  has been established.     |  |  hast beee lost or failed.
+                            v  |
+                    .-------------------.
+                    |                   |
+                    |      Active       |
+                    |                   |
+                    '-------------------'
+
+State Descriptions:
+  Configured - receiver configuration is present.
+  Connecting - the publisher is trying to establish a connection.
+  Active     - connection established, publisher can send messages.
+~~~~
+
+This state model allows implementations and operators to clearly distinguish between receivers that are simply configured, those that are in the process of connecting, and those that are actively being used.
 
 ## Transports {#transports}
 
@@ -693,6 +748,8 @@ Using a secure transport is RECOMMENDED.  Thus, any transport specification MUST
 Any transport specification SHOULD support mutual receiver and publisher authentication at the transport layer.
 
 The transport selected by the subscriber to reach the publisher SHOULD be able to support multiple "establish-subscription" requests made in the same transport session.
+
+The transport specification MAY require separate transport sessions per subscription to a given receiver, or it MAY allow multiple subscriptions to the same receiver to be multiplexed over a shared transport session.
 
 Any transport specification SHOULD ensure that the receiver application can be notified of the *subscription-started* lifecycle notification before any associated *update* messages.
 
@@ -2115,6 +2172,8 @@ Note some of these apply or impact dynamic subscriptions as well.
 
 ## Issues related to Subscription Lifecycle
 
+1. Use subscription name as the unique identifier for the subscription configuration.  Subscription id identifies a subscription session.  I.e., if a configured subscription is terminated and re-established then a new subscription id is allocated.
+
 1. Should subscription-started notification include a fingerprint of the schema that is covered by the subscription that would guaranteed to change if the subscription changes?
    - Rob: I think that we should do this (i.e., as optimized version of content-id)
    - Would this also be impacted by a change to access control? (Rob: Probably not)
@@ -2158,8 +2217,7 @@ Note some of these apply or impact dynamic subscriptions as well.
       - It could be under the subscription list, which would effectively be equivalent to forcing the subscription to terminate and re-initialise across all receivers.
       - It could also be under the receiver list, which would effectively be equivalent to forcing all subscriptions using that receiver to terminate and re-initialise.
       - **We also need to consider whether this would clear subscription counters or not.**
-      - **We also consider whether we need any text to rate limit requests, e.g., in the security considerations section.**
-      - **We also need to consider whether configured subscription MAY/SHOULD share transport sessions where possible, or whether each subscription uses a separate transport session, or whether this is down to the transport session definition.  This decision may impact the design of the data model, and pehaps the transport requirements text.**
+      - **We also consider whether configured subscription MAY/SHOULD share transport sessions where possible, or whether each subscription uses a separate transport session, or whether this is down to the transport session definition.  This decision may impact the design of the data model, and pehaps the transport requirements text.**
       - **Rob: I've written up some text for the reset action on a subscription and under the receiver (that applies to all subscriptions that reference the receiver configuration).  Unlike the existing reset action, I've removed the return parameter (timestamp of when it took effect), and I think that we should allow it to be processed asynchronously w.r.t the RPC caller.  Authors, please check the latest text.**
 
 1. Should we support configurable subscription-level keepalives?
@@ -2241,3 +2299,9 @@ This appendix is only intended while the authors/WG are working on the document,
 1. Dynamic susbcriptions to require the encoding to be specified. (Decided 21 Feb 25)
 
 1. DSCP settings are only specified under the receiver (for configured subscriptions) (Decided 21 Feb 25)
+
+## Changes
+
+1. Aligned configured and dynamic subscription data models:
+ - Both are configured by name.
+ - Made "purpose" field common (limited to 1k max characters, previously unrestricted), i.e., now available for dynamic subscriptions.

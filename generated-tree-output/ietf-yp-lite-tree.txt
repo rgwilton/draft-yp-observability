@@ -12,8 +12,8 @@ module: ietf-yp-lite
      |           +--rw xpaths*    yang:xpath1.0 {ypl:xpath}?
      +--rw subscriptions
      |  +--rw subscription* [name]
-     |     +--ro id                subscription-id
      |     +--rw name              subscription-name
+     |     +--rw purpose?          string
      |     +--rw target
      |     |  +--rw datastore?             identityref
      |     |  +--rw (filter)?
@@ -33,17 +33,17 @@ module: ietf-yp-lite
      |     |  |  +--rw anchor-time?   yang:date-and-time
      |     |  +--rw on-change! {on-change}?
      |     |     +--rw sync-on-start?   boolean
-     |     +--rw purpose?          string
-     |     +--ro status?           subscription-status
      |     +--rw receivers* [name]
      |     |  +--rw name
      |     |  |       -> /datastore-telemetry/receivers/receiver/name
-     |     |  +--ro encoding?     encoding
-     |     |  +--ro statistics
-     |     |     +--ro sent-event-records?
-     |     |     |       yang:zero-based-counter64
-     |     |     +--ro excluded-event-records?
-     |     |             yang:zero-based-counter64
+     |     |  +--ro status?   enumeration
+     |     +--ro id                subscription-id
+     |     +--ro status?           subscription-status
+     |     +--ro statistics
+     |     |  +--ro update-record-count?
+     |     |  |       yang:zero-based-counter64
+     |     |  +--ro excluded-event-records?
+     |     |          yang:zero-based-counter64
      |     +---x reset {configured}?
      +--rw receivers {configured}?
         +--rw receiver* [name]
@@ -63,7 +63,8 @@ module: ietf-yp-lite
   rpcs:
     +---x establish-subscription {dynamic}?
     |  +---w input
-    |  |  +---w name?             subscription-name
+    |  |  +---w name              subscription-name
+    |  |  +---w purpose?          string
     |  |  +---w target
     |  |  |  +---w datastore?             identityref
     |  |  |  +---w (filter)?
@@ -89,10 +90,10 @@ module: ietf-yp-lite
     |     +--ro id    subscription-id
     +---x delete-subscription {dynamic}?
     |  +---w input
-    |     +---w id    subscription-id
+    |     +---w name    subscription-name
     +---x kill-subscription {dynamic}?
        +---w input
-          +---w id    subscription-id
+          +---w name    subscription-name
 
   notifications:
     +---n replay-completed
@@ -101,7 +102,8 @@ module: ietf-yp-lite
     |  +--ro id    subscription-id
     +---n subscription-started
     |  +--ro id                subscription-id
-    |  +--ro name?             subscription-name
+    |  +--ro name              subscription-name
+    |  +--ro purpose?          string
     |  +--ro target
     |  |  +--ro datastore?             identityref
     |  |  +--ro (filter)?
@@ -122,6 +124,7 @@ module: ietf-yp-lite
     |     +--ro on-change! {on-change}?
     |        +--ro sync-on-start?   boolean
     +---n subscription-terminated
+    |  +--ro name      subscription-name
     |  +--ro id        subscription-id
     |  +--ro reason    identityref
     +---n update
