@@ -439,7 +439,7 @@ module ietf-yp-lite {
       description
         "The content filter specification for this request.";
 
-      leaf-list paths {
+      leaf path {
         type ypath;
         description
           "A basic path filter that allows wildcard, regex, or
@@ -454,7 +454,7 @@ module ietf-yp-lite {
           "RFC 6241: Network Configuration Protocol (NETCONF),
                      Section 6";
       }
-      leaf-list xpaths {
+      leaf xpath {
         if-feature "ypl:xpath";
         type yang:xpath1.0;
         description

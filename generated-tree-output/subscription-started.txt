@@ -9,12 +9,12 @@
     |  |     |  +--ro filter-ref       filter-ref
     |  |     +--:(within-subscription)
     |  |        +--ro (filter-spec)?
-    |  |           +--:(paths)
-    |  |           |  +--ro paths*     ypath
+    |  |           +--:(path)
+    |  |           |  +--ro path?      ypath
     |  |           +--:(subtree)
     |  |           |  +--ro subtree?   <anydata> {ypl:subtree}?
-    |  |           +--:(xpaths)
-    |  |              +--ro xpaths*    yang:xpath1.0 {ypl:xpath}?
+    |  |           +--:(xpath)
+    |  |              +--ro xpath?     yang:xpath1.0 {ypl:xpath}?
     |  +--ro update-trigger
     |     +--ro periodic!
     |     |  +--ro period         centiseconds

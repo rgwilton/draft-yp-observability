@@ -11,12 +11,12 @@ module: ietf-yp-lite
            |     |  +--rw filter-ref       filter-ref
            |     +--:(within-subscription)
            |        +--rw (filter-spec)?
-           |           +--:(paths)
-           |           |  +--rw paths*     ypath
+           |           +--:(path)
+           |           |  +--rw path?      ypath
            |           +--:(subtree)
            |           |  +--rw subtree?   <anydata> {ypl:subtree}?
-           |           +--:(xpaths)
-           |              +--rw xpaths*    yang:xpath1.0 {ypl:xpath}?
+           |           +--:(xpath)
+           |              +--rw xpath?     yang:xpath1.0 {ypl:xpath}?
            +--rw update-trigger
            |  +--rw periodic!
            |  |  +--rw period         centiseconds
