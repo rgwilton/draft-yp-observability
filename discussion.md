@@ -85,3 +85,83 @@ Notes from filtering discussion:
 
    - I would propose that we remove support for XPath filtering from this draft (since an implementation could always augment it back in, or it could in an extension draft), and vendor implementations generally don't implement XPath filtering consistently or fully, and it has the potential to allow for subscriptions that would be very hard to implement in a performant way, and hard to police the performance impact.  If we do retain it, then it should go under a feature statement and be entirely optional to implement.
      - Consensus: Leave this as an optional to implement (MAY).
+
+
+Decomposing subscriptions:
+ - Every subscription has a name (either provided by the user or dynamically allocated for dynamic subscriptions):
+   - This is the primary key for the subscription.
+
+   - Periodic subscription data does not need to be sent it a single message, it can be sent in separate updates.
+   - If split the should send a single update complete message on the subscription to indicate when all data in a periodic update has been sent.
+   - Allow the data to be encoded from the root, or the subscription bind point.
+   - All data should either be encoded from the root or relative to the subscription.
+
+
+ - A subscription is named and to one path (not a set of paths)
+   - Name is either explicitly provided by the user or allocated dynamically for a dynamic subscription
+   - May include filters on the keys (wildcard, regex or exact match)
+   - Can exclude subtrees of data to be returned relative to the subscription point.
+   - This is the path that the data is encoded relative to.
+   - Want both on-change and periodic to both encode from the same point.
+   - TODO - Subscription may be decomposed into child subscriptions, each of which gets a different numeric subscription id.
+
+// The subscription started messages should indicate:
+- The subscription path
+- Any relative subpath/filter for the child subscription.
+
+    +---n update
+       +--ro id?                 subscription-id
+       +--ro path-prefix?        string
+       +--ro snapshot-type?      enumeration
+       +--ro observation-time?   yang:date-and-time
+       +--ro updates* [target-path]
+       |  +--ro target-path    string
+       |  +--ro data?          <anydata>
+       +--ro incomplete?         empty
+
+- The notification data itself (i.e., in the data leaf node above), can be encoded relative to 3 separate points in the schema tree:
+    - Encode from the root of the data tree (e.g., as is done an RFC 8641 periodic subscription)
+    - Encode relative to the data node identified by the target-path, i.e., how RFC 8641 encodes for on-change subscriptions.
+    - Encode relative to the data node subtree in the subscription path (i.e., for both for periodic and on-change)
+
+For periodic subscriptions:
+
+- The target-path, relative to the path-prefix, *ALWAYS* identifies the object that is being replaced (excluding filtered information) (or deleted).  This could be lower than the subscription point (e.g., for a decomposed subscription), but would never be higher than the subscription point, i.e., all data returned MUST be contained within the subscription subtree.
+  - By default, it makes most sense for the data to be encoded relative to the target path (but it could be encoded relative to other points as well)
+    - Not for a decomposed subscription, even for periodic, this target path would end up being below the subscription target.
+  - If you are updating a datastore snapshot of the data, then you would logically replace the 
+
+- The path-prefix contains the static part of the subscription path that doesn't contain any wildcard keys.
+- T
+Returned data (ignoring keys) must always be returned at or below the subscription point.
+  - If there are any wildcard keys in the subscription path (i.e., anything that matches more than one list entry), then those keys will need to be expressed somehow, either in a path expression or within the JSON data itself, which would naturally require the encoding to be higher.
+  - For the Kafka use case there is a strong desire to encode the data relative to the subscription point, since this would most naturally map on to a sane Kafka schema per YANG Push message.
+  - Different types of subscriptions (e.g., periodic, on-change, combined) have different encodings that make sense.
+  - Child subscriptions mean that only a subset of the data is being returned.
+
+PROPOSAL for YP Lite:
+- Data is always encoded relative to the subscription path (what about lists at the end)?
+
+
+ - Specify the relative subscription point (e.g, where data is encoded from)
+
+- There are three sensible points that data can be encoded from:
+
+
+  - Logically the encoding is always split into two parts:
+    - A path (containing keys) that identifies the object that is being updated.  [TODO - How would this be encoded for CBOR]
+    - The update itself (encoded at JSON or CBOR).
+
+
+If the data is being validated 
+
+  - Schema of notifications is relative to the object identified in the subscription path.
+  - A notification message contains a list of tree updates.
+
+- Choices of where the data is encoded from:
+
+
+- A path to identify what data is being updated/replaced.
+
+ - Same encoding for both on-change and periodic:
+   - Update message is either a replace, or a delete (on-change only), with a delete represented as an empty {}.
