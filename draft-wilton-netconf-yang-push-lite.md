@@ -187,7 +187,7 @@ In practice, many network devices will manage their operational data as a combin
 
 For the consumer of the telemetry data, there is a requirement to associate a schema with the instance-data that will be provided by a subscription.  One approach is to fetch and build the entire schema for the device, e.g., by fetching YANG library, and then use the subscription XPath to select the relevant subtree of the schema that applies only to the subscription.  The problem with this approach is that if the schema ever changes, e.g., after a software update, then it is reasonably likely of some changes occurring with the global device schema even if there are no changes to the schema subtree under the subscription path.  Hence, it would be helpful to identify and version the schema associated with a particular subscription path, and also to encoded the instance data relatively to the subscription path rather than as an absolute path from the root of the operational datastore.
 
-**TODO More needs to be added here, e.g., encoding, on-change considerations.  Splitting subscriptions up.**
+**TODO More needs to be added here, e.g., encoding, on-change considerations.  Splitting subscriptions up. **
 
 This document proposes a new opt-in YANG-Push encoding format to use instead of the "push-update" and "push-change-update" notifications defined in {{RFC8641}}.
 
