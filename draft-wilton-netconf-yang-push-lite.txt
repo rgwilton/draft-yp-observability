@@ -5,7 +5,7 @@
 Network Configuration                                     R. Wilton, Ed.
 Internet-Draft                                             Cisco Systems
 Intended status: Standards Track                               H. Keller
-Expires: 4 September 2025                              Deuetsche Telekom
+Expires: 4 January 2026                                Deuetsche Telekom
                                                                B. Claise
                                                                   Huawei
                                                                 E. Aries
@@ -14,7 +14,7 @@ Expires: 4 September 2025                              Deuetsche Telekom
                                                                    Nokia
                                                                  T. Graf
                                                                 Swisscom
-                                                            3 March 2025
+                                                             3 July 2025
 
 
                YANG Datastore Telemetry (YANG Push Lite)
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 September 2025.
+   This Internet-Draft will expire on 4 January 2026.
 
 Copyright Notice
 
@@ -113,6 +113,7 @@ Table of Contents
      8.1.  Receivers
        8.1.1.  Receivers for Configured Subscriptions
        8.1.2.  Receivers for Dynamic Subscriptions
+       8.1.3.  Receiver Session States and State Machine
      8.2.  Transports
        8.2.1.  Requirements for Yang Push Lite Transport
                Specifications
@@ -205,6 +206,7 @@ Table of Contents
      D.14.  Issues related to the Appendixes
        D.14.1.  Examples related issues/questions:
      D.15. Summary of closed/resolved issues
+     D.16. Changes
    Authors' Addresses
 
 1.  Document Status
@@ -370,8 +372,8 @@ Table of Contents
    subscription path rather than as an absolute path from the root of
    the operational datastore.
 
-   *TODO More needs to be added here, e.g., encoding, on-change
-   considerations.  Splitting subscriptions up.*
+   **TODO More needs to be added here, e.g., encoding, on-change
+   considerations.  Splitting subscriptions up. **
 
    This document proposes a new opt-in YANG-Push encoding format to use
    instead of the "push-update" and "push-change-update" notifications
@@ -447,8 +449,7 @@ Table of Contents
    [RFC8639] and [RFC8641], and the various extensions to YANG Push.
 
    A more complete description of the main differences in YANG Push Lite
-   compares to [RFC8639] and [RFC8641] is given in
-   {#DifferencesFromYangPush}.
+   compares to [RFC8639] and [RFC8641] is given in Appendix A.
 
 3.4.2.  [I-D.draft-netana-netconf-notif-envelope] and RFC 5277
 
@@ -693,7 +694,8 @@ Table of Contents
       or dynamic subscription.  Also referred to as the subscription-id.
 
    *  _YANG-Push-Lite_: The light weight subscription and push mechanism
-      for datastore updates that is specified in this document.
+      for datastore updates that is specified in this document. *Add
+      comment*
 
    All _YANG tree diagrams_ used in this document follow the notation
    defined in [RFC8340].
@@ -810,11 +812,9 @@ Table of Contents
 6.2.  The "filters" Container
 
    The "filters" container maintains a list of all datastore
-   subhttps://rgwilton.github.io/draft-yp-observability/draft-wilton-
-   netconf-yp-observability.html scription filters that persist outside
-   the lifecycle of a single subscription.  This enables predefined
-   filters that may be referenced by more than one configured or dynamic
-   subscription.
+   subscription filters that persist outside the lifecycle of a single
+   subscription.  This enables predefined filters that may be referenced
+   by more than one configured or dynamic subscription.
 
    Below is a tree diagram for the "filters" container.  All objects
    contained in this tree are described in the YANG module in
@@ -826,12 +826,12 @@ Table of Contents
            +--rw filter* [name]
               +--rw name             string
               +--rw (filter-spec)?
-                 +--:(paths)
-                 |  +--rw paths*     ypath
+                 +--:(path)
+                 |  +--rw path?      ypath
                  +--:(subtree)
                  |  +--rw subtree?   <anydata> {ypl:subtree}?
-                 +--:(xpaths)
-                    +--rw xpaths*    yang:xpath1.0 {ypl:xpath}?
+                 +--:(xpath)
+                    +--rw xpath?     yang:xpath1.0 {ypl:xpath}?
 
                                   Figure 1
 
@@ -1063,7 +1063,7 @@ Table of Contents
    module: ietf-yp-lite
      +--rw datastore-telemetry!
         +--rw subscriptions
-           +--rw subscription* [id]
+           +--rw subscription* [name]
               +--rw update-trigger
                  +--rw periodic!
                  |  +--rw period         centiseconds
@@ -1302,54 +1302,44 @@ Table of Contents
 8.1.  Receivers
 
    Every subscription is associated with one or more receivers, which
-   each identify the destination host where all the subscription
-   notifications are sent.  Each receiver has the following associated
-   properties:
+   each identify the destination host, transport and encoding settings,
+   where all notifications for a subscription are sent.
 
-   *  a _name_ to identify and reference the receiver in configured
-      subscriptions.
+   For configured subscriptions there is no explicit association with an
+   existing transport session, and hence the properties associated with
+   the receiver are explicitly configured, as described in
+   Section 8.1.1.
 
-   *  a _transport_, which identifies the transport protocol to use to
-      connect with all subscription receivers.
-
-      -  Optional transport-specific related parameters, e.g., DSCP.
-         There are likely to be various data nodes related to
-         establishing appropriate security and encryption.
-
-   *  an _encoding_ to encode all YANG notification messages to the
-      receiver, i.e., see Section 8.3.
-
-   *  optional parameters to identify where traffic should egress the
-      publisher:
-
-      -  a _source-interface_, which identifies the egress interface to
-         use from the publisher.
-
-      -  a _source-address_ address, which identifies the IP address to
-         stamp on notification messages destined for the receiver.
-
-      -  a _source-vrf_, which identifies the Virtual Routing and
-         Forwarding (VRF) instance on which to reach receivers.  This
-         VRF is a network instance as defined in [RFC8529].  Publisher
-         support for VRFs is optional and advertised using the
-         _supports-vrf_ feature. *TODO - do we also support inferring
-         the VRF from the source interface?*
-
-   “If none of the above parameters are set, the publisher MAY decide
-   which interface(s) to source notifications from.
+   For dynamic subscriptions, the receiver, and most associated
+   properties are implicit from the session on which the dynamic
+   subscription was initiated, as described in Section 8.1.2.
 
 8.1.1.  Receivers for Configured Subscriptions
 
    For configured subscriptions, receivers are configured independently
-   from the subscriptions and then referenced from the subscription.
+   from the subscriptions and then referenced from the subscription
+   configuration.
 
-   Configured subscriptions MAY have multiple receivers, but they MUST
-   have the same encoding.  Multiple receivers facilitate redundancy at
-   the receivers.
+   Configured subscriptions MAY have multiple receivers.  Multiple
+   receivers facilitate redundancy at the receivers.  Each receiver MAY
+   be configured with different transports and associated transport
+   settings, but they MUST all share the same encoding.  All
+   subscription notifications, including lifecycle notifications, are
+   sent to all receivers except for the receiver-disconnected
+   notification, which is only sent to the affected receiver, and only
+   if the subscription remains active because of other active receivers.
+
+   are sent to all receivers except for the notification that a receiver
+   is been disconnected, but other receivers and active and hence the
+   subscription is still active.
 
    Below is a tree diagram for _datastore-telemetry/receivers_
    container.  All objects contained in this tree are described in the
    YANG module in Section 13.2.
+
+   These parameters identify how to connect to each receiver.  For each
+   subscription, the publisher uses the referenced receiver
+   configuration to establish transport connectivity to the receiver.
 
    module: ietf-yp-lite
      +--rw datastore-telemetry!
@@ -1370,34 +1360,54 @@ Table of Contents
 
              Figure 7: datastore-telemetry/receivers container
 
-   Because there is no explicit association with an existing transport
-   session, configuration operations include additional parameters
-   beyond those of dynamic subscriptions.  These parameters identify
-   each receiver, how to connect with that receiver, and possibly
-   whether the notification messages need to come from a specific egress
-   interface on the publisher.  Receiver-specific transport connectivity
-   parameters MUST be configured via transport-specific augmentations to
-   this specification.  See Section 2.5.7 for details.
+   Each configured receiver has the following associated properties:
 
-   This specification is transport independent.  However, supporting a
-   configured subscription will normally require the establishment of
-   transport connectivity.  Some parameters used for this transport
-   connectivity establishment are transport specific.  As a result, the
-   YANG module defined in Section 13.2 is not able to directly define
-   and expose these transport parameters.
+   *  a _name_ to identify and reference the receiver in the
+      subscription configuration.
 
-   It is necessary for an implementation to support the connection
-   establishment process.  To support this function, the YANG data model
-   defined in this document includes a YANG choice node where transport-
-   specific parameters for a particular receiver may be augmented.  This
-   node is _/datastore-telemetry/receivers/receiver/transport-type_.
+   *  a _transport_, which identifies the transport protocol to use for
+      all connections to the receiver.
+
+      -  optional transport-specific related parameters, e.g., DSCP.
+         There are likely to be various data nodes related to
+         establishing appropriate security and encryption.
+
+   *  an _encoding_ to encode all YANG notification messages to the
+      receiver, i.e., see Section 8.3.
+
+   *  optional parameters to identify where traffic should egress the
+      publisher:
+
+      -  a _source-interface_, identifying the egress interface to use
+         from the publisher, implicitly choosing the source IP address
+         and VRF.
+
+      -  a _source-vrf_, identifying the Virtual Routing and Forwarding
+         (VRF) instance on which to reach receivers.  This VRF is a
+         network instance as defined in [RFC8529].  Publisher support
+         for VRFs is optional and advertised using the _supports-vrf_
+         feature.
+
+      -  a _source-address_ address, identifying the IP address to
+         source notification messages from.
+
+      If none of the above parameters are set, the publisher MAY choose
+      which interface(s) and address(es) to source subscription
+      notifications from.
+
+   This specification is transport independent, e.g., see Section 8.2,
+   and thus the YANG module defined in Section 13.2 cannot directly
+   define and expose these transport parameters.  Instead, receiver-
+   specific transport connectivity parameters MUST be configured via
+   transport-specific augmentations to the YANG choice node _/datastore-
+   telemetry/receivers/receiver/transport-type_.
 
    A publisher supporting configured subscriptions must obviously
    support at least one YANG data model that augments transport
-   connectivity parameters on _/datastore-telemetry/receivers/receiver/
-   transport-type_.  For an example of such an augmentation, see
-   [I-D.draft-ietf-netconf-udp-notif] *TODO, fix this to a UDP bis
-   document*
+   connectivity parameters onto _/datastore-
+   telemetry/receivers/receiver/transport-type_.  For an example of such
+   an augmentation, see [I-D.draft-ietf-netconf-udp-notif]. *TODO,
+   update this reference to a UDP bis document*
 
 8.1.2.  Receivers for Dynamic Subscriptions
 
@@ -1406,12 +1416,78 @@ Table of Contents
    subscription_ RPC, reusing the same transport session for all the
    subscription notifications.
 
-   Hence most receiver parameters for a dynamic subscription are
-   implicitly determined, and cannot be explicitly controlled.
+   Hence most receiver parameters for a dynamic subscription, e.g.,
+   related to the transport, are implicitly determined and cannot be
+   explicitly controlled.
 
    Dynamic subscriptions MUST specify an encoding (see Section 8.3) and
    MAY specify DSCP Marking (see Section 8.2.2) for the telemetry
    notifications in the _establish-subscription_ RPC (see Figure 12).
+
+   *Potential Future - we could allow a dynamic subscription to choose a
+   configured receiver as the receiver for notifications.  E.g., this
+   could be helpful to allow a client to temporarily debug an issue by
+   allowing additional information to be sent to an existing telemetry
+   collector.*
+
+8.1.3.  Receiver Session States and State Machine
+
+   Each subscription will need to establish a subcription to the
+   specified receiver.  Multiple subscriptions may share one or more
+   transport sessions to the same receiver,
+
+   A receiver in YANG Push Lite can be in one of the following states:
+
+   *  *Configured*: The receiver has been configured on the publisher,
+      but the receiver is not referenced by any valid subscriptions and
+      hence there is no attempt to establish a connection to the
+      receiver.
+
+   *  *Connecting*: The receiver has at least one associated
+      subscription and the publisher is attempting to establish a
+      transport session and complete any required security exchanges,
+      but this process has not yet succeeded.
+
+   *  *Active*: The receiver has at least one associated subscription, a
+      transport session has been established (if required), security
+      exchanges have successfully completed, and the publisher is able
+      to send notifications to the receiver.
+
+   The state transitions for a receiver are illustrated below:
+
+                       .-------------------.
+                       |                   |
+                       |    Disconnected   |
+                       |                   |
+                       '-------------------'
+                               |  ^
+     Receiver is referenced by |  |  No configured subscriptions
+     1 or more subscriptions   |  |  reference the receiver
+                               v  |
+                       .-------------------.
+                       |                   |
+                       |    Connecting     |
+                       |                   |
+                       '-------------------'
+                               |  ^
+     Transport and/or security |  | Transport or securty session
+     has been established.     |  |  hast beee lost or failed.
+                               v  |
+                       .-------------------.
+                       |                   |
+                       |      Active       |
+                       |                   |
+                       '-------------------'
+
+   State Descriptions:
+     Configured - receiver configuration is present.
+     Connecting - the publisher is trying to establish a connection.
+     Active     - connection established, publisher can send messages.
+
+   This state model allows implementations and operators to clearly
+   distinguish between receivers that are simply configured, those that
+   are in the process of connecting, and those that are actively being
+   used.
 
 8.2.  Transports
 
@@ -1448,6 +1524,11 @@ Table of Contents
    The transport selected by the subscriber to reach the publisher
    SHOULD be able to support multiple "establish-subscription" requests
    made in the same transport session.
+
+   The transport specification MAY require separate transport sessions
+   per subscription to a given receiver, or it MAY allow multiple
+   subscriptions to the same receiver to be multiplexed over a shared
+   transport session.
 
    Any transport specification SHOULD ensure that the receiver
    application can be notified of the _subscription-started_ lifecycle
@@ -1653,8 +1734,9 @@ Table of Contents
    module: ietf-yp-lite
      +--rw datastore-telemetry!
         +--rw subscriptions
-           +--rw subscription* [id]
-              +--rw id                subscription-id
+           +--rw subscription* [name]
+              +--rw name              subscription-name
+              +--rw purpose?          string
               +--rw target
               |  +--rw datastore?             identityref
               |  +--rw (filter)?
@@ -1662,30 +1744,29 @@ Table of Contents
               |     |  +--rw filter-ref       filter-ref
               |     +--:(within-subscription)
               |        +--rw (filter-spec)?
-              |           +--:(paths)
-              |           |  +--rw paths*     ypath
+              |           +--:(path)
+              |           |  +--rw path?      ypath
               |           +--:(subtree)
               |           |  +--rw subtree?   <anydata> {ypl:subtree}?
-              |           +--:(xpaths)
-              |              +--rw xpaths*    yang:xpath1.0 {ypl:xpath}?
+              |           +--:(xpath)
+              |              +--rw xpath?     yang:xpath1.0 {ypl:xpath}?
               +--rw update-trigger
               |  +--rw periodic!
               |  |  +--rw period         centiseconds
               |  |  +--rw anchor-time?   yang:date-and-time
               |  +--rw on-change! {on-change}?
               |     +--rw sync-on-start?   boolean
-              +--rw purpose?          string {configured}?
-              +--ro status?           subscription-status
               +--rw receivers* [name]
               |  +--rw name
               |  |       -> /datastore-telemetry/receivers/receiver/name
-              |  +--ro encoding?     encoding
-              |  +--ro status?       receiver-status
-              |  +--ro statistics
-              |     +--ro sent-event-records?
-              |     |       yang:zero-based-counter64
-              |     +--ro excluded-event-records?
-              |             yang:zero-based-counter64
+              |  +--ro status?   enumeration
+              +--ro id                subscription-id
+              +--ro status?           subscription-status
+              +--ro statistics
+              |  +--ro update-record-count?
+              |  |       yang:zero-based-counter64
+              |  +--ro excluded-event-records?
+              |          yang:zero-based-counter64
               +---x reset {configured}?
 
                Figure 8: subscriptions container Tree Diagram
@@ -1997,6 +2078,8 @@ Table of Contents
 
        +---x establish-subscription {dynamic}?
        |  +---w input
+       |  |  +---w name              subscription-name
+       |  |  +---w purpose?          string
        |  |  +---w target
        |  |  |  +---w datastore?             identityref
        |  |  |  +---w (filter)?
@@ -2004,12 +2087,12 @@ Table of Contents
        |  |  |     |  +---w filter-ref       filter-ref
        |  |  |     +--:(within-subscription)
        |  |  |        +---w (filter-spec)?
-       |  |  |           +--:(paths)
-       |  |  |           |  +---w paths*     ypath
+       |  |  |           +--:(path)
+       |  |  |           |  +---w path?      ypath
        |  |  |           +--:(subtree)
        |  |  |           |  +---w subtree?   <anydata> {ypl:subtree}?
-       |  |  |           +--:(xpaths)
-       |  |  |              +---w xpaths*    yang:xpath1.0 {ypl:xpath}?
+       |  |  |           +--:(xpath)
+       |  |  |              +---w xpath?     yang:xpath1.0 {ypl:xpath}?
        |  |  +---w update-trigger
        |  |  |  +---w periodic!
        |  |  |  |  +---w period         centiseconds
@@ -2259,6 +2342,8 @@ Table of Contents
 
        +---n subscription-started
        |  +--ro id                subscription-id
+       |  +--ro name              subscription-name
+       |  +--ro purpose?          string
        |  +--ro target
        |  |  +--ro datastore?             identityref
        |  |  +--ro (filter)?
@@ -2266,12 +2351,12 @@ Table of Contents
        |  |     |  +--ro filter-ref       filter-ref
        |  |     +--:(within-subscription)
        |  |        +--ro (filter-spec)?
-       |  |           +--:(paths)
-       |  |           |  +--ro paths*     ypath
+       |  |           +--:(path)
+       |  |           |  +--ro path?      ypath
        |  |           +--:(subtree)
        |  |           |  +--ro subtree?   <anydata> {ypl:subtree}?
-       |  |           +--:(xpaths)
-       |  |              +--ro xpaths*    yang:xpath1.0 {ypl:xpath}?
+       |  |           +--:(xpath)
+       |  |              +--ro xpath?     yang:xpath1.0 {ypl:xpath}?
        |  +--ro update-trigger
        |     +--ro periodic!
        |     |  +--ro period         centiseconds
@@ -2324,6 +2409,7 @@ Table of Contents
    Section 13.2.
 
        +---n subscription-terminated
+       |  +--ro name      subscription-name
        |  +--ro id        subscription-id
        |  +--ro reason    identityref
 
@@ -2609,15 +2695,16 @@ Table of Contents
         |  +--rw filter* [name]
         |     +--rw name             string
         |     +--rw (filter-spec)?
-        |        +--:(paths)
-        |        |  +--rw paths*     ypath
+        |        +--:(path)
+        |        |  +--rw path?      ypath
         |        +--:(subtree)
         |        |  +--rw subtree?   <anydata> {ypl:subtree}?
-        |        +--:(xpaths)
-        |           +--rw xpaths*    yang:xpath1.0 {ypl:xpath}?
+        |        +--:(xpath)
+        |           +--rw xpath?     yang:xpath1.0 {ypl:xpath}?
         +--rw subscriptions
-        |  +--rw subscription* [id]
-        |     +--rw id                subscription-id
+        |  +--rw subscription* [name]
+        |     +--rw name              subscription-name
+        |     +--rw purpose?          string
         |     +--rw target
         |     |  +--rw datastore?             identityref
         |     |  +--rw (filter)?
@@ -2625,30 +2712,29 @@ Table of Contents
         |     |     |  +--rw filter-ref       filter-ref
         |     |     +--:(within-subscription)
         |     |        +--rw (filter-spec)?
-        |     |           +--:(paths)
-        |     |           |  +--rw paths*     ypath
+        |     |           +--:(path)
+        |     |           |  +--rw path?      ypath
         |     |           +--:(subtree)
         |     |           |  +--rw subtree?   <anydata> {ypl:subtree}?
-        |     |           +--:(xpaths)
-        |     |              +--rw xpaths*    yang:xpath1.0 {ypl:xpath}?
+        |     |           +--:(xpath)
+        |     |              +--rw xpath?     yang:xpath1.0 {ypl:xpath}?
         |     +--rw update-trigger
         |     |  +--rw periodic!
         |     |  |  +--rw period         centiseconds
         |     |  |  +--rw anchor-time?   yang:date-and-time
         |     |  +--rw on-change! {on-change}?
         |     |     +--rw sync-on-start?   boolean
-        |     +--rw purpose?          string {configured}?
-        |     +--ro status?           subscription-status
         |     +--rw receivers* [name]
         |     |  +--rw name
         |     |  |       -> /datastore-telemetry/receivers/receiver/name
-        |     |  +--ro encoding?     encoding
-        |     |  +--ro status?       receiver-status
-        |     |  +--ro statistics
-        |     |     +--ro sent-event-records?
-        |     |     |       yang:zero-based-counter64
-        |     |     +--ro excluded-event-records?
-        |     |             yang:zero-based-counter64
+        |     |  +--ro status?   enumeration
+        |     +--ro id                subscription-id
+        |     +--ro status?           subscription-status
+        |     +--ro statistics
+        |     |  +--ro update-record-count?
+        |     |  |       yang:zero-based-counter64
+        |     |  +--ro excluded-event-records?
+        |     |          yang:zero-based-counter64
         |     +---x reset {configured}?
         +--rw receivers {configured}?
            +--rw receiver* [name]
@@ -2668,6 +2754,8 @@ Table of Contents
      rpcs:
        +---x establish-subscription {dynamic}?
        |  +---w input
+       |  |  +---w name              subscription-name
+       |  |  +---w purpose?          string
        |  |  +---w target
        |  |  |  +---w datastore?             identityref
        |  |  |  +---w (filter)?
@@ -2675,12 +2763,12 @@ Table of Contents
        |  |  |     |  +---w filter-ref       filter-ref
        |  |  |     +--:(within-subscription)
        |  |  |        +---w (filter-spec)?
-       |  |  |           +--:(paths)
-       |  |  |           |  +---w paths*     ypath
+       |  |  |           +--:(path)
+       |  |  |           |  +---w path?      ypath
        |  |  |           +--:(subtree)
        |  |  |           |  +---w subtree?   <anydata> {ypl:subtree}?
-       |  |  |           +--:(xpaths)
-       |  |  |              +---w xpaths*    yang:xpath1.0 {ypl:xpath}?
+       |  |  |           +--:(xpath)
+       |  |  |              +---w xpath?     yang:xpath1.0 {ypl:xpath}?
        |  |  +---w update-trigger
        |  |  |  +---w periodic!
        |  |  |  |  +---w period         centiseconds
@@ -2693,10 +2781,10 @@ Table of Contents
        |     +--ro id    subscription-id
        +---x delete-subscription {dynamic}?
        |  +---w input
-       |     +---w id    subscription-id
+       |     +---w name    subscription-name
        +---x kill-subscription {dynamic}?
           +---w input
-             +---w id    subscription-id
+             +---w name    subscription-name
 
      notifications:
        +---n replay-completed
@@ -2705,6 +2793,8 @@ Table of Contents
        |  +--ro id    subscription-id
        +---n subscription-started
        |  +--ro id                subscription-id
+       |  +--ro name              subscription-name
+       |  +--ro purpose?          string
        |  +--ro target
        |  |  +--ro datastore?             identityref
        |  |  +--ro (filter)?
@@ -2712,12 +2802,12 @@ Table of Contents
        |  |     |  +--ro filter-ref       filter-ref
        |  |     +--:(within-subscription)
        |  |        +--ro (filter-spec)?
-       |  |           +--:(paths)
-       |  |           |  +--ro paths*     ypath
+       |  |           +--:(path)
+       |  |           |  +--ro path?      ypath
        |  |           +--:(subtree)
        |  |           |  +--ro subtree?   <anydata> {ypl:subtree}?
-       |  |           +--:(xpaths)
-       |  |              +--ro xpaths*    yang:xpath1.0 {ypl:xpath}?
+       |  |           +--:(xpath)
+       |  |              +--ro xpath?     yang:xpath1.0 {ypl:xpath}?
        |  +--ro update-trigger
        |     +--ro periodic!
        |     |  +--ro period         centiseconds
@@ -2725,6 +2815,7 @@ Table of Contents
        |     +--ro on-change! {on-change}?
        |        +--ro sync-on-start?   boolean
        +---n subscription-terminated
+       |  +--ro name      subscription-name
        |  +--ro id        subscription-id
        |  +--ro reason    identityref
        +---n update
@@ -3079,6 +3170,14 @@ Table of Contents
          "Specifies a data encoding, e.g., for a data subscription.";
      }
 
+     typedef subscription-name {
+       type string {
+         length "1..255";
+       }
+       description
+         "A user friendly name for a subscription.";
+     }
+
      typedef subscription-id {
        type uint32;
        description
@@ -3156,37 +3255,6 @@ Table of Contents
          "Indicates the status of a subscription";
      }
 
-     typedef receiver-status {
-       type enumeration {
-         enum disconnected {
-           description
-             "The publish is not currently connected to the receiver.
-
-              Nornally, this is because there are no active
-              subscriptions for this receiver.";
-         }
-         enum connecting {
-           description
-             "The publisher is actively trying to connect to the
-              receiver.  This implies that there is at least one active
-              subscription for this receiver.
-
-              A receiver in connecting state may indicate that the
-              transport or associated security session could not be
-              established, and the publisher is periodically trying to
-              establish the connection.";
-         }
-         enum connected {
-           description
-             "The publisher has successfully connected to the receiver
-              and at least one active subscription is using this
-              receiver.";
-         }
-       }
-       description
-         "Indicates the status of a receiver";
-     }
-
      /*
       * GROUPINGS
       */
@@ -3215,7 +3283,7 @@ Table of Contents
          description
            "The content filter specification for this request.";
 
-         leaf-list paths {
+         leaf path {
            type ypath;
            description
              "A basic path filter that allows wildcard, regex, or
@@ -3230,7 +3298,7 @@ Table of Contents
              "RFC 6241: Network Configuration Protocol (NETCONF),
                         Section 6";
          }
-         leaf-list xpaths {
+         leaf xpath {
            if-feature "ypl:xpath";
            type yang:xpath1.0;
            description
@@ -3344,6 +3412,27 @@ Table of Contents
        description
          "Common settings that are shared between dynamic and
           configured subscriptions.";
+
+       leaf name {
+         type subscription-name;
+         mandatory true;
+         description
+           "The client provided name for the subscription.
+
+            This MUST be unique across all subscriptions.  Configuring
+            a subscription with a name already used by a dynamic
+            subscription will replace the dynamic subscription, forcing
+            it to be terminated.";
+       }
+
+       leaf purpose {
+         type string {
+           length "1..1000";
+         }
+         description
+           "Open text allowing a configuring entity to embed the
+            originator or other specifics of this subscription.";
+       }
 
        container target {
          description
@@ -3477,12 +3566,11 @@ Table of Contents
           where the 'error-info' field MAY contain a
           'delete-subscription-error-info' structure.";
        input {
-         leaf id {
-           type subscription-id;
+         leaf name {
+           type subscription-name;
            mandatory true;
            description
-             "Identifier of the dynamic subscription that is to be
-              deleted.";
+             "The name of the dynamic subscription to be deleted.";
          }
        }
      }
@@ -3502,12 +3590,11 @@ Table of Contents
           where the 'error-info' field MAY contain a
           'delete-subscription-error-info' structure.";
        input {
-         leaf id {
-           type subscription-id;
+         leaf name {
+           type subscription-name;
            mandatory true;
            description
-             "Identifier of the dynamic subscription that is to be
-              deleted.";
+             "The name of the dynamic subscription to be deleted.";
          }
        }
      }
@@ -3588,6 +3675,12 @@ Table of Contents
        description
          "This notification indicates that a subscription has been
           terminated.";
+       leaf name {
+         type subscription-name;
+         mandatory true;
+         description
+           "The name of the subscription that has been terminated.";
+       }
        leaf id {
          type subscription-id;
          mandatory true;
@@ -3763,7 +3856,7 @@ Table of Contents
            RPC primitives as well as subscriptions that have been
            established via configuration.";
          list subscription {
-           key "id";
+           key "name";
            description
              "The identity and specific parameters of a subscription.
              Subscriptions in this list can be created using a control
@@ -3773,31 +3866,8 @@ Table of Contents
              are used to delete a subscription, a
              'subscription-terminated' message is sent to any active or
              suspended receivers.";
-           leaf id {
-             type subscription-id;
-             description
-               "Identifier of a subscription; unique in a given
-               publisher.";
-           }
+
            uses subscription-common;
-
-           leaf purpose {
-             if-feature "configured";
-             type string;
-             description
-               "Open text allowing a configuring entity to embed the
-               originator or other specifics of this subscription.";
-           }
-
-           leaf status {
-             type subscription-status;
-             config false;
-             description
-               "The presence of this leaf indicates that the
-                subscription originated from configuration, not through
-                a controlchannel or RPC.  The value indicates the state
-                of the subscription as established by the publisher.";
-           }
 
            list receivers {
              key "name";
@@ -3816,47 +3886,98 @@ Table of Contents
                  "Identifies a unique receiver for a subscription.";
              }
 
-             leaf encoding {
-               type encoding;
-               config false;
-               description
-                 "The type of encoding for notification messages.";
-             }
-
              leaf status {
-               type receiver-status;
+               type enumeration {
+                 enum disconnected {
+                   description
+                     "This subscription does not have an active session
+                      with the receiver, and it is not trying to connect.
+
+                     E.g., this state may be reported if the subscription
+                     is not valid, or has not been started yet.";
+                 }
+                 enum connecting {
+                   description
+                     "The publisher is trying to establish a session with
+                      the receiver for this subscription.
+
+                      For a session less transport, this state may be
+                      used to indicate that there is no route to the
+                      receiver.
+
+                      A receiver in connecting state may indicate that
+                      the transport or associated security session
+                      could not be established, and the publisher is
+                      periodically trying to establish the connection.";
+                 }
+                 enum active {
+                   description
+                     "The publisher has successfully connected (if over a
+                      session based transport) to the receiver for this
+                      subscription, and the publisher is able to send
+                      notifications to the receiver.";
+                 }
+               }
                config false;
                description
-                 "Specifies the connection status of the receiver.
-                  I.e., whether a conenction has been sucessfully
-                 established";
+                 "Specifies the connection status of the receiver for
+                  this subscription.";
+             }
+           }
+
+           leaf id {
+             type subscription-id;
+             config false;
+             mandatory true;
+             description
+               "Publisher allocated identifier for a subscription;
+                 Unique in a given publisher.";
+           }
+
+           leaf status {
+             type subscription-status;
+             config false;
+             description
+               "The presence of this leaf indicates that the
+                subscription originated from configuration, not through
+                a controlchannel or RPC.  The value indicates the state
+                of the subscription as established by the publisher.";
+           }
+
+           container statistics {
+             config false;
+             description
+               "Statistics related to the number of messages generated
+                for this subscription.";
+
+             leaf update-record-count {
+               type yang:zero-based-counter64;
+               config false;
+               description
+                 "The number of update records generated for the
+                  subscription, to be queued to one of more active
+                  receivers.
+
+                  The count is initialized when the subscription
+                  first becomes active.
+
+                  The count is incremented even if the update
+                  record has been generated, but is not queued to
+                  any receiver.
+
+                  TODO - Does this count include lifecycle or only
+                  update messages?";
              }
 
-             container statistics {
+             leaf excluded-event-records {
+               type yang:zero-based-counter64;
                config false;
                description
-                 "Statistics related to the number of messages sent to
-                 the receiver.";
-
-               leaf sent-event-records {
-                 type yang:zero-based-counter64;
-                 config false;
-                 description
-                   "The number of event records sent to the receiver.
-                    The count is initialized when a dynamic
-                    subscription is established or when a configured
-                    receiver transitions to the 'valid' state.";
-               }
-               leaf excluded-event-records {
-                 type yang:zero-based-counter64;
-                 config false;
-                 description
-                   "The number of event records explicitly removed via
-                   either an event stream filter or an access control
-                   filter so that they are not passed to a receiver.
-                   This count is set to zero each time
-                   'sent-event-records' is initialized.";
-               }
+                 "The number of event records explicitly removed via
+                 either an event stream filter or an access control
+                 filter so that they are not passed to a receiver.
+                 This count is set to zero each time
+                 'sent-event-records' is initialized.";
              }
            }
 
@@ -4576,11 +4697,11 @@ Informative References
 
    [I-D.draft-ietf-netconf-distributed-notif]
               Zhou, T., Zheng, G., Voit, E., Graf, T., and P. Francois,
-              "Subscription to Distributed Notifications", Work in
-              Progress, Internet-Draft, draft-ietf-netconf-distributed-
-              notif-13, 1 March 2025,
+              "Subscription to Notifications in a Distributed
+              Architecture", Work in Progress, Internet-Draft, draft-
+              ietf-netconf-distributed-notif-14, 8 June 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              distributed-notif-13>.
+              distributed-notif-14>.
 
    [I-D.draft-ietf-netconf-https-notif]
               Jethanandani, M. and K. Watsen, "An HTTPS-based Transport
@@ -4590,20 +4711,20 @@ Informative References
               https-notif-15>.
 
    [I-D.draft-ietf-netconf-udp-notif]
-              Zheng, G., Zhou, T., Graf, T., Francois, P., Feng, A. H.,
-              and P. Lucente, "UDP-based Transport for Configured
+              Feng, A. H., Francois, P., Zhou, T., Graf, T., and P.
+              Lucente, "UDP-based Transport for Configured
               Subscriptions", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-udp-notif-20, 3 March 2025,
+              ietf-netconf-udp-notif-22, 3 July 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              udp-notif-20>.
+              udp-notif-22>.
 
    [I-D.draft-ietf-netmod-rfc8407bis]
               Bierman, A., Boucadair, M., and Q. Wu, "Guidelines for
               Authors and Reviewers of Documents Containing YANG Data
               Models", Work in Progress, Internet-Draft, draft-ietf-
-              netmod-rfc8407bis-22, 14 January 2025,
+              netmod-rfc8407bis-28, 5 June 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netmod-
-              rfc8407bis-22>.
+              rfc8407bis-28>.
 
    [I-D.draft-netana-netconf-yp-transport-capabilities]
               Wu, Q., Ma, Q., Feng, A. H., and T. Graf, "YANG
@@ -4615,19 +4736,19 @@ Informative References
 
    [I-D.ietf-netconf-distributed-notif]
               Zhou, T., Zheng, G., Voit, E., Graf, T., and P. Francois,
-              "Subscription to Distributed Notifications", Work in
-              Progress, Internet-Draft, draft-ietf-netconf-distributed-
-              notif-13, 1 March 2025,
+              "Subscription to Notifications in a Distributed
+              Architecture", Work in Progress, Internet-Draft, draft-
+              ietf-netconf-distributed-notif-14, 8 June 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              distributed-notif-13>.
+              distributed-notif-14>.
 
    [I-D.ietf-nmop-network-anomaly-architecture]
-              Graf, T., Du, W., and P. Francois, "An Architecture for a
-              Network Anomaly Detection Framework", Work in Progress,
-              Internet-Draft, draft-ietf-nmop-network-anomaly-
-              architecture-01, 20 October 2024,
+              Graf, T., Du, W., Francois, P., and A. H. Feng, "A
+              Framework for a Network Anomaly Detection Architecture",
+              Work in Progress, Internet-Draft, draft-ietf-nmop-network-
+              anomaly-architecture-03, 8 May 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-nmop-
-              network-anomaly-architecture-01>.
+              network-anomaly-architecture-03>.
 
    [I-D.ietf-nmop-yang-message-broker-integration]
               Graf, T. and A. Elhassany, "An Architecture for YANG-Push
@@ -5334,6 +5455,12 @@ D.1.  Issues related to general IETF process:
           suspect that it would be better added to this document than to
           require small separate documents (as was done before).
 
+   3.  What is the right name.  Should we be calling this Yang Push 2
+       (YPv2) to more clearly indicate that this is intended to be a
+       replacement for Yang Push?  We need to be slightly careful in
+       that this is only specifying implementing a subset of the
+       functionality.
+
 D.2.  Issue related to Terminology/Definitions:
 
    1.  Should we use the object terminology?  This may be better than
@@ -5626,7 +5753,13 @@ D.7.2.  Issues related to dynamic subscriptions:
 
 D.8.  Issues related to Subscription Lifecycle
 
-   1.  Should subscription-started notification include a fingerprint of
+   1.  Use subscription name as the unique identifier for the
+       subscription configuration.  Subscription id identifies a
+       subscription session.  I.e., if a configured subscription is
+       terminated and re-established then a new subscription id is
+       allocated.
+
+   2.  Should subscription-started notification include a fingerprint of
        the schema that is covered by the subscription that would
        guaranteed to change if the subscription changes?
 
@@ -5648,7 +5781,7 @@ D.8.  Issues related to Subscription Lifecycle
 
           -  Should discuss all of this together.  IETF 122 discussion.
 
-   2.  If a subscription references a filter, then should that be
+   3.  If a subscription references a filter, then should that be
        included inline in the subscription started notification (as per
        the RFC 8641 text), or should it indicate that it is a referenced
        filter?
@@ -5663,7 +5796,7 @@ D.8.  Issues related to Subscription Lifecycle
        *  Thomas try to simplify as much as possible, then do we need
           templating?
 
-   3.  When a subscription is terminated, should it be MUST NOT send any
+   4.  When a subscription is terminated, should it be MUST NOT send any
        more notifications after the terminated message, or SHOULD NOT?
        For a dynamic subscription, should the RPC be synchronous and not
        reply until it knows that all queues have been drained?
@@ -5677,7 +5810,7 @@ D.8.  Issues related to Subscription Lifecycle
 
        *  What does the receiver do when it gets this message anyway.
 
-   4.  Is a publisher allowed to arbitrarily send a sync-on-start
+   5.  Is a publisher allowed to arbitrarily send a sync-on-start
        resync, e.g., if it detects data loss, or should it always just
        terminate and reinitialize the subscription?
 
@@ -5693,7 +5826,7 @@ D.8.  Issues related to Subscription Lifecycle
        *  Receiver can already monitor and see that there is a problem
           anyway.
 
-   5.  If the parameters for a subscription change in any way (e.g., the
+   6.  If the parameters for a subscription change in any way (e.g., the
        config changes for a configured subscription, or a referenced
        filter changes in a dynamic subscription) then do we want to say
        that the subscription MUST be killed and recreated.  I.e., with
@@ -5717,7 +5850,7 @@ D.8.  Issues related to Subscription Lifecycle
        *  Benoit: If you are not sure what you are doing you must
           recreate.
 
-   6.  Should we have a YANG Action to reset a receiver or a
+   7.  Should we have a YANG Action to reset a receiver or a
        subscription?  E.g., discussed in Section 9.1.5.
 
        *  There seems to be consensus that having/keeping such a YANG
@@ -5737,15 +5870,12 @@ D.8.  Issues related to Subscription Lifecycle
           -  *We also need to consider whether this would clear
              subscription counters or not.*
 
-          -  *We also consider whether we need any text to rate limit
-             requests, e.g., in the security considerations section.*
-
-          -  *We also need to consider whether configured subscription
-             MAY/SHOULD share transport sessions where possible, or
-             whether each subscription uses a separate transport
-             session, or whether this is down to the transport session
-             definition.  This decision may impact the design of the
-             data model, and pehaps the transport requirements text.*
+          -  *We also consider whether configured subscription MAY/
+             SHOULD share transport sessions where possible, or whether
+             each subscription uses a separate transport session, or
+             whether this is down to the transport session definition.
+             This decision may impact the design of the data model, and
+             pehaps the transport requirements text.*
 
           -  *Rob: I've written up some text for the reset action on a
              subscription and under the receiver (that applies to all
@@ -5756,7 +5886,7 @@ D.8.  Issues related to Subscription Lifecycle
              w.r.t the RPC caller.  Authors, please check the latest
              text.*
 
-   7.  Should we support configurable subscription-level keepalives?
+   8.  Should we support configurable subscription-level keepalives?
 
        *  This would probably entail periodically sending a small
           message on on-change subscriptions so that the receiver
@@ -5906,6 +6036,13 @@ D.15.  Summary of closed/resolved issues
    5.  DSCP settings are only specified under the receiver (for
        configured subscriptions) (Decided 21 Feb 25)
 
+D.16.  Changes
+
+   1.  Aligned configured and dynamic subscription data models: - Both
+       are configured by name.  - Made "purpose" field common (limited
+       to 1k max characters, previously unrestricted), i.e., now
+       available for dynamic subscriptions.
+
 Authors' Addresses
 
    Robert Wilton (editor)
@@ -5925,7 +6062,7 @@ Authors' Addresses
 
    Ebben Aries
    Juniper
-   Email: Ebben Aries exa@juniper.net
+   Email: exa@juniper.net
 
 
    James Cumming
