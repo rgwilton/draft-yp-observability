@@ -22,3 +22,7 @@ draft-wilton-netconf-yang-push-lite.xml
 package-lock.json
 report.xml
 !requirements.txt
+/.bsp/
+/.metals/
+/.scala-build/
+/out/
