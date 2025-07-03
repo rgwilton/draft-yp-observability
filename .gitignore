@@ -1,4 +1,3 @@
-.DS_Store/lib
 .tags
 *.html
 *.pdf
@@ -8,18 +7,14 @@
 *.upload
 *~
 /.*.mk
-/.bsp/
 /.gems/
 /.idea/
-/.metals/
 /.refcache
-/.scala-build/
 /.venv/
 /.vscode/
 /*-[0-9][0-9].xml
 /lib
 /node_modules/
-/out/
 /versioned/
 archive.json
 draft-wilton-netconf-yang-push-lite.xml
