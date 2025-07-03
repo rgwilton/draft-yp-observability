@@ -22,3 +22,7 @@ Gemfile.lock
 package-lock.json
 report.xml
 !requirements.txt
+/.bsp/
+/.metals/
+/.scala-build/
+/out/
