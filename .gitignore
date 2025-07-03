@@ -26,3 +26,4 @@ report.xml
 /.metals/
 /.scala-build/
 /out/
+.DS_Store
