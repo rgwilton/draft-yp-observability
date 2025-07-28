@@ -1,13 +1,12 @@
-//| mill-version: 1.0.0-RC1
-//| mill-jvm-version: temurin:21.0.1
+//| mill-version: 1.0.1
+//| mill-jvm-version: temurin:21
 //| mvnDeps:
-//| - uk.org.wilton::ietf-yang-mill-plugin::0.0.3
+//| - uk.org.wilton::ietf-yang-mill-plugin::0.0.5
 
 package build
 
 import mill._
 import uk.org.wilton.ietf.yang.mill.plugin._
-//import $file.util_ietf._
 
 object `package` extends IETF {
   def draft = Task.Source { "draft-wilton-netconf-yang-push-lite.md" }

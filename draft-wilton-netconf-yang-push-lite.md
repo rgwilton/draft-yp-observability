@@ -73,6 +73,7 @@ informative:
   RFC3411:
   RFC3688:
   RFC4252:
+  RFC5277:
   RFC6020:
   RFC7049:
   RFC7540:
@@ -1713,7 +1714,7 @@ Notes on examples:
 
 - To allow for programmatic validation, most notification examples in this section exclude the mandatory notification envelope and associated metadata defined in {{I-D.netana-netconf-notif-envelope}}.  Only the full notification example in {{FullNotificationExample}} includes the notification header.
 
-- These examples have been given using a JSON encoding of the regular YANG-Push notification format, i.e., encoded using {{!RFC5277}}, but it is anticipated that these notifications could be defined to exclusively use the new format proposed by {{?I-D.netana-netconf-notif-envelope}}.
+- These examples have been given using a JSON encoding of the regular YANG-Push notification format, i.e., encoded using {{RFC5277}}, but it is anticipated that these notifications could be defined to exclusively use the new format proposed by {{?I-D.netana-netconf-notif-envelope}}.
 
 - Some additional meta data fields, e.g., like those defined in {{?I-D.tgraf-netconf-notif-sequencing}} would also likely be included, but have also been excluded to allow for slightly more concise examples.
 
