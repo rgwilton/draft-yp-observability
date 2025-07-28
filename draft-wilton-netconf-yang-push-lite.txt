@@ -5,7 +5,7 @@
 Network Configuration                                     R. Wilton, Ed.
 Internet-Draft                                             Cisco Systems
 Intended status: Standards Track                               H. Keller
-Expires: 4 January 2026                                Deuetsche Telekom
+Expires: 29 January 2026                               Deuetsche Telekom
                                                                B. Claise
                                                                   Huawei
                                                                 E. Aries
@@ -14,7 +14,7 @@ Expires: 4 January 2026                                Deuetsche Telekom
                                                                    Nokia
                                                                  T. Graf
                                                                 Swisscom
-                                                             3 July 2025
+                                                            28 July 2025
 
 
                YANG Datastore Telemetry (YANG Push Lite)
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 January 2026.
+   This Internet-Draft will expire on 29 January 2026.
 
 Copyright Notice
 
@@ -4605,10 +4605,6 @@ Normative References
               DOI 10.17487/RFC2474, December 1998,
               <https://www.rfc-editor.org/rfc/rfc2474>.
 
-   [RFC5277]  Chisholm, S. and H. Trevino, "NETCONF Event
-              Notifications", RFC 5277, DOI 10.17487/RFC5277, July 2008,
-              <https://www.rfc-editor.org/rfc/rfc5277>.
-
    [RFC6241]  Enns, R., Ed., Bjorklund, M., Ed., Schoenwaelder, J., Ed.,
               and A. Bierman, Ed., "Network Configuration Protocol
               (NETCONF)", RFC 6241, DOI 10.17487/RFC6241, June 2011,
@@ -4699,9 +4695,9 @@ Informative References
               Zhou, T., Zheng, G., Voit, E., Graf, T., and P. Francois,
               "Subscription to Notifications in a Distributed
               Architecture", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-distributed-notif-14, 8 June 2025,
+              ietf-netconf-distributed-notif-15, 4 July 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              distributed-notif-14>.
+              distributed-notif-15>.
 
    [I-D.draft-ietf-netconf-https-notif]
               Jethanandani, M. and K. Watsen, "An HTTPS-based Transport
@@ -4738,25 +4734,25 @@ Informative References
               Zhou, T., Zheng, G., Voit, E., Graf, T., and P. Francois,
               "Subscription to Notifications in a Distributed
               Architecture", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-distributed-notif-14, 8 June 2025,
+              ietf-netconf-distributed-notif-15, 4 July 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              distributed-notif-14>.
+              distributed-notif-15>.
 
    [I-D.ietf-nmop-network-anomaly-architecture]
               Graf, T., Du, W., Francois, P., and A. H. Feng, "A
               Framework for a Network Anomaly Detection Architecture",
               Work in Progress, Internet-Draft, draft-ietf-nmop-network-
-              anomaly-architecture-03, 8 May 2025,
+              anomaly-architecture-04, 4 July 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-nmop-
-              network-anomaly-architecture-03>.
+              network-anomaly-architecture-04>.
 
    [I-D.ietf-nmop-yang-message-broker-integration]
               Graf, T. and A. Elhassany, "An Architecture for YANG-Push
               to Message Broker Integration", Work in Progress,
               Internet-Draft, draft-ietf-nmop-yang-message-broker-
-              integration-07, 3 March 2025,
+              integration-08, 7 July 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-nmop-
-              yang-message-broker-integration-07>.
+              yang-message-broker-integration-08>.
 
    [I-D.netana-netconf-notif-envelope]
               Feng, A. H., Francois, P., Graf, T., and B. Claise,
@@ -4797,6 +4793,10 @@ Informative References
    [RFC4252]  Ylonen, T. and C. Lonvick, Ed., "The Secure Shell (SSH)
               Authentication Protocol", RFC 4252, DOI 10.17487/RFC4252,
               January 2006, <https://www.rfc-editor.org/rfc/rfc4252>.
+
+   [RFC5277]  Chisholm, S. and H. Trevino, "NETCONF Event
+              Notifications", RFC 5277, DOI 10.17487/RFC5277, July 2008,
+              <https://www.rfc-editor.org/rfc/rfc5277>.
 
    [RFC6020]  Bjorklund, M., Ed., "YANG - A Data Modeling Language for
               the Network Configuration Protocol (NETCONF)", RFC 6020,
