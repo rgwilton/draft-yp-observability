@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-01T00:20:22.746110+00:00",
+  "timestamp": "2025-09-23T00:18:37.408137+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -79,6 +79,22 @@
       "body": "Couple of high-level questions/comments:\n\n- There is no text on (the lack of) backwards compatibility with existing RFC8639/41 YP implementations. The intro mentions that they can be implemented alongside each other but how does e.g. a client, which implements both, decide which to pick when subscribing to a server. Is this based on the yp-lite-capabilities in section 12.1? Do we need a new NETCONF capability?\n\n- I'm not a fan of the term yp-lite, although I understand why it was chosen. You have removed some functionality from YP, but yp-lite also has extra functionality and looking at the YANG module+tree, it does not seem to be \"lite\". And if someday we'd need another version of YP, would we call it \"yp-liter\" or \"yp-not-as-lite\" :-) Personally I'd go for something as boring as YPv2.\n",
       "createdAt": "2025-03-19T14:37:59Z",
       "updatedAt": "2025-03-19T14:37:59Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 9,
+      "id": "I_kwDOM-PT7s7NFR2H",
+      "title": "Should we move YP configuration model into a draft?  Or alternatively, in it's own section?",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/9",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "There is a suggestion to move YP configuration into a separate draft.\nAn alternative approach could just put it into it's own section of the document.\n\nJames (and I think Ebben) would like this for a few reasons:\n- Implementations might implement YP LIte, but not the IETF configuration/oper YANG model (which are currently getting less traction in the industry)\n\nIt may have some other benefits:\n- It would make the YP LIte document shorter, but it might also make it less readable, or harder to describe.\n\nQuestion (Thomas): Would there be a normative reference to the configuration model?\nQuestion (Rob): What about the notifications/RPCs/types/etc?  Having all of these in one model has some benefits of shorter/simpler paths.  I think that this would force the structure into more modules. (E.g., types, notifications, config/state, rpcs, capabilities).\nQuestion (Rob): What about examples?  Would they be in this document (as informative references), or a separate doc?\n\nNote, the WG was also asked and the current indication was to keep it together in a single doc (but we could still potentially structure it into separate sections).",
+      "createdAt": "2025-09-22T12:22:52Z",
+      "updatedAt": "2025-09-22T12:22:52Z",
       "closedAt": null,
       "comments": []
     }
