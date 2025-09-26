@@ -328,7 +328,8 @@ module ietf-yp-lite {
 
   typedef subscription-name {
     type string {
-      length "1..255";
+      length "1..64";
+      // TODO, is it reasonable to limit this to 64 characters?
     } 
     description
       "A user friendly name for a subscription.";
@@ -924,7 +925,6 @@ module ietf-yp-lite {
          being sent.";
     }
 
-    // Could add observation time here.
     leaf observation-time {
       type yang:date-and-time;
       description
@@ -1163,6 +1163,7 @@ container datastore-telemetry {
         }
 
         leaf encoding {
+          mandatory true;
   /*        when 'not(../transport) or derived-from(../transport,
           "ypl:configurable-encoding")';*/
           type encoding;

@@ -73,7 +73,7 @@ High level points for discussion:
 - Identifying the schema associated with a subscription (complicated by support multiple sensor paths, or a subtree filter).
 
 
-Notes from filtering discussion:
+Notes from filtering discussion:##
      - This path should support at least support exact match and wildcard match of keys (perhaps with some restrictions).
 
      - Regex matching of keys is probably also a good idea (but would this be YANG's Regex or the new IETF draft for a basic regex language).

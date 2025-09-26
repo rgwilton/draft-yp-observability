@@ -1,7 +1,7 @@
-//| mill-version: 1.0.1
+//| mill-version: 1.0.4
 //| mill-jvm-version: temurin:21
 //| mvnDeps:
-//| - uk.org.wilton::ietf-yang-mill-plugin::0.0.5
+//| - uk.org.wilton::ietf-yang-mill-plugin::0.0.6
 
 package build
 
@@ -19,16 +19,16 @@ object `package` extends IETF {
 
   // All drafts that we need to extract YANG from.
   def draftDeps = Seq(
-    "draft-ietf-netmod-rfc6991-bis-17",
+    "draft-ietf-netmod-rfc6991-bis-18",
     "draft-ietf-netconf-https-notif-15",
-    "draft-ietf-netconf-udp-notif-21",
+    "draft-ietf-netconf-udp-notif-22",
     "draft-ietf-netconf-udp-client-server-07",
-    "draft-ietf-netconf-distributed-notif-14",
+    "draft-ietf-netconf-distributed-notif-15",
     "draft-ietf-netconf-http-client-server-28",
-    "draft-ietf-netconf-yang-notifications-versioning-08",
-    "draft-ietf-netconf-yang-library-augmentedby-05",
+    "draft-ietf-netconf-yang-notifications-versioning-09",
+    "draft-ietf-netconf-yang-library-augmentedby-12",
     "draft-ietf-netmod-yang-module-versioning-13",
-    "draft-ietf-netmod-yang-semver-20",
+    "draft-ietf-netmod-yang-semver-23",
     "draft-netana-netconf-yp-transport-capabilities-01",
     "draft-netana-netconf-notif-envelope-02"
   )

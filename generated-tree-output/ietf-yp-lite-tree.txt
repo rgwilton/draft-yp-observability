@@ -48,7 +48,7 @@ module: ietf-yp-lite
      +--rw receivers {configured}?
         +--rw receiver* [name]
            +--rw name                      string
-           +--rw encoding?                 encoding
+           +--rw encoding                  encoding
            +--rw dscp?                     inet:dscp
            +---x reset
            +--rw (notification-message-origin)?
