@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-23T00:18:37.408137+00:00",
+  "timestamp": "2025-09-28T00:20:41.932761+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -94,9 +94,17 @@
       "labels": [],
       "body": "There is a suggestion to move YP configuration into a separate draft.\nAn alternative approach could just put it into it's own section of the document.\n\nJames (and I think Ebben) would like this for a few reasons:\n- Implementations might implement YP LIte, but not the IETF configuration/oper YANG model (which are currently getting less traction in the industry)\n\nIt may have some other benefits:\n- It would make the YP LIte document shorter, but it might also make it less readable, or harder to describe.\n\nQuestion (Thomas): Would there be a normative reference to the configuration model?\nQuestion (Rob): What about the notifications/RPCs/types/etc?  Having all of these in one model has some benefits of shorter/simpler paths.  I think that this would force the structure into more modules. (E.g., types, notifications, config/state, rpcs, capabilities).\nQuestion (Rob): What about examples?  Would they be in this document (as informative references), or a separate doc?\n\nNote, the WG was also asked and the current indication was to keep it together in a single doc (but we could still potentially structure it into separate sections).",
       "createdAt": "2025-09-22T12:22:52Z",
-      "updatedAt": "2025-09-22T12:22:52Z",
+      "updatedAt": "2025-09-26T09:28:07Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "More thoughts:\n\nIf we were to split then I think that this would mean two modules:\n(1) Covering types, notifications (in the base draft), any common groupings, and probably the RPCs for dynamic subscriptions.\n(2)A separate module cover the configuration/oper model.",
+          "createdAt": "2025-09-26T09:28:07Z",
+          "updatedAt": "2025-09-26T09:28:07Z"
+        }
+      ]
     }
   ],
   "pulls": [
