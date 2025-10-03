@@ -1,75 +1,13 @@
 module: ietf-yp-lite
-  +--rw datastore-telemetry!
-     +--rw filters
-     |  +--rw filter* [name]
-     |     +--rw name             string
-     |     +--rw (filter-spec)?
-     |        +--:(path)
-     |        |  +--rw path?      ypath
-     |        +--:(subtree)
-     |        |  +--rw subtree?   <anydata> {ypl:subtree}?
-     |        +--:(xpath)
-     |           +--rw xpath?     yang:xpath1.0 {ypl:xpath}?
-     +--rw subscriptions
-     |  +--rw subscription* [name]
-     |     +--rw name              subscription-name
-     |     +--rw purpose?          string
-     |     +--rw target
-     |     |  +--rw datastore?             identityref
-     |     |  +--rw (filter)?
-     |     |     +--:(by-reference)
-     |     |     |  +--rw filter-ref       filter-ref
-     |     |     +--:(within-subscription)
-     |     |        +--rw (filter-spec)?
-     |     |           +--:(path)
-     |     |           |  +--rw path?      ypath
-     |     |           +--:(subtree)
-     |     |           |  +--rw subtree?   <anydata> {ypl:subtree}?
-     |     |           +--:(xpath)
-     |     |              +--rw xpath?     yang:xpath1.0 {ypl:xpath}?
-     |     +--rw update-trigger
-     |     |  +--rw periodic!
-     |     |  |  +--rw period         centiseconds
-     |     |  |  +--rw anchor-time?   yang:date-and-time
-     |     |  +--rw on-change! {on-change}?
-     |     |     +--rw sync-on-start?   boolean
-     |     +--rw receivers* [name]
-     |     |  +--rw name
-     |     |  |       -> /datastore-telemetry/receivers/receiver/name
-     |     |  +--ro status?   enumeration
-     |     +--ro id                subscription-id
-     |     +--ro status?           subscription-status
-     |     +--ro statistics
-     |     |  +--ro update-record-count?
-     |     |  |       yang:zero-based-counter64
-     |     |  +--ro excluded-event-records?
-     |     |          yang:zero-based-counter64
-     |     +---x reset {configured}?
-     +--rw receivers {configured}?
-        +--rw receiver* [name]
-           +--rw name                      string
-           +--rw encoding                  encoding
-           +--rw dscp?                     inet:dscp
-           +---x reset
-           +--rw (notification-message-origin)?
-           |  +--:(interface-originated)
-           |  |  +--rw source-interface?   if:interface-ref
-           |  |          {interface-designation}?
-           |  +--:(address-originated)
-           |     +--rw source-vrf?         leafref {supports-vrf}?
-           |     +--rw source-address?     inet:ip-address-no-zone
-           +--rw (transport-type)
 
   rpcs:
     +---x establish-subscription {dynamic}?
     |  +---w input
     |  |  +---w name              subscription-name
-    |  |  +---w purpose?          string
+    |  |  +---w description?      string
     |  |  +---w target
     |  |  |  +---w datastore?             identityref
     |  |  |  +---w (filter)?
-    |  |  |     +--:(by-reference)
-    |  |  |     |  +---w filter-ref       filter-ref
     |  |  |     +--:(within-subscription)
     |  |  |        +---w (filter-spec)?
     |  |  |           +--:(path)
@@ -103,12 +41,10 @@ module: ietf-yp-lite
     +---n subscription-started
     |  +--ro id                subscription-id
     |  +--ro name              subscription-name
-    |  +--ro purpose?          string
+    |  +--ro description?      string
     |  +--ro target
     |  |  +--ro datastore?             identityref
     |  |  +--ro (filter)?
-    |  |     +--:(by-reference)
-    |  |     |  +--ro filter-ref       filter-ref
     |  |     +--:(within-subscription)
     |  |        +--ro (filter-spec)?
     |  |           +--:(path)
@@ -136,3 +72,4 @@ module: ietf-yp-lite
        |  +--ro target-path    string
        |  +--ro data?          <anydata>
        +--ro incomplete?         empty
+       +--ro update-complete?    empty

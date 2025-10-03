@@ -1,0 +1,66 @@
+module: ietf-yp-lite-config
+  +--rw datastore-telemetry!
+     +--rw filters
+     |  +--rw filter* [name]
+     |     +--rw name             string
+     |     +--rw (filter-spec)?
+     |        +--:(path)
+     |        |  +--rw path?      ypath
+     |        +--:(subtree)
+     |        |  +--rw subtree?   <anydata> {ypl:subtree}?
+     |        +--:(xpath)
+     |           +--rw xpath?     yang:xpath1.0 {ypl:xpath}?
+     +--rw subscriptions
+     |  +--rw subscription* [name]
+     |     +--rw name              subscription-name
+     |     +--rw description?      string
+     |     +--rw target
+     |     |  +--rw datastore?             identityref
+     |     |  +--rw (filter)?
+     |     |     +--:(within-subscription)
+     |     |     |  +--rw (filter-spec)?
+     |     |     |     +--:(path)
+     |     |     |     |  +--rw path?      ypath
+     |     |     |     +--:(subtree)
+     |     |     |     |  +--rw subtree?   <anydata> {ypl:subtree}?
+     |     |     |     +--:(xpath)
+     |     |     |        +--rw xpath?     yang:xpath1.0 {ypl:xpath}?
+     |     |     +--:(by-reference)
+     |     |        +--rw filter-ref       filter-ref
+     |     +--rw update-trigger
+     |     |  +--rw periodic!
+     |     |  |  +--rw period         centiseconds
+     |     |  |  +--rw anchor-time?   yang:date-and-time
+     |     |  +--rw on-change! {on-change}?
+     |     |     +--rw sync-on-start?   boolean
+     |     +--rw receivers* [name]
+     |     |  +--rw name
+     |     |  |       -> /datastore-telemetry/receivers/receiver/name
+     |     |  +--ro status?   enumeration
+     |     +--ro id                ypl:subscription-id
+     |     +--ro status?           ypl:subscription-status
+     |     +--ro statistics
+     |     |  +--ro update-record-count?
+     |     |  |       yang:zero-based-counter64
+     |     |  +--ro excluded-event-records?
+     |     |          yang:zero-based-counter64
+     |     +---x reset
+     +--rw receivers
+        +--rw receiver* [name]
+           +--rw name                      string
+           +--rw encoding                  ypl:encoding
+           +--rw dscp?                     inet:dscp
+           +---x reset
+           +--rw (notification-message-origin)?
+           |  +--:(interface-originated)
+           |  |  +--rw source-interface?   if:interface-ref
+           |  |          {interface-designation}?
+           |  +--:(address-originated)
+           |     +--rw source-vrf?         leafref {supports-vrf}?
+           |     +--rw source-address?     inet:ip-address-no-zone
+           +--rw (transport-type)
+
+  augment /ypl:establish-subscription/ypl:input/ypl:target
+            /ypl:filter:
+    +--:(by-reference)
+       +-- filter-ref    filter-ref

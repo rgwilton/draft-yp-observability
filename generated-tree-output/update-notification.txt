@@ -7,3 +7,4 @@
        |  +--ro target-path    string
        |  +--ro data?          <anydata>
        +--ro incomplete?         empty
+       +--ro update-complete?    empty
