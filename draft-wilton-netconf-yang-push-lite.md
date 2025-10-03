@@ -1454,7 +1454,7 @@ Note, this output does not include support for any transport configuration, and 
 
 This module imports typedefs from {{RFC6991}}, {{RFC8343}}, {{RFC8341}}, {{RFC8529}}, and {{RFC8342}}.  It references {{RFC6241}}, {{XPATH}} ("XML Path Language (XPath) Version 1.0"), {{RFC7049}}, {{RFC8259}}, {{RFC7950}}, {{RFC7951}}, and {{RFC7540}}.
 
-**TODO, update this list since some will have moved due to the config being split out.**
+**TODO, update this list since some will have moved due to the config being split out. **
 
 This YANG module imports typedefs from {{RFC6991}}, identities from
 [RFC8342], and the "sx:structure" extension from {{RFC8791}}. It also references {{RFC6241}}, {{XPATH}}, and {{RFC7950}}.
