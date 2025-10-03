@@ -886,7 +886,7 @@ With active configured subscriptions, it is allowable to buffer event records ev
 
 Subscriptions MAY be modified in various ways:
 
-1. the subscription *filter* (inline, referring to a different named filter, or changing the referenced filter), *update-triggers*, or *purpose* may be changed.
+1. the subscription *filter* (inline, referring to a different named filter, or changing the referenced filter), *update-triggers*, or *description* may be changed.
 1. *receivers* may be added or removed.
 1. parameter associated with a receiver may be changed.
 
@@ -900,7 +900,7 @@ If any of the following properties associated with a subscription are changed:
 - the name, or content, of a referenced filter,
 - the *encoding*,
 - the *update-triggers*,
-- the *purpose* field,
+- the *description* field,
 - the YANG schema used by subscription,
 - any other fields that are included in a *subscription-started* notification message
 
@@ -1454,6 +1454,8 @@ Note, this output does not include support for any transport configuration, and 
 
 This module imports typedefs from {{RFC6991}}, {{RFC8343}}, {{RFC8341}}, {{RFC8529}}, and {{RFC8342}}.  It references {{RFC6241}}, {{XPATH}} ("XML Path Language (XPath) Version 1.0"), {{RFC7049}}, {{RFC8259}}, {{RFC7950}}, {{RFC7951}}, and {{RFC7540}}.
 
+**TODO, update this list since some will have moved due to the config being split out.**
+
 This YANG module imports typedefs from {{RFC6991}}, identities from
 [RFC8342], and the "sx:structure" extension from {{RFC8791}}. It also references {{RFC6241}}, {{XPATH}}, and {{RFC7950}}.
 
@@ -1462,6 +1464,30 @@ This YANG module imports typedefs from {{RFC6991}}, identities from
 ~~~~
 {: align="left" sourcecode-markers="true"
 sourcecode-name="ietf-yp-lite.yang#0.1.0" title="YANG module ietf-yp-lite"}
+
+
+## ietf-yp-lite-config YANG tree {#yp-lite-config-tree}
+
+This section shows the full tree output for ietf-yp-lite-config YANG module.
+
+Note, this output does not include support for any transport configuration, and for any implementation that supports configured subscriptions using this YANG module then at least one transport would expect to be configurable.
+
+~~~~ yangtree
+{::include generated-tree-output/ietf-yp-lite-config-tree.txt}
+~~~~
+{: align="left" title="YANG tree for YANG Push Lite Config Module Tree Output "}
+
+## ietf-yp-lite-config YANG Model {#yp-lite-config-yang-module}
+
+This module has import dependencies on {{RFC6991}}, {{RFC8343}}, and {{RFC8529}}, and ietf-yang-push-lite.yang (this RFC).  In addition, this YANG module references
+BCP 14 **TODO, fix to proper reference**, and {{RFC8529}}.
+
+~~~~ yang
+{::include yang/ietf-yp-lite-config.yang}
+~~~~
+{: align="left" sourcecode-markers="true"
+sourcecode-name="ietf-yp-lite-config.yang#0.1.0" title="YANG module ietf-yp-lite-config"}
+
 
 ## ietf-yp-lite-capabilities YANG tree {#yp-lite-capabilties-tree}
 
@@ -2368,4 +2394,4 @@ This appendix is only intended while the authors/WG are working on the document,
 
 1. Aligned configured and dynamic subscription data models:
  - Both are configured by name.
- - Made "purpose" field common (limited to 1k max characters, previously unrestricted), i.e., now available for dynamic subscriptions.
+ - Made "purpose" field common and renamed to "description" (limited to 1k max characters, previously unrestricted), i.e., now available for dynamic subscriptions.

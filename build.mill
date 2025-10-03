@@ -50,7 +50,7 @@ object `package` extends IETF {
   )
 
   def yangCompiles = Seq(
-    Seq("ietf-yp-lite.yang"),
+    Seq("ietf-yp-lite.yang", "ietf-yp-lite-config.yang"),
     Seq("ietf-yp-lite-capabilities.yang", "ietf-yp-lite.yang")
   )
 
@@ -60,6 +60,7 @@ object `package` extends IETF {
     (Seq("ietf-yp-lite.yang"), "subscriptions.txt", Some("datastore-telemetry/subscriptions")),
     (Seq("ietf-yp-lite.yang"), "update-trigger.txt", Some("datastore-telemetry/subscriptions/subscription/update-trigger")),
     (Seq("ietf-yp-lite.yang"), "receivers.txt", Some("datastore-telemetry/receivers")),
+    (Seq("ietf-yp-lite-config.yang"), "ietf-yp-lite-config-tree.txt", None),
     (Seq("ietf-yp-lite-capabilities.yang"), "ietf-yp-lite-capabilities-tree.txt", None),
     (Seq("ietf-yp-lite-capabilities.yang", "ietf-system-capabilities@2022-02-17.yang"), "ietf-system-capabilities-tree.txt", None)
   )

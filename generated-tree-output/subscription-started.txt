@@ -1,12 +1,10 @@
     +---n subscription-started
     |  +--ro id                subscription-id
     |  +--ro name              subscription-name
-    |  +--ro purpose?          string
+    |  +--ro description?      string
     |  +--ro target
     |  |  +--ro datastore?             identityref
     |  |  +--ro (filter)?
-    |  |     +--:(by-reference)
-    |  |     |  +--ro filter-ref       filter-ref
     |  |     +--:(within-subscription)
     |  |        +--ro (filter-spec)?
     |  |           +--:(path)
