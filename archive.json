@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-28T00:20:41.932761+00:00",
+  "timestamp": "2025-10-05T00:20:30.034378+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -78,9 +78,17 @@
       "labels": [],
       "body": "Couple of high-level questions/comments:\n\n- There is no text on (the lack of) backwards compatibility with existing RFC8639/41 YP implementations. The intro mentions that they can be implemented alongside each other but how does e.g. a client, which implements both, decide which to pick when subscribing to a server. Is this based on the yp-lite-capabilities in section 12.1? Do we need a new NETCONF capability?\n\n- I'm not a fan of the term yp-lite, although I understand why it was chosen. You have removed some functionality from YP, but yp-lite also has extra functionality and looking at the YANG module+tree, it does not seem to be \"lite\". And if someday we'd need another version of YP, would we call it \"yp-liter\" or \"yp-not-as-lite\" :-) Personally I'd go for something as boring as YPv2.\n",
       "createdAt": "2025-03-19T14:37:59Z",
-      "updatedAt": "2025-03-19T14:37:59Z",
+      "updatedAt": "2025-10-03T16:09:00Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "To answer the first question:\nYP Lite will be a separate config tree and use separate RPCs, with separate capabilities.  I.e., it is in essence a separate protocol.\n\nI don't think that we should add a NETCONF capability for this since this feature is really orthogonal to the NETCONF protocol.",
+          "createdAt": "2025-10-03T16:09:00Z",
+          "updatedAt": "2025-10-03T16:09:00Z"
+        }
+      ]
     },
     {
       "number": 9,
@@ -94,7 +102,7 @@
       "labels": [],
       "body": "There is a suggestion to move YP configuration into a separate draft.\nAn alternative approach could just put it into it's own section of the document.\n\nJames (and I think Ebben) would like this for a few reasons:\n- Implementations might implement YP LIte, but not the IETF configuration/oper YANG model (which are currently getting less traction in the industry)\n\nIt may have some other benefits:\n- It would make the YP LIte document shorter, but it might also make it less readable, or harder to describe.\n\nQuestion (Thomas): Would there be a normative reference to the configuration model?\nQuestion (Rob): What about the notifications/RPCs/types/etc?  Having all of these in one model has some benefits of shorter/simpler paths.  I think that this would force the structure into more modules. (E.g., types, notifications, config/state, rpcs, capabilities).\nQuestion (Rob): What about examples?  Would they be in this document (as informative references), or a separate doc?\n\nNote, the WG was also asked and the current indication was to keep it together in a single doc (but we could still potentially structure it into separate sections).",
       "createdAt": "2025-09-22T12:22:52Z",
-      "updatedAt": "2025-09-26T09:28:07Z",
+      "updatedAt": "2025-10-03T14:25:52Z",
       "closedAt": null,
       "comments": [
         {
@@ -103,8 +111,38 @@
           "body": "More thoughts:\n\nIf we were to split then I think that this would mean two modules:\n(1) Covering types, notifications (in the base draft), any common groupings, and probably the RPCs for dynamic subscriptions.\n(2)A separate module cover the configuration/oper model.",
           "createdAt": "2025-09-26T09:28:07Z",
           "updatedAt": "2025-09-26T09:28:07Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Discussion on 26th Sept:\n- RPCs, Notifications, types stay in the core draft.\n- Configuration (and hence operational tree as well, since they are co-located) move to a separate yang-push-lite-config.yang module.\n\nIf we pull out the configuration tree then this has an impact on whether/how dynamic subscriptions may reference a configured subscription (but could just move to an augment of the configuration model).",
+          "createdAt": "2025-10-03T12:58:40Z",
+          "updatedAt": "2025-10-03T12:58:40Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "James is questioning whether a dynamic subscription needs to be able to reference a configured filter?  Also raises the issue of what happens to the dynamic subscription if the referenced configured filter changes ... perhaps better to just remove this capability to keep YANG Push Lite.",
+          "createdAt": "2025-10-03T14:25:52Z",
+          "updatedAt": "2025-10-03T14:25:52Z"
         }
       ]
+    },
+    {
+      "number": 10,
+      "id": "I_kwDOM-PT7s7PiBFw",
+      "title": "update-complete notification",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/10",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The latest draft has an update-complete notification (although possibly should be renamed as end-of-update, both as a flag to the update notification and as an independent update-complete notification.\n\nThe expectation is that all notifications for a given periodic collection or on-change event (create/update or delete) MUST use the same event-time in the notification envelope:\n - we are also considering whether to also include, or use a numeric collection-id to correlate, but that would mean sending an extra field in every message.  I don't think that we need two field to correlate on.\n\nExisting yang-push defined an \"incomplete\" flag on a notification, but there are questions about whether this is really useful/required.  Questions/comments raised in discussion were:\n- can/will servers be able to set this field?\n- what would clients do if they received this field?  E.g., don't delete data items that you haven't heard about.\n- would it be better if the flag just indicated the end of a collection period with less emphasis on whether it was complete or not? E.g., \"update-end\" rather than \"update-complete\"\n- is a server allowed to just not include some data (rather than delay sending it) in a periodic update?\n- if we do have separate incomplete/complete flags then definitely need to rename, could use an enum (with a default to avoid encoding in the normal case), definitely need to define clearly what such flags mean (or which conditions they may be used).\n- we should try and keep this as simple as possible (i.e., take it out if it isn't needed).  But we want a solution that is complete.\n- also look at what gNMI does - although that isn't really a great/complete specification in this area.\n\nOther questions that came up in internal discussions are:\n - Is a server just allowed to delay sending updates until it is able to, and then eventually sends an update-complete?\n - If you can't queue the traffic then just tear down the connection - I think that this has been previously suggested/agreed.\n - If you get stuck waiting, i.e., don't time out, then we would just delay sending the update-complete notification.",
+      "createdAt": "2025-10-03T16:56:49Z",
+      "updatedAt": "2025-10-03T16:56:49Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
