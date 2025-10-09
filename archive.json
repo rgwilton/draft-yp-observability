@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-05T00:20:30.034378+00:00",
+  "timestamp": "2025-10-09T00:18:21.931217+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -131,7 +131,7 @@
     {
       "number": 10,
       "id": "I_kwDOM-PT7s7PiBFw",
-      "title": "update-complete notification",
+      "title": "update-complete notification (and incomplete flag)",
       "url": "https://github.com/rgwilton/draft-yp-observability/issues/10",
       "state": "OPEN",
       "author": "rgwilton",
@@ -140,9 +140,17 @@
       "labels": [],
       "body": "The latest draft has an update-complete notification (although possibly should be renamed as end-of-update, both as a flag to the update notification and as an independent update-complete notification.\n\nThe expectation is that all notifications for a given periodic collection or on-change event (create/update or delete) MUST use the same event-time in the notification envelope:\n - we are also considering whether to also include, or use a numeric collection-id to correlate, but that would mean sending an extra field in every message.  I don't think that we need two field to correlate on.\n\nExisting yang-push defined an \"incomplete\" flag on a notification, but there are questions about whether this is really useful/required.  Questions/comments raised in discussion were:\n- can/will servers be able to set this field?\n- what would clients do if they received this field?  E.g., don't delete data items that you haven't heard about.\n- would it be better if the flag just indicated the end of a collection period with less emphasis on whether it was complete or not? E.g., \"update-end\" rather than \"update-complete\"\n- is a server allowed to just not include some data (rather than delay sending it) in a periodic update?\n- if we do have separate incomplete/complete flags then definitely need to rename, could use an enum (with a default to avoid encoding in the normal case), definitely need to define clearly what such flags mean (or which conditions they may be used).\n- we should try and keep this as simple as possible (i.e., take it out if it isn't needed).  But we want a solution that is complete.\n- also look at what gNMI does - although that isn't really a great/complete specification in this area.\n\nOther questions that came up in internal discussions are:\n - Is a server just allowed to delay sending updates until it is able to, and then eventually sends an update-complete?\n - If you can't queue the traffic then just tear down the connection - I think that this has been previously suggested/agreed.\n - If you get stuck waiting, i.e., don't time out, then we would just delay sending the update-complete notification.",
       "createdAt": "2025-10-03T16:56:49Z",
-      "updatedAt": "2025-10-03T16:56:49Z",
+      "updatedAt": "2025-10-07T14:26:39Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "My current thinking is that we should remove the incomplete flag, but perhaps put a tighter constraint on sending an update-complete notification (or setting the \"complete\" flag - renamed from \"update-complete\") in an update notification.\n\nI.e., when a client processes this notification is should be able to infer that if is hasn't received some of the data for a periodic subscription event, and there are no gaps in the sequence-number, then that data no longer exists on the system and can be removed by the client.",
+          "createdAt": "2025-10-07T14:26:39Z",
+          "updatedAt": "2025-10-07T14:26:39Z"
+        }
+      ]
     }
   ],
   "pulls": [
