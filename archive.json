@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-09T00:18:21.931217+00:00",
+  "timestamp": "2025-10-12T00:19:26.984783+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -151,6 +151,78 @@
           "updatedAt": "2025-10-07T14:26:39Z"
         }
       ]
+    },
+    {
+      "number": 11,
+      "id": "I_kwDOM-PT7s7Qi9jA",
+      "title": "Advertising subscription schema",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/11",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The existing YP extensions allow a device to advertise the YANG module at the top of an XPath subscription.  The augmented-by allows a client, using YANG library to retrieve the descendant modules below the subscription point.  Collectively, these can be used to construct a partial YANG schema that covers the subscription nodes.  Note, in the case of OC YANG modules, that make heavy use of groupings, it is possible that some subscriptions may pull in large amounts of YANG schema nodes.\n\nAlternatively, if the clients has access to the full device schema (e.g., through YANG library, or offline YANG packages) then the subscription path could be used to construct a minimal schema that is covered by the subscription (or perhaps the minimum set of modules required to cover the particular schema).\n\nThe solution also needs a way to identify if the subscription has changed so that the schema can be reconstructed.\n\nProposal:\n- Subscription started message always includes the actual filter(s) being used (even if a configured subscription references a filter).\n- Configured subscription also include the referenced filter name, if a referenced (as opposed to inline) filter has been used.\n- We include a string field [max 128 chars] for the publisher to identify the version of the schema under the subscription.  This string field MUST change if any modules under the subscription path have changed.  This field MAY change if modules outside the subscription have changed:\n  - E.g., an accurate way (to minimise churn) would be generate an hash of the compiled schema tree at the point of the subscription (e.g., for a simple YPath subscription).  Done carefully, this should also mean that different devices by the same vendor would have the same schema.\n  - A much simpler alternative would be to include the YANG library checksum, although that is more likely to generate false-positive changes (e.g., when patches of bugfixes are generated), i.e., where the subscription schema has been reported as changed, but there are no actual changes to that part of the schema\n\nAlso consider:\n- In the case of an XPath or YPath subscription, do we also include the modules at the path of the subscription?  Ideally, I would like to find a different, more robust and complete, solution (since this would not identify if any child nodes have changed).\n- If we do move away from listing the modules then we may want a migration path.\n- Is the schema affected at all due to access-control policies (i.e., if the receiver is going to stop receiving some information).  I don't think that it should, it is arguably simpler to be tied solely to the schema.\n",
+      "createdAt": "2025-10-09T11:47:51Z",
+      "updatedAt": "2025-10-09T14:32:15Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Some comments from when this was discussed prior to IETF 122:\n   - Rob: I think that we should do this (i.e., as optimized version of content-id)\n   - Would this also be impacted by a change to access control? (Rob: Probably not)\n   - Thomas would like to align to the same mechanism in YANG Push, i.e., in the existing drafts, and we should use the same mechanism\n   - Rob: I would like to understand what the long term complete solution is here.\n   - Benoit: Also related to the data manifest draft (in WGLC in OPSWG.)\n     - Should discuss all of this together.  IETF 122 discussion.\n",
+          "createdAt": "2025-10-09T14:29:22Z",
+          "updatedAt": "2025-10-09T14:29:42Z"
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "id": "I_kwDOM-PT7s7QlLy9",
+      "title": "update-complete notification",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/12",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "This replaces the replay-complete notification and may be used on any notification:\n\n- Does this need a flag to indicate that the update-complete notification is due to an initial-sync?  I'm not convinced, but we could potentially just include the *snapshot-type* from the notification message.\n- Check that there is agreement that a single notification is better than too separate notifications (less code paths).\n\n- Should clients have to configure on each subscription that they want to receive update-complete notifications on each subscription (we could also implement a hierarchical default)?  Or is this just default behaviour and these notifications should always be generated?\n\n- Note, that I also have a working assumption that even if a subscription is effectively decomposed internally (e.g., perhaps due to multiple subscription paths) then we would only have a single update-complete notification when all internal subscriptions have completed.",
+      "createdAt": "2025-10-09T14:23:12Z",
+      "updatedAt": "2025-10-09T14:26:50Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 13,
+      "id": "I_kwDOM-PT7s7Qlbbu",
+      "title": "When a subscription is terminated, should it be MUST NOT send any more notifications after the terminated message, or SHOULD NOT?",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/13",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "      - Holger, Thomas, Benoit: MUST NOT\n      - James: SHOULD NOT\n      - MUST NOT is clearer from an implementation POV, but probably doesn't really matter.\n      - What does the receiver do when it gets this message anyway?  I.e., does a receiver check/know to ignore messages received after a subscription-terminated, or before a subscription-started?\n\nProposal: Change the draft to \"MUST NOT\" for now.\n\nRelated question on dynamic-subscriptions:\n- is a terminate-subscription RPC allowed to be asynchronous with respect to the caller.  I.e., is it allowed to return before the subscription has actually stopped?\n- is a kill-subscription RPC allowed to be asynchronous with respect to the caller.  I.e., is it allowed to return before the subscription has actually stopped?  For kill-subscription I think that it should be asynchronous - I think that makes more sense given that it generally expected to be a third party and not actively consuming the subscription.",
+      "createdAt": "2025-10-09T14:38:14Z",
+      "updatedAt": "2025-10-09T14:38:14Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 14,
+      "id": "I_kwDOM-PT7s7QwH42",
+      "title": "On-change events",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/14",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "1. Should we allow on-change events to be published above the subscription path?\n   -  Rob: I think that the answer should be no.\n1. Should we allow on-change events to be generated even if the value may not have changed?\n   - Rob: I think that this needs to be yes, since many systems may track whether something has changed at a higher level in the data tree.  E.g., rather than tracking whether the interface MTU has changed, track whether any of a set of interface properties has changed.\n   - Ebben: How loose or tight should the specification bit.\n   - Holger: This should be okay, and this happens today.\n   - Rob: Should add comment that this shouldn't generate excessive spurious notifications. \n\n1. When subscribed to a leaf under and interface, and the interface is deleted, then what do you generate the delete notification for?\n   - Do you generate the delete for the object being subscribed to?\n   - Or do you send the delete higher up the path, at point that the object has been removed?\n   - If the messages are lifted up to object level then need to consider happen's before relationship (if this is an issue).\n   - Better soln may be to subscribe higher up to the object with a filter applied to select the fields of interface within the object.",
+      "createdAt": "2025-10-10T10:27:46Z",
+      "updatedAt": "2025-10-10T14:43:14Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
