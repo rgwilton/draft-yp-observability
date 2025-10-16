@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-12T00:19:26.984783+00:00",
+  "timestamp": "2025-10-16T00:19:27.476908+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -93,7 +93,7 @@
     {
       "number": 9,
       "id": "I_kwDOM-PT7s7NFR2H",
-      "title": "Should we move YP configuration model into a draft?  Or alternatively, in it's own section?",
+      "title": "Should we move YP configuration model into a separate draft?  Or alternatively, in it's own section?",
       "url": "https://github.com/rgwilton/draft-yp-observability/issues/9",
       "state": "OPEN",
       "author": "rgwilton",
@@ -102,7 +102,7 @@
       "labels": [],
       "body": "There is a suggestion to move YP configuration into a separate draft.\nAn alternative approach could just put it into it's own section of the document.\n\nJames (and I think Ebben) would like this for a few reasons:\n- Implementations might implement YP LIte, but not the IETF configuration/oper YANG model (which are currently getting less traction in the industry)\n\nIt may have some other benefits:\n- It would make the YP LIte document shorter, but it might also make it less readable, or harder to describe.\n\nQuestion (Thomas): Would there be a normative reference to the configuration model?\nQuestion (Rob): What about the notifications/RPCs/types/etc?  Having all of these in one model has some benefits of shorter/simpler paths.  I think that this would force the structure into more modules. (E.g., types, notifications, config/state, rpcs, capabilities).\nQuestion (Rob): What about examples?  Would they be in this document (as informative references), or a separate doc?\n\nNote, the WG was also asked and the current indication was to keep it together in a single doc (but we could still potentially structure it into separate sections).",
       "createdAt": "2025-09-22T12:22:52Z",
-      "updatedAt": "2025-10-03T14:25:52Z",
+      "updatedAt": "2025-10-15T09:33:39Z",
       "closedAt": null,
       "comments": [
         {
@@ -218,9 +218,41 @@
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
-      "body": "1. Should we allow on-change events to be published above the subscription path?\n   -  Rob: I think that the answer should be no.\n1. Should we allow on-change events to be generated even if the value may not have changed?\n   - Rob: I think that this needs to be yes, since many systems may track whether something has changed at a higher level in the data tree.  E.g., rather than tracking whether the interface MTU has changed, track whether any of a set of interface properties has changed.\n   - Ebben: How loose or tight should the specification bit.\n   - Holger: This should be okay, and this happens today.\n   - Rob: Should add comment that this shouldn't generate excessive spurious notifications. \n\n1. When subscribed to a leaf under and interface, and the interface is deleted, then what do you generate the delete notification for?\n   - Do you generate the delete for the object being subscribed to?\n   - Or do you send the delete higher up the path, at point that the object has been removed?\n   - If the messages are lifted up to object level then need to consider happen's before relationship (if this is an issue).\n   - Better soln may be to subscribe higher up to the object with a filter applied to select the fields of interface within the object.",
+      "body": "1. Should we allow on-change events to be published above the subscription path?\n   -  Rob: I think that the answer should be no.\n1. Should we allow on-change events to be generated even if the value may not have changed?\n   - Rob: I think that this needs to be yes, since many systems may track whether something has changed at a higher level in the data tree.  E.g., rather than tracking whether the interface MTU has changed, track whether any of a set of interface properties has changed.\n   - Ebben: How loose or tight should the specification bit.\n   - Holger: This should be okay, and this happens today.\n   - Rob: Should add comment that this shouldn't generate excessive spurious notifications. \n\n1. When subscribed to a leaf under and interface, and the interface is deleted, then what do you generate the delete notification for?\n   - Do you generate the delete for the object being subscribed to?\n   - Or do you send the delete higher up the path, at point that the object has been removed?\n   - If the messages are lifted up to object level then need to consider happen's before relationship (if this is an issue).\n   - Better soln may be to subscribe higher up to the object with a filter applied to select the fields of interface within the object.\n\n1. Should we support configurable subscription-level keepalives?\n   - This would probably entail periodically sending a small message on on-change subscriptions so that the receiver (message broker) knows that the collection is still alive and active.\n   - The presumption is that would be configurable option on an on-change subscription (configured or dynamic)\n   - Note, some transport sessions may already support keepalives, which is a separate, transport specific consideration.\n   - An alternative would be to configure a joint periodic and on-change subscription, but depending on the keepalive interval this would likely involve sending more data on a periodic basis.\n   - Another alternative is to monitor the operational state of the subscription to keep that all the expected subscriptions are active.",
       "createdAt": "2025-10-10T10:27:46Z",
-      "updatedAt": "2025-10-10T14:43:14Z",
+      "updatedAt": "2025-10-15T09:31:25Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 15,
+      "id": "I_kwDOM-PT7s7RaC0B",
+      "title": "Document check/cleanup tasks",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/15",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Document check/cleanup (mostly editorial) tasks:\n\n- [ ] Check/prune terminology, any extra, missing, consistency.\n- [ ] Remove dead/commented text in the draft.\n- [ ] Remove dead/commented code from YANG modules.\n- [ ] Check everyone has been acknowledged.\n- [ ] Check that the change list for add/update messages.\n- [ ] Add and validate examples.\n",
+      "createdAt": "2025-10-14T10:14:11Z",
+      "updatedAt": "2025-10-14T10:14:53Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 16,
+      "id": "I_kwDOM-PT7s7Rq2TD",
+      "title": "Advertising support for the subscription config data model",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/16",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Should this just use the standard mechanisms, i.e., whether the module is included in YANG library (RFC 8525), or should this also be listed in the Yang Push Capabilities Data Model?",
+      "createdAt": "2025-10-15T11:51:56Z",
+      "updatedAt": "2025-10-15T11:51:56Z",
       "closedAt": null,
       "comments": []
     }
