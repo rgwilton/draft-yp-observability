@@ -5,7 +5,7 @@
 Network Configuration                                     R. Wilton, Ed.
 Internet-Draft                                             Cisco Systems
 Intended status: Standards Track                               H. Keller
-Expires: 6 April 2026                                  Deuetsche Telekom
+Expires: 20 April 2026                                 Deuetsche Telekom
                                                                B. Claise
                                                                   Huawei
                                                                 E. Aries
@@ -14,7 +14,7 @@ Expires: 6 April 2026                                  Deuetsche Telekom
                                                                    Nokia
                                                                  T. Graf
                                                                 Swisscom
-                                                          3 October 2025
+                                                         17 October 2025
 
 
                YANG Datastore Telemetry (YANG Push Lite)
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 6 April 2026.
+   This Internet-Draft will expire on 20 April 2026.
 
 Copyright Notice
 
@@ -117,7 +117,6 @@ Table of Contents
      8.2.  Transports
        8.2.1.  Requirements for Yang Push Lite Transport
                Specifications
-       8.2.2.  DSCP Marking
      8.3.  Encodings
    9.  Setting up and Managing Subscriptions
      9.1.  Common Subscription Parameters
@@ -129,7 +128,7 @@ Table of Contents
        9.2.1.  "subscription-started"
        9.2.2.  "subscription-terminated"
        9.2.3.  "receiver-disconnected"
-       9.2.4.  "replay-completed"
+       9.2.4.  "update-completed"
      9.3.  Configured Subscriptions
        9.3.1.  Creating a Configured Subscription
        9.3.2.  Modifying a Configured Subscription
@@ -140,25 +139,29 @@ Table of Contents
        9.4.2.  Deleting a Dynamic Subscription
        9.4.3.  Killing a Dynamic Subscription
        9.4.4.  RPC Failures
-   10. Performance, Reliability, and Subscription Monitoring
-     10.1.  Subscription Monitoring
-     10.2.  Robustness and Reliability
+   10. Robustness, Reliability, and Subscription Monitoring
+     10.1.  Robustness and Reliability
+     10.2.  Subscription Monitoring
      10.3.  Publisher Capacity
    11. Conformance and Capabilities
      11.1.  Capabilities
      11.2.  Subscription Content Schema Identification
-   12. YANG
+   12. Core YANG Push Lite YANG Data Model
      12.1.  ietf-yp-lite YANG tree
      12.2.  ietf-yp-lite YANG Model
-     12.3.  ietf-yp-lite-config YANG tree
-     12.4.  ietf-yp-lite-config YANG Model
-     12.5.  ietf-yp-lite-capabilities YANG tree
-     12.6.  ietf-yp-lite-capabiltiies YANG Model
-   13. Security Considerations
-     13.1.  Use of YANG Push Lite with NACM
-     13.2.  Receiver Authorization
-     13.3.  YANG Module Security Considerations
-   14. IANA Considerations
+   13. Configured Subscription YANG Data Model
+     13.1.  ietf-yp-lite-config YANG tree
+     13.2.  ietf-yp-lite-config YANG Model
+   14. Capabilities YANG Data Model
+     14.1.  ietf-yp-lite-capabilities YANG tree
+     14.2.  ietf-yp-lite-capabiltiies YANG Model
+   15. Security Considerations
+     15.1.  Use of YANG Push Lite with NACM
+     15.2.  Receiver Authorization
+     15.3.  YANG Module Security Considerations
+   16. IANA Considerations
+     16.1.  Namespace URI registrations
+   17. YANG Module Name registrations
    Acknowledgments
    Contributors
    References
@@ -217,7 +220,8 @@ Table of Contents
 1.  Document Status
 
    _RFC Editor: If present, please remove this section before
-   publication._
+   publication._ _RFC Editor: Please replace 'RFC XXXX' with the RFC
+   number for this RFC._
 
    Based on the feedback received during the IETF 121 NETCONF session,
    this document has currently been written as a self-contained
@@ -377,8 +381,8 @@ Table of Contents
    subscription path rather than as an absolute path from the root of
    the operational datastore.
 
-   **TODO More needs to be added here, e.g., encoding, on-change
-   considerations.  Splitting subscriptions up. **
+   *TODO More needs to be added here, e.g., encoding, on-change
+   considerations.  Splitting subscriptions up.*
 
    This document proposes a new opt-in YANG-Push encoding format to use
    instead of the "push-update" and "push-change-update" notifications
@@ -551,7 +555,7 @@ Table of Contents
 
    Security access control mechanisms, e.g., NACM {RFC8341}} can be used
    to ensure the receivers only get access to the information for which
-   they are allowed.  This is further described in Section 13.
+   they are allowed.  This is further described in Section 15.
 
    While the functionality defined in this document is transport
    agnostic, transports like the Network Configuration Protocol
@@ -580,11 +584,6 @@ Table of Contents
 
    This document reuses the terminology defined in [RFC7950], [RFC8341],
    [RFC8342], [RFC8639] and [RFC8641].
-
-   *TODO, if this document progresses, we should check which of this
-   terminology we actually use/re-use (and ensure it is used
-   consistently), and if any new terminology should be introduced in
-   this document.*
 
    The following terms are taken from [RFC8342]:
 
@@ -706,7 +705,7 @@ Table of Contents
    subscription's receiver(s).
 
    Filters can either be defined inline within a configured subscription
-   (Figure 13), a dynamic subscription's _establish-subscription_ RPC
+   (Figure 20), a dynamic subscription's _establish-subscription_ RPC
    (Figure 14), or as part of the _datastore-telemetry/filters_
    container (Figure 1) which can then be referenced from a configured
    or dynamic subscription.
@@ -724,29 +723,22 @@ Table of Contents
       syntax and semantics correspond to those specified in [RFC6241],
       Section 6.
 
-   *  _XPaths_: A list of _XPath_ selection filter is a full XPath
-      expression that returns a node set.  (XPath is a query language
-      for selecting nodes in an XML document; see [XPATH] for details.)
-      When specified, updates will only come from the selected datastore
-      nodes that match the XPath expression.
+   *  _XPaths_: A list of _XPath_ ([XPATH]) selection filter
+      expressions.  When specified, updates will only come from the
+      selected datastore nodes that match the node set associated with
+      the XPath expression.
 
    These filters are used as selectors that define which data nodes fall
-   within the scope of a subscription.  A publisher MUST support basic
-   path filters, and MAY also support subtree or xpath filters.
+   within the scope of a subscription.  A publisher MUST support YPath
+   filters, and MAY also support subtree or XPath filters.
 
-   XPath itself provides powerful filtering constructs, and care must be
-   used in filter definition.  Consider an XPath filter that only passes
-   a datastore node when an interface is up.  It is up to the receiver
-   to understand the implications of the presence or absence of objects
-   in each update.
-
-   For both path and xpath based filters, each filter may define a list
-   of paths/xpaths.  Each of these filter paths is processed by the
-   publisher independently, and if two or more filter paths end up
-   selecting overlapping data nodes then the publisher MAY notify
-   duplicate values for those data nodes, but the encoded data that is
-   returned MUST always be syntactically valid, i.e., as per section 5.3
-   of [RFC8342].
+   For both YPath and XPath based filters, each filter may define a list
+   of path expressions.  Each of these filter path expressions MAY be
+   processed by the publisher independently, and if two or more filter
+   path expressions end up selecting overlapping data nodes then the
+   publisher MAY notify duplicate values for those data nodes, but the
+   encoded data that is returned MUST always be syntactically valid,
+   i.e., as per section 5.3 of [RFC8342].
 
 6.1.  _YPath_ definition
 
@@ -816,9 +808,24 @@ Table of Contents
    contained in this tree are described in the YANG module in
    Section 12.
 
-   (Artwork only available as YANGTREE: see
-   https://www.ietf.org/archive/id/draft-wilton-netconf-yang-push-lite-
-   latest.html)
+   module: ietf-yp-lite-config
+     +--rw datastore-telemetry!
+        +--rw filters
+           +--rw filter* [name]
+              +--rw name             string
+              +--rw (filter)
+                 +--:(path)
+                 |  +--rw path       ypath
+                 +--:(subtree)
+                 |  +--rw subtree    <anydata> {ypl:subtree}?
+                 +--:(xpath)
+                    +--rw xpath      yang:xpath1.0 {ypl:xpath}?
+
+     augment /ypl:establish-subscription/ypl:input/ypl:target
+               /ypl:filter:
+       +--:(by-reference)
+     augment /ypl:subscription-started/ypl:target:
+       +-- filter-ref    filter-ref
 
                                   Figure 1
 
@@ -827,17 +834,17 @@ Table of Contents
    In order to address the issues described in Section 3.2, YANG Push
    Lite allows for publishers to send subtrees of data nodes in separate
    _update_ notifications, rather than requiring that the subscription
-   data be returned as a single datastore update covering all data nodes
-   matched by the subscription filter.  This better facilitates
-   publishers that internally group some of their operational data
-   fields together into larger structures for efficiency (referred to as
-   an _object_), and avoids the publishers or receivers having to
-   consume potentially very large notification messages.  For example,
-   each entry in the _/ietf-interfaces:interface/interface_ list could
-   be represents as an object of data internally within the publisher.
-   In essence, a client specified subscription filter can be decomposed
-   by a publisher into more specific, non-overlapping, filters, that are
-   then used to return the data.
+   data be returned as a single datastore _update_ notification covering
+   all data nodes matched by the subscription filter.  This better
+   facilitates publishers that internally group some of their
+   operational data fields together into larger structures for
+   efficiency, and avoids publishers or receivers having to consume
+   potentially very large notification messages.  For example, each
+   entry in the _/ietf-interfaces:interface/interface_ list could be
+   represented as an object of data internally within the publisher.  In
+   essence, a client specified subscription filter can be decomposed by
+   a publisher into more specific non-overlapping filters that are then
+   used to return the data.
 
    In particular:
 
@@ -845,31 +852,16 @@ Table of Contents
        path into a set of non-overlapping subscription filter paths that
        collectively cover the same data.  The publisher is allowed to
        return data for each of these decomposed subscription filter
-       paths in separate update messages, and with separate, perhaps
-       more precise, timestamps.
+       paths in separate _update_ notification messages, each with
+       separate, perhaps more precise, _observation-time_ timestamps,
+       but all using the same notification _event-time_.
 
    2.  A Publisher MAY split large lists into multiple separate update
-       messages, each with separate timestamps.  E.g., if a device has
-       10,000 entries in a list, it may return them in a single
+       messages, each with separate _observation-time_ timestamps, but
+       all using the same notification _event-time_.  E.g., if a device
+       has 10,000 entries in a list, it may return them in a single
        response, or it may split them into multiple smaller messages,
-       perhaps for 500 interfaces at a time. *TODO We need a mechanism
-       so that the client knows all list entries have been returned, and
-       hence it can delete stale entries?  E.g., something like a
-       _more_data_ flag.*
-
-   3.  A Publisher is allowed to generate on-change notifications at an
-       _object_ level, which hence may contain other associated fields
-       that may not have changed state, rather than restricting the on-
-       change notifications strictly to only those specific fields that
-       have changed state.  E.g., if a subscribers registers on the path
-       _/ietf-interfaces:interfaces/interface[name = *]/oper-status_,
-       and if interface _eth1_ had a change in the _oper-status_ leaf
-       state, then rather than just publishing the updated _oper-status_
-       leaf, the publisher may instead publish all the data associated
-       with that interface entry object, i.e., everything under _/ietf-
-       interfaces:interface/interface[name = eth1]_.  *TODO Does it have
-       to be the entire subtree that is published?  Do we need to add a
-       capability annotation to indicate the object publication paths?*
+       perhaps for 500 interfaces at a time.
 
    To ensure that clients can reasonably process data returned via
    decomposed filters then:
@@ -882,10 +874,6 @@ Table of Contents
        *  if we support splitting list entries in multiple updates, then
           something like a _more_data_ flag is needed to indicate that
           the given update message is not complete.
-
-   *TODO We should consider adding a _update-complete_ message
-   (potentially including an incrementing collection counter) to
-   indicate when a periodic update has completed for a subscription.*
 
 7.  Datastore Event Streams
 
@@ -991,15 +979,14 @@ Table of Contents
    diagram:
 
        +---n update
-          +--ro id?                 subscription-id
-          +--ro path-prefix?        string
-          +--ro snapshot-type?      enumeration
-          +--ro observation-time?   yang:date-and-time
-          +--ro updates* [target-path]
-          |  +--ro target-path    string
-          |  +--ro data?          <anydata>
-          +--ro incomplete?         empty
-          +--ro update-complete?    empty
+       |  +--ro id?                 subscription-id
+       |  +--ro path-prefix?        string
+       |  +--ro snapshot-type?      enumeration
+       |  +--ro observation-time?   yang:date-and-time
+       |  +--ro updates* [target-path]
+       |  |  +--ro target-path    string
+       |  |  +--ro data?          <anydata>
+       |  +--ro complete?           empty
 
                       Figure 3: 'update' notification
 
@@ -1027,15 +1014,10 @@ Table of Contents
    *  _data_ - the full replacement data subtree for the content at the
       target-path, encoded from the path-prefix.
 
-   *  _incomplete_ - indicates that the message is incomplete for any
-      reason.  For example, perhaps a periodic subscription expects to
-      retrieve data from multiple data sources, but one of those data
-      sources is unavailable.  Normally, a receiver can use the absence
-      of a field in an update message to implicitly indicate that the
-      field has been deleted, but that should not be inferred if the
-      incomplete-update leaf is present because not all changes that
-      have occurred since the last update are actually included with
-      this update.
+   *  _complete_ - if present, this flag indicates that a periodic
+      collection (*TODO, what about on-change*) is complete.  Setting
+      this flag is semantically equivalent to the server sending a
+      separate update-complete notification.
 
    As per the structure of the _update_ notification, a single
    notification MAY provide updates for multiple target-paths.
@@ -1053,9 +1035,22 @@ Table of Contents
    The schema for the update-trigger container is given in the following
    tree diagram:
 
-   (Artwork only available as YANGTREE: see
-   https://www.ietf.org/archive/id/draft-wilton-netconf-yang-push-lite-
-   latest.html)
+   module: ietf-yp-lite-config
+     +--rw datastore-telemetry!
+        +--rw subscriptions
+           +--rw subscription* [name]
+              +--rw update-trigger
+                 +--rw periodic!
+                 |  +--rw period         centiseconds
+                 |  +--rw anchor-time?   yang:date-and-time
+                 +--rw on-change! {on-change}?
+                    +--rw sync-on-start?   boolean
+
+     augment /ypl:establish-subscription/ypl:input/ypl:target
+               /ypl:filter:
+       +--:(by-reference)
+     augment /ypl:subscription-started/ypl:target:
+       +-- filter-ref    filter-ref
 
                     Figure 4: 'update-trigger' container
 
@@ -1122,7 +1117,7 @@ Table of Contents
       identifies the list entry that is being deleted, but the data
       returned is just an empty object {}, which replaces all the
       existing data for that object in the receiver. *TODO, is this
-      better an a delete flag?*
+      better as a delete flag, or separate delete list?*
 
    On-change subscriptions also support the following additional
    parameters:
@@ -1309,7 +1304,7 @@ Table of Contents
    all share the same encoding.
 
    All subscription notifications, including lifecycle notifications
-   (Section 9.2) , are sent to all receivers except for the _receiver-
+   (Section 9.2), are sent to all receivers except for the _receiver-
    disconnected_ notification, which is only sent to the affected
    receiver, and only if the subscription remains active because of
    other active receivers.
@@ -1322,9 +1317,28 @@ Table of Contents
    subscription, the publisher uses the referenced receiver
    configuration to establish transport connectivity to the receiver.
 
-   (Artwork only available as YANGTREE: see
-   https://www.ietf.org/archive/id/draft-wilton-netconf-yang-push-lite-
-   latest.html)
+   module: ietf-yp-lite-config
+     +--rw datastore-telemetry!
+        +--rw receivers
+           +--rw receiver* [name]
+              +--rw name                      string
+              +--rw encoding                  ypl:encoding
+              +--rw dscp?                     inet:dscp
+              +---x reset
+              +--rw (notification-message-origin)?
+              |  +--:(interface-originated)
+              |  |  +--rw source-interface?   if:interface-ref
+              |  |          {interface-designation}?
+              |  +--:(address-originated)
+              |     +--rw source-vrf?         leafref {supports-vrf}?
+              |     +--rw source-address?     inet:ip-address-no-zone
+              +--rw (transport-type)
+
+     augment /ypl:establish-subscription/ypl:input/ypl:target
+               /ypl:filter:
+       +--:(by-reference)
+     augment /ypl:subscription-started/ypl:target:
+       +-- filter-ref    filter-ref
 
              Figure 7: datastore-telemetry/receivers container
 
@@ -1391,7 +1405,7 @@ Table of Contents
    explicitly controlled.
 
    Dynamic subscriptions MUST specify an encoding (see Section 8.3) and
-   MAY specify DSCP Marking (see Section 8.2.2) for the telemetry
+   MAY specify DSCP Marking (see Section 8.2.1.1) for the telemetry
    notifications in the _establish-subscription_ RPC (see Figure 14).
 
 8.1.3.  Receiver Session States and State Machine
@@ -1469,8 +1483,9 @@ Table of Contents
    This section provides requirements for any transport specifications
    supporting the YANG Push Lite solution presented in this document.
 
-   The transport specification MUST provide YANG modules (to be
-   implemented by publishers) that:
+   The transport specification MUST provide YANG modules, to be
+   implemented by publishers implementing the YANG Push configuration
+   model in Section 13, that:
 
    *  augments the _datastore-telemetry/receivers/transport-type_ choice
       statement with a container that both identifies the transport and
@@ -1480,13 +1495,13 @@ Table of Contents
       capabilities/_ container with any transport specific capabilities
       or options (conditional on a YANG _when_ statement).  Note,
       encodings for a given transport are advertised directly via the
-      ietf-yp-lite-capabilities YANG Model Section 12.6.
+      ietf-yp-lite-capabilities YANG Model Section 14.2.
 
    Using a secure transport is RECOMMENDED.  Thus, any transport
    specification MUST provide a mechanism to ensure secure communication
    between the publisher and receiver in a hostile environment, e.g.,
    through the use of transport layer encryption.  Transport
-   specification MAY also specify a mechanism for unencrypted
+   specifications MAY also specify a mechanism for unencrypted
    communications, which can be used when transport layer security is
    not required, e.g., if the transport session is being secured via
    another mechanism, or when operating within a controlled environment
@@ -1518,7 +1533,7 @@ Table of Contents
    Additional transport requirements may be dictated by the choice of
    transport used with a subscription.
 
-8.2.2.  DSCP Marking
+8.2.1.1.  DSCP Marking
 
    YANG Push Lite supports _dscp_ marking to differentiate
    prioritization of notification messages during network transit.
@@ -1530,13 +1545,9 @@ Table of Contents
    MUST respect the DSCP markings for subscription traffic egressing
    that publisher.
 
-   Different DSCP code points require different transport connections.
-   As a result, where TCP is used, a publisher that supports the "dscp"
-   feature must ensure that a subscription's notification messages are
-   returned in a single TCP transport session where all traffic shares
-   the subscription's "dscp" leaf value.  If this cannot be guaranteed,
-   any "establish-subscription" RPC request SHOULD be rejected with a
-   "dscp-unavailable" error.  *TODO - Is this text still relevant?*
+   The transport specification MUST specify if there are any particular
+   quality-of-service or class-of-service considerations related to
+   handling DSCP settings associated with the subscription.
 
 8.3.  Encodings
 
@@ -1569,7 +1580,7 @@ Table of Contents
    can be defined by defining and implementing new identities that
    derive from the _encoding_ base identity, and also advertising those
    identities as part of the ietf-yp-lite-capabilities YANG module's
-   transport capabilities Section 12.6.
+   transport capabilities Section 14.2.
 
 9.  Setting up and Managing Subscriptions
 
@@ -1651,7 +1662,7 @@ Table of Contents
       rarely be seen.
 
    *  *Inactive*: a valid subscription, but one that is not active
-      because it has no associated receivers.  This state is unliekly to
+      because it has no associated receivers.  This state is unlikely to
       be seen for dynamic subscriptions.
 
    *  *Connecting*: a subscription that is valid, and has appropriate
@@ -1726,7 +1737,7 @@ Table of Contents
    case, when there is something to transport for an active
    subscription, transport-specific "call home" operations [RFC8071]
    will be used to establish the connection. *TODO - this should just
-   reference the transport RFCS*.  When transport connectivity is
+   reference the transport RFCs*.  When transport connectivity is
    available, notification messages may then be pushed.
 
    With active configured subscriptions, it is allowable to buffer event
@@ -1849,9 +1860,9 @@ Table of Contents
        the subscription needs to be reset by terminating and recreating
        it, i.e., as described for some changes in Section 9.1.3.1.
 
-   7.  The _reset_ RPC is invoked on a configured subscription. **TODO,
-       does this always terminate, or just send a new subscription-
-       started notification?
+   7.  The _reset_ RPC is invoked on a configured subscription, or on
+       the referenced receiver associated with a configured
+       subscription.
 
    8.  From a receiver perspective, if transport connectivity is lost,
        then that is equivalent to terminating the subscription via a
@@ -1872,15 +1883,10 @@ Table of Contents
    The publisher MUST NOT generate any further events, e.g., _update_
    notifications, related to the subscription after the _subscription-
    terminated_ notification has been generated.  In addition, receivers
-   MUST ignore any messages received outside of an active subscription,
-   i.e., either before a _subscription-started_ notification or after a
-   _subscription-terminated_ or _receiver-disconnected_ notification.
-
-   *TODO, I think that we should relax this to a SHOULD, but also this
-   should be common with configured subscriptions, so perhaps not in
-   this section.* If the publisher accepts the request and the publisher
-   has indicated success, the publisher SHOULD NOT send any more
-   notification messages for this subscription.
+   SHOULD ignore any messages received outside of an active
+   subscription, i.e., either before a _subscription-started_
+   notification or after a _subscription-terminated_ or _receiver-
+   disconnected_ notification.
 
    If the publisher accepts the request, which it MUST, if the
    subscription-id matches a dynamic subscription established in the
@@ -1937,16 +1943,14 @@ Table of Contents
        |  +--ro name              subscription-name
        |  +--ro description?      string
        |  +--ro target
-       |  |  +--ro datastore?             identityref
-       |  |  +--ro (filter)?
-       |  |     +--:(within-subscription)
-       |  |        +--ro (filter-spec)?
-       |  |           +--:(path)
-       |  |           |  +--ro path?      ypath
-       |  |           +--:(subtree)
-       |  |           |  +--ro subtree?   <anydata> {ypl:subtree}?
-       |  |           +--:(xpath)
-       |  |              +--ro xpath?     yang:xpath1.0 {ypl:xpath}?
+       |  |  +--ro datastore?       identityref
+       |  |  +--ro (filter)
+       |  |     +--:(path)
+       |  |     |  +--ro path       ypath
+       |  |     +--:(subtree)
+       |  |     |  +--ro subtree    <anydata> {ypl:subtree}?
+       |  |     +--:(xpath)
+       |  |        +--ro xpath      yang:xpath1.0 {ypl:xpath}?
        |  +--ro update-trigger
        |     +--ro periodic!
        |     |  +--ro period         centiseconds
@@ -1955,9 +1959,6 @@ Table of Contents
        |        +--ro sync-on-start?   boolean
 
          Figure 10: subscription-started Notification Tree Diagram
-
-   *TODO, Should the subscription-started notification report decomposed
-   subscription paths?  RobW: I suggest no.*
 
 9.2.2.  "subscription-terminated"
 
@@ -2011,29 +2012,49 @@ Table of Contents
 
 9.2.3.  "receiver-disconnected"
 
-9.2.4.  "replay-completed"
+   Configured subscriptions support multiple receivers.  If one
+   particular receiver is slow to process notifications, e.g., causing
 
-   *TODO: Need to consider how this works when notifications are split
-   up.  Possibly need to replace this with an opt-in message for a per
-   collection complete message.  I.e., a notification that would be sent
-   whenever every periodic collection is complete.*
+   The _receiver-disconnected_ notification is sent to a specific
+   receiver if the publisher has a multi-receiver subscription, and the
+   publisher has decided to stop sending notification to a particular
+   receiver, but the subscription will continue sending updates to other
+   receivers.  Note the _subscription-terminated_ notification is a
+   publisher is stopping sending messages to all receivers.
+
+   Possible reasons as to why a publisher may disconnect a receiver are:
+
+   *  the receiver is too slow processing the messages causing the
+      subscription to back pressure overflowing internal buffers,
+
+   *  the transport session is unreliable, frequently dropping and
+      reconnecting.
+
+       +---n update-complete
+          +--ro id    subscription-id
+
+            Figure 12: update-complete Notification Tree Diagram
+
+9.2.4.  "update-completed"
+
+   *TODO, this description needs to be updated*.
 
    This notification indicates that all of the event records prior to
    the current time have been passed to a receiver.  It is sent before
    any notification messages containing an event record with a timestamp
    later than (1) the subscription's start time.
 
-   After the "replay-completed" notification has been sent, additional
+   After the _update-complete_ notification has been sent, additional
    event records will be sent in sequence as they arise naturally on the
    publisher.
 
-   Below is a tree diagram for "replay-completed".  All objects
-   contained in this tree are described in the YANG module in Section 4.
+   Below is a tree diagram for _update-complete_.  All objects contained
+   in this tree are described in the YANG module in Section 4.
 
-       +---n replay-completed
-       |  +--ro id    subscription-id
+       +---n update-complete
+          +--ro id    subscription-id
 
-           Figure 12: replay-completed Notification Tree Diagram
+            Figure 13: update-complete Notification Tree Diagram
 
 9.3.  Configured Subscriptions
 
@@ -2041,10 +2062,12 @@ Table of Contents
    configuration so that a publisher can send notification messages to a
    receiver.
 
-   Support for configured subscriptions is OPTIONAL.  The availability
-   of the ietf-yp-lite configuration module is advertised via the
-   _configured_ YANG feature in the ietf-yp-lite YANG module
-   Section 12.2.
+   This document specifies the ietf-yp-lite-config YANG module
+   Section 13.2 that defines an configuration model for configuring
+   subscriptions.  Support for this YANG module is OPTIONAL and is
+   advertised using the normal YANG mechanisms, e.g., [RFC8525]. *TODO,
+   do we also advertise support via capabilities, i.e., issue 16
+   (https://github.com/rgwilton/draft-yp-observability/issues/16)*
 
    In addition to the common subscription parameters described in
    Section 9.1, a configured subscription also includes:
@@ -2062,9 +2085,7 @@ Table of Contents
 
    *  configured subscriptions have the ability to send notification
       messages to more than one receiver.  All receivers for a given
-      subscription MUST use the same encoding and type of transport
-      (*TODO What about DSCP settings?*).  _Note that receivers are
-      unaware of the existence of any other receivers._
+      subscription MUST use the same encoding.
 
    *  The lifetime of a configured subscription is tied to the
       configuration.  I.e., if a valid and complete configuration exists
@@ -2096,34 +2117,12 @@ Table of Contents
       configured subscription, any alterations MUST be done via changes
       to the configuration.
 
-   Multiple configured subscriptions MUST be supportable over a single
-   transport session. *TODO, James is suggesting that this should be
-   MAY, either way, I think that this should move to be under the
-   transport considerations section of the document.*
-
-   Below is a tree diagram for the "subscriptions" container.  All
-   objects contained in this tree are described in the YANG module in
-   Section 12.2.  In the operational datastore [RFC8342], the
-   "subscription" list contains entries both for configured and dynamic
-   subscriptions.
-
-   (Artwork only available as YANGTREE: see
-   https://www.ietf.org/archive/id/draft-wilton-netconf-yang-push-lite-
-   latest.html)
-
-              Figure 13: subscriptions container Tree Diagram
-
 9.3.1.  Creating a Configured Subscription
 
    Configured subscriptions are those created via changes to the
    publisher's configuration, e.g., using the YANG module defined in
-   Section 12.2, or an equivalent configuration mechanism, such as a
+   Section 13, or an equivalent configuration mechanism, such as a
    command-line interface, or alternative YANG configuration model.
-
-   Support for configured subscriptions is OPTIONAL, with its
-   availability advertised via the _configured_ YANG feature in the
-   ietf-yp-lite YANG module Section 12.2, and also via the capabilities
-   module Section 12.6.
 
    After the configuration change has been accepted by the system, then
    the subscription is updated, as per Section 9.1.2.
@@ -2147,31 +2146,34 @@ Table of Contents
 
 9.3.4.  Resetting a Configured Subscription
 
-   It is possible that a configured subscription needs to be reset,
-   e.g., if the receiver wasn't ready to start processing the
-   subscription notifications.  This can be accomplished via invoking
-   one of the two YANG _reset_ actions in the ietf-yp-lite YANG module:
+   Configured subscriptions are generally expected to self-monitor and
+   automatically reconnect to the receivers if they experience network
+   or transport issues.  However, the data model also defines explicit
+   YANG _actions_ to either: (i) reset a single subscription, or (ii)
+   reset all subscriptions and the transports(s) associated with a
+   specific configured receiver instance.
 
-   1.  the _reset_ action at _/datastore-
-       telemetry/subscriptions/subscription/reset_ resets a single
-       subscription, or
+   These reset actions primarily act at the subsciption application
+   layer, but may be useful if a receiver or collector determines that a
+   configured subscription is not behaving correctly, and wishes to
+   force a reset of the subscription without modifying the configuration
+   associated with the subscription or forcing a configuration change on
+   the publisher device.
 
-   2.  the _reset_ action at _/datastore-telemetry/receivers/receiver/
-       reset_ resets all subscriptions that reference that receiver.
+   The reset action on a subscription is handled equivalently to
+   removing and re-adding the subscription configuration.  I.e., the
+   subscription MUST be terminated, as per Section 9.1.4 before being
+   recreated, as per Section 9.1.2.  The reset action also resets
+   (terminated and re-establishes) any subscription specific transport
+   session that is not shared with any other subscriptions.
 
-   These actions may be useful in cases if a receiver or collector
-   determines that a configured subscription is not behaving correctly,
-   and wishes to force a reset of the subscription without modifying the
-   subscription configuration.
-
-   Although the reset action acts at the subscription application level,
-   the publisher MAY reset any transport session(s) associated with the
-   subscription or attempt to reconnect to the receiver if a transport
-   session could not connect.  Publishers SHOULD NOT reset the transport
-   session if the transport session is shared with other subscriptions.
-
-   *TODO, update this section to describe what a reset action actually
-   is*
+   The reset acction on a receiver is handled equivalently to removing
+   and re-adding the receiver configuration for the receiver that has
+   been reset.  Specifically, every subscription referencing the
+   receiver MUST be terminated, as per Section 9.1.4 before being
+   recreated, as per Section 9.1.2.  Any transport sessions tied to the
+   subscriptions referencing the reset receiver MUST also be terminated
+   and re-established.
 
 9.4.  Dynamic Subscriptions
 
@@ -2181,7 +2183,7 @@ Table of Contents
    Support for dynamic subscriptions is OPTIONAL, with its availability
    advertised via the _dynamic_ YANG feature in the ietf-yp-lite YANG
    module Section 12.2, and also via the capabilities module
-   Section 12.6.
+   Section 14.2.
 
    Dynamic subscription differ from configured subscription in the
    following ways:
@@ -2192,34 +2194,35 @@ Table of Contents
       specified and each dynamic subscription can always only have a
       single receiver.
 
-   *  With the exception of the _kill-subscription_ RPC, dynamic
-      subscriptions can only be modified or terminated by the original
-      client that established the subscription.
+   *  The publisher MUST reply to the _establish-subscription_ RPC
+      before sending the _subscription-started_ or any _update_
+      notifications for this subscription.
 
    *  The lifetime of a dynamic subscription is bound by the transport
       session used to establish it.  If the transport session fails then
       the dynamic subscription MUST be terminated.
 
+   *  Active dynamic subscriptions cannot be modified on the fly,
+      instead, the client is required to send a _delete-subscription_
+      YANG RPC followed by a _establish-subscription_ YANG RPC.
+
+   *  Dynamic subscriptions can either be terminated by the client that
+      established the subscription sending a _delete-subscription_ YANG
+      RPC on the same transport session, or any client with sufficient
+      access permissions invoking the _kill-subscription_ YANG RPC.
+
    *  A publisher MAY terminate a dynamic subscription at any time,
       i.e., due to internal constraints of the publisher.
-
-   *  If the publisher cannot honor the terms of a dynamic subscription
-      then the subscription SHOULD be terminated. *TODO, is this a
-      SHOULD or MUST, do we want some leeway for temporary issues?
-      E.g., allow some buffering.*
 
    *  If a dynamic subscription is terminated for any reason, then the
       client is responsible for re-establishing the subscription if it
       is still required.
 
-   *  Active dynamic subscriptions cannot be modified on the fly,
-      instead, a _delete-subscription_ YANG RPC should be sent followed
-      by a _establish-subscription_ YANG RPC.
-
-   When a dynamic subscription has been started with "establish-
-   subscription", respectively, event records matching the newly applied
-   filter criteria MUST NOT be sent until after the RPC reply has been
-   sent. *TODO, moved from elsewhere, do we want to keep this?*
+   *  If the publisher cannot honor the terms of a dynamic subscription
+      then the subscription MUST be terminated. *TODO, is this a SHOULD
+      or MUST, do we want some leeway for temporary issues?  E.g., allow
+      some buffering.  Also, this effectively applies to config
+      subscriptions as well and hence should move.*
 
 9.4.1.  Establishing a Dynamic Subscription
 
@@ -2238,6 +2241,10 @@ Table of Contents
       If the configuration for the referenced filter changes then the
       subscription MUST be terminated Section 9.1.4.
 
+   The DSCP code point settings for all subscription using the same
+   transport session MUST be the same.  Attempts to invoke _establish-
+   subscription_ with a different DSCP code point MUST be rejected.
+
    If the publisher can satisfy the _establish-subscription_ request, it
    replies with a numeric identifier for the subscription and then
    immediately starts streaming notification messages.
@@ -2255,16 +2262,14 @@ Table of Contents
        |  |  +---w name              subscription-name
        |  |  +---w description?      string
        |  |  +---w target
-       |  |  |  +---w datastore?             identityref
-       |  |  |  +---w (filter)?
-       |  |  |     +--:(within-subscription)
-       |  |  |        +---w (filter-spec)?
-       |  |  |           +--:(path)
-       |  |  |           |  +---w path?      ypath
-       |  |  |           +--:(subtree)
-       |  |  |           |  +---w subtree?   <anydata> {ypl:subtree}?
-       |  |  |           +--:(xpath)
-       |  |  |              +---w xpath?     yang:xpath1.0 {ypl:xpath}?
+       |  |  |  +---w datastore?       identityref
+       |  |  |  +---w (filter)
+       |  |  |     +--:(path)
+       |  |  |     |  +---w path       ypath
+       |  |  |     +--:(subtree)
+       |  |  |     |  +---w subtree    <anydata> {ypl:subtree}?
+       |  |  |     +--:(xpath)
+       |  |  |        +---w xpath      yang:xpath1.0 {ypl:xpath}?
        |  |  +---w update-trigger
        |  |  |  +---w periodic!
        |  |  |  |  +---w period         centiseconds
@@ -2396,50 +2401,62 @@ Table of Contents
        placed elsewhere in the transport portion of a failed "delete-
        subscription" or "kill-subscription" RPC response.
 
-10.  Performance, Reliability, and Subscription Monitoring
+10.  Robustness, Reliability, and Subscription Monitoring
 
-   *TODO.  Needs updating.  Not sure if this text doesn't end up
-   elsewhere?*
+10.1.  Robustness and Reliability
 
-   A subscription to updates from a datastore is intended to obviate the
-   need for polling.  However, in order to do so, it is critical that
-   subscribers can rely on the subscription and have confidence that
-   they will indeed receive the subscribed updates without having to
-   worry about updates being silently dropped.  In other words, a
-   subscription constitutes a promise on the side of the publisher to
-   provide the receivers with updates per the terms of the subscription,
-   or otherwise notify the receiver if t
+   It is important for clients to have confidence that the telemetry
+   data that they receive is correct and complete.  The design of YANG
+   Push Lite achieves this in several ways:
 
-   Now, there are many reasons why a publisher may at some point no
-   longer be able to fulfill the terms of the subscription, even if the
-   subscription had been initiated in good faith.  For example, the
-   volume of datastore nodes may be larger than anticipated, the
-   interval may prove too short to send full updates in rapid
-   succession, or an internal problem may prevent objects from being
-   collected.  For this reason, the solution defined in this document
-   (1) mandates that a publisher notify receivers immediately and
-   reliably whenever it encounters a situation in which it is unable to
-   keep the terms of the subscription and (2) provides the publisher
-   with the option to suspend the subscription in such a case.  This
-   includes indicating the fact that an update is incomplete as part of
-   a "push-update" or "push-change-update" notification, as well as
-   emitting a "subscription-suspended" notification as applicable.  This
-   is described further in Section 3.11.1.
+   *  the _complete_ flag in _update_ notification, or the equivalent
+      _update-complete_ notification, are used to signal when all data
+      for a periodic collection event has been enqueued.  This allows
+      clients to delete stale information and monitor the performance
+      and behaviour of the publisher.
 
-   A publisher SHOULD reject a request for a subscription if it is
-   unlikely that the publisher will be able to fulfill the terms of that
-   subscription request.  In such cases, it is preferable to have a
-   subscriber request a less resource-intensive subscription than to
-   deal with frequently degraded behavior.
+   *  publishers use buffers when enqueuing traffic on to a transport to
+      a receiver, but if that buffer becomes full then either the
+      subscription is terminated, or in the case of a configured
+      subscription with multiple receivers the slow receiver is
+      disconnected from the subscription.  In the case of dynamic
+      subscriptions, the client may attempt to re-created the
+      subscription.  For configured subscriptions, the publisher should
+      attempt to periodically recreate the subscription or reconnect the
+      receiver.
 
-   The solution builds on [RFC8639].  As defined therein, any loss of an
-   underlying transport connection will be detected and result in
-   subscription termination (in the case of dynamic subscriptions) or
-   suspension (in the case of configured subscriptions), ensuring that
-   situations where the loss of update notifications would go unnoticed
-   will not occur.
+      -  *TODO, do we want to allow for a more lossy mode where the
+         publisher just tail drops if the buffer is full?  If we do,
+         then this looks like it should be a configurable option.*
 
-10.1.  Subscription Monitoring
+      -  *TODO, ensure that we document how to reconnect to an new
+         receiver*
+
+   *  the _notification envelope_ structure, Section 7.1, used for all
+      YANG Push notifications contains a monotonically increasing
+      _sequence-number_ field that allows for lost messages in an end-
+      to-end data pipeline spanning multiple transport hops to be
+      detected, allowing appropriate mitigation steps to be taken.  For
+      example, see figure 1 in
+      [I-D.ietf-nmop-network-anomaly-architecture].
+
+      -  *TODO, sequence-numbers are unique except for the receiver-
+         disconnected message.*
+
+   *  the protocol relies on transport protocols that are either
+      reliable, e.g., TCP or HTTP, or unreliable transports that employ
+      mechanisms for clients to detect when losses at the transport
+      layer have occurred, e.g., the _message id_ in
+      [I-D.draft-ietf-netconf-udp-notif] (*TODO fix reference to bis
+      version, once that becomes available*).
+
+   *  finally, if a publisher is not able tohonor the expectation for a
+      subscription for any reason, then the publisher always has the
+      option to terminate the subscription.  It can then subsequently
+      refuse to handle new subscriptions if it does not have sufficient
+      resources to handle the subscription.
+
+10.2.  Subscription Monitoring
 
    In the operational state datastore, the _datastore-telemetry_
    container maintains operational state for all configured and dynamic
@@ -2474,50 +2491,6 @@ Table of Contents
       and whether just monitoring the device CPU load and general
       performance would be a better indication.
 
-10.2.  Robustness and Reliability
-
-   It is important that updates as discussed in this document, and on-
-   change updates in particular, do not get lost.  If the loss of an
-   update is unavoidable, it is critical that the receiver be notified
-   accordingly.
-
-   Update records for a single subscription MUST NOT be resequenced
-   prior to transport.
-
-   It is conceivable that, under certain circumstances, a publisher will
-   recognize that it is unable to include in an update record the full
-   set of objects desired per the terms of a subscription.  In this
-   case, the publisher MUST act as follows:
-
-   *  The publisher MUST set the "incomplete-update" flag on any update
-      record that is known to be missing information.
-
-   *  The publisher MAY choose to suspend the subscription as per
-      [RFC8639].  If the publisher does not create an update record at
-      all, it MUST suspend the subscription.
-
-   *  When resuming an on-change subscription, the publisher SHOULD
-      generate a complete patch from the previous update record.  If
-      this is not possible and the "sync-on-start" option is set to
-      "true" for the subscription, then the full datastore contents MAY
-      be sent via a "push-update" instead (effectively replacing the
-      previous contents).  If neither scenario above is possible, then
-      an "incomplete-update" flag MUST be included on the next "push-
-      change-update".
-
-   Note: It is perfectly acceptable to have a series of "push-change-
-   update" notifications (and even "push-update" notifications) serially
-   queued at the transport layer awaiting transmission.  It is not
-   required for the publisher to merge pending update records sent at
-   the same time.
-
-   On the receiver side, what action to take when a record with an
-   "incomplete-update" flag is received depends on the application.  It
-   could simply choose to wait and do nothing.  It could choose to
-   resync, actively retrieving all subscribed information.  It could
-   also choose to tear down the subscription and start a new one,
-   perhaps with a smaller scope that contains fewer objects.
-
 10.3.  Publisher Capacity
 
    It is far preferable to decline a subscription request than to accept
@@ -2528,8 +2501,9 @@ Table of Contents
    trigger (on-change or periodic), the period in which to report
    changes (one-second periods will consume more resources than one-hour
    periods), the amount of data in the datastore subtree that is being
-   subscribed to, and the number and combination of other subscriptions
-   that are concurrently being serviced.
+   subscribed to, the number and combination of other subscriptions that
+   are concurrently being serviced, and the overall load from other
+   services running on the publisher.
 
 11.  Conformance and Capabilities
 
@@ -2551,7 +2525,7 @@ Table of Contents
 
    Publishers SHOULD implement the ietf-system-capabilities YANG module,
    defined in [RFC9196], and the ietf-yp-lite-capabilities YANG module,
-   defined in Section 12.6) that augments ietf-system-capabilities.
+   defined in Section 14.2) that augments ietf-system-capabilities.
 
    The ietf-yp-lite-capabilities module contains capabilities to
    indicate what types of subscriptions and transports may be
@@ -2571,42 +2545,37 @@ Table of Contents
         |     |  +--:(node-selector)
         |     |     +--ro node-selector?
         |     |             nacm:node-instance-identifier
-        |     +--ro yplc:datastore-telemetry
-        |        +--ro yplc:periodic-notifications-supported?
+        |     +--ro yplca:datastore-telemetry
+        |        +--ro yplca:periodic-notifications-supported?
         |        |       notification-support
-        |        +--ro (yplc:update-period)?
-        |        |  +--:(yplc:minimum-update-period)
-        |        |  |  +--ro yplc:minimum-update-period?        uint32
-        |        |  +--:(yplc:supported-update-period)
-        |        |     +--ro yplc:supported-update-period*      uint32
-        |        +--ro yplc:on-change-supported?
+        |        +--ro (yplca:update-period)?
+        |        |  +--:(yplca:minimum-update-period)
+        |        |  |  +--ro yplca:minimum-update-period?        uint32
+        |        |  +--:(yplca:supported-update-period)
+        |        |     +--ro yplca:supported-update-period*      uint32
+        |        +--ro yplca:on-change-supported?
         |                notification-support
-        +--ro yplc:datastore-telemetry
-           +--ro yplc:periodic-notifications-supported?
+        +--ro yplca:datastore-telemetry
+           +--ro yplca:periodic-notifications-supported?
            |       notification-support
-           +--ro (yplc:update-period)?
-           |  +--:(yplc:minimum-update-period)
-           |  |  +--ro yplc:minimum-update-period?        uint32
-           |  +--:(yplc:supported-update-period)
-           |     +--ro yplc:supported-update-period*      uint32
-           +--ro yplc:on-change-supported?
+           +--ro (yplca:update-period)?
+           |  +--:(yplca:minimum-update-period)
+           |  |  +--ro yplca:minimum-update-period?        uint32
+           |  +--:(yplca:supported-update-period)
+           |     +--ro yplca:supported-update-period*      uint32
+           +--ro yplca:on-change-supported?
            |       notification-support
-           +--ro yplc:transport
-              +--ro yplc:transport-capability* [transport-protocol]
-                 +--ro yplc:transport-protocol    identityref
-                 +--ro yplc:security-protocol?    identityref
-                 +--ro yplc:encoding-format*      identityref
+           +--ro yplca:transport
+              +--ro yplca:transport-capability* [transport-protocol]
+                 +--ro yplca:transport-protocol    identityref
+                 +--ro yplca:security-protocol?    identityref
+                 +--ro yplca:encoding-format*      identityref
 
       Figure 17: YANG tree for ietf-system-capabilities with ietf-yl-
                       lite-capabilities augmentations.
 
-   TODO Do we need to add capabilities to indicate:
-
-   1.  Which fields are on-change notifiable.
-
-   2.  At which level _bags_ exist internally (for performance reasons).
-
-   3.  The points at which subscriptions are decomposed to.
+   *TODO, do we need additional capabilities, as per Issue 18
+   (https://github.com/rgwilton/draft-yp-observability/issues/18)*
 
 11.2.  Subscription Content Schema Identification
 
@@ -2631,7 +2600,7 @@ Table of Contents
    ideas to fingerprint the subscription schema in the subscription-
    started notification.*
 
-12.  YANG
+12.  Core YANG Push Lite YANG Data Model
 
 12.1.  ietf-yp-lite YANG tree
 
@@ -2650,16 +2619,14 @@ Table of Contents
        |  |  +---w name              subscription-name
        |  |  +---w description?      string
        |  |  +---w target
-       |  |  |  +---w datastore?             identityref
-       |  |  |  +---w (filter)?
-       |  |  |     +--:(within-subscription)
-       |  |  |        +---w (filter-spec)?
-       |  |  |           +--:(path)
-       |  |  |           |  +---w path?      ypath
-       |  |  |           +--:(subtree)
-       |  |  |           |  +---w subtree?   <anydata> {ypl:subtree}?
-       |  |  |           +--:(xpath)
-       |  |  |              +---w xpath?     yang:xpath1.0 {ypl:xpath}?
+       |  |  |  +---w datastore?       identityref
+       |  |  |  +---w (filter)
+       |  |  |     +--:(path)
+       |  |  |     |  +---w path       ypath
+       |  |  |     +--:(subtree)
+       |  |  |     |  +---w subtree    <anydata> {ypl:subtree}?
+       |  |  |     +--:(xpath)
+       |  |  |        +---w xpath      yang:xpath1.0 {ypl:xpath}?
        |  |  +---w update-trigger
        |  |  |  +---w periodic!
        |  |  |  |  +---w period         centiseconds
@@ -2678,25 +2645,19 @@ Table of Contents
              +---w name    subscription-name
 
      notifications:
-       +---n replay-completed
-       |  +--ro id    subscription-id
-       +---n update-complete
-       |  +--ro id    subscription-id
        +---n subscription-started
        |  +--ro id                subscription-id
        |  +--ro name              subscription-name
        |  +--ro description?      string
        |  +--ro target
-       |  |  +--ro datastore?             identityref
-       |  |  +--ro (filter)?
-       |  |     +--:(within-subscription)
-       |  |        +--ro (filter-spec)?
-       |  |           +--:(path)
-       |  |           |  +--ro path?      ypath
-       |  |           +--:(subtree)
-       |  |           |  +--ro subtree?   <anydata> {ypl:subtree}?
-       |  |           +--:(xpath)
-       |  |              +--ro xpath?     yang:xpath1.0 {ypl:xpath}?
+       |  |  +--ro datastore?       identityref
+       |  |  +--ro (filter)
+       |  |     +--:(path)
+       |  |     |  +--ro path       ypath
+       |  |     +--:(subtree)
+       |  |     |  +--ro subtree    <anydata> {ypl:subtree}?
+       |  |     +--:(xpath)
+       |  |        +--ro xpath      yang:xpath1.0 {ypl:xpath}?
        |  +--ro update-trigger
        |     +--ro periodic!
        |     |  +--ro period         centiseconds
@@ -2707,16 +2668,21 @@ Table of Contents
        |  +--ro name      subscription-name
        |  +--ro id        subscription-id
        |  +--ro reason    identityref
+       +---n receiver-disconnected
+       |  +--ro name      subscription-name
+       |  +--ro id        subscription-id
+       |  +--ro reason    identityref
        +---n update
-          +--ro id?                 subscription-id
-          +--ro path-prefix?        string
-          +--ro snapshot-type?      enumeration
-          +--ro observation-time?   yang:date-and-time
-          +--ro updates* [target-path]
-          |  +--ro target-path    string
-          |  +--ro data?          <anydata>
-          +--ro incomplete?         empty
-          +--ro update-complete?    empty
+       |  +--ro id?                 subscription-id
+       |  +--ro path-prefix?        string
+       |  +--ro snapshot-type?      enumeration
+       |  +--ro observation-time?   yang:date-and-time
+       |  +--ro updates* [target-path]
+       |  |  +--ro target-path    string
+       |  |  +--ro data?          <anydata>
+       |  +--ro complete?           empty
+       +---n update-complete
+          +--ro id    subscription-id
 
          Figure 18: YANG tree for YANG Push Lite Module Tree Output
 
@@ -2726,9 +2692,6 @@ Table of Contents
    [RFC8529], and [RFC8342].  It references [RFC6241], [XPATH] ("XML
    Path Language (XPath) Version 1.0"), [RFC7049], [RFC8259], [RFC7950],
    [RFC7951], and [RFC7540].
-
-   *TODO, update this list since some will have moved due to the config
-   being split out.*
 
    This YANG module imports typedefs from [RFC6991], identities from
    [RFC8342], and the "sx:structure" extension from [RFC8791].  It also
@@ -3128,22 +3091,25 @@ Table of Contents
        }
      }
 
-     grouping filter-types {
+     grouping filter-choice {
        description
          "This grouping defines the types of selectors for objects
           from a datastore.";
-       choice filter-spec {
+       choice filter {
+         mandatory true;
          description
            "The content filter specification for this request.";
 
          leaf path {
            type ypath;
+           mandatory true;
            description
              "A basic path filter that allows wildcard, regex, or
               fixed value for list keys.  Each format is TODO";
          }
          anydata subtree {
            if-feature "ypl:subtree";
+           mandatory true;
            description
              "This parameter identifies the portions of the
               target datastore to retrieve.";
@@ -3154,6 +3120,7 @@ Table of Contents
          leaf xpath {
            if-feature "ypl:xpath";
            type yang:xpath1.0;
+           mandatory true;
            description
              "This parameter contains an XPath expression identifying
               the portions of the target datastore to retrieve.
@@ -3302,19 +3269,7 @@ Table of Contents
               operational";
          }
 
-         choice filter {
-           description
-             "The source of the selection filter applied to the
-              subscription.  This will either (1) come referenced from
-              a global list or (2) be provided in the subscription
-              itself.";
-           case within-subscription {
-             description
-               "A local definition allows a filter to have the same
-               lifecycle as the subscription.";
-             uses filter-types;
-           }
-         }
+         uses filter-choice;
        }
 
        uses update-policy;
@@ -3465,42 +3420,6 @@ Table of Contents
       * NOTIFICATIONS
       */
 
-     // TODO - Need to signal when an initial replay has completed, or
-     //        possibly when any period subscription has completed.
-     // TODO - Need to think about list key entries that are no longer
-     //        present.
-     notification replay-completed {
-       //ypl:subscription-state-notification;
-       //if-feature "replay";
-       description
-         "This notification is sent to indicate that all of the replay
-          notifications have been sent.";
-       leaf id {
-         type subscription-id;
-         mandatory true;
-         description
-           "This references the affected subscription.";
-       }
-     }
-
-     notification update-complete {
-       //ypl:subscription-state-notification;
-       //if-feature "replay";
-       description
-         "This notification indicates the end of a periodic collection,
-          and can be used to purge old state.
-
-          Alternatively, the update-complete flag in the update
-          notification MAY be used to indicate that all messages in a
-          periodic or resync update have been sent.";
-       leaf id {
-         type subscription-id;
-         mandatory true;
-         description
-           "This references the affected subscription.";
-       }
-     }
-
      notification subscription-started {
        //ypl:subscription-state-notification;
        description
@@ -3535,6 +3454,42 @@ Table of Contents
        leaf reason {
          type identityref {
            base subscription-terminated-reason;
+         }
+         mandatory true;
+         description
+           "Identifies the condition that resulted in the
+            termination.";
+       }
+     }
+
+     notification receiver-disconnected {
+       description
+         "This notification indicates that a receiver has been
+          disconnected from a subscription.  This notification is only
+          sent to the affected receiver if the transport is still
+          available, and only if the subscription remains active due
+          to other active receivers.
+
+          The receiver will not receive any further notifications
+          for this subscription unless it receives a new
+          'subscription-started' notification for this
+          subscription.";
+       leaf name {
+         type subscription-name;
+         mandatory true;
+         description
+           "The name of the subscription.";
+       }
+       leaf id {
+         type subscription-id;
+         mandatory true;
+         description
+           "The subscription identifier";
+       }
+       leaf reason {
+         type identityref {
+           base subscription-terminated-reason;
+             // TODO, add new receiver disconnected reasons.
          }
          mandatory true;
          description
@@ -3651,16 +3606,7 @@ Table of Contents
          }
        }
 
-       leaf incomplete {
-         type empty;
-         description
-           "This is a flag that indicates that not all datastore nodes
-            subscribed to are included with this update. Receivers of
-            this data SHOULD NOT assume that any missing data has been
-            implicitly deleted.";
-       }
-
-       leaf update-complete {
+       leaf complete {
          type empty;
          description
            "This flag indicates that this is the last
@@ -3669,7 +3615,34 @@ Table of Contents
             the event-time.
 
             The 'update-complete' notification MAY be used as an
-            alternative to setting this flag.";
+            alternative to setting this flag, and is semantically
+            equivalent.";
+       }
+     }
+
+     // TODO - Need to signal when an initial replay has completed, or
+     //        possibly when any period subscription has completed.
+     // TODO - Need to think about list key entries that are no longer
+     //        present.
+     notification update-complete {
+       //ypl:subscription-state-notification;
+       //if-feature "replay";
+       description
+         "This notification indicates the end of a periodic collection
+          or resync event for an on-change subscription, and can be used
+          to indicate that the receiver has a complete snapshot of the
+          subscribed data at the event-time, and hence the client MAY
+          use this as a signal that it can purge stale state
+          information.
+
+          Alternatively, the 'complete' flag in the update
+          notification MAY be used instead of sending this notification
+          as a separate message, and both are semantically equivalent.";
+       leaf id {
+         type subscription-id;
+         mandatory true;
+         description
+           "This references the affected subscription.";
        }
      }
    }
@@ -3677,7 +3650,69 @@ Table of Contents
 
                     Figure 19: YANG module ietf-yp-lite
 
-12.3.  ietf-yp-lite-config YANG tree
+13.  Configured Subscription YANG Data Model
+
+   This document specifies the ietf-yp-lite-config YANG module
+   Section 13.2 that defines an NMDA [RFC8342] compatible YANG data
+   model for configuring subscriptions.  Support for this YANG module is
+   OPTIONAL and is advertised using the normal mechanisms, e.g.,
+   [RFC8525].
+
+   Below is a tree diagram for the "subscriptions" container.  All
+   objects contained in this tree are described in the YANG module in
+   Section 12.2.  In the operational datastore [RFC8342], the
+   "subscription" list contains entries both for configured and dynamic
+   subscriptions.
+
+   module: ietf-yp-lite-config
+     +--rw datastore-telemetry!
+        +--rw subscriptions
+           +--rw subscription* [name]
+              +--rw name              subscription-name
+              +--rw description?      string
+              +--rw target
+              |  +--rw datastore?          identityref
+              |  +--rw (filter)
+              |     +--:(path)
+              |     |  +--rw path          ypath
+              |     +--:(subtree)
+              |     |  +--rw subtree       <anydata> {ypl:subtree}?
+              |     +--:(xpath)
+              |     |  +--rw xpath         yang:xpath1.0 {ypl:xpath}?
+              |     +--:(by-reference)
+              |        +--rw filter-ref    filter-ref
+              +--rw update-trigger
+              |  +--rw periodic!
+              |  |  +--rw period         centiseconds
+              |  |  +--rw anchor-time?   yang:date-and-time
+              |  +--rw on-change! {on-change}?
+              |     +--rw sync-on-start?   boolean
+              +--rw receivers* [name]
+              |  +--rw name
+              |  |       -> /datastore-telemetry/receivers/receiver/name
+              |  +--ro status?   enumeration
+              +--ro id                ypl:subscription-id
+              +--ro status?           ypl:subscription-status
+              +--ro statistics
+              |  +--ro update-record-count?
+              |  |       yang:zero-based-counter64
+              |  +--ro excluded-event-records?
+              |          yang:zero-based-counter64
+              +---x reset
+
+     augment /ypl:establish-subscription/ypl:input/ypl:target
+               /ypl:filter:
+       +--:(by-reference)
+     augment /ypl:subscription-started/ypl:target:
+       +-- filter-ref    filter-ref
+
+              Figure 20: subscriptions container Tree Diagram
+
+   An overview of the behaviour for configured subscriptions is
+   specified in Section 9.3, with further details specified in the ietf-
+   yp-lite-config YANG module.
+
+13.1.  ietf-yp-lite-config YANG tree
 
    This section shows the full tree output for ietf-yp-lite-config YANG
    module.
@@ -3692,30 +3727,28 @@ Table of Contents
         +--rw filters
         |  +--rw filter* [name]
         |     +--rw name             string
-        |     +--rw (filter-spec)?
+        |     +--rw (filter)
         |        +--:(path)
-        |        |  +--rw path?      ypath
+        |        |  +--rw path       ypath
         |        +--:(subtree)
-        |        |  +--rw subtree?   <anydata> {ypl:subtree}?
+        |        |  +--rw subtree    <anydata> {ypl:subtree}?
         |        +--:(xpath)
-        |           +--rw xpath?     yang:xpath1.0 {ypl:xpath}?
+        |           +--rw xpath      yang:xpath1.0 {ypl:xpath}?
         +--rw subscriptions
         |  +--rw subscription* [name]
         |     +--rw name              subscription-name
         |     +--rw description?      string
         |     +--rw target
-        |     |  +--rw datastore?             identityref
-        |     |  +--rw (filter)?
-        |     |     +--:(within-subscription)
-        |     |     |  +--rw (filter-spec)?
-        |     |     |     +--:(path)
-        |     |     |     |  +--rw path?      ypath
-        |     |     |     +--:(subtree)
-        |     |     |     |  +--rw subtree?   <anydata> {ypl:subtree}?
-        |     |     |     +--:(xpath)
-        |     |     |        +--rw xpath?     yang:xpath1.0 {ypl:xpath}?
+        |     |  +--rw datastore?          identityref
+        |     |  +--rw (filter)
+        |     |     +--:(path)
+        |     |     |  +--rw path          ypath
+        |     |     +--:(subtree)
+        |     |     |  +--rw subtree       <anydata> {ypl:subtree}?
+        |     |     +--:(xpath)
+        |     |     |  +--rw xpath         yang:xpath1.0 {ypl:xpath}?
         |     |     +--:(by-reference)
-        |     |        +--rw filter-ref       filter-ref
+        |     |        +--rw filter-ref    filter-ref
         |     +--rw update-trigger
         |     |  +--rw periodic!
         |     |  |  +--rw period         centiseconds
@@ -3753,21 +3786,23 @@ Table of Contents
                /ypl:filter:
        +--:(by-reference)
           +-- filter-ref    filter-ref
+     augment /ypl:subscription-started/ypl:target:
+       +-- filter-ref    filter-ref
 
-     Figure 20: YANG tree for YANG Push Lite Config Module Tree Output
+     Figure 21: YANG tree for YANG Push Lite Config Module Tree Output
 
-12.4.  ietf-yp-lite-config YANG Model
+13.2.  ietf-yp-lite-config YANG Model
 
    This module has import dependencies on [RFC6991], [RFC8343], and
    [RFC8529], and ietf-yang-push-lite.yang (this RFC).  In addition,
-   this YANG module references BCP 14 *TODO, fix to proper reference*,
-   and [RFC8529].
+   this YANG module references [BCP14] ([RFC2119] [RFC8174]), and
+   [RFC8529].
 
    <CODE BEGINS> file "ietf-yp-lite-config.yang#0.1.0"
    module ietf-yp-lite-config {
      yang-version 1.1;
      namespace "urn:ietf:params:xml:ns:yang:ietf-yp-lite-config";
-     prefix yplc;
+     prefix yplco;
 
      import ietf-inet-types {
        prefix inet;
@@ -3906,7 +3941,7 @@ Table of Contents
              description
                "A unique name to identify the selection filters.";
            }
-           uses ypl:filter-types;
+           uses ypl:filter-choice;
          }
        }
        container subscriptions {
@@ -4167,6 +4202,14 @@ Table of Contents
        }
      }
 
+     augment "/ypl:subscription-started/ypl:target" {
+
+       description
+         "Allow a subscription-started notification to include a
+          referenced subscription-name";
+       uses filter-ref;
+     }
+
      augment "/datastore-telemetry/subscriptions/subscription/"
            + "target/filter" {
 
@@ -4184,45 +4227,17 @@ Table of Contents
    }
    <CODE ENDS>
 
-                 Figure 21: YANG module ietf-yp-lite-config
+                 Figure 22: YANG module ietf-yp-lite-config
 
-12.5.  ietf-yp-lite-capabilities YANG tree
+14.  Capabilities YANG Data Model
+
+14.1.  ietf-yp-lite-capabilities YANG tree
 
    This section shows the tree output for ietf-yp-lite-capabilities YANG
    module, which augments the ietf-system-capabilities YANG module
    [RFC9196].
 
-   module: ietf-yp-lite-capabilities
-
-     augment /sysc:system-capabilities:
-       +--ro datastore-telemetry
-          +--ro periodic-notifications-supported?   notification-support
-          +--ro (update-period)?
-          |  +--:(minimum-update-period)
-          |  |  +--ro minimum-update-period?        uint32
-          |  +--:(supported-update-period)
-          |     +--ro supported-update-period*      uint32
-          +--ro on-change-supported?                notification-support
-          +--ro transport
-             +--ro transport-capability* [transport-protocol]
-                +--ro transport-protocol    identityref
-                +--ro security-protocol?    identityref
-                +--ro encoding-format*      identityref
-     augment /sysc:system-capabilities/sysc:datastore-capabilities
-               /sysc:per-node-capabilities:
-       +--ro datastore-telemetry
-          +--ro periodic-notifications-supported?   notification-support
-          +--ro (update-period)?
-          |  +--:(minimum-update-period)
-          |  |  +--ro minimum-update-period?        uint32
-          |  +--:(supported-update-period)
-          |     +--ro supported-update-period*      uint32
-          +--ro on-change-supported?                notification-support
-
-      Figure 22: YANG tree for YANG Push Lite Capabilities Module Tree
-                                   Output
-
-12.6.  ietf-yp-lite-capabiltiies YANG Model
+14.2.  ietf-yp-lite-capabiltiies YANG Model
 
    This module imports typedefs from the yang-push-lite YANG module.
 
@@ -4233,7 +4248,7 @@ Table of Contents
    module ietf-yp-lite-capabilities {
      yang-version 1.1;
      namespace "urn:ietf:params:xml:ns:yang:ietf-yp-lite-capabilities";
-     prefix yplc;
+     prefix yplca;
 
      import ietf-system-capabilities {
        prefix sysc;
@@ -4468,7 +4483,7 @@ Table of Contents
        uses yp-lite-capabilities;
      }
 
-     augment "/sysc:system-capabilities/yplc:datastore-telemetry" {
+     augment "/sysc:system-capabilities/yplca:datastore-telemetry" {
        description
          "Adds system level Yang Push Lite transport capabilities";
        uses yp-lite-transport-capabilities;
@@ -4485,7 +4500,37 @@ Table of Contents
 
               Figure 23: YANG module ietf-yp-lite-capabilities
 
-13.  Security Considerations
+   module: ietf-yp-lite-capabilities
+
+     augment /sysc:system-capabilities:
+       +--ro datastore-telemetry
+          +--ro periodic-notifications-supported?   notification-support
+          +--ro (update-period)?
+          |  +--:(minimum-update-period)
+          |  |  +--ro minimum-update-period?        uint32
+          |  +--:(supported-update-period)
+          |     +--ro supported-update-period*      uint32
+          +--ro on-change-supported?                notification-support
+          +--ro transport
+             +--ro transport-capability* [transport-protocol]
+                +--ro transport-protocol    identityref
+                +--ro security-protocol?    identityref
+                +--ro encoding-format*      identityref
+     augment /sysc:system-capabilities/sysc:datastore-capabilities
+               /sysc:per-node-capabilities:
+       +--ro datastore-telemetry
+          +--ro periodic-notifications-supported?   notification-support
+          +--ro (update-period)?
+          |  +--:(minimum-update-period)
+          |  |  +--ro minimum-update-period?        uint32
+          |  +--:(supported-update-period)
+          |     +--ro supported-update-period*      uint32
+          +--ro on-change-supported?                notification-support
+
+      Figure 24: YANG tree for YANG Push Lite Capabilities Module Tree
+                                   Output
+
+15.  Security Considerations
 
    With configured subscriptions, one or more publishers could be used
    to overwhelm a receiver.  To counter this, notification messages
@@ -4513,7 +4558,7 @@ Table of Contents
    expected on the publisher, so the recipient would be different than
    expected.
 
-13.1.  Use of YANG Push Lite with NACM
+15.1.  Use of YANG Push Lite with NACM
 
    *TODO, do we even need this section?*
 
@@ -4529,7 +4574,7 @@ Table of Contents
    *  NACM can be used to control access to the data included in the
       YANG _update_ notifications.
 
-13.2.  Receiver Authorization
+15.2.  Receiver Authorization
 
    *TODO Relax when access control must be checked.*
 
@@ -4561,7 +4606,7 @@ Table of Contents
     push-change-update  | access allowed? | ---> | to update record   |
                         +-----------------+      +--------------------+
 
-                 Figure 24: Access Control for Push Updates
+                 Figure 25: Access Control for Push Updates
 
    A publisher MUST allow for the possibility that a subscription's
    selection filter references nonexistent data or data that a receiver
@@ -4600,10 +4645,7 @@ Table of Contents
    establishment or configured subscription reinitialization so that
    appropriate filtering is installed.
 
-13.3.  YANG Module Security Considerations
-
-   *TODO - Check that this section is still correct at WG LC, and
-   before/after IESG Evaluation, if the YANG data model changes at all*.
+15.3.  YANG Module Security Considerations
 
    This section is modeled after the template described in Section 3.7.1
    of [I-D.draft-ietf-netmod-rfc8407bis].
@@ -4649,32 +4691,52 @@ Table of Contents
       any dynamic subscription, even those created via other users, or
       other transport sessions.
 
-   *TODO - As per the template in [I-D.draft-ietf-netmod-rfc8407bis], we
-   would need to add text for groupings if we add any groupings from
-   elsewhere, or the modules define groupings that are expected to be
-   used by other modules.*
+16.  IANA Considerations
 
-14.  IANA Considerations
+16.1.  Namespace URI registrations
 
    This document registers the following namespace URI in the "IETF XML
    Registry" [RFC3688]:
 
-   URI: urn:ietf:params:xml:ns:yang:ietf-yp-lite
+         +=======================================================+
+         | URI                                                   |
+         +=======================================================+
+         | urn:ietf:params:xml:ns:yang:ietf-yp-lite              |
+         +-------------------------------------------------------+
+         | urn:ietf:params:xml:ns:yang:ietf-yp-lite-config       |
+         +-------------------------------------------------------+
+         | urn:ietf:params:xml:ns:yang:ietf-yp-lite-capabilities |
+         +-------------------------------------------------------+
 
-   Registrant Contact: The IESG.
+                    Table 1: Namespace URI registrations
 
-   XML: N/A; the requested URI is an XML namespace.
+   For all registrations:
 
-   This document registers the following YANG module in the "YANG Module
-   Names" registry [RFC6020]:
+   *  Registrant Contact: The IESG.
 
-   Name: ietf-yp-lite
+   *  XML: N/A; the requested URI is an XML namespace.
 
-   Namespace: urn:ietf:params:xml:ns:yang:ietf-yp-lite
+17.  YANG Module Name registrations
 
-   Prefix: ypl
+   This document registers the following YANG modules in the "YANG
+   Module Names" registry [RFC6020]:
 
-   Reference: RFC XXXX
+   +===============+==========================================+========+
+   | Name          | Namespace                                | Prefix |
+   +===============+==========================================+========+
+   | ietf-yp-lite  | urn:ietf:params:xml:ns:yang:ietf-        | ypl    |
+   |               | yp-lite                                  |        |
+   +---------------+------------------------------------------+--------+
+   | ietf-yp-lite- | urn:ietf:params:xml:ns:yang:ietf-        | yplco  |
+   | config        | yp-lite-config                           |        |
+   +---------------+------------------------------------------+--------+
+   | ietf-yp-lite- | urn:ietf:params:xml:ns:yang:ietf-        | yplca  |
+   | capabilities  | yp-lite-capabilities                     |        |
+   +---------------+------------------------------------------+--------+
+
+                  Table 2: YANG Module Name Registrations
+
+   For all registration the reference is "RFC XXXX".
 
 Acknowledgments
 
@@ -4689,11 +4751,15 @@ Contributors
    The following individuals have actively contributed to this draft and
    the YANG Push Solution.
 
-   *  Dan Voyer (TBD)
+   *  Dan Voyer
 
 References
 
 Normative References
+
+   [BCP14]    Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
    [I-D.draft-ietf-netconf-notif-envelope]
               Feng, A. H., Francois, P., Graf, T., and B. Claise,
@@ -4819,9 +4885,9 @@ Informative References
               Feng, A. H., Francois, P., Zhou, T., Graf, T., and P.
               Lucente, "UDP-based Transport for Configured
               Subscriptions", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-udp-notif-22, 3 July 2025,
+              ietf-netconf-udp-notif-23, 14 October 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              udp-notif-22>.
+              udp-notif-23>.
 
    [I-D.draft-ietf-netmod-rfc8407bis]
               Bierman, A., Boucadair, M., and Q. Wu, "Guidelines for
@@ -5040,6 +5106,11 @@ A.2.  Changed Functionality
             receivers (to preserve sequence numbers)
 
          o  all receivers must be configured with the same encoding
+
+      -  Invoking the _reset_ RPC operation on a receiver requires and
+         forces a reset of any transport sessions associated with that
+         receiver.  Previously, the sessions would not be reset if they
+         were used by other subscriptions.
 
    *  Periodic and on-change message uses a common _update_ notification
       message format, allowing for the messages to be processed by
@@ -5264,7 +5335,7 @@ C.1.  Example of update message using the new style update message
    }
    <CODE ENDS>
 
-              Figure 25: Example YANG Push Lite update message
+              Figure 26: Example YANG Push Lite update message
 
    The second periodic message is being published for the "Cisco-IOS-XR-
    pfi-im-cmd-oper:interfaces/interfaces/interface" list, but again, it
@@ -5313,7 +5384,7 @@ C.1.  Example of update message using the new style update message
    }
    <CODE ENDS>
 
-            Figure 26: 2nd example YANG Push Lite update message
+            Figure 27: 2nd example YANG Push Lite update message
 
    Each child subscription would use the same period and anchor time as
    the configured subscription, possibly with a little bit of initial
@@ -5390,7 +5461,7 @@ C.2.  Example of an on-change-update notification using the new style
    }
    <CODE ENDS>
 
-         Figure 27: Example YANG Push Lite on-change update message
+         Figure 28: Example YANG Push Lite on-change update message
 
 C.3.  Example of an on-change-delete notification using the new style
       update message
@@ -5425,7 +5496,7 @@ C.3.  Example of an on-change-delete notification using the new style
    }
    <CODE ENDS>
 
-         Figure 28: Example YANG Push Lite on-change delete message
+         Figure 29: Example YANG Push Lite on-change delete message
 
 C.4.  Subscription RPC examples (from RFC 8641)
 
@@ -5595,9 +5666,7 @@ D.1.  Issues related to general IETF process:
 
 D.2.  Issue related to Terminology/Definitions:
 
-   1.  Should we use the object terminology?  This may be better than
-       data node subtree, or the equivalent, and could be better than
-       introducing _bags_?
+   1.  Should we use the object terminology?
 
        *  Holger: should try and use same terminology as existing YANG
           Push RFCs.
@@ -5605,6 +5674,10 @@ D.2.  Issue related to Terminology/Definitions:
        *  Rob: This issue can be a place holder, to go through and
           check/update the terminology used, and see if any of the
           referenced terminology isn't neeed in YP Lite.
+
+       *  Rob: Update, possible should refine the definition of object
+          to make it clear that it may refer to a single data node or
+          set of data nodes.
 
 D.3.  Issues related to YANG Push Lite Overview.
 
@@ -5639,24 +5712,8 @@ D.4.  Issues related to Subscription Paths and Selection Filters
           expect further discussion may be needed.  (E.g., how multiple
           keys should be expressed)*
 
-   2.  The draft retains OPTIONAL subtree filtering (under a feature
-       statement):
-
-       *  What is the schema associated with this subtree (compared to a
-          simple path), and how is this expressed?
-
-       *  Does the subtree filter get put into the subscription-started
-          message?
-
-   3.  xpath filtering - conslusion is that we should keep this in a
-       draft as a MAY (under a feature statement).
-
-       *  Do we allow implementations to support a subset of xpath
-          syntax, or should they support all of xpath.
-
-       *  *Proposal: From an IETF draft perspective, don't say anything,
-          i.e., it just indicates support for XPath filtering without
-          explicitly saying whether or not it must all be supported*
+   2.  Advertising subscription schema: https://github.com/rgwilton/
+       draft-yp-observability/issues/11
 
 D.5.  Issues related to Datastore Event Streams
 
@@ -5707,9 +5764,6 @@ D.5.2.  Questions/comments on the notification message format:
 
           -  Ideally, the path prefix would be exactly the same as the
              YPath format that is being specified for configuration.
-
-       *  Do we keep the "incomplete" update flag?  Otherwise how would
-          a publisher indicate that a message was not complete.
 
           -  Thomas: We should keep this.
 
@@ -5893,23 +5947,8 @@ D.8.  Issues related to Subscription Lifecycle
        the schema that is covered by the subscription that would
        guaranteed to change if the subscription changes?
 
-       *  Rob: I think that we should do this (i.e., as optimized
-          version of content-id)
-
-       *  Would this also be impacted by a change to access control?
-          (Rob: Probably not)
-
-       *  *Thomas would like to align to the same mechanism in YANG
-          Push, i.e., in the existing drafts, and we should use the same
-          mechanism*
-
-       *  Rob: I would like to understand what the long term complete
-          solution is here.
-
-       *  Benoit: Also related to the data manifest draft (in WGLC in
-          OPSWG.)
-
-          -  Should discuss all of this together.  IETF 122 discussion.
+       *  Tracked via https://github.com/rgwilton/draft-yp-
+          observability/issues/11
 
    3.  If a subscription references a filter, then should that be
        included inline in the subscription started notification (as per
@@ -5931,14 +5970,8 @@ D.8.  Issues related to Subscription Lifecycle
        For a dynamic subscription, should the RPC be synchronous and not
        reply until it knows that all queues have been drained?
 
-       *  Holger, Thomas, Benoit: MUST NOT
-
-       *  James: SHOULD NOT
-
-       *  MUST NOT is clearer from an implementation POV, but probably
-          doesn't really matter.
-
-       *  What does the receiver do when it gets this message anyway.
+       *  Tracked via https://github.com/rgwilton/draft-yp-
+          observability/issues/13
 
    5.  Is a publisher allowed to arbitrarily send a sync-on-start
        resync, e.g., if it detects data loss, or should it always just
@@ -6017,28 +6050,6 @@ D.8.  Issues related to Subscription Lifecycle
              text.*
 
    8.  Should we support configurable subscription-level keepalives?
-
-       *  This would probably entail periodically sending a small
-          message on on-change subscriptions so that the receiver
-          (message broker) knows that the collection is still alive and
-          active.
-
-       *  The presumption is that would be configurable option on an on-
-          change subscription (configured or dynamic)
-
-       *  Note, some transport sessions may already support keepalives,
-          which is a separate, transport specific consideration.
-
-       *  An alternative would be to configure a joint periodic and on-
-          change subscription, but depending on the keepalive interval
-          this would likely involve sending more data on a periodic
-          basis.
-
-       *  Another alternative is to monitor the operational state of the
-          subscription to keep that all the expected subscriptions are
-          active.
-
-       *  *Discussed, but no consensus reached yet*
 
 D.9.  Issues related to Performance, Reliability & Subscription
       Monitoring
@@ -6136,7 +6147,7 @@ D.12.  Issues related to the Security Considerations (& NACM filtering)
 
 D.13.  Issues related to the IANA
 
-   1.  Need to add in registration for ietf-yp-lite-capabilities.yang
+   None open.
 
 D.14.   Issues related to the Appendixes
 
@@ -6160,7 +6171,7 @@ D.15.  Summary of closed/resolved issues
        implementations to implement one or both of them.  (Decided 21
        Feb 25)
 
-   4.  Dynamic susbcriptions to require the encoding to be specified.
+   4.  Dynamic susbcriptions require the encoding to be specified.
        (Decided 21 Feb 25)
 
    5.  DSCP settings are only specified under the receiver (for

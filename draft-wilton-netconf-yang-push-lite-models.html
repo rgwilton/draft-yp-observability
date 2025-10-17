@@ -1056,7 +1056,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Wilton, et al.</td>
-<td class="center">Expires 6 April 2026</td>
+<td class="center">Expires 20 April 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1069,12 +1069,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-wilton-netconf-yang-push-lite-models-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-10-03" class="published">3 October 2025</time>
+<time datetime="2025-10-17" class="published">17 October 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-04-06">6 April 2026</time></dd>
+<dd class="expires"><time datetime="2026-04-20">20 April 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1145,7 +1145,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 6 April 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 20 April 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1973,6 +1973,24 @@ defined in <span>[<a href="#RFC8340" class="cite xref">RFC8340</a>]</span>.<a hr
 <figure id="figure-1">
           <div class="lang-yangtree sourcecode" id="section-6.2-3.1">
 <pre>
+module: ietf-yp-lite-config
+  +--rw datastore-telemetry!
+     +--rw filters
+        +--rw filter* [name]
+           +--rw name             string
+           +--rw (filter)
+              +--:(path)
+              |  +--rw path       ypath
+              +--:(subtree)
+              |  +--rw subtree    &lt;anydata&gt; {ypl:subtree}?
+              +--:(xpath)
+                 +--rw xpath      yang:xpath1.0 {ypl:xpath}?
+
+  augment /ypl:establish-subscription/ypl:input/ypl:target
+            /ypl:filter:
+    +--:(by-reference)
+  augment /ypl:subscription-started/ypl:target:
+    +-- filter-ref    filter-ref
 </pre>
 </div>
 <figcaption><a href="#figure-1" class="selfRef">Figure 1</a></figcaption></figure>
@@ -2090,15 +2108,14 @@ defined in <span>[<a href="#RFC8340" class="cite xref">RFC8340</a>]</span>.<a hr
           <div class="lang-yangtree sourcecode" id="section-7.2-3.1">
 <pre>
     +---n update
-       +--ro id?                 subscription-id
-       +--ro path-prefix?        string
-       +--ro snapshot-type?      enumeration
-       +--ro observation-time?   yang:date-and-time
-       +--ro updates* [target-path]
-       |  +--ro target-path    string
-       |  +--ro data?          &lt;anydata&gt;
-       +--ro incomplete?         empty
-       +--ro update-complete?    empty
+    |  +--ro id?                 subscription-id
+    |  +--ro path-prefix?        string
+    |  +--ro snapshot-type?      enumeration
+    |  +--ro observation-time?   yang:date-and-time
+    |  +--ro updates* [target-path]
+    |  |  +--ro target-path    string
+    |  |  +--ro data?          &lt;anydata&gt;
+    |  +--ro complete?           empty
 </pre>
 </div>
 <figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
@@ -2141,6 +2158,22 @@ defined in <span>[<a href="#RFC8340" class="cite xref">RFC8340</a>]</span>.<a hr
 <span id="name-update-trigger-container"></span><figure id="figure-4">
           <div class="lang-yangtree sourcecode" id="section-7.3-3.1">
 <pre>
+module: ietf-yp-lite-config
+  +--rw datastore-telemetry!
+     +--rw subscriptions
+        +--rw subscription* [name]
+           +--rw update-trigger
+              +--rw periodic!
+              |  +--rw period         centiseconds
+              |  +--rw anchor-time?   yang:date-and-time
+              +--rw on-change! {on-change}?
+                 +--rw sync-on-start?   boolean
+
+  augment /ypl:establish-subscription/ypl:input/ypl:target
+            /ypl:filter:
+    +--:(by-reference)
+  augment /ypl:subscription-started/ypl:target:
+    +-- filter-ref    filter-ref
 </pre>
 </div>
 <figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
@@ -2334,6 +2367,28 @@ the same subscription.<a href="#section-7.7-4" class="pilcrow">¶</a></p>
 <figure id="figure-7">
             <div class="lang-yangtree sourcecode" id="section-8.1.1-6.1">
 <pre>
+module: ietf-yp-lite-config
+  +--rw datastore-telemetry!
+     +--rw receivers
+        +--rw receiver* [name]
+           +--rw name                      string
+           +--rw encoding                  ypl:encoding
+           +--rw dscp?                     inet:dscp
+           +---x reset
+           +--rw (notification-message-origin)?
+           |  +--:(interface-originated)
+           |  |  +--rw source-interface?   if:interface-ref
+           |  |          {interface-designation}?
+           |  +--:(address-originated)
+           |     +--rw source-vrf?         leafref {supports-vrf}?
+           |     +--rw source-address?     inet:ip-address-no-zone
+           +--rw (transport-type)
+
+  augment /ypl:establish-subscription/ypl:input/ypl:target
+            /ypl:filter:
+    +--:(by-reference)
+  augment /ypl:subscription-started/ypl:target:
+    +-- filter-ref    filter-ref
 </pre>
 </div>
 <figcaption><a href="#figure-7" class="selfRef">Figure 7</a>:
@@ -2577,6 +2632,47 @@ State Descriptions:
 <figure id="figure-8">
           <div class="lang-yangtree sourcecode" id="section-9.1-8.1">
 <pre>
+module: ietf-yp-lite-config
+  +--rw datastore-telemetry!
+     +--rw subscriptions
+        +--rw subscription* [name]
+           +--rw name              subscription-name
+           +--rw description?      string
+           +--rw target
+           |  +--rw datastore?          identityref
+           |  +--rw (filter)
+           |     +--:(path)
+           |     |  +--rw path          ypath
+           |     +--:(subtree)
+           |     |  +--rw subtree       &lt;anydata&gt; {ypl:subtree}?
+           |     +--:(xpath)
+           |     |  +--rw xpath         yang:xpath1.0 {ypl:xpath}?
+           |     +--:(by-reference)
+           |        +--rw filter-ref    filter-ref
+           +--rw update-trigger
+           |  +--rw periodic!
+           |  |  +--rw period         centiseconds
+           |  |  +--rw anchor-time?   yang:date-and-time
+           |  +--rw on-change! {on-change}?
+           |     +--rw sync-on-start?   boolean
+           +--rw receivers* [name]
+           |  +--rw name
+           |  |       -&gt; /datastore-telemetry/receivers/receiver/name
+           |  +--ro status?   enumeration
+           +--ro id                ypl:subscription-id
+           +--ro status?           ypl:subscription-status
+           +--ro statistics
+           |  +--ro update-record-count?
+           |  |       yang:zero-based-counter64
+           |  +--ro excluded-event-records?
+           |          yang:zero-based-counter64
+           +---x reset
+
+  augment /ypl:establish-subscription/ypl:input/ypl:target
+            /ypl:filter:
+    +--:(by-reference)
+  augment /ypl:subscription-started/ypl:target:
+    +-- filter-ref    filter-ref
 </pre>
 </div>
 <figcaption><a href="#figure-8" class="selfRef">Figure 8</a>:
@@ -2790,16 +2886,14 @@ also be informed of the modification.  However, this notification will await the
     |  |  +---w name              subscription-name
     |  |  +---w description?      string
     |  |  +---w target
-    |  |  |  +---w datastore?             identityref
-    |  |  |  +---w (filter)?
-    |  |  |     +--:(within-subscription)
-    |  |  |        +---w (filter-spec)?
-    |  |  |           +--:(path)
-    |  |  |           |  +---w path?      ypath
-    |  |  |           +--:(subtree)
-    |  |  |           |  +---w subtree?   &lt;anydata&gt; {ypl:subtree}?
-    |  |  |           +--:(xpath)
-    |  |  |              +---w xpath?     yang:xpath1.0 {ypl:xpath}?
+    |  |  |  +---w datastore?       identityref
+    |  |  |  +---w (filter)
+    |  |  |     +--:(path)
+    |  |  |     |  +---w path       ypath
+    |  |  |     +--:(subtree)
+    |  |  |     |  +---w subtree    &lt;anydata&gt; {ypl:subtree}?
+    |  |  |     +--:(xpath)
+    |  |  |        +---w xpath      yang:xpath1.0 {ypl:xpath}?
     |  |  +---w update-trigger
     |  |  |  +---w periodic!
     |  |  |  |  +---w period         centiseconds
@@ -3043,16 +3137,14 @@ until after the "subscription-started" notification has been sent.<a href="#sect
     |  +--ro name              subscription-name
     |  +--ro description?      string
     |  +--ro target
-    |  |  +--ro datastore?             identityref
-    |  |  +--ro (filter)?
-    |  |     +--:(within-subscription)
-    |  |        +--ro (filter-spec)?
-    |  |           +--:(path)
-    |  |           |  +--ro path?      ypath
-    |  |           +--:(subtree)
-    |  |           |  +--ro subtree?   &lt;anydata&gt; {ypl:subtree}?
-    |  |           +--:(xpath)
-    |  |              +--ro xpath?     yang:xpath1.0 {ypl:xpath}?
+    |  |  +--ro datastore?       identityref
+    |  |  +--ro (filter)
+    |  |     +--:(path)
+    |  |     |  +--ro path       ypath
+    |  |     +--:(subtree)
+    |  |     |  +--ro subtree    &lt;anydata&gt; {ypl:subtree}?
+    |  |     +--:(xpath)
+    |  |        +--ro xpath      yang:xpath1.0 {ypl:xpath}?
     |  +--ro update-trigger
     |     +--ro periodic!
     |     |  +--ro period         centiseconds
@@ -3128,8 +3220,6 @@ until after the "subscription-started" notification has been sent.<a href="#sect
 <span id="name-replay-completed-notificati"></span><figure id="figure-16">
           <div class="lang-yangtree sourcecode" id="section-10.3-5.1">
 <pre>
-    +---n replay-completed
-    |  +--ro id    subscription-id
 </pre>
 </div>
 <figcaption><a href="#figure-16" class="selfRef">Figure 16</a>:
@@ -3268,31 +3358,31 @@ module: ietf-system-capabilities
      |     |  +--:(node-selector)
      |     |     +--ro node-selector?
      |     |             nacm:node-instance-identifier
-     |     +--ro yplc:datastore-telemetry
-     |        +--ro yplc:periodic-notifications-supported?
+     |     +--ro yplca:datastore-telemetry
+     |        +--ro yplca:periodic-notifications-supported?
      |        |       notification-support
-     |        +--ro (yplc:update-period)?
-     |        |  +--:(yplc:minimum-update-period)
-     |        |  |  +--ro yplc:minimum-update-period?        uint32
-     |        |  +--:(yplc:supported-update-period)
-     |        |     +--ro yplc:supported-update-period*      uint32
-     |        +--ro yplc:on-change-supported?
+     |        +--ro (yplca:update-period)?
+     |        |  +--:(yplca:minimum-update-period)
+     |        |  |  +--ro yplca:minimum-update-period?        uint32
+     |        |  +--:(yplca:supported-update-period)
+     |        |     +--ro yplca:supported-update-period*      uint32
+     |        +--ro yplca:on-change-supported?
      |                notification-support
-     +--ro yplc:datastore-telemetry
-        +--ro yplc:periodic-notifications-supported?
+     +--ro yplca:datastore-telemetry
+        +--ro yplca:periodic-notifications-supported?
         |       notification-support
-        +--ro (yplc:update-period)?
-        |  +--:(yplc:minimum-update-period)
-        |  |  +--ro yplc:minimum-update-period?        uint32
-        |  +--:(yplc:supported-update-period)
-        |     +--ro yplc:supported-update-period*      uint32
-        +--ro yplc:on-change-supported?
+        +--ro (yplca:update-period)?
+        |  +--:(yplca:minimum-update-period)
+        |  |  +--ro yplca:minimum-update-period?        uint32
+        |  +--:(yplca:supported-update-period)
+        |     +--ro yplca:supported-update-period*      uint32
+        +--ro yplca:on-change-supported?
         |       notification-support
-        +--ro yplc:transport
-           +--ro yplc:transport-capability* [transport-protocol]
-              +--ro yplc:transport-protocol    identityref
-              +--ro yplc:security-protocol?    identityref
-              +--ro yplc:encoding-format*      identityref
+        +--ro yplca:transport
+           +--ro yplca:transport-capability* [transport-protocol]
+              +--ro yplca:transport-protocol    identityref
+              +--ro yplca:security-protocol?    identityref
+              +--ro yplca:encoding-format*      identityref
 </pre>
 </div>
 <figcaption><a href="#figure-17" class="selfRef">Figure 17</a>:
@@ -3348,16 +3438,14 @@ module: ietf-yp-lite
     |  |  +---w name              subscription-name
     |  |  +---w description?      string
     |  |  +---w target
-    |  |  |  +---w datastore?             identityref
-    |  |  |  +---w (filter)?
-    |  |  |     +--:(within-subscription)
-    |  |  |        +---w (filter-spec)?
-    |  |  |           +--:(path)
-    |  |  |           |  +---w path?      ypath
-    |  |  |           +--:(subtree)
-    |  |  |           |  +---w subtree?   &lt;anydata&gt; {ypl:subtree}?
-    |  |  |           +--:(xpath)
-    |  |  |              +---w xpath?     yang:xpath1.0 {ypl:xpath}?
+    |  |  |  +---w datastore?       identityref
+    |  |  |  +---w (filter)
+    |  |  |     +--:(path)
+    |  |  |     |  +---w path       ypath
+    |  |  |     +--:(subtree)
+    |  |  |     |  +---w subtree    &lt;anydata&gt; {ypl:subtree}?
+    |  |  |     +--:(xpath)
+    |  |  |        +---w xpath      yang:xpath1.0 {ypl:xpath}?
     |  |  +---w update-trigger
     |  |  |  +---w periodic!
     |  |  |  |  +---w period         centiseconds
@@ -3376,25 +3464,19 @@ module: ietf-yp-lite
           +---w name    subscription-name
 
   notifications:
-    +---n replay-completed
-    |  +--ro id    subscription-id
-    +---n update-complete
-    |  +--ro id    subscription-id
     +---n subscription-started
     |  +--ro id                subscription-id
     |  +--ro name              subscription-name
     |  +--ro description?      string
     |  +--ro target
-    |  |  +--ro datastore?             identityref
-    |  |  +--ro (filter)?
-    |  |     +--:(within-subscription)
-    |  |        +--ro (filter-spec)?
-    |  |           +--:(path)
-    |  |           |  +--ro path?      ypath
-    |  |           +--:(subtree)
-    |  |           |  +--ro subtree?   &lt;anydata&gt; {ypl:subtree}?
-    |  |           +--:(xpath)
-    |  |              +--ro xpath?     yang:xpath1.0 {ypl:xpath}?
+    |  |  +--ro datastore?       identityref
+    |  |  +--ro (filter)
+    |  |     +--:(path)
+    |  |     |  +--ro path       ypath
+    |  |     +--:(subtree)
+    |  |     |  +--ro subtree    &lt;anydata&gt; {ypl:subtree}?
+    |  |     +--:(xpath)
+    |  |        +--ro xpath      yang:xpath1.0 {ypl:xpath}?
     |  +--ro update-trigger
     |     +--ro periodic!
     |     |  +--ro period         centiseconds
@@ -3405,16 +3487,21 @@ module: ietf-yp-lite
     |  +--ro name      subscription-name
     |  +--ro id        subscription-id
     |  +--ro reason    identityref
+    +---n receiver-disconnected
+    |  +--ro name      subscription-name
+    |  +--ro id        subscription-id
+    |  +--ro reason    identityref
     +---n update
-       +--ro id?                 subscription-id
-       +--ro path-prefix?        string
-       +--ro snapshot-type?      enumeration
-       +--ro observation-time?   yang:date-and-time
-       +--ro updates* [target-path]
-       |  +--ro target-path    string
-       |  +--ro data?          &lt;anydata&gt;
-       +--ro incomplete?         empty
-       +--ro update-complete?    empty
+    |  +--ro id?                 subscription-id
+    |  +--ro path-prefix?        string
+    |  +--ro snapshot-type?      enumeration
+    |  +--ro observation-time?   yang:date-and-time
+    |  +--ro updates* [target-path]
+    |  |  +--ro target-path    string
+    |  |  +--ro data?          &lt;anydata&gt;
+    |  +--ro complete?           empty
+    +---n update-complete
+       +--ro id    subscription-id
 </pre>
 </div>
 <figcaption><a href="#figure-18" class="selfRef">Figure 18</a>:
@@ -3827,22 +3914,25 @@ module ietf-yp-lite {
     }
   }
 
-  grouping filter-types {
+  grouping filter-choice {
     description
       "This grouping defines the types of selectors for objects
        from a datastore.";
-    choice filter-spec {
+    choice filter {
+      mandatory true;
       description
         "The content filter specification for this request.";
 
       leaf path {
         type ypath;
+        mandatory true;
         description
           "A basic path filter that allows wildcard, regex, or
            fixed value for list keys.  Each format is TODO";
       }
       anydata subtree {
         if-feature "ypl:subtree";
+        mandatory true;
         description
           "This parameter identifies the portions of the
            target datastore to retrieve.";
@@ -3853,6 +3943,7 @@ module ietf-yp-lite {
       leaf xpath {
         if-feature "ypl:xpath";
         type yang:xpath1.0;
+        mandatory true;
         description
           "This parameter contains an XPath expression identifying
            the portions of the target datastore to retrieve.
@@ -4001,19 +4092,7 @@ module ietf-yp-lite {
            operational";
       }
 
-      choice filter {
-        description
-          "The source of the selection filter applied to the
-           subscription.  This will either (1) come referenced from
-           a global list or (2) be provided in the subscription
-           itself.";
-        case within-subscription {
-          description
-            "A local definition allows a filter to have the same
-            lifecycle as the subscription.";
-          uses filter-types;
-        }
-      }
+      uses filter-choice;
     }
 
     uses update-policy;
@@ -4164,42 +4243,6 @@ module ietf-yp-lite {
    * NOTIFICATIONS
    */
 
-  // TODO - Need to signal when an initial replay has completed, or
-  //        possibly when any period subscription has completed.
-  // TODO - Need to think about list key entries that are no longer
-  //        present.
-  notification replay-completed {
-    //ypl:subscription-state-notification;
-    //if-feature "replay";
-    description
-      "This notification is sent to indicate that all of the replay
-       notifications have been sent.";
-    leaf id {
-      type subscription-id;
-      mandatory true;
-      description
-        "This references the affected subscription.";
-    }
-  }
-
-  notification update-complete {
-    //ypl:subscription-state-notification;
-    //if-feature "replay";
-    description
-      "This notification indicates the end of a periodic collection,
-       and can be used to purge old state.
-
-       Alternatively, the update-complete flag in the update
-       notification MAY be used to indicate that all messages in a
-       periodic or resync update have been sent.";
-    leaf id {
-      type subscription-id;
-      mandatory true;
-      description
-        "This references the affected subscription.";
-    }
-  }
-
   notification subscription-started {
     //ypl:subscription-state-notification;
     description
@@ -4234,6 +4277,42 @@ module ietf-yp-lite {
     leaf reason {
       type identityref {
         base subscription-terminated-reason;
+      }
+      mandatory true;
+      description
+        "Identifies the condition that resulted in the
+         termination.";
+    }
+  }
+
+  notification receiver-disconnected {
+    description
+      "This notification indicates that a receiver has been
+       disconnected from a subscription.  This notification is only
+       sent to the affected receiver if the transport is still
+       available, and only if the subscription remains active due
+       to other active receivers.
+
+       The receiver will not receive any further notifications
+       for this subscription unless it receives a new
+       'subscription-started' notification for this
+       subscription.";
+    leaf name {
+      type subscription-name;
+      mandatory true;
+      description
+        "The name of the subscription.";
+    }
+    leaf id {
+      type subscription-id;
+      mandatory true;
+      description
+        "The subscription identifier";
+    }
+    leaf reason {
+      type identityref {
+        base subscription-terminated-reason;
+          // TODO, add new receiver disconnected reasons.
       }
       mandatory true;
       description
@@ -4350,16 +4429,7 @@ module ietf-yp-lite {
       }
     }
 
-    leaf incomplete {
-      type empty;
-      description
-        "This is a flag that indicates that not all datastore nodes
-         subscribed to are included with this update. Receivers of
-         this data SHOULD NOT assume that any missing data has been
-         implicitly deleted.";
-    }
-
-    leaf update-complete {
+    leaf complete {
       type empty;
       description
         "This flag indicates that this is the last
@@ -4368,7 +4438,34 @@ module ietf-yp-lite {
          the event-time.
 
          The 'update-complete' notification MAY be used as an
-         alternative to setting this flag.";
+         alternative to setting this flag, and is semantically
+         equivalent.";
+    }
+  }
+
+  // TODO - Need to signal when an initial replay has completed, or
+  //        possibly when any period subscription has completed.
+  // TODO - Need to think about list key entries that are no longer
+  //        present.
+  notification update-complete {
+    //ypl:subscription-state-notification;
+    //if-feature "replay";
+    description
+      "This notification indicates the end of a periodic collection
+       or resync event for an on-change subscription, and can be used
+       to indicate that the receiver has a complete snapshot of the
+       subscribed data at the event-time, and hence the client MAY
+       use this as a signal that it can purge stale state
+       information.
+
+       Alternatively, the 'complete' flag in the update
+       notification MAY be used instead of sending this notification
+       as a separate message, and both are semantically equivalent.";
+    leaf id {
+      type subscription-id;
+      mandatory true;
+      description
+        "This references the affected subscription.";
     }
   }
 }
@@ -4436,7 +4533,7 @@ module: ietf-yp-lite-capabilities
 module ietf-yp-lite-capabilities {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-yp-lite-capabilities";
-  prefix yplc;
+  prefix yplca;
 
   import ietf-system-capabilities {
     prefix sysc;
@@ -4671,7 +4768,7 @@ module ietf-yp-lite-capabilities {
     uses yp-lite-capabilities;
   }
 
-  augment "/sysc:system-capabilities/yplc:datastore-telemetry" {
+  augment "/sysc:system-capabilities/yplca:datastore-telemetry" {
     description
       "Adds system level Yang Push Lite transport capabilities";
     uses yp-lite-transport-capabilities;
@@ -4914,7 +5011,7 @@ continuous and total filtering of a subscription's content for every update reco
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-netconf-udp-notif">[I-D.draft-ietf-netconf-udp-notif]</dt>
         <dd>
-<span class="refAuthor">Feng, A. H.</span>, <span class="refAuthor">Francois, P.</span>, <span class="refAuthor">Zhou, T.</span>, <span class="refAuthor">Graf, T.</span>, and <span class="refAuthor">P. Lucente</span>, <span class="refTitle">"UDP-based Transport for Configured Subscriptions"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-netconf-udp-notif-22</span>, <time datetime="2025-07-03" class="refDate">3 July 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-netconf-udp-notif-22">https://datatracker.ietf.org/doc/html/draft-ietf-netconf-udp-notif-22</a>&gt;</span>. </dd>
+<span class="refAuthor">Feng, A. H.</span>, <span class="refAuthor">Francois, P.</span>, <span class="refAuthor">Zhou, T.</span>, <span class="refAuthor">Graf, T.</span>, and <span class="refAuthor">P. Lucente</span>, <span class="refTitle">"UDP-based Transport for Configured Subscriptions"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-netconf-udp-notif-23</span>, <time datetime="2025-10-14" class="refDate">14 October 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-netconf-udp-notif-23">https://datatracker.ietf.org/doc/html/draft-ietf-netconf-udp-notif-23</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-netmod-rfc8407bis">[I-D.draft-ietf-netmod-rfc8407bis]</dt>
         <dd>
