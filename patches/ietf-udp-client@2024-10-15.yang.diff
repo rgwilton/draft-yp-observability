@@ -1,4 +1,0 @@
-50c50
-<   grouping udp-client {
----
->   grouping udp-client-grouping {

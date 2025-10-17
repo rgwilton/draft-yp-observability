@@ -1,0 +1,4 @@
+    +---n receiver-disconnected
+    |  +--ro name      subscription-name
+    |  +--ro id        subscription-id
+    |  +--ro reason    identityref
