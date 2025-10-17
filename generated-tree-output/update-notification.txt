@@ -1,10 +1,9 @@
     +---n update
-       +--ro id?                 subscription-id
-       +--ro path-prefix?        string
-       +--ro snapshot-type?      enumeration
-       +--ro observation-time?   yang:date-and-time
-       +--ro updates* [target-path]
-       |  +--ro target-path    string
-       |  +--ro data?          <anydata>
-       +--ro incomplete?         empty
-       +--ro update-complete?    empty
+    |  +--ro id?                 subscription-id
+    |  +--ro path-prefix?        string
+    |  +--ro snapshot-type?      enumeration
+    |  +--ro observation-time?   yang:date-and-time
+    |  +--ro updates* [target-path]
+    |  |  +--ro target-path    string
+    |  |  +--ro data?          <anydata>
+    |  +--ro complete?           empty

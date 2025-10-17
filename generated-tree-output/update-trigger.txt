@@ -1,0 +1,16 @@
+module: ietf-yp-lite-config
+  +--rw datastore-telemetry!
+     +--rw subscriptions
+        +--rw subscription* [name]
+           +--rw update-trigger
+              +--rw periodic!
+              |  +--rw period         centiseconds
+              |  +--rw anchor-time?   yang:date-and-time
+              +--rw on-change! {on-change}?
+                 +--rw sync-on-start?   boolean
+
+  augment /ypl:establish-subscription/ypl:input/ypl:target
+            /ypl:filter:
+    +--:(by-reference)
+  augment /ypl:subscription-started/ypl:target:
+    +-- filter-ref    filter-ref

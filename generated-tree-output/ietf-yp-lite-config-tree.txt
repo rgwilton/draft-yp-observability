@@ -3,30 +3,28 @@ module: ietf-yp-lite-config
      +--rw filters
      |  +--rw filter* [name]
      |     +--rw name             string
-     |     +--rw (filter-spec)?
+     |     +--rw (filter)
      |        +--:(path)
-     |        |  +--rw path?      ypath
+     |        |  +--rw path       ypath
      |        +--:(subtree)
-     |        |  +--rw subtree?   <anydata> {ypl:subtree}?
+     |        |  +--rw subtree    <anydata> {ypl:subtree}?
      |        +--:(xpath)
-     |           +--rw xpath?     yang:xpath1.0 {ypl:xpath}?
+     |           +--rw xpath      yang:xpath1.0 {ypl:xpath}?
      +--rw subscriptions
      |  +--rw subscription* [name]
      |     +--rw name              subscription-name
      |     +--rw description?      string
      |     +--rw target
-     |     |  +--rw datastore?             identityref
-     |     |  +--rw (filter)?
-     |     |     +--:(within-subscription)
-     |     |     |  +--rw (filter-spec)?
-     |     |     |     +--:(path)
-     |     |     |     |  +--rw path?      ypath
-     |     |     |     +--:(subtree)
-     |     |     |     |  +--rw subtree?   <anydata> {ypl:subtree}?
-     |     |     |     +--:(xpath)
-     |     |     |        +--rw xpath?     yang:xpath1.0 {ypl:xpath}?
+     |     |  +--rw datastore?          identityref
+     |     |  +--rw (filter)
+     |     |     +--:(path)
+     |     |     |  +--rw path          ypath
+     |     |     +--:(subtree)
+     |     |     |  +--rw subtree       <anydata> {ypl:subtree}?
+     |     |     +--:(xpath)
+     |     |     |  +--rw xpath         yang:xpath1.0 {ypl:xpath}?
      |     |     +--:(by-reference)
-     |     |        +--rw filter-ref       filter-ref
+     |     |        +--rw filter-ref    filter-ref
      |     +--rw update-trigger
      |     |  +--rw periodic!
      |     |  |  +--rw period         centiseconds
@@ -64,3 +62,5 @@ module: ietf-yp-lite-config
             /ypl:filter:
     +--:(by-reference)
        +-- filter-ref    filter-ref
+  augment /ypl:subscription-started/ypl:target:
+    +-- filter-ref    filter-ref

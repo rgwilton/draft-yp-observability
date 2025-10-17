@@ -1,7 +1,7 @@
 module ietf-yp-lite-config {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-yp-lite-config";
-  prefix yplc;
+  prefix yplco;
 
   import ietf-inet-types {
     prefix inet;
@@ -140,7 +140,7 @@ module ietf-yp-lite-config {
           description
             "A unique name to identify the selection filters.";
         }
-        uses ypl:filter-types;
+        uses ypl:filter-choice;
       }
     }
     container subscriptions {
@@ -399,6 +399,14 @@ module ietf-yp-lite-config {
          separately.";
       uses filter-ref;
     }
+  }
+
+  augment "/ypl:subscription-started/ypl:target" {
+
+    description
+      "Allow a subscription-started notification to include a
+       referenced subscription-name";
+    uses filter-ref;
   }
 
   augment "/datastore-telemetry/subscriptions/subscription/"

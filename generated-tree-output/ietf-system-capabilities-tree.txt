@@ -8,28 +8,28 @@ module: ietf-system-capabilities
      |     |  +--:(node-selector)
      |     |     +--ro node-selector?
      |     |             nacm:node-instance-identifier
-     |     +--ro yplc:datastore-telemetry
-     |        +--ro yplc:periodic-notifications-supported?
+     |     +--ro yplca:datastore-telemetry
+     |        +--ro yplca:periodic-notifications-supported?
      |        |       notification-support
-     |        +--ro (yplc:update-period)?
-     |        |  +--:(yplc:minimum-update-period)
-     |        |  |  +--ro yplc:minimum-update-period?        uint32
-     |        |  +--:(yplc:supported-update-period)
-     |        |     +--ro yplc:supported-update-period*      uint32
-     |        +--ro yplc:on-change-supported?
+     |        +--ro (yplca:update-period)?
+     |        |  +--:(yplca:minimum-update-period)
+     |        |  |  +--ro yplca:minimum-update-period?        uint32
+     |        |  +--:(yplca:supported-update-period)
+     |        |     +--ro yplca:supported-update-period*      uint32
+     |        +--ro yplca:on-change-supported?
      |                notification-support
-     +--ro yplc:datastore-telemetry
-        +--ro yplc:periodic-notifications-supported?
+     +--ro yplca:datastore-telemetry
+        +--ro yplca:periodic-notifications-supported?
         |       notification-support
-        +--ro (yplc:update-period)?
-        |  +--:(yplc:minimum-update-period)
-        |  |  +--ro yplc:minimum-update-period?        uint32
-        |  +--:(yplc:supported-update-period)
-        |     +--ro yplc:supported-update-period*      uint32
-        +--ro yplc:on-change-supported?
+        +--ro (yplca:update-period)?
+        |  +--:(yplca:minimum-update-period)
+        |  |  +--ro yplca:minimum-update-period?        uint32
+        |  +--:(yplca:supported-update-period)
+        |     +--ro yplca:supported-update-period*      uint32
+        +--ro yplca:on-change-supported?
         |       notification-support
-        +--ro yplc:transport
-           +--ro yplc:transport-capability* [transport-protocol]
-              +--ro yplc:transport-protocol    identityref
-              +--ro yplc:security-protocol?    identityref
-              +--ro yplc:encoding-format*      identityref
+        +--ro yplca:transport
+           +--ro yplca:transport-capability* [transport-protocol]
+              +--ro yplca:transport-protocol    identityref
+              +--ro yplca:security-protocol?    identityref
+              +--ro yplca:encoding-format*      identityref

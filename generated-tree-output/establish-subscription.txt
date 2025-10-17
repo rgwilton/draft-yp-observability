@@ -3,16 +3,14 @@
     |  |  +---w name              subscription-name
     |  |  +---w description?      string
     |  |  +---w target
-    |  |  |  +---w datastore?             identityref
-    |  |  |  +---w (filter)?
-    |  |  |     +--:(within-subscription)
-    |  |  |        +---w (filter-spec)?
-    |  |  |           +--:(path)
-    |  |  |           |  +---w path?      ypath
-    |  |  |           +--:(subtree)
-    |  |  |           |  +---w subtree?   <anydata> {ypl:subtree}?
-    |  |  |           +--:(xpath)
-    |  |  |              +---w xpath?     yang:xpath1.0 {ypl:xpath}?
+    |  |  |  +---w datastore?       identityref
+    |  |  |  +---w (filter)
+    |  |  |     +--:(path)
+    |  |  |     |  +---w path       ypath
+    |  |  |     +--:(subtree)
+    |  |  |     |  +---w subtree    <anydata> {ypl:subtree}?
+    |  |  |     +--:(xpath)
+    |  |  |        +---w xpath      yang:xpath1.0 {ypl:xpath}?
     |  |  +---w update-trigger
     |  |  |  +---w periodic!
     |  |  |  |  +---w period         centiseconds

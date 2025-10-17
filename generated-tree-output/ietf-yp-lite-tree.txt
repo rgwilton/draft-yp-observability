@@ -6,16 +6,14 @@ module: ietf-yp-lite
     |  |  +---w name              subscription-name
     |  |  +---w description?      string
     |  |  +---w target
-    |  |  |  +---w datastore?             identityref
-    |  |  |  +---w (filter)?
-    |  |  |     +--:(within-subscription)
-    |  |  |        +---w (filter-spec)?
-    |  |  |           +--:(path)
-    |  |  |           |  +---w path?      ypath
-    |  |  |           +--:(subtree)
-    |  |  |           |  +---w subtree?   <anydata> {ypl:subtree}?
-    |  |  |           +--:(xpath)
-    |  |  |              +---w xpath?     yang:xpath1.0 {ypl:xpath}?
+    |  |  |  +---w datastore?       identityref
+    |  |  |  +---w (filter)
+    |  |  |     +--:(path)
+    |  |  |     |  +---w path       ypath
+    |  |  |     +--:(subtree)
+    |  |  |     |  +---w subtree    <anydata> {ypl:subtree}?
+    |  |  |     +--:(xpath)
+    |  |  |        +---w xpath      yang:xpath1.0 {ypl:xpath}?
     |  |  +---w update-trigger
     |  |  |  +---w periodic!
     |  |  |  |  +---w period         centiseconds
@@ -34,25 +32,19 @@ module: ietf-yp-lite
           +---w name    subscription-name
 
   notifications:
-    +---n replay-completed
-    |  +--ro id    subscription-id
-    +---n update-complete
-    |  +--ro id    subscription-id
     +---n subscription-started
     |  +--ro id                subscription-id
     |  +--ro name              subscription-name
     |  +--ro description?      string
     |  +--ro target
-    |  |  +--ro datastore?             identityref
-    |  |  +--ro (filter)?
-    |  |     +--:(within-subscription)
-    |  |        +--ro (filter-spec)?
-    |  |           +--:(path)
-    |  |           |  +--ro path?      ypath
-    |  |           +--:(subtree)
-    |  |           |  +--ro subtree?   <anydata> {ypl:subtree}?
-    |  |           +--:(xpath)
-    |  |              +--ro xpath?     yang:xpath1.0 {ypl:xpath}?
+    |  |  +--ro datastore?       identityref
+    |  |  +--ro (filter)
+    |  |     +--:(path)
+    |  |     |  +--ro path       ypath
+    |  |     +--:(subtree)
+    |  |     |  +--ro subtree    <anydata> {ypl:subtree}?
+    |  |     +--:(xpath)
+    |  |        +--ro xpath      yang:xpath1.0 {ypl:xpath}?
     |  +--ro update-trigger
     |     +--ro periodic!
     |     |  +--ro period         centiseconds
@@ -63,13 +55,18 @@ module: ietf-yp-lite
     |  +--ro name      subscription-name
     |  +--ro id        subscription-id
     |  +--ro reason    identityref
+    +---n receiver-disconnected
+    |  +--ro name      subscription-name
+    |  +--ro id        subscription-id
+    |  +--ro reason    identityref
     +---n update
-       +--ro id?                 subscription-id
-       +--ro path-prefix?        string
-       +--ro snapshot-type?      enumeration
-       +--ro observation-time?   yang:date-and-time
-       +--ro updates* [target-path]
-       |  +--ro target-path    string
-       |  +--ro data?          <anydata>
-       +--ro incomplete?         empty
-       +--ro update-complete?    empty
+    |  +--ro id?                 subscription-id
+    |  +--ro path-prefix?        string
+    |  +--ro snapshot-type?      enumeration
+    |  +--ro observation-time?   yang:date-and-time
+    |  +--ro updates* [target-path]
+    |  |  +--ro target-path    string
+    |  |  +--ro data?          <anydata>
+    |  +--ro complete?           empty
+    +---n update-complete
+       +--ro id    subscription-id

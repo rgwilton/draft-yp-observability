@@ -391,22 +391,25 @@ module ietf-yp-lite {
     }
   }
 
-  grouping filter-types {
+  grouping filter-choice {
     description
       "This grouping defines the types of selectors for objects
        from a datastore.";
-    choice filter-spec {
+    choice filter {
+      mandatory true;
       description
         "The content filter specification for this request.";
 
       leaf path {
         type ypath;
+        mandatory true;
         description
           "A basic path filter that allows wildcard, regex, or
            fixed value for list keys.  Each format is TODO";
       }
       anydata subtree {
         if-feature "ypl:subtree";
+        mandatory true;
         description
           "This parameter identifies the portions of the
            target datastore to retrieve.";
@@ -417,6 +420,7 @@ module ietf-yp-lite {
       leaf xpath {
         if-feature "ypl:xpath";
         type yang:xpath1.0;
+        mandatory true;
         description
           "This parameter contains an XPath expression identifying
            the portions of the target datastore to retrieve.
@@ -565,19 +569,7 @@ module ietf-yp-lite {
            operational";
       }
 
-      choice filter {
-        description
-          "The source of the selection filter applied to the
-           subscription.  This will either (1) come referenced from
-           a global list or (2) be provided in the subscription
-           itself.";
-        case within-subscription {
-          description
-            "A local definition allows a filter to have the same
-            lifecycle as the subscription.";
-          uses filter-types;
-        }
-      }
+      uses filter-choice;
     }
 
     uses update-policy;
@@ -728,42 +720,6 @@ module ietf-yp-lite {
    * NOTIFICATIONS
    */
 
-  // TODO - Need to signal when an initial replay has completed, or
-  //        possibly when any period subscription has completed.
-  // TODO - Need to think about list key entries that are no longer
-  //        present.
-  notification replay-completed {
-    //ypl:subscription-state-notification;
-    //if-feature "replay";
-    description
-      "This notification is sent to indicate that all of the replay
-       notifications have been sent.";
-    leaf id {
-      type subscription-id;
-      mandatory true;
-      description
-        "This references the affected subscription.";
-    }
-  }
-
-  notification update-complete {
-    //ypl:subscription-state-notification;
-    //if-feature "replay";
-    description
-      "This notification indicates the end of a periodic collection,
-       and can be used to purge old state.
-       
-       Alternatively, the update-complete flag in the update
-       notification MAY be used to indicate that all messages in a
-       periodic or resync update have been sent.";
-    leaf id {
-      type subscription-id;
-      mandatory true;
-      description
-        "This references the affected subscription.";
-    }
-  }
-
   notification subscription-started {
     //ypl:subscription-state-notification;
     description
@@ -798,6 +754,42 @@ module ietf-yp-lite {
     leaf reason {
       type identityref {
         base subscription-terminated-reason;
+      }
+      mandatory true;
+      description
+        "Identifies the condition that resulted in the
+         termination.";
+    }
+  }
+
+  notification receiver-disconnected {
+    description
+      "This notification indicates that a receiver has been
+       disconnected from a subscription.  This notification is only
+       sent to the affected receiver if the transport is still
+       available, and only if the subscription remains active due
+       to other active receivers.
+
+       The receiver will not receive any further notifications
+       for this subscription unless it receives a new
+       'subscription-started' notification for this
+       subscription.";
+    leaf name {
+      type subscription-name;
+      mandatory true;
+      description
+        "The name of the subscription.";
+    }
+    leaf id {
+      type subscription-id;
+      mandatory true;
+      description
+        "The subscription identifier";
+    }
+    leaf reason {
+      type identityref {
+        base subscription-terminated-reason;
+          // TODO, add new receiver disconnected reasons.
       }
       mandatory true;
       description
@@ -914,16 +906,7 @@ module ietf-yp-lite {
       }
     }
 
-    leaf incomplete {
-      type empty;
-      description
-        "This is a flag that indicates that not all datastore nodes
-         subscribed to are included with this update. Receivers of
-         this data SHOULD NOT assume that any missing data has been
-         implicitly deleted.";
-    }
-
-    leaf update-complete {
+    leaf complete {
       type empty;
       description
         "This flag indicates that this is the last
@@ -932,7 +915,34 @@ module ietf-yp-lite {
          the event-time.
 
          The 'update-complete' notification MAY be used as an
-         alternative to setting this flag.";
+         alternative to setting this flag, and is semantically
+         equivalent.";
+    }
+  }
+
+  // TODO - Need to signal when an initial replay has completed, or
+  //        possibly when any period subscription has completed.
+  // TODO - Need to think about list key entries that are no longer
+  //        present.
+  notification update-complete {
+    //ypl:subscription-state-notification;
+    //if-feature "replay";
+    description
+      "This notification indicates the end of a periodic collection
+       or resync event for an on-change subscription, and can be used
+       to indicate that the receiver has a complete snapshot of the
+       subscribed data at the event-time, and hence the client MAY
+       use this as a signal that it can purge stale state
+       information.
+       
+       Alternatively, the 'complete' flag in the update
+       notification MAY be used instead of sending this notification
+       as a separate message, and both are semantically equivalent.";
+    leaf id {
+      type subscription-id;
+      mandatory true;
+      description
+        "This references the affected subscription.";
     }
   }
 }
