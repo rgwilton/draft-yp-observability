@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-16T00:19:27.476908+00:00",
+  "timestamp": "2025-10-19T00:21:10.001075+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -195,16 +195,16 @@
     {
       "number": 13,
       "id": "I_kwDOM-PT7s7Qlbbu",
-      "title": "When a subscription is terminated, should it be MUST NOT send any more notifications after the terminated message, or SHOULD NOT?",
+      "title": "Issues related to dynamic subscription lifecycles",
       "url": "https://github.com/rgwilton/draft-yp-observability/issues/13",
       "state": "OPEN",
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
-      "body": "      - Holger, Thomas, Benoit: MUST NOT\n      - James: SHOULD NOT\n      - MUST NOT is clearer from an implementation POV, but probably doesn't really matter.\n      - What does the receiver do when it gets this message anyway?  I.e., does a receiver check/know to ignore messages received after a subscription-terminated, or before a subscription-started?\n\nProposal: Change the draft to \"MUST NOT\" for now.\n\nRelated question on dynamic-subscriptions:\n- is a terminate-subscription RPC allowed to be asynchronous with respect to the caller.  I.e., is it allowed to return before the subscription has actually stopped?\n- is a kill-subscription RPC allowed to be asynchronous with respect to the caller.  I.e., is it allowed to return before the subscription has actually stopped?  For kill-subscription I think that it should be asynchronous - I think that makes more sense given that it generally expected to be a third party and not actively consuming the subscription.",
+      "body": "When a subscription is terminated, should it be MUST NOT send any more notifications after the terminated message, or SHOULD NOT?\n       \n      - Holger, Thomas, Benoit: MUST NOT\n      - James: SHOULD NOT\n      - MUST NOT is clearer from an implementation POV, but probably doesn't really matter.\n      - What does the receiver do when it gets this message anyway?  I.e., does a receiver check/know to ignore messages received after a subscription-terminated, or before a subscription-started?\n\nProposal: Change the draft to \"MUST NOT\" for now.\n\nRelated question on dynamic-subscriptions:\n- is a terminate-subscription RPC allowed to be asynchronous with respect to the caller.  I.e., is it allowed to return before the subscription has actually stopped?\n- is a kill-subscription RPC allowed to be asynchronous with respect to the caller.  I.e., is it allowed to return before the subscription has actually stopped?  For kill-subscription I think that it should be asynchronous - I think that makes more sense given that it generally expected to be a third party and not actively consuming the subscription.\n- Do we wait for a \"establish-subscription\" RPC to return before sending events to a client?  YP had this restriction, but I was considering removing it, but I don't know if that would make life more difficult for clients.",
       "createdAt": "2025-10-09T14:38:14Z",
-      "updatedAt": "2025-10-09T14:38:14Z",
+      "updatedAt": "2025-10-17T10:34:18Z",
       "closedAt": null,
       "comments": []
     },
@@ -218,9 +218,9 @@
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
-      "body": "1. Should we allow on-change events to be published above the subscription path?\n   -  Rob: I think that the answer should be no.\n1. Should we allow on-change events to be generated even if the value may not have changed?\n   - Rob: I think that this needs to be yes, since many systems may track whether something has changed at a higher level in the data tree.  E.g., rather than tracking whether the interface MTU has changed, track whether any of a set of interface properties has changed.\n   - Ebben: How loose or tight should the specification bit.\n   - Holger: This should be okay, and this happens today.\n   - Rob: Should add comment that this shouldn't generate excessive spurious notifications. \n\n1. When subscribed to a leaf under and interface, and the interface is deleted, then what do you generate the delete notification for?\n   - Do you generate the delete for the object being subscribed to?\n   - Or do you send the delete higher up the path, at point that the object has been removed?\n   - If the messages are lifted up to object level then need to consider happen's before relationship (if this is an issue).\n   - Better soln may be to subscribe higher up to the object with a filter applied to select the fields of interface within the object.\n\n1. Should we support configurable subscription-level keepalives?\n   - This would probably entail periodically sending a small message on on-change subscriptions so that the receiver (message broker) knows that the collection is still alive and active.\n   - The presumption is that would be configurable option on an on-change subscription (configured or dynamic)\n   - Note, some transport sessions may already support keepalives, which is a separate, transport specific consideration.\n   - An alternative would be to configure a joint periodic and on-change subscription, but depending on the keepalive interval this would likely involve sending more data on a periodic basis.\n   - Another alternative is to monitor the operational state of the subscription to keep that all the expected subscriptions are active.",
+      "body": "1. Should we allow on-change events to be published above the subscription path?\n   -  Rob: I think that the answer should be no.\n1. Should we allow on-change events to be generated even if the value may not have changed?\n   - Rob: I think that this needs to be yes, since many systems may track whether something has changed at a higher level in the data tree.  E.g., rather than tracking whether the interface MTU has changed, track whether any of a set of interface properties has changed.\n   - Ebben: How loose or tight should the specification bit.\n   - Holger: This should be okay, and this happens today.\n   - Rob: Should add comment that this shouldn't generate excessive spurious notifications. \n\n1. When subscribed to a leaf under and interface, and the interface is deleted, then what do you generate the delete notification for?\n   - Do you generate the delete for the object being subscribed to?\n   - Or do you send the delete higher up the path, at point that the object has been removed?\n   - If the messages are lifted up to object level then need to consider happen's before relationship (if this is an issue).\n   - Better soln may be to subscribe higher up to the object with a filter applied to select the fields of interface within the object.\n\n1. Should we support configurable subscription-level keepalives?\n   - This would probably entail periodically sending a small message on on-change subscriptions so that the receiver (message broker) knows that the collection is still alive and active.\n   - The presumption is that would be configurable option on an on-change subscription (configured or dynamic)\n   - Note, some transport sessions may already support keepalives, which is a separate, transport specific consideration.\n   - An alternative would be to configure a joint periodic and on-change subscription, but depending on the keepalive interval this would likely involve sending more data on a periodic basis.\n   - Another alternative is to monitor the operational state of the subscription to keep that all the expected subscriptions are active.\n   - **discussed, but no conclusion yet**",
       "createdAt": "2025-10-10T10:27:46Z",
-      "updatedAt": "2025-10-15T09:31:25Z",
+      "updatedAt": "2025-10-16T09:30:58Z",
       "closedAt": null,
       "comments": []
     },
@@ -234,9 +234,9 @@
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
-      "body": "Document check/cleanup (mostly editorial) tasks:\n\n- [ ] Check/prune terminology, any extra, missing, consistency.\n- [ ] Remove dead/commented text in the draft.\n- [ ] Remove dead/commented code from YANG modules.\n- [ ] Check everyone has been acknowledged.\n- [ ] Check that the change list for add/update messages.\n- [ ] Add and validate examples.\n",
+      "body": "Document check/cleanup (mostly editorial) tasks:\n\n- [ ] Check/prune terminology, any extra, missing, consistency.\n- [ ] Remove dead/commented text in the draft.\n- [ ] Remove dead/commented code from YANG modules.\n- [ ] Check everyone has been acknowledged.\n- [ ] Check that the change list for add/update messages.\n- [ ] Add and validate examples.\n- [ ] Simplify and update the list of dependencies on the various YANG modules (once the structure of them is more stable).\n",
       "createdAt": "2025-10-14T10:14:11Z",
-      "updatedAt": "2025-10-14T10:14:53Z",
+      "updatedAt": "2025-10-16T14:50:37Z",
       "closedAt": null,
       "comments": []
     },
@@ -253,6 +253,38 @@
       "body": "Should this just use the standard mechanisms, i.e., whether the module is included in YANG library (RFC 8525), or should this also be listed in the Yang Push Capabilities Data Model?",
       "createdAt": "2025-10-15T11:51:56Z",
       "updatedAt": "2025-10-15T11:51:56Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 17,
+      "id": "I_kwDOM-PT7s7R9LGn",
+      "title": "Transport considerations for subscriptions over multiple receivers",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/17",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Note I've updated the document to allow a single configured subscription to have different transports - I was trying to avoid this to keep it simple, but as soon as you secure transports any benefit you would have disappears anyway, so the limitation doesn't really help in the general case.\n",
+      "createdAt": "2025-10-16T15:49:25Z",
+      "updatedAt": "2025-10-16T15:49:25Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 18,
+      "id": "I_kwDOM-PT7s7R9Loj",
+      "title": "Capabilities",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/18",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Do we need to add capabilities to indicate:\n\n1. Which fields are on-change notifiable.\n\n1. At which level *bags* exist internally (for performance reasons).\n\n1. The points at which subscriptions are decomposed to.",
+      "createdAt": "2025-10-16T15:50:00Z",
+      "updatedAt": "2025-10-16T15:50:00Z",
       "closedAt": null,
       "comments": []
     }
