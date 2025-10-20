@@ -1,0 +1,31 @@
+{
+  "ietf-yp-lite:update": {
+    "id": 1011,
+    "path-prefix": "/ietf-interfaces:interfaces/interface",
+    "snapshot-type": "periodic",
+    "observation-time": "2024-10-10T08:00:05.21Z",
+    "updates": [
+      {
+        "target-path": "",
+        "data": {
+          "ietf-interfaces:interface": [
+            {
+              "name": "eth0",
+              "statistics": {
+                "in-octets": 123456,
+                "out-octets": 654321
+              }
+            },
+            {
+              "name": "eth1",
+              "statistics": {
+                "in-octets": 789012,
+                "out-octets": 210987
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

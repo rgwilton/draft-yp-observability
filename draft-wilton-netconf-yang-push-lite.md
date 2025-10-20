@@ -1777,101 +1777,33 @@ Notes on examples:
 
 - All these examples are created by hand, may contain errors, and may not parse correctly.
 
-## Example of update message using the new style update message
+## Example of periodic update messages
 
-The subscription was made on "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces", but for efficiency reasons, the device has split the subscription into separate child subscriptions for the different data providers, and makes use of the new message format.
+In this example, a subscription is for */ietf-interfaces:interfaces/interface*.  However, for efficiency reasons, the publisher is internally returning the data from two different data providers.
 
-Hence, this first periodic message is being published for the "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interface-summary" container, but it is encoded rooted relative to the schema for "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces".
+Of note:
 
-~~~~ JSON
-{
-  "ietf-yp-notification:envelope": {
-    "event-time": "2024-09-27T14:16:27.773Z",
-    "hostname": "example-router",
-    "sequence-number": 1,
-    "contents": {
-      "ietf-yp-ext:update": {
-        "id": 1,
-        "subscription-path":
-          "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces",
-        "target-path":
-          "Cisco-IOS-XR-pfi-im-cmd-oper:"
-          "interfaces/interface-summary",
-        "snapshot-type": "periodic"
-        "observation-time": "2024-09-27T14:16:27.773Z",
-        "datastore-snapshot": {
-          "interface-summary" : {
-            "interface-type": [
-              {
-                "interface-type-name": "IFT_GETHERNET",
-                "interface-type-description": "GigabitEthernet",
-                "interface-counts": {
-                  "interface-count": 5,
-                  "up-interface-count": 2,
-                  "down-interface-count": 0,
-                  "admin-down-interface-count": 3
-                }
-              }
-            ],
-            "interface-counts": {
-              "interface-count": 8,
-              "up-interface-count": 5,
-              "down-interface-count": 0,
-              "admin-down-interface-count": 3
-            }
-          }
-        }
-      }
-    }
-  }
-}
-~~~~
-{: align="left" sourcecode-markers="true" sourcecode-name="update-msg.json" title="Example YANG Push Lite update message"}
-
-The second periodic message is being published for the "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interfaces/interface" list, but again, it is encoded rooted relative to the schema for "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces".  This message has a separate observation time that represents the more accurate time that this periodic date was read.
+- The first periodic message is published for the entries in the */ietf-interfaces:interface/interfaces* list, but doesn't contain the data in the *statistics* child container.
+- the *path-prefix* is to the subscription subtree, since the device will never return data outside of the subscription subtree.
+- the *target-path* is elided because the data is returned at the subscription point. **TODO, or should it actually be to the element above? **
 
 ~~~~ JSON
-{
-  "ietf-yp-notification:envelope": {
-    "event-time": "2024-09-27T14:16:27.973Z",
-    "hostname": "example-router",
-    "sequence-number": 67,
-    "contents": {
-      "ietf-yp-ext:update": {
-        "id": 1,
-        "subscription-path":
-          "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces",
-        "target-path":
-          "Cisco-IOS-XR-pfi-im-cmd-oper:
-          interfaces/interfaces/interface[]",
-        "snapshot-type": "periodic"
-        "observation-time": "2024-09-27T14:16:27.973Z",
-        "datastore-snapshot": {
-          "interfaces": {
-            "interface": [
-              {
-                "interface-name": "GigabitEthernet0/0/0/0",
-                "interface": "GigabitEthernet0/0/0/0",
-                "state": "im-state-admin-down",
-                "line-state": "im-state-admin-down"
-              },
-              {
-                "interface-name": "GigabitEthernet0/0/0/4",
-                "interface": "GigabitEthernet0/0/0/4",
-                "state": "im-state-admin-down",
-                "line-state": "im-state-admin-down"
-              },
-            ]
-          }
-        }
-      }
-    }
-  }
-}
+{::include examples/yang/notifications/periodic-update.json}
 ~~~~
-{: align="left" sourcecode-markers="true" sourcecode-name="update-msg-2.json" title="2nd example YANG Push Lite update message"}
+{: align="left" sourcecode-name="periodic-update.json" title="Example periodic update for interfaces list"}
 
-Each child subscription would use the same period and anchor time as the configured subscription, possibly with a little bit of initial jitter to avoid all daemons attempting to publish the data at exactly the same time.
+For the second notification related to the same subscription:
+
+- the second periodic message is published for only the statistics associated with the interfaces.
+- as above, the *path-prefix* is still to the subscription subtree.
+- the second notification uses a separate observation-time, but would use the same event-time in the notification header so that the two messages can be correlated to the same periodic collection event.
+- the second periodic message has set the *complete* flag to indicate that it is the last notification as part of the periodic collection.  A separate *update-complete* notification could have been sent instead.
+
+~~~~ JSON
+{::include examples/yang/notifications/periodic-update-stats.json}
+~~~~
+{: align="left" sourcecode-name="periodic-update-stats.json" title="Example periodic update for interface statistics"}
+
 
 ## Example of an on-change-update notification using the new style update message
 
@@ -1926,30 +1858,39 @@ If the subscription is for on-change notifications, or periodic-and-on-change-no
 
 ## Example of an on-change-delete notification using the new style update message
 
-If the interface was deleted, and if the system was capable of reporting on-change events for the delete event, then an on-change delete message would be encoded as per the following message.  Of note:
 
-- The on-change-delete snapshot type doesn't include a "datastore-snapshot", instead it represents a delete of the list entry at the path identified by the target-path, which is similar to a YANG Patch delete notification.
+### Update message with single deleted data node
+
+If the interface was deleted, and if the system was capable of reporting on-change events for the delete event, then an on-change delete message would be encoded as per the following message.
+
+Of note:
+
+- The ietf-yp-notification:envelope has been elided
+- The deleted data is identified by the target node in the *updates/target-path* element.
+- The observation time represents the time at which the delete event occurred, e.g., perhaps when the system processed a configuration change.
 
 ~~~~ JSON
-{
-  "ietf-yp-notification:envelope": {
-    "event-time": "2024-09-27T14:16:40.973Z",
-    "contents": {
-      "ietf-yp-ext:update": {
-        "id": 1,
-        "subscription-path":
-          "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces",
-        "target-path":
-          "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interfaces/
-          interface[interface=GigabitEthernet0/0/0/0]",
-        "snapshot-type": "on-change-delete"
-        "observation-time": "2024-09-27T14:16:40.973Z",
-      }
-    }
-  }
-}
+{::include examples/yang/notifications/on-change-delete.json}
 ~~~~
-{: align="left" sourcecode-markers="true" sourcecode-name="on-change-delete-msg.json" title="Example YANG Push Lite on-change delete message"}
+{: align="left" sourcecode-name="on-change-delete-msg.json" title="Example YANG Push Lite on-change delete message"}
+
+
+### Update message with multiple on-change deletes
+
+This follow example illustrates how a single update notification message can contain multiple on-change delete events for different data nodes.  In this example, two separate interfaces are being deleted.
+
+Of note:
+
+- The ietf-yp-notification:envelope has been elided
+- *prefix-path* is used to shorten the target-paths, the full paths can be constructed concatenating the *prefix-path* with each *target-path* in the *updates* list.
+- all delete events share a common observation-time of when the delete events occurred.  If it is necessary to identify separate observation times then the publisher would send separate messages.
+- data node subtrees that are deleted (list entries in this case) are identified by separate entries in the *updates* list.
+
+~~~~ JSON
+{::include examples/yang/notifications/on-change-multi-delete.json}
+~~~~
+{: align="left" sourcecode-name="on-change-multi-delete-msg.json" title="Example YANG Push Lite on-change delete message"}
+
 
 ## Subscription RPC examples (from RFC 8641)
 
