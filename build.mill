@@ -1,7 +1,7 @@
-//| mill-version: 1.0.4
+//| mill-version: 1.0.6
 //| mill-jvm-version: temurin:21
 //| mvnDeps:
-//| - uk.org.wilton::ietf-yang-mill-plugin::0.0.6
+//| - uk.org.wilton::ietf-yang-mill-plugin::0.0.10
 
 package build
 
@@ -21,13 +21,13 @@ object `package` extends IETF {
   def draftDeps = Seq(
     "draft-ietf-netmod-rfc6991-bis-18",
     "draft-ietf-netconf-https-notif-15",
-    "draft-ietf-netconf-udp-notif-22",
+    "draft-ietf-netconf-udp-notif-23",
     "draft-ietf-netconf-udp-client-server-08",
-    "draft-ietf-netconf-distributed-notif-15",
+    "draft-ietf-netconf-distributed-notif-16",
     "draft-ietf-netconf-http-client-server-29",
     "draft-ietf-netconf-yang-notifications-versioning-09",
     "draft-ietf-netconf-yang-library-augmentedby-12",
-    "draft-ietf-netmod-yang-module-versioning-14",
+    "draft-ietf-netmod-yang-module-versioning-15",
     "draft-ietf-netmod-yang-semver-24",
     "draft-netana-netconf-yp-transport-capabilities-01",
     "draft-netana-netconf-notif-envelope-02"
@@ -50,7 +50,8 @@ object `package` extends IETF {
 
   def yangCompiles = Seq(
     Seq("ietf-yp-lite.yang", "ietf-yp-lite-config.yang"),
-    Seq("ietf-yp-lite-capabilities.yang", "ietf-yp-lite.yang")
+    Seq("ietf-yp-lite-capabilities.yang", "ietf-yp-lite.yang"),
+    Seq("ietf-udp-notif-transport-2.yang", "ietf-yp-lite.yang")
   )
 
   def yangTrees = Seq(
@@ -79,4 +80,6 @@ object `package` extends IETF {
     checkDraftLatest()
     make()
   }
+
 }
+

@@ -172,9 +172,9 @@ YANG Push {{RFC8641}} was standardized by the IETF in 2019, but market adoption 
 
 Hence, during 2024, the vendors and operators working towards YANG telemetry solutions agreed to a plan to implement a subset of {{RFC8639}} and {{RFC8641}}, including common agreements of features that are not needed and would not be implemented, and deviations from the standards for some aspects of encoding YANG data.  In addition, the implementation efforts identified the minimal subset of functionality needed to support the initial telemetry use cases, and areas of potential improvement and optimization to the overall YANG Push telemetry solution (which has been written up as a set of small internet drafts that augment or extend the base YANG Push solution).
 
-Out of this work, consensus was building to specify a cut down version of Subscribed Notifications {{RFC8639}} and YANG Push {{RFC8641}} that is both more focussed on the operational telemetry use case, and is also easier to implement, by relaxing some of the constraints on consistency on the device, and removing, or simplifying some of the operational features.  This has resulted in this specification, YANG Push Lite.
+Out of this work, consensus was building to specify a cut down version of Subscribed Notifications {{RFC8639}} and YANG Push {{RFC8641}} that is both more focussed on the operational telemetry use case and is also easier to implement, achieved by relaxing some of the constraints on consistency on the device, and removing, or simplifying some of the operational features.  This has resulted in this specification, YANG Push Lite.
 
-The implementation efforts also gave arise to potential improvements to the protocol and encoding of notification messages.
+The implementation efforts also gave rise to potential improvements to the protocol and encoding of notification messages.
 
 ## Complexities in Modelling the Operational State Datastore {#OperationalModellingComplexities}
 
@@ -213,7 +213,6 @@ Hence, this document introduces the fairly intuitive "periodic-and-on-change" up
 This document, specifying YANG Push Lite, is intended to be a lightweight alternative for {{RFC8639}} and {{RFC8641}}, but that also incorporates various extensions since those RFCs were written.  Often substantial parts of those documents and models have been incorporated almost verbatim, but modified to fit the YANG Push Lite functionality and module structure.
 
 Hence, the authors of this draft would like to sincerely thank and acknowledge the very significant effort put into those RFCs and drafts by authors, contributors and reviewers.  In particular, We would like to thank the listed authors of these documents: Eric Voit, Alex Clemm, Alberto Gonzalez Prieto, Einar Nilsen-Nygaard, Ambika Prasad Tripathy, Balazs Lengyel, Alexander Clemm, Benoit Claise, Qin Wu, Qiufang Ma, Alex Huang Feng, Thomas Graf, Pierre Francois.
-
 
 ### RFC 8639 and RFC 8641
 
@@ -257,7 +256,7 @@ A YANG Push lite subscription comprises:
 
 - a target datastore for the subscription, where the monitored subscription data is logically sourced from.
 
-- a set of selection filters to choose which datastore nodes from the target datstore the subscription is monitoring or sampling, as described in {{pathsAndFilters}}.
+- a set of selection filters to choose which datastore nodes from the target datastore the subscription is monitoring or sampling, as described in {{pathsAndFilters}}.
 
 - a choice of how update event notifications for the datastore's data nodes are triggered.  I.e., either periodic sampling of the current state, on-change event-driven, or both.  These are described in **TODO, add reference**.
 
@@ -442,7 +441,7 @@ If subscriber permissions change during the lifecycle of a subscription and even
 
 Event records SHALL be sent to a receiver in the order in which they were generated.  I.e., the publisher MUST not reorder the events when enqueuing notifications on the transport session, but there is no guarantee of delivery order.
 
-Event records MUST NOT be sent before a *subscriptipn-started* notification ({{SubscriptionStartedNotification}}) or after a *subscription-terminated* notification ({{SubscriptionTerminatedNotification}}), or to a particular receiver that has been sent a *receiver-disconnected* notification ({{ReceiverDisconnectedNotification}}).
+Event records MUST NOT be sent before a *subscription-started* notification ({{SubscriptionStartedNotification}}) or after a *subscription-terminated* notification ({{SubscriptionTerminatedNotification}}), or to a particular receiver that has been sent a *receiver-disconnected* notification ({{ReceiverDisconnectedNotification}}).
 
 ## Notification Envelope {#FullNotificationExample}
 
@@ -670,7 +669,7 @@ Each configured receiver has the following associated properties:
 
 This specification is transport independent, e.g., see {{transports}}, and thus the YANG module defined in {{yp-lite-yang-module}} cannot directly define and expose these transport parameters.  Instead, receiver-specific transport connectivity parameters MUST be configured via transport-specific augmentations to the YANG choice node */datastore-telemetry/receivers/receiver/transport-type*.
 
-A publisher supporting configured subscriptions clearly must support at least one YANG data model that augments transport connectivity parameters onto */datastore-telemetry/receivers/receiver/transport-type*.  For an example of a similar such augmentation (but for YANG Push), see {{I-D.draft-ietf-netconf-udp-notif}}. **TODO, this reference and text will need to be updated to a UDP bis document, that augments the new namespace.**
+A publisher supporting configured subscriptions clearly must support at least one YANG data model that augments transport connectivity parameters onto */datastore-telemetry/receivers/receiver/transport-type*.  For an example of a similar such augmentation (but for YANG Push), see {{I-D.draft-ietf-netconf-udp-notif}}. **TODO, this reference and text will need to be updated to a UDP-notif bis document, that augments the new YANG Push Lite receiver path.**
 
 ### Receivers for Dynamic Subscriptions {#DynamicSubscriptionReceivers}
 
@@ -723,7 +722,7 @@ The state transitions for a receiver are illustrated below:
 
 This state model allows implementations and operators to clearly distinguish between receivers that are simply configured, those that are in the process of connecting, and those that are actively being used.
 
-**TODO, do we need a comment about closing the transport session if there are no more subscription to that receiver?  Possibly the Transports section of the document should have a section that describes the lifecycle of a transport session (or will that end up differing between configured and dyanmic subscriptions?)**
+If the configuration has changed such that there were previously connections to a receiver, but that receiver is no longer referenced by valid subscriptions, then the publisher MUST close any associated transport sessions to the receiver, but MAY delay the closing for a short period of time (no more than 15 minutes) to potentially allow existing transport session to be reused by new subscriptions.
 
 ## Transports {#transports}
 
@@ -735,9 +734,9 @@ This section provides requirements for any transport specifications supporting t
 
 The transport specification MUST provide YANG modules, to be implemented by publishers implementing the YANG Push configuration model in {{config-subs-data-model}}, that:
 
-* augments the *datastore-telemetry/receivers/transport-type* choice statement with a container that both identifies the transport and contains all transport specific parameters.
+- augments the *datastore-telemetry/receivers/transport-type* choice statement with a container that both identifies the transport and contains all transport specific parameters.
 
-* augments */sysc:system-capabilities/transport/transport-capabilities/* container with any transport specific capabilities or options (conditional on a YANG *when* statement).  Note, encodings for a given transport are advertised directly via the ietf-yp-lite-capabilities YANG Model {{yp-lite-yang-capabilities-module}}.
+- augments */sysc:system-capabilities/transport/transport-capabilities/* container with any transport specific capabilities or options (conditional on a YANG *when* statement).  Note, encodings for a given transport are advertised directly via the ietf-yp-lite-capabilities YANG Model {{yp-lite-yang-capabilities-module}}.
 
 Using a secure transport is RECOMMENDED.  Thus, any transport specification MUST provide a mechanism to ensure secure communication between the publisher and receiver in a hostile environment, e.g., through the use of transport layer encryption.  Transport specifications MAY also specify a mechanism for unencrypted communications, which can be used when transport layer security is not required, e.g., if the transport session is being secured via another mechanism, or when operating within a controlled environment or test lab.
 
@@ -748,6 +747,8 @@ The transport selected by the subscriber to reach the publisher SHOULD be able t
 The transport specification MUST specifying how multiple subscriptions referencing the same receiver are to be handled at the transport layer.  The transport specification MAY require separate transport sessions per subscription to a given receiver, or it MAY allow multiple subscriptions to the same receiver to be multiplexed over a shared transport session.
 
 A specification for a transport built upon this document can choose whether to use the same logical channel for the RPCs and the event records.  However, the *update* records and the subscription state change notifications MUST be sent on the same transport session.
+
+The transport specification MAY specify a keepalive mechanism to keep the transport session alive.  There is no YANG Push Lite protocol or application level keepalive mechanism.
 
 **TODO, do we need to mention anything about transport session timeouts, e.g., which would cause a subscription to be terminated.  What about buffering?  Is that a transport consideration?**
 
@@ -784,11 +785,11 @@ Subscriptions can be set up and managed in two ways:
 
 Conformant implementations MUST implement at least one of the two mechanisms above for establishing and maintaining subscriptions, but they MAY choose to only implement a single mechanism.
 
-The core behaviour for both configured and dynamic subscription is the same, with the key differentiation being how they are provisioned, and how the transport is setup.  This next section describes the functionaity that is common to both types of subscription, followed by the sections that describe the specifics and differences between the two ways of managing subscriptions.
+The core behavior for both configured and dynamic subscription is the same, with the key differentiation being how they are provisioned, and how the transport is setup.  This next section describes the functionality that is common to both types of subscription, followed by the sections that describe the specifics and differences between the two ways of managing subscriptions.
 
 ## Common Subscription Parameters {#CommonSubscriptionParameters}
 
-All subscriptions require the following state to be instanstiated:
+All subscriptions require the following state to be instantiated:
 
 - a *name* to identify the subscription.
 - the *target* for the subscription, comprising:
@@ -799,10 +800,10 @@ All subscriptions require the following state to be instanstiated:
   - *on-change*, for the publisher to send state updates when the internal state changes, i.e., event driven.
 - receiver, transport, and encoding parameters, as per {{receivers}}.  How these are provided differs for configured vs dynamic subscriptions and is further explained in the sections below.
 
-Subscription names MUST be unique across all configured and dynamic subscriptions.  Configured subscription take precdence over dynamic subscription, so:
+Subscription names MUST be unique across all configured and dynamic subscriptions.  Configured subscription take precedence over dynamic subscription, so:
 
 - attempts to create a dynamic subscription with a name that conflicts with any other subscription (configured or dynamic) MUST fail,
-- configuring a subscription, assuming it passes configuration validation, replaces any dynamic subscriptions with the same name.  Thus, causing the dyanmic subscription to be immediately terminated (see {{TerminatingSubscriptions}}).
+- configuring a subscription, assuming it passes configuration validation, replaces any dynamic subscriptions with the same name.  Thus, causing the dynamic subscription to be immediately terminated (see {{TerminatingSubscriptions}}).
 - **TODO: We want to make the name optional to be specified for dynamic subscriptions?  If not provided then the publisher could allocate using "dyn-\<XXX\>", where XXX is an increasing numeric subscription id?**
 
 <!--
@@ -814,9 +815,10 @@ A publisher MAY terminate a dynamic subscription at any time. Similarly, it MAY 
 -->
 
 ### Subscription States
+
 YANG Push Lite has a small set of simple states for a subscription on a publisher.  These states are intended to help clients easily determine the health and status of a subscription.
 
-- **Invalid**: a subscription that is invalid for any reason.  E.g., the subscription references an invalid filter expression for the current device schema.  Normally, invalid configurations should be rejected by the system, whether due to subscription configuration or *establish-susbcription* RPC, and hence this state should rarely be seen.
+- **Invalid**: a subscription that is invalid for any reason.  E.g., the subscription references an invalid filter expression for the current device schema.  Normally, invalid configurations should be rejected by the system, whether due to subscription configuration or *establish-subscription* RPC, and hence this state should rarely be seen.
 
 - **Inactive**: a valid subscription, but one that is not active because it has no associated receivers.  This state is unlikely to be seen for dynamic subscriptions.
 
@@ -828,7 +830,7 @@ YANG Push Lite has a small set of simple states for a subscription on a publishe
 
 - **Terminated**: represents a subscription that has finished.  Subscriptions would only be expected to transiently be in this state and hence it would not normally be reported.  Terminated dynamic subscriptions, or unconfigured subscriptions, should quickly be removed from the operational state of the device.  Terminated
 
-Below is an approximate state diagram illustrating the states, and the likely changes between states.  However, this is not a formal state machine and publishers can move between arbitrary states based on changes to susbcription properties, the system, connectivity to receivers, or resource constraints on the system.  New subscriptions should choose an appropriate starting state, e.g., either Inactive or Invalid.
+Below is a state diagram illustrating the states, and the likely changes between states.  However, this is not a formal state machine and publishers can move between arbitrary states based on changes to subscription properties, the system, connectivity to receivers, or resource constraints on the system.  New subscriptions should choose an appropriate starting state, e.g., either Inactive or Invalid.
 
 ~~~~
 
@@ -982,7 +984,7 @@ Below is the tree diagram for the *subscription-started* notification.  All data
 ~~~~
 {: align="left" title="subscription-started Notification Tree Diagram"}
 
-###  "subscription-terminated" {#SubscriptionTerminatedNotification}
+### "subscription-terminated" {#SubscriptionTerminatedNotification}
 
 For a receiver, this notification indicates that no further event records for an active subscription should be expected from the publisher unless and until a new *subscription-started* notification is received.
 
@@ -1009,9 +1011,9 @@ Below is a tree diagram for "subscription-terminated".  All objects contained in
 ~~~~
 {: align="left" title="subscription-terminated Notification Tree Diagram"}
 
-**TODO Augmenting extra fields is better for clients?**  The *reason* datanode identifyref indicates why a subcription has been terminated, and could be extended with further reasons in future.  I suggest that we change this to an enum with an optional description field.**
+**TODO Augmenting extra fields is better for clients?**  The *reason* data node identityref indicates why a subscription has been terminated, and could be extended with further reasons in future.  I suggest that we change this to an enum with an optional description field.**
 
-###  "receiver-disconnected" {#ReceiverDisconnectedNotification}
+### "receiver-disconnected" {#ReceiverDisconnectedNotification}
 
 Configured subscriptions support multiple receivers.  If one particular receiver is slow to process notifications, e.g., causing
 
@@ -1029,7 +1031,7 @@ Possible reasons as to why a publisher may disconnect a receiver are:
 {: align="left" title="update-complete Notification Tree Diagram"}
 
 
-###  "update-completed"
+### "update-completed"
 
 **TODO, this description needs to be updated**.
 
@@ -1067,7 +1069,7 @@ Configured subscriptions have several characteristics distinguishing them from d
 
   - If the device reboots, then the configured subscription will obviously end, but once the subscription configuration has been processed after boot up, then the subscription will be recreated again, assuming the subscription configuration is still valid.
 
-  - If transport connectivity to the receiver is broken, then any subscriptions using that transport are terminated, but the publisher MUST periodically attempt to restablish connection to the receiver and re-activate any configured subscriptions to that receiver.
+  - If transport connectivity to the receiver is broken, then any subscriptions using that transport are terminated, but the publisher MUST periodically attempt to re-establish connection to the receiver and re-activate any configured subscriptions to that receiver.
 
   - Note, if there are no active subscriptions for a given receiver then any transport session(s) associated with that receiver MUST be closed, but that MAY be after a short delay.
 
@@ -1093,11 +1095,11 @@ Configured subscriptions can be deleted via configuration.  After the configurat
 
 Configured subscriptions are generally expected to self-monitor and automatically reconnect to the receivers if they experience network or transport issues.  However, the data model also defines explicit YANG *actions* to either: (i) reset a single subscription, or (ii) reset all subscriptions and the transports(s) associated with a specific configured receiver instance.
 
-These reset actions primarily act at the subsciption application layer, but may be useful if a receiver or collector determines that a configured subscription is not behaving correctly, and wishes to force a reset of the subscription without modifying the configuration associated with the subscription or forcing a configuration change on the publisher device.
+These reset actions primarily act at the subscription application layer, but may be useful if a receiver or collector determines that a configured subscription is not behaving correctly, and wishes to force a reset of the subscription without modifying the configuration associated with the subscription or forcing a configuration change on the publisher device.
 
 The reset action on a subscription is handled equivalently to removing and re-adding the subscription configuration.  I.e., the subscription MUST be terminated, as per {{TerminatingSubscriptions}} before being recreated, as per {{CreatingSubscriptions}}.  The reset action also resets (terminated and re-establishes) any subscription specific transport session that is not shared with any other subscriptions.
 
-The reset acction on a receiver is handled equivalently to removing and re-adding the receiver configuration for the receiver that has been reset.  Specifically, every subscription referencing the receiver MUST be terminated, as per {{TerminatingSubscriptions}} before being recreated, as per {{CreatingSubscriptions}}.  Any transport sessions tied to the subscriptions referencing the reset receiver MUST also be terminated and re-established.
+The reset action on a receiver is handled equivalently to removing and re-adding the receiver configuration for the receiver that has been reset.  Specifically, every subscription referencing the receiver MUST be terminated, as per {{TerminatingSubscriptions}} before being recreated, as per {{CreatingSubscriptions}}.  Any transport sessions tied to the subscriptions referencing the reset receiver MUST also be terminated and re-established.
 
 ## Dynamic Subscriptions {#DynamicSubscriptions}
 
@@ -1124,7 +1126,6 @@ Dynamic subscription differ from configured subscription in the following ways:
 - If the publisher cannot honor the terms of a dynamic subscription then the subscription MUST be terminated. **TODO, is this a SHOULD or MUST, do we want some leeway for temporary issues? E.g., allow some buffering. Also, this effectively applies to config subscriptions as well and hence should move.**
 
 <!--
-
 
 ### Dynamic Subscription State Machine
 
@@ -1192,7 +1193,7 @@ Below is a tree diagram for *establish-subscription* YANG RPC.  All objects cont
 A publisher MAY reject the "establish-subscription" RPC for many reasons, as described in Section 2.4.6.
 
 <!--
-TODO - Decide the simplist mechanism for returning RPC errors.
+TODO - Decide the simplest mechanism for returning RPC errors.
 
 Below is a tree diagram for "establish-subscription-stream-error-info" RPC yang-data.  All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.
 
@@ -1305,7 +1306,7 @@ transport-layer RPC structures.  These structures are:
 
 It is important for clients to have confidence that the telemetry data that they receive is correct and complete.  The design of YANG Push Lite achieves this in several ways:
 
-- the *complete* flag in *update* notification, or the equivalent *update-complete* notification, are used to signal when all data for a periodic collection event has been enqueued.  This allows clients to delete stale information and monitor the performance and behaviour of the publisher.
+- the *complete* flag in *update* notification, or the equivalent *update-complete* notification, are used to signal when all data for a periodic collection event has been enqueued.  This allows clients to delete stale information and monitor the performance and behavior of the publisher.
 
 - publishers use buffers when enqueuing traffic on to a transport to a receiver, but if that buffer becomes full then either the subscription is terminated, or in the case of a configured subscription with multiple receivers the slow receiver is disconnected from the subscription.  In the case of dynamic subscriptions, the client may attempt to re-created the subscription.  For configured subscriptions, the publisher should attempt to periodically recreate the subscription or reconnect the receiver.
 
@@ -1319,9 +1320,9 @@ It is important for clients to have confidence that the telemetry data that they
 
 - the protocol relies on transport protocols that are either reliable, e.g., TCP or HTTP, or unreliable transports that employ mechanisms for clients to detect when losses at the transport layer have occurred, e.g., the *message id* in {{I-D.draft-ietf-netconf-udp-notif}} (**TODO fix reference to bis version, once that becomes available**).
 
-- finally, if a publisher is not able tohonor the expectation for a subscription for any reason, then the publisher always has the option to terminate the subscription.  It can then subsequently refuse to handle new subscriptions if it does not have sufficient resources to handle the subscription.
+- finally, if a publisher is not able to honor the expectation for a subscription for any reason, then the publisher always has the option to terminate the subscription.  It can then subsequently refuse to handle new subscriptions if it does not have sufficient resources to handle the subscription.
 
-<!-- TODO, I think that this text is superflous to requirements, but we will keep it around a bit longer in case it is needed.
+<!-- TODO, I think that this text is superfluous to requirements, but we will keep it around a bit longer in case it is needed.
 
 A subscription to updates from a datastore is intended to obviate the need for polling.  However, in order to do so, it is critical that subscribers can rely on the subscription and have confidence that they will indeed receive the subscribed updates without having to worry about updates being silently dropped.  In other words, a subscription constitutes a promise on the side of the publisher to provide the receivers with updates per the terms of the subscription, or otherwise notify the receiver if t
 
@@ -1437,7 +1438,7 @@ Below is a tree diagram for the "subscriptions" container.  All objects containe
 ~~~~
 {: title="subscriptions container Tree Diagram" #SubscriptionYangTree }
 
-An overview of the behaviour for configured subscriptions is specified in {{configured-subscriptions}}, with further details specified in the ietf-yp-lite-config YANG module.
+An overview of the behavior for configured subscriptions is specified in {{configured-subscriptions}}, with further details specified in the ietf-yp-lite-config YANG module.
 
 ## ietf-yp-lite-config YANG tree {#yp-lite-config-tree}
 
@@ -1463,11 +1464,11 @@ sourcecode-name="ietf-yp-lite-config.yang#0.1.0" title="YANG module ietf-yp-lite
 
 # Capabilities YANG Data Model
 
-## ietf-yp-lite-capabilities YANG tree {#yp-lite-capabilties-tree}
+## ietf-yp-lite-capabilities YANG tree {#yp-lite-capabilities-tree}
 
 This section shows the tree output for ietf-yp-lite-capabilities YANG module, which augments the ietf-system-capabilities YANG module {{RFC9196}}.
 
-## ietf-yp-lite-capabiltiies YANG Model {#yp-lite-yang-capabilities-module}
+## ietf-yp-lite-capabilities YANG Model {#yp-lite-yang-capabilities-module}
 
 This module imports typedefs from the yang-push-lite YANG module.
 
@@ -1478,7 +1479,6 @@ This module augments the ietf-system-capabilities YANG module {{RFC9196}}.
 ~~~~
 {: align="left" sourcecode-markers="true"
 sourcecode-name="ietf-yp-lite-capabilities.yang#0.1.0" title="YANG module ietf-yp-lite-capabilities"}
-
 
 ~~~~ yangtree
 {::include generated-tree-output/ietf-yp-lite-capabilities-tree.txt}
@@ -1540,7 +1540,7 @@ This section is modeled after the template described in Section 3.7.1 of {{I-D.d
 
 The "ietf-yp-lite" YANG module defines a data model that is designed to be accessed via YANG-based management protocols, such as NETCONF {{RFC6241}} and RESTCONF {{RFC8040}}. These protocols have to use a secure transport layer (e.g., SSH {{RFC4252}}, TLS {{RFC8446}}, and QUIC {{RFC9000}}) and have to use mutual authentication.
 
-The Network Configuration Access Control Model (NACM) {{RFC8341}} provides the means to restrict access for particular NETCONF or RESTCONF users to a preconfigured subset of all available NETCONF or RESTCONF protocol operations and content.
+The Network Configuration Access Control Model (NACM) {{RFC8341}} provides the means to restrict access for particular NETCONF or RESTCONF users to a pre-configured subset of all available NETCONF or RESTCONF protocol operations and content.
 
 There are a number of data nodes defined in this YANG module that are writable/creatable/deletable (i.e., "config true", which is the default).  All writable data nodes are likely to be reasonably sensitive or vulnerable in some network environments.  Write operations (e.g., edit-config) and delete operations to these data nodes without proper protection or authentication can have a negative effect on network operations.  The following subtrees and data nodes have particular sensitivities/vulnerabilities:
 
@@ -1586,7 +1586,7 @@ For all registration the reference is "RFC XXXX".
 # Acknowledgments
 {:numbered="false"}
 
-This inital draft is early work is based on discussions with various folk, particularly Thomas Graf, Holger Keller, Dan Voyer, Nils Warnke, and Alex Huang Feng; but also wider conversations that include: Benoit Claise, Pierre Francois, Paolo Lucente, Jean Quilbeuf, among others.
+This initial draft is early work is based on discussions with various folk, particularly Thomas Graf, Holger Keller, Dan Voyer, Nils Warnke, and Alex Huang Feng; but also wider conversations that include: Benoit Claise, Pierre Francois, Paolo Lucente, Jean Quilbeuf, among others.
 
 # Contributors
 {:numbered="false"}
@@ -1637,7 +1637,7 @@ This section documents behavior that exists in both YANG Push and YANG Push Lite
 
   - Transport and Encoding parameters are configured as part of a receiver definition, and are used by all subscriptions directed towards a given receiver.
 
-  - Encoding is now a mandatory paramater under a receiver and dyanmic subscription (rather than specifying a default).
+  - Encoding is now a mandatory parameter under a receiver and dynamic subscription (rather than specifying a default).
 
   - If a subscription uses multiple receivers then:
 
@@ -1956,7 +1956,7 @@ If the interface was deleted, and if the system was capable of reporting on-chan
 YANG-Push subscriptions are established, modified, and deleted using
 RPCs augmented from [RFC8639].
 
-###  "establish-subscription" RPC
+### "establish-subscription" RPC
 
 The subscriber sends an "establish-subscription" RPC with the
 parameters listed in Section 3.1.  An example might look like:
@@ -2100,7 +2100,7 @@ This temporary section lists open issues and enhancements that require further d
 
 The issues are ordered/grouped by the sections in the current document.  I.e., to make it easier to review/update sections of the document.
 
-## Issues related to general IETF process:
+## Issues related to general IETF process
 
 1. If this work progresses we will need simple bis versions of the transports document so that they augment into the new data model paths.  Drafts that would need to be updated as documented in  {{DraftRelationships}}.
 
@@ -2109,14 +2109,14 @@ The issues are ordered/grouped by the sections in the current document.  I.e., t
 
 1. What is the right name.  Should we be calling this Yang Push 2 (YPv2) to more clearly indicate that this is intended to be a replacement for Yang Push?  We need to be slightly careful in that this is only specifying implementing a subset of the functionality.
 
-## Issue related to Terminology/Definitions:
+## Issue related to Terminology/Definitions
 
 1. Should we use the object terminology?
    - Holger: should try and use same terminology as existing YANG Push RFCs.
-   - Rob: This issue can be a place holder, to go through and check/update the terminology used, and see if any of the referenced terminology isn't neeed in YP Lite.
+   - Rob: This issue can be a place holder, to go through and check/update the terminology used, and see if any of the referenced terminology isn't needed in YP Lite.
    - Rob: Update, possible should refine the definition of object to make it clear that it may refer to a single data node or set of data nodes.
 
-## Issues related to YANG Push Lite Overview.
+## Issues related to YANG Push Lite Overview
 
 None currently.
 
@@ -2189,7 +2189,7 @@ None currently.
 
 ### Issues related to Transports:
 
-1. {{transports}} lists quite a lot of rules on what are valid transports and what negotation/etc is required.  I think we need to check whether we can weaken some of these (although it is possible that these were imposed during a transport directorate review).
+1. {{transports}} lists quite a lot of rules on what are valid transports and what negotiation/etc is required.  I think we need to check whether we can weaken some of these (although it is possible that these were imposed during a transport directorate review).
     - **Rob: Authors, I've updated the transport section, {{transports}}, please can you re-review.**
 
 1. James: We also need to add some text into security section.
@@ -2241,7 +2241,6 @@ Note some of these apply or impact dynamic subscriptions as well.
 1. Should subscription-started notification include a fingerprint of the schema that is covered by the subscription that would guaranteed to change if the subscription changes?
    - Tracked via https://github.com/rgwilton/draft-yp-observability/issues/11
 
-
 1. If a subscription references a filter, then should that be included inline in the subscription started notification (as per the RFC 8641 text), or should it indicate that it is a referenced filter?
      - Thomas: Do we need referenced filters at all?  Subscriptions could be simplified if everything was done inline.
      - gNMI is only done inline.
@@ -2250,7 +2249,6 @@ Note some of these apply or impact dynamic subscriptions as well.
 
 1. When a subscription is terminated, should it be MUST NOT send any more notifications after the terminated message, or SHOULD NOT?  For a dynamic subscription, should the RPC be synchronous and not reply until it knows that all queues have been drained?
       - Tracked via https://github.com/rgwilton/draft-yp-observability/issues/13
-
 
 1. Is a publisher allowed to arbitrarily send a sync-on-start resync, e.g., if it detects data loss, or should it always just terminate and reinitialize the subscription?
     - Holger, terminate & recreate.
@@ -2270,10 +2268,10 @@ Note some of these apply or impact dynamic subscriptions as well.
 1. Should we have a YANG Action to reset a receiver or a subscription?  E.g., discussed in {{reset}}.
    - There seems to be consensus that having/keeping such a YANG action is useful if a configured subscription is stuck.
    - Further discussion is needed to indicate where such an RPC should be in the data model, and what effect it should have:
-      - It could be under the subscription list, which would effectively be equivalent to forcing the subscription to terminate and re-initialise across all receivers.
-      - It could also be under the receiver list, which would effectively be equivalent to forcing all subscriptions using that receiver to terminate and re-initialise.
+      - It could be under the subscription list, which would effectively be equivalent to forcing the subscription to terminate and re-initialize across all receivers.
+      - It could also be under the receiver list, which would effectively be equivalent to forcing all subscriptions using that receiver to terminate and re-initialize.
       - **We also need to consider whether this would clear subscription counters or not.**
-      - **We also consider whether configured subscription MAY/SHOULD share transport sessions where possible, or whether each subscription uses a separate transport session, or whether this is down to the transport session definition.  This decision may impact the design of the data model, and pehaps the transport requirements text.**
+      - **We also consider whether configured subscription MAY/SHOULD share transport sessions where possible, or whether each subscription uses a separate transport session, or whether this is down to the transport session definition.  This decision may impact the design of the data model, and perhaps the transport requirements text.**
       - **Rob: I've written up some text for the reset action on a subscription and under the receiver (that applies to all subscriptions that reference the receiver configuration).  Unlike the existing reset action, I've removed the return parameter (timestamp of when it took effect), and I think that we should allow it to be processed asynchronously w.r.t the RPC caller.  Authors, please check the latest text.**
 
 1. Should we support configurable subscription-level keepalives?
@@ -2294,7 +2292,7 @@ Note some of these apply or impact dynamic subscriptions as well.
 
 1. Do we advertise that conformance via capabilities and/or YANG features (both for configured and dynamic subscriptions)?
 
-   - The current doc uses a mixture of both (e.g., features for supporting config vs dyanmic subscriptions), capabilities for advertising other capabilities that either cannot be advertised via features, or would arguably be too fine grained.
+   - The current doc uses a mixture of both (e.g., features for supporting config vs dynamic subscriptions), capabilities for advertising other capabilities that either cannot be advertised via features, or would arguably be too fine grained.
 
 1. For on-change, should a subscription be rejected (or not brought up) if there are no on-change notifiable nodes?  Alternative is to offer implementation flexibility between these two approaches.
    - Holger: Prefer for the subscription to be rejected.
@@ -2303,7 +2301,7 @@ Note some of these apply or impact dynamic subscriptions as well.
    - In terms of conformance, we have SHOULD for CBOR, but the draft is silent on whether this means with SIDs or not.
    - Further discussion is required on how to manage SID files.
 
-1. Check of the current approach in the draft of using a separate tree for YP Lite capbilities rather than reusing the YP capabilities (and augmentations) previously defined.
+1. Check of the current approach in the draft of using a separate tree for YP Lite capabilities rather than reusing the YP capabilities (and augmentations) previously defined.
    - Rob: The draft currently includes a separate tree, which I think is necessary because the supported functionality is different (e.g., dampening), and a implementation may support both YANG Push and YANG Push Lite.
 
 1. Further work and discussion is required for advertising capabilities for filter paths.  E.g., listing all of the paths that support on-change could be a very long list.  Related, does the draft need to advertise at what points a publisher would decompose a higher subscription into more specific subscriptions.
@@ -2330,7 +2328,7 @@ None open.
 
 None open.
 
-## Issues related to the Appendixes
+## Issues related to the Appendixes
 
 ### Examples related issues/questions:
 
@@ -2346,12 +2344,14 @@ This appendix is only intended while the authors/WG are working on the document,
 
 1. Don't mandate configured or dynamic subscriptions, allow implementations to implement one or both of them. (Decided 21 Feb 25)
 
-1. Dynamic susbcriptions require the encoding to be specified. (Decided 21 Feb 25)
+1. Dynamic subscriptions require the encoding to be specified. (Decided 21 Feb 25)
 
 1. DSCP settings are only specified under the receiver (for configured subscriptions) (Decided 21 Feb 25)
+
+1. Config and dynamic subscriptions should be aligned as much as possible.
 
 ## Changes
 
 1. Aligned configured and dynamic subscription data models:
- - Both are configured by name.
- - Made "purpose" field common and renamed to "description" (limited to 1k max characters, previously unrestricted), i.e., now available for dynamic subscriptions.
+- Both are configured by name.
+- Made "purpose" field common and renamed to "description" (limited to 1k max characters, previously unrestricted), i.e., now available for dynamic subscriptions.

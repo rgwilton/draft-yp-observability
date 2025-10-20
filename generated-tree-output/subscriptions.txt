@@ -2,8 +2,9 @@ module: ietf-yp-lite-config
   +--rw datastore-telemetry!
      +--rw subscriptions
         +--rw subscription* [name]
-           +--rw name              subscription-name
-           +--rw description?      string
+           +--rw name
+           |       subscription-name
+           +--rw description?                        string
            +--rw target
            |  +--rw datastore?          identityref
            |  +--rw (filter)
@@ -24,11 +25,30 @@ module: ietf-yp-lite-config
            +--rw receivers* [name]
            |  +--rw name
            |  |       -> /datastore-telemetry/receivers/receiver/name
-           |  +--ro status?   enumeration
-           +--ro id                ypl:subscription-id
-           +--ro status?           ypl:subscription-status
+           |  +--ro status?       enumeration
+           |  +--ro statistics
+           |     +--ro receiver-disconnected-count?
+           |             yang:zero-based-counter64
+           +--ro id
+           |       ypl:subscription-id
+           +--ro status?
+           |       ypl:subscription-status
+           +--ro last-sequence-number?
+           |       yang:zero-based-counter64
+           +--ro last-notification-time?
+           |       yang:date-and-time
+           +--ro last-periodic-collection-time?
+           |       yang:date-and-time
+           +--ro last-on-change-notification-time?
+           |       yang:date-and-time
            +--ro statistics
-           |  +--ro update-record-count?
+           |  +--ro started-notification-count?
+           |  |       yang:zero-based-counter64
+           |  +--ro terminated-notification-count?
+           |  |       yang:zero-based-counter64
+           |  +--ro update-notification-count?
+           |  |       yang:zero-based-counter64
+           |  +--ro periodic-collection-count?
            |  |       yang:zero-based-counter64
            |  +--ro excluded-event-records?
            |          yang:zero-based-counter64
@@ -38,4 +58,4 @@ module: ietf-yp-lite-config
             /ypl:filter:
     +--:(by-reference)
   augment /ypl:subscription-started/ypl:target:
-    +-- filter-ref    filter-ref
+    +-- filter-ref?   filter-ref

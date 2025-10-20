@@ -1,9 +1,10 @@
 {
   "ietf-yp-lite:subscription-started": {
     "id": 1011,
+    "name": "ExampleStatsSubscription",
     "target": {
       "datastore": "ietf-datastores:operational",
-      "filter-ref": "interface-stats-filter"
+      "path": "/ietf-interfaces:interfaces/interface/statistics"
     },
     "update-trigger": {
       "periodic": {

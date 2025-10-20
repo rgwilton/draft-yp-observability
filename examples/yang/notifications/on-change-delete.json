@@ -1,0 +1,12 @@
+{
+  "ietf-yp-lite:update": {
+    "id": 1012,
+    "snapshot-type": "on-change-delete",
+    "observation-time": "2025-10-10T08:16:15.11Z",
+    "updates": [
+      {
+        "target-path": "ietf-interfaces:interfaces/interface[name='eth0']"
+      }
+    ]
+  }
+}

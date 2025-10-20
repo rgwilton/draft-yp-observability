@@ -13,4 +13,4 @@ module: ietf-yp-lite-config
             /ypl:filter:
     +--:(by-reference)
   augment /ypl:subscription-started/ypl:target:
-    +-- filter-ref    filter-ref
+    +-- filter-ref?   filter-ref

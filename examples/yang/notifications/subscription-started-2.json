@@ -1,11 +1,10 @@
 {
   "ietf-yp-lite:subscription-started": {
     "id": 1011,
+    "name": "ExampleInterfaceSubscription",
     "target": {
       "datastore": "ietf-datastores:operational",
-      "paths": [
-        "ietf-interfaces:interfaces/interface/"
-      ]
+      "path": "ietf-interfaces:interfaces/interface/"
     },
     "update-trigger": {
       "on-change": {

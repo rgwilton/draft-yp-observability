@@ -1,19 +1,17 @@
 {
-  "ietf-yp-lite:datastore-telemetry": {
+  "ietf-yp-lite-config:datastore-telemetry": {
     "filters": {
       "filter": [
         {
           "name": "interface-stats-filter",
-          "paths": [
-            "ietf-interfaces:interfaces/interface/statistics"
-          ]
+          "path": "ietf-interfaces:interfaces/interface/statistics"
         }
       ]
     },
     "subscriptions": {
       "subscription": [
         {
-          "id": 1011,
+          "name": "ExampleStatsSubscription",
           "target": {
             "datastore": "ietf-datastores:operational",
             "filter-ref": "interface-stats-filter"

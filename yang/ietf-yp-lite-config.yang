@@ -221,6 +221,23 @@ module ietf-yp-lite-config {
               "Specifies the connection status of the receiver for
                this subscription.";
           }
+
+          container statistics {
+            config false;
+            description
+              "Statistics related to the number of messages sent to
+               this specific receiver for this subscription.";
+
+            leaf receiver-disconnected-count {
+              type yang:zero-based-counter64;
+              config false;
+              description
+                "The number of times that the receiver has been
+                 disconnected since the subscription
+                 receiver entry was created and the configuration
+                 was applied by the publisher";
+            }
+          }
         }
 
         leaf id {
@@ -242,13 +259,83 @@ module ietf-yp-lite-config {
              of the subscription as established by the publisher.";
         }
 
+        leaf last-sequence-number {
+          type yang:zero-based-counter64;
+          config false;
+          description
+            "The envelope sequence number for the last notification
+             sent for this subscription.
+
+             The sequence number is initialized to zero when the
+             subscription first becomes active and the first
+             subscription-started notification is sent.";
+        }
+
+        leaf last-notification-time {
+          type yang:date-and-time;
+          config false;
+          description
+            "The notification envelope event-time timestamp of the
+             last notification sent for this subscription.
+
+             The timestamp is initialized to the time when the
+             subscription first becomes active and the first
+             subscription-started notification is sent.";
+        }
+
+        leaf last-periodic-collection-time {
+          type yang:date-and-time;
+          config false;
+          description
+            "The event-time timestamp of the last completed periodic
+             collection or resynchronization collection for this
+             subscription, and used as the event-time in the
+             notification header.
+
+             The timestamp is initialized to the time when the
+             subscription first becomes active and the first
+             subscription-started notification is sent.";
+        }
+
+        leaf last-on-change-notification-time {
+          type yang:date-and-time;
+          config false;
+          description
+            "The notification envelope event-time timestamp of the
+             last on-change notification sent for this subscription.
+
+             The timestamp is initialized to the time when the
+             subscription first becomes active and the first
+             subscription-started notification is sent.";
+        }
+
         container statistics {
           config false;
           description
             "Statistics related to the number of messages generated
              for this subscription.";
 
-          leaf update-record-count {
+          leaf started-notification-count {
+            type yang:zero-based-counter64;
+            config false;
+            description
+              "The number of subscription-started notifications
+               sent for this subscription since the subscription
+               list entry was created and the configuration
+               was applied by the publisher.";
+          }
+
+          leaf terminated-notification-count {
+            type yang:zero-based-counter64;
+            config false;
+            description
+              "The number of subscription-terminated notifications
+               sent for this subscription since the subscription
+               list entry was created and the configuration
+               was applied by the publisher.";
+          }
+
+          leaf update-notification-count {
             type yang:zero-based-counter64;
             config false;
             description
@@ -256,15 +343,29 @@ module ietf-yp-lite-config {
                subscription, to be queued to one of more active
                receivers.
 
-               The count is initialized when the subscription
-               first becomes active.
+               The count is re-initialized to 0 when the
+               subscription first becomes active and the
+               subscription-started notification is sent.
 
                The count is incremented even if the update
                record has been generated, but is not queued to
-               any receiver.
+               any receiver.";
+          }
 
-               TODO - Does this count include lifecycle or only
-               update messages?";
+          leaf periodic-collection-count {
+            type yang:zero-based-counter64;
+            config false;
+            description
+              "The number of periodic collections completed for
+               the subscription.
+
+               The count is re-initialized to 0 when the
+               subscription first becomes active and the
+               subscription-started notification is sent.
+
+               The count is incremented even if the update
+               record has been generated, but is not queued to
+               any receiver.";
           }
 
           leaf excluded-event-records {
@@ -397,7 +498,11 @@ module ietf-yp-lite-config {
       description
         "Incorporates a filter that has been configured
          separately.";
-      uses filter-ref;
+      uses filter-ref {
+        refine "filter-ref" {
+          mandatory false;
+        }
+      }
     }
   }
 
@@ -405,8 +510,12 @@ module ietf-yp-lite-config {
 
     description
       "Allow a subscription-started notification to include a
-       referenced subscription-name";
-    uses filter-ref;
+       referenced named filter";
+    uses filter-ref {
+      refine "filter-ref" {
+        mandatory false;
+      }
+    }
   }
 
   augment "/datastore-telemetry/subscriptions/subscription/"
