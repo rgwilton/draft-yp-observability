@@ -5,7 +5,7 @@
 Network Configuration                                     R. Wilton, Ed.
 Internet-Draft                                             Cisco Systems
 Intended status: Standards Track                               H. Keller
-Expires: 20 April 2026                                 Deuetsche Telekom
+Expires: 23 April 2026                                 Deuetsche Telekom
                                                                B. Claise
                                                                   Huawei
                                                                 E. Aries
@@ -14,7 +14,7 @@ Expires: 20 April 2026                                 Deuetsche Telekom
                                                                    Nokia
                                                                  T. Graf
                                                                 Swisscom
-                                                         17 October 2025
+                                                         20 October 2025
 
 
          YANG Datastore Telemetry Data Models (YANG Push Lite)
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 20 April 2026.
+   This Internet-Draft will expire on 23 April 2026.
 
 Copyright Notice
 
@@ -832,7 +832,7 @@ Table of Contents
                /ypl:filter:
        +--:(by-reference)
      augment /ypl:subscription-started/ypl:target:
-       +-- filter-ref    filter-ref
+       +-- filter-ref?   filter-ref
 
                                   Figure 1
 
@@ -1076,7 +1076,7 @@ Table of Contents
                /ypl:filter:
        +--:(by-reference)
      augment /ypl:subscription-started/ypl:target:
-       +-- filter-ref    filter-ref
+       +-- filter-ref?   filter-ref
 
                     Figure 4: 'update-trigger' container
 
@@ -1369,7 +1369,7 @@ Table of Contents
                /ypl:filter:
        +--:(by-reference)
      augment /ypl:subscription-started/ypl:target:
-       +-- filter-ref    filter-ref
+       +-- filter-ref?   filter-ref
 
              Figure 7: datastore-telemetry/receivers container
 
@@ -1748,8 +1748,9 @@ Table of Contents
      +--rw datastore-telemetry!
         +--rw subscriptions
            +--rw subscription* [name]
-              +--rw name              subscription-name
-              +--rw description?      string
+              +--rw name
+              |       subscription-name
+              +--rw description?                        string
               +--rw target
               |  +--rw datastore?          identityref
               |  +--rw (filter)
@@ -1770,11 +1771,30 @@ Table of Contents
               +--rw receivers* [name]
               |  +--rw name
               |  |       -> /datastore-telemetry/receivers/receiver/name
-              |  +--ro status?   enumeration
-              +--ro id                ypl:subscription-id
-              +--ro status?           ypl:subscription-status
+              |  +--ro status?       enumeration
+              |  +--ro statistics
+              |     +--ro receiver-disconnected-count?
+              |             yang:zero-based-counter64
+              +--ro id
+              |       ypl:subscription-id
+              +--ro status?
+              |       ypl:subscription-status
+              +--ro last-sequence-number?
+              |       yang:zero-based-counter64
+              +--ro last-notification-time?
+              |       yang:date-and-time
+              +--ro last-periodic-collection-time?
+              |       yang:date-and-time
+              +--ro last-on-change-notification-time?
+              |       yang:date-and-time
               +--ro statistics
-              |  +--ro update-record-count?
+              |  +--ro started-notification-count?
+              |  |       yang:zero-based-counter64
+              |  +--ro terminated-notification-count?
+              |  |       yang:zero-based-counter64
+              |  +--ro update-notification-count?
+              |  |       yang:zero-based-counter64
+              |  +--ro periodic-collection-count?
               |  |       yang:zero-based-counter64
               |  +--ro excluded-event-records?
               |          yang:zero-based-counter64
@@ -1784,7 +1804,7 @@ Table of Contents
                /ypl:filter:
        +--:(by-reference)
      augment /ypl:subscription-started/ypl:target:
-       +-- filter-ref    filter-ref
+       +-- filter-ref?   filter-ref
 
                Figure 8: subscriptions container Tree Diagram
 
@@ -4226,9 +4246,9 @@ Normative References
               Feng, A. H., Francois, P., Graf, T., and B. Claise,
               "Extensible YANG Model for YANG-Push Notifications", Work
               in Progress, Internet-Draft, draft-ietf-netconf-notif-
-              envelope-02, 17 June 2025,
+              envelope-03, 20 October 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              notif-envelope-02>.
+              notif-envelope-03>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -4331,9 +4351,9 @@ Informative References
               Zhou, T., Zheng, G., Voit, E., Graf, T., and P. Francois,
               "Subscription to Notifications in a Distributed
               Architecture", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-distributed-notif-15, 4 July 2025,
+              ietf-netconf-distributed-notif-16, 19 October 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              distributed-notif-15>.
+              distributed-notif-16>.
 
    [I-D.draft-ietf-netconf-https-notif]
               Jethanandani, M. and K. Watsen, "An HTTPS-based Transport
@@ -4370,9 +4390,9 @@ Informative References
               Zhou, T., Zheng, G., Voit, E., Graf, T., and P. Francois,
               "Subscription to Notifications in a Distributed
               Architecture", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-distributed-notif-15, 4 July 2025,
+              ietf-netconf-distributed-notif-16, 19 October 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              distributed-notif-15>.
+              distributed-notif-16>.
 
    [I-D.ietf-nmop-network-anomaly-architecture]
               Graf, T., Du, W., Francois, P., and A. H. Feng, "A
@@ -4386,9 +4406,9 @@ Informative References
               Graf, T. and A. Elhassany, "An Architecture for YANG-Push
               to Message Broker Integration", Work in Progress,
               Internet-Draft, draft-ietf-nmop-yang-message-broker-
-              integration-08, 7 July 2025,
+              integration-09, 20 October 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-nmop-
-              yang-message-broker-integration-08>.
+              yang-message-broker-integration-09>.
 
    [I-D.tgraf-netconf-notif-sequencing]
               Graf, T., Quilbeuf, J., and A. H. Feng, "Support of

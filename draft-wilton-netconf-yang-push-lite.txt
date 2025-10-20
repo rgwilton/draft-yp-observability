@@ -5,7 +5,7 @@
 Network Configuration                                     R. Wilton, Ed.
 Internet-Draft                                             Cisco Systems
 Intended status: Standards Track                               H. Keller
-Expires: 20 April 2026                                 Deuetsche Telekom
+Expires: 23 April 2026                                 Deuetsche Telekom
                                                                B. Claise
                                                                   Huawei
                                                                 E. Aries
@@ -14,7 +14,7 @@ Expires: 20 April 2026                                 Deuetsche Telekom
                                                                    Nokia
                                                                  T. Graf
                                                                 Swisscom
-                                                         17 October 2025
+                                                         20 October 2025
 
 
                YANG Datastore Telemetry (YANG Push Lite)
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 20 April 2026.
+   This Internet-Draft will expire on 23 April 2026.
 
 Copyright Notice
 
@@ -154,7 +154,7 @@ Table of Contents
      13.2.  ietf-yp-lite-config YANG Model
    14. Capabilities YANG Data Model
      14.1.  ietf-yp-lite-capabilities YANG tree
-     14.2.  ietf-yp-lite-capabiltiies YANG Model
+     14.2.  ietf-yp-lite-capabilities YANG Model
    15. Security Considerations
      15.1.  Use of YANG Push Lite with NACM
      15.2.  Receiver Authorization
@@ -176,20 +176,21 @@ Table of Contents
      B.1.  RPC Failures
      B.2.  Failure Notifications
    Appendix C.  Examples
-     C.1.  Example of update message using the new style update
-           message
+     C.1.  Example of periodic update messages
      C.2.  Example of an on-change-update notification using the new
            style update message
      C.3.  Example of an on-change-delete notification using the new
            style update message
+       C.3.1.  Update message with single deleted data node
+       C.3.2.  Update message with multiple on-change deletes
      C.4.  Subscription RPC examples (from RFC 8641)
        C.4.1.  "establish-subscription" RPC
        C.4.2.  "delete-subscription" RPC
        C.4.3.  "resync-subscription" RPC
    Appendix D.  Summary of Open Issues & Potential Enhancements
-     D.1.  Issues related to general IETF process:
-     D.2.  Issue related to Terminology/Definitions:
-     D.3.  Issues related to YANG Push Lite Overview.
+     D.1.  Issues related to general IETF process
+     D.2.  Issue related to Terminology/Definitions
+     D.3.  Issues related to YANG Push Lite Overview
      D.4.  Issues related to Subscription Paths and Selection Filters
      D.5.  Issues related to Datastore Event Streams
        D.5.1.  Further refinements on how a subscription can be
@@ -211,7 +212,7 @@ Table of Contents
      D.12. Issues related to the Security Considerations (& NACM
             filtering)
      D.13. Issues related to the IANA
-     D.14.  Issues related to the Appendixes
+     D.14. Issues related to the Appendixes
        D.14.1.  Examples related issues/questions:
      D.15. Summary of closed/resolved issues
      D.16. Changes
@@ -325,13 +326,13 @@ Table of Contents
 
    Out of this work, consensus was building to specify a cut down
    version of Subscribed Notifications [RFC8639] and YANG Push [RFC8641]
-   that is both more focussed on the operational telemetry use case, and
-   is also easier to implement, by relaxing some of the constraints on
-   consistency on the device, and removing, or simplifying some of the
-   operational features.  This has resulted in this specification, YANG
-   Push Lite.
+   that is both more focussed on the operational telemetry use case and
+   is also easier to implement, achieved by relaxing some of the
+   constraints on consistency on the device, and removing, or
+   simplifying some of the operational features.  This has resulted in
+   this specification, YANG Push Lite.
 
-   The implementation efforts also gave arise to potential improvements
+   The implementation efforts also gave rise to potential improvements
    to the protocol and encoding of notification messages.
 
 3.2.  Complexities in Modelling the Operational State Datastore
@@ -517,8 +518,8 @@ Table of Contents
       subscription data is logically sourced from.
 
    *  a set of selection filters to choose which datastore nodes from
-      the target datstore the subscription is monitoring or sampling, as
-      described in Section 6.
+      the target datastore the subscription is monitoring or sampling,
+      as described in Section 6.
 
    *  a choice of how update event notifications for the datastore's
       data nodes are triggered.  I.e., either periodic sampling of the
@@ -825,7 +826,7 @@ Table of Contents
                /ypl:filter:
        +--:(by-reference)
      augment /ypl:subscription-started/ypl:target:
-       +-- filter-ref    filter-ref
+       +-- filter-ref?   filter-ref
 
                                   Figure 1
 
@@ -906,7 +907,7 @@ Table of Contents
    enqueuing notifications on the transport session, but there is no
    guarantee of delivery order.
 
-   Event records MUST NOT be sent before a _subscriptipn-started_
+   Event records MUST NOT be sent before a _subscription-started_
    notification (Section 9.2.1) or after a _subscription-terminated_
    notification (Section 9.2.2), or to a particular receiver that has
    been sent a _receiver-disconnected_ notification (Section 9.2.3).
@@ -1050,7 +1051,7 @@ Table of Contents
                /ypl:filter:
        +--:(by-reference)
      augment /ypl:subscription-started/ypl:target:
-       +-- filter-ref    filter-ref
+       +-- filter-ref?   filter-ref
 
                     Figure 4: 'update-trigger' container
 
@@ -1338,7 +1339,7 @@ Table of Contents
                /ypl:filter:
        +--:(by-reference)
      augment /ypl:subscription-started/ypl:target:
-       +-- filter-ref    filter-ref
+       +-- filter-ref?   filter-ref
 
              Figure 7: datastore-telemetry/receivers container
 
@@ -1390,8 +1391,8 @@ Table of Contents
    parameters onto _/datastore-telemetry/receivers/receiver/transport-
    type_.  For an example of a similar such augmentation (but for YANG
    Push), see [I-D.draft-ietf-netconf-udp-notif]. *TODO, this reference
-   and text will need to be updated to a UDP bis document, that augments
-   the new namespace.*
+   and text will need to be updated to a UDP-notif bis document, that
+   augments the new YANG Push Lite receiver path.*
 
 8.1.2.  Receivers for Dynamic Subscriptions
 
@@ -1464,11 +1465,12 @@ Table of Contents
    are in the process of connecting, and those that are actively being
    used.
 
-   *TODO, do we need a comment about closing the transport session if
-   there are no more subscription to that receiver?  Possibly the
-   Transports section of the document should have a section that
-   describes the lifecycle of a transport session (or will that end up
-   differing between configured and dyanmic subscriptions?)*
+   If the configuration has changed such that there were previously
+   connections to a receiver, but that receiver is no longer referenced
+   by valid subscriptions, then the publisher MUST close any associated
+   transport sessions to the receiver, but MAY delay the closing for a
+   short period of time (no more than 15 minutes) to potentially allow
+   existing transport session to be reused by new subscriptions.
 
 8.2.  Transports
 
@@ -1525,6 +1527,10 @@ Table of Contents
    whether to use the same logical channel for the RPCs and the event
    records.  However, the _update_ records and the subscription state
    change notifications MUST be sent on the same transport session.
+
+   The transport specification MAY specify a keepalive mechanism to keep
+   the transport session alive.  There is no YANG Push Lite protocol or
+   application level keepalive mechanism.
 
    *TODO, do we need to mention anything about transport session
    timeouts, e.g., which would cause a subscription to be terminated.
@@ -1596,16 +1602,16 @@ Table of Contents
    mechanisms above for establishing and maintaining subscriptions, but
    they MAY choose to only implement a single mechanism.
 
-   The core behaviour for both configured and dynamic subscription is
-   the same, with the key differentiation being how they are
-   provisioned, and how the transport is setup.  This next section
-   describes the functionaity that is common to both types of
-   subscription, followed by the sections that describe the specifics
-   and differences between the two ways of managing subscriptions.
+   The core behavior for both configured and dynamic subscription is the
+   same, with the key differentiation being how they are provisioned,
+   and how the transport is setup.  This next section describes the
+   functionality that is common to both types of subscription, followed
+   by the sections that describe the specifics and differences between
+   the two ways of managing subscriptions.
 
 9.1.  Common Subscription Parameters
 
-   All subscriptions require the following state to be instanstiated:
+   All subscriptions require the following state to be instantiated:
 
    *  a _name_ to identify the subscription.
 
@@ -1631,7 +1637,7 @@ Table of Contents
       subscriptions and is further explained in the sections below.
 
    Subscription names MUST be unique across all configured and dynamic
-   subscriptions.  Configured subscription take precdence over dynamic
+   subscriptions.  Configured subscription take precedence over dynamic
    subscription, so:
 
    *  attempts to create a dynamic subscription with a name that
@@ -1640,7 +1646,7 @@ Table of Contents
 
    *  configuring a subscription, assuming it passes configuration
       validation, replaces any dynamic subscriptions with the same name.
-      Thus, causing the dyanmic subscription to be immediately
+      Thus, causing the dynamic subscription to be immediately
       terminated (see Section 9.1.4).
 
    *  *TODO: We want to make the name optional to be specified for
@@ -1658,7 +1664,7 @@ Table of Contents
       the subscription references an invalid filter expression for the
       current device schema.  Normally, invalid configurations should be
       rejected by the system, whether due to subscription configuration
-      or _establish-susbcription_ RPC, and hence this state should
+      or _establish-subscription_ RPC, and hence this state should
       rarely be seen.
 
    *  *Inactive*: a valid subscription, but one that is not active
@@ -1689,13 +1695,12 @@ Table of Contents
       quickly be removed from the operational state of the device.
       Terminated
 
-   Below is an approximate state diagram illustrating the states, and
-   the likely changes between states.  However, this is not a formal
-   state machine and publishers can move between arbitrary states based
-   on changes to susbcription properties, the system, connectivity to
-   receivers, or resource constraints on the system.  New subscriptions
-   should choose an appropriate starting state, e.g., either Inactive or
-   Invalid.
+   Below is a state diagram illustrating the states, and the likely
+   changes between states.  However, this is not a formal state machine
+   and publishers can move between arbitrary states based on changes to
+   subscription properties, the system, connectivity to receivers, or
+   resource constraints on the system.  New subscriptions should choose
+   an appropriate starting state, e.g., either Inactive or Invalid.
 
                      .-------------------.         .-------------------.
                      |                   |         |                   |
@@ -2006,9 +2011,10 @@ Table of Contents
         Figure 11: subscription-terminated Notification Tree Diagram
 
    *TODO Augmenting extra fields is better for clients?* The _reason_
-   datanode identifyref indicates why a subcription has been terminated,
-   and could be extended with further reasons in future.  I suggest that
-   we change this to an enum with an optional description field.**
+   data node identityref indicates why a subscription has been
+   terminated, and could be extended with further reasons in future.  I
+   suggest that we change this to an enum with an optional description
+   field.**
 
 9.2.3.  "receiver-disconnected"
 
@@ -2104,8 +2110,8 @@ Table of Contents
 
       -  If transport connectivity to the receiver is broken, then any
          subscriptions using that transport are terminated, but the
-         publisher MUST periodically attempt to restablish connection to
-         the receiver and re-activate any configured subscriptions to
+         publisher MUST periodically attempt to re-establish connection
+         to the receiver and re-activate any configured subscriptions to
          that receiver.
 
       -  Note, if there are no active subscriptions for a given receiver
@@ -2153,7 +2159,7 @@ Table of Contents
    reset all subscriptions and the transports(s) associated with a
    specific configured receiver instance.
 
-   These reset actions primarily act at the subsciption application
+   These reset actions primarily act at the subscription application
    layer, but may be useful if a receiver or collector determines that a
    configured subscription is not behaving correctly, and wishes to
    force a reset of the subscription without modifying the configuration
@@ -2167,7 +2173,7 @@ Table of Contents
    (terminated and re-establishes) any subscription specific transport
    session that is not shared with any other subscriptions.
 
-   The reset acction on a receiver is handled equivalently to removing
+   The reset action on a receiver is handled equivalently to removing
    and re-adding the receiver configuration for the receiver that has
    been reset.  Specifically, every subscription referencing the
    receiver MUST be terminated, as per Section 9.1.4 before being
@@ -2413,7 +2419,7 @@ Table of Contents
       _update-complete_ notification, are used to signal when all data
       for a periodic collection event has been enqueued.  This allows
       clients to delete stale information and monitor the performance
-      and behaviour of the publisher.
+      and behavior of the publisher.
 
    *  publishers use buffers when enqueuing traffic on to a transport to
       a receiver, but if that buffer becomes full then either the
@@ -2450,7 +2456,7 @@ Table of Contents
       [I-D.draft-ietf-netconf-udp-notif] (*TODO fix reference to bis
       version, once that becomes available*).
 
-   *  finally, if a publisher is not able tohonor the expectation for a
+   *  finally, if a publisher is not able to honor the expectation for a
       subscription for any reason, then the publisher always has the
       option to terminate the subscription.  It can then subsequently
       refuse to handle new subscriptions if it does not have sufficient
@@ -3668,8 +3674,9 @@ Table of Contents
      +--rw datastore-telemetry!
         +--rw subscriptions
            +--rw subscription* [name]
-              +--rw name              subscription-name
-              +--rw description?      string
+              +--rw name
+              |       subscription-name
+              +--rw description?                        string
               +--rw target
               |  +--rw datastore?          identityref
               |  +--rw (filter)
@@ -3690,11 +3697,30 @@ Table of Contents
               +--rw receivers* [name]
               |  +--rw name
               |  |       -> /datastore-telemetry/receivers/receiver/name
-              |  +--ro status?   enumeration
-              +--ro id                ypl:subscription-id
-              +--ro status?           ypl:subscription-status
+              |  +--ro status?       enumeration
+              |  +--ro statistics
+              |     +--ro receiver-disconnected-count?
+              |             yang:zero-based-counter64
+              +--ro id
+              |       ypl:subscription-id
+              +--ro status?
+              |       ypl:subscription-status
+              +--ro last-sequence-number?
+              |       yang:zero-based-counter64
+              +--ro last-notification-time?
+              |       yang:date-and-time
+              +--ro last-periodic-collection-time?
+              |       yang:date-and-time
+              +--ro last-on-change-notification-time?
+              |       yang:date-and-time
               +--ro statistics
-              |  +--ro update-record-count?
+              |  +--ro started-notification-count?
+              |  |       yang:zero-based-counter64
+              |  +--ro terminated-notification-count?
+              |  |       yang:zero-based-counter64
+              |  +--ro update-notification-count?
+              |  |       yang:zero-based-counter64
+              |  +--ro periodic-collection-count?
               |  |       yang:zero-based-counter64
               |  +--ro excluded-event-records?
               |          yang:zero-based-counter64
@@ -3704,13 +3730,13 @@ Table of Contents
                /ypl:filter:
        +--:(by-reference)
      augment /ypl:subscription-started/ypl:target:
-       +-- filter-ref    filter-ref
+       +-- filter-ref?   filter-ref
 
               Figure 20: subscriptions container Tree Diagram
 
-   An overview of the behaviour for configured subscriptions is
-   specified in Section 9.3, with further details specified in the ietf-
-   yp-lite-config YANG module.
+   An overview of the behavior for configured subscriptions is specified
+   in Section 9.3, with further details specified in the ietf-yp-lite-
+   config YANG module.
 
 13.1.  ietf-yp-lite-config YANG tree
 
@@ -3736,8 +3762,9 @@ Table of Contents
         |           +--rw xpath      yang:xpath1.0 {ypl:xpath}?
         +--rw subscriptions
         |  +--rw subscription* [name]
-        |     +--rw name              subscription-name
-        |     +--rw description?      string
+        |     +--rw name
+        |     |       subscription-name
+        |     +--rw description?                        string
         |     +--rw target
         |     |  +--rw datastore?          identityref
         |     |  +--rw (filter)
@@ -3758,11 +3785,30 @@ Table of Contents
         |     +--rw receivers* [name]
         |     |  +--rw name
         |     |  |       -> /datastore-telemetry/receivers/receiver/name
-        |     |  +--ro status?   enumeration
-        |     +--ro id                ypl:subscription-id
-        |     +--ro status?           ypl:subscription-status
+        |     |  +--ro status?       enumeration
+        |     |  +--ro statistics
+        |     |     +--ro receiver-disconnected-count?
+        |     |             yang:zero-based-counter64
+        |     +--ro id
+        |     |       ypl:subscription-id
+        |     +--ro status?
+        |     |       ypl:subscription-status
+        |     +--ro last-sequence-number?
+        |     |       yang:zero-based-counter64
+        |     +--ro last-notification-time?
+        |     |       yang:date-and-time
+        |     +--ro last-periodic-collection-time?
+        |     |       yang:date-and-time
+        |     +--ro last-on-change-notification-time?
+        |     |       yang:date-and-time
         |     +--ro statistics
-        |     |  +--ro update-record-count?
+        |     |  +--ro started-notification-count?
+        |     |  |       yang:zero-based-counter64
+        |     |  +--ro terminated-notification-count?
+        |     |  |       yang:zero-based-counter64
+        |     |  +--ro update-notification-count?
+        |     |  |       yang:zero-based-counter64
+        |     |  +--ro periodic-collection-count?
         |     |  |       yang:zero-based-counter64
         |     |  +--ro excluded-event-records?
         |     |          yang:zero-based-counter64
@@ -3785,9 +3831,9 @@ Table of Contents
      augment /ypl:establish-subscription/ypl:input/ypl:target
                /ypl:filter:
        +--:(by-reference)
-          +-- filter-ref    filter-ref
+          +-- filter-ref?   filter-ref
      augment /ypl:subscription-started/ypl:target:
-       +-- filter-ref    filter-ref
+       +-- filter-ref?   filter-ref
 
      Figure 21: YANG tree for YANG Push Lite Config Module Tree Output
 
@@ -4022,6 +4068,23 @@ Table of Contents
                  "Specifies the connection status of the receiver for
                   this subscription.";
              }
+
+             container statistics {
+               config false;
+               description
+                 "Statistics related to the number of messages sent to
+                  this specific receiver for this subscription.";
+
+               leaf receiver-disconnected-count {
+                 type yang:zero-based-counter64;
+                 config false;
+                 description
+                   "The number of times that the receiver has been
+                    disconnected since the subscription
+                    receiver entry was created and the configuration
+                    was applied by the publisher";
+               }
+             }
            }
 
            leaf id {
@@ -4043,13 +4106,83 @@ Table of Contents
                 of the subscription as established by the publisher.";
            }
 
+           leaf last-sequence-number {
+             type yang:zero-based-counter64;
+             config false;
+             description
+               "The envelope sequence number for the last notification
+                sent for this subscription.
+
+                The sequence number is initialized to zero when the
+                subscription first becomes active and the first
+                subscription-started notification is sent.";
+           }
+
+           leaf last-notification-time {
+             type yang:date-and-time;
+             config false;
+             description
+               "The notification envelope event-time timestamp of the
+                last notification sent for this subscription.
+
+                The timestamp is initialized to the time when the
+                subscription first becomes active and the first
+                subscription-started notification is sent.";
+           }
+
+           leaf last-periodic-collection-time {
+             type yang:date-and-time;
+             config false;
+             description
+               "The event-time timestamp of the last completed periodic
+                collection or resynchronization collection for this
+                subscription, and used as the event-time in the
+                notification header.
+
+                The timestamp is initialized to the time when the
+                subscription first becomes active and the first
+                subscription-started notification is sent.";
+           }
+
+           leaf last-on-change-notification-time {
+             type yang:date-and-time;
+             config false;
+             description
+               "The notification envelope event-time timestamp of the
+                last on-change notification sent for this subscription.
+
+                The timestamp is initialized to the time when the
+                subscription first becomes active and the first
+                subscription-started notification is sent.";
+           }
+
            container statistics {
              config false;
              description
                "Statistics related to the number of messages generated
                 for this subscription.";
 
-             leaf update-record-count {
+             leaf started-notification-count {
+               type yang:zero-based-counter64;
+               config false;
+               description
+                 "The number of subscription-started notifications
+                  sent for this subscription since the subscription
+                  list entry was created and the configuration
+                  was applied by the publisher.";
+             }
+
+             leaf terminated-notification-count {
+               type yang:zero-based-counter64;
+               config false;
+               description
+                 "The number of subscription-terminated notifications
+                  sent for this subscription since the subscription
+                  list entry was created and the configuration
+                  was applied by the publisher.";
+             }
+
+             leaf update-notification-count {
                type yang:zero-based-counter64;
                config false;
                description
@@ -4057,15 +4190,29 @@ Table of Contents
                   subscription, to be queued to one of more active
                   receivers.
 
-                  The count is initialized when the subscription
-                  first becomes active.
+                  The count is re-initialized to 0 when the
+                  subscription first becomes active and the
+                  subscription-started notification is sent.
 
                   The count is incremented even if the update
                   record has been generated, but is not queued to
-                  any receiver.
+                  any receiver.";
+             }
 
-                  TODO - Does this count include lifecycle or only
-                  update messages?";
+             leaf periodic-collection-count {
+               type yang:zero-based-counter64;
+               config false;
+               description
+                 "The number of periodic collections completed for
+                  the subscription.
+
+                  The count is re-initialized to 0 when the
+                  subscription first becomes active and the
+                  subscription-started notification is sent.
+
+                  The count is incremented even if the update
+                  record has been generated, but is not queued to
+                  any receiver.";
              }
 
              leaf excluded-event-records {
@@ -4198,7 +4345,11 @@ Table of Contents
          description
            "Incorporates a filter that has been configured
             separately.";
-         uses filter-ref;
+         uses filter-ref {
+           refine "filter-ref" {
+             mandatory false;
+           }
+         }
        }
      }
 
@@ -4206,8 +4357,12 @@ Table of Contents
 
        description
          "Allow a subscription-started notification to include a
-          referenced subscription-name";
-       uses filter-ref;
+          referenced named filter";
+       uses filter-ref {
+         refine "filter-ref" {
+           mandatory false;
+         }
+       }
      }
 
      augment "/datastore-telemetry/subscriptions/subscription/"
@@ -4237,7 +4392,7 @@ Table of Contents
    module, which augments the ietf-system-capabilities YANG module
    [RFC9196].
 
-14.2.  ietf-yp-lite-capabiltiies YANG Model
+14.2.  ietf-yp-lite-capabilities YANG Model
 
    This module imports typedefs from the yang-push-lite YANG module.
 
@@ -4658,7 +4813,7 @@ Table of Contents
 
    The Network Configuration Access Control Model (NACM) [RFC8341]
    provides the means to restrict access for particular NETCONF or
-   RESTCONF users to a preconfigured subset of all available NETCONF or
+   RESTCONF users to a pre-configured subset of all available NETCONF or
    RESTCONF protocol operations and content.
 
    There are a number of data nodes defined in this YANG module that are
@@ -4740,7 +4895,7 @@ Table of Contents
 
 Acknowledgments
 
-   This inital draft is early work is based on discussions with various
+   This initial draft is early work is based on discussions with various
    folk, particularly Thomas Graf, Holger Keller, Dan Voyer, Nils
    Warnke, and Alex Huang Feng; but also wider conversations that
    include: Benoit Claise, Pierre Francois, Paolo Lucente, Jean
@@ -4765,9 +4920,9 @@ Normative References
               Feng, A. H., Francois, P., Graf, T., and B. Claise,
               "Extensible YANG Model for YANG-Push Notifications", Work
               in Progress, Internet-Draft, draft-ietf-netconf-notif-
-              envelope-02, 17 June 2025,
+              envelope-03, 20 October 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              notif-envelope-02>.
+              notif-envelope-03>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -4870,9 +5025,9 @@ Informative References
               Zhou, T., Zheng, G., Voit, E., Graf, T., and P. Francois,
               "Subscription to Notifications in a Distributed
               Architecture", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-distributed-notif-15, 4 July 2025,
+              ietf-netconf-distributed-notif-16, 19 October 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              distributed-notif-15>.
+              distributed-notif-16>.
 
    [I-D.draft-ietf-netconf-https-notif]
               Jethanandani, M. and K. Watsen, "An HTTPS-based Transport
@@ -4909,9 +5064,9 @@ Informative References
               Zhou, T., Zheng, G., Voit, E., Graf, T., and P. Francois,
               "Subscription to Notifications in a Distributed
               Architecture", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-distributed-notif-15, 4 July 2025,
+              ietf-netconf-distributed-notif-16, 19 October 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              distributed-notif-15>.
+              distributed-notif-16>.
 
    [I-D.ietf-nmop-network-anomaly-architecture]
               Graf, T., Du, W., Francois, P., and A. H. Feng, "A
@@ -4925,9 +5080,9 @@ Informative References
               Graf, T. and A. Elhassany, "An Architecture for YANG-Push
               to Message Broker Integration", Work in Progress,
               Internet-Draft, draft-ietf-nmop-yang-message-broker-
-              integration-08, 7 July 2025,
+              integration-09, 20 October 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-nmop-
-              yang-message-broker-integration-08>.
+              yang-message-broker-integration-09>.
 
    [I-D.tgraf-netconf-notif-sequencing]
               Graf, T., Quilbeuf, J., and A. H. Feng, "Support of
@@ -5097,8 +5252,8 @@ A.2.  Changed Functionality
          receiver definition, and are used by all subscriptions directed
          towards a given receiver.
 
-      -  Encoding is now a mandatory paramater under a receiver and
-         dyanmic subscription (rather than specifying a default).
+      -  Encoding is now a mandatory parameter under a receiver and
+         dynamic subscription (rather than specifying a default).
 
       -  If a subscription uses multiple receivers then:
 
@@ -5279,117 +5434,110 @@ Appendix C.  Examples
    *  All these examples are created by hand, may contain errors, and
       may not parse correctly.
 
-C.1.  Example of update message using the new style update message
+C.1.  Example of periodic update messages
 
-   The subscription was made on "Cisco-IOS-XR-pfi-im-cmd-
-   oper:interfaces", but for efficiency reasons, the device has split
-   the subscription into separate child subscriptions for the different
-   data providers, and makes use of the new message format.
+   In this example, a subscription is for _/ietf-interfaces:interfaces/
+   interface_.  However, for efficiency reasons, the publisher is
+   internally returning the data from two different data providers.
 
-   Hence, this first periodic message is being published for the "Cisco-
-   IOS-XR-pfi-im-cmd-oper:interfaces/interface-summary" container, but
-   it is encoded rooted relative to the schema for "Cisco-IOS-XR-pfi-im-
-   cmd-oper:interfaces".
+   Of note:
 
-   <CODE BEGINS> file "update-msg.json"
+   *  The first periodic message is published for the entries in the _/
+      ietf-interfaces:interface/interfaces_ list, but doesn't contain
+      the data in the _statistics_ child container.
+
+   *  the _path-prefix_ is to the subscription subtree, since the device
+      will never return data outside of the subscription subtree.
+
+   *  the _target-path_ is elided because the data is returned at the
+      subscription point. **TODO, or should it actually be to the
+      element above? **
+
    {
-     "ietf-yp-notification:envelope": {
-       "event-time": "2024-09-27T14:16:27.773Z",
-       "hostname": "example-router",
-       "sequence-number": 1,
-       "contents": {
-         "ietf-yp-ext:update": {
-           "id": 1,
-           "subscription-path":
-             "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces",
-           "target-path":
-             "Cisco-IOS-XR-pfi-im-cmd-oper:"
-             "interfaces/interface-summary",
-           "snapshot-type": "periodic"
-           "observation-time": "2024-09-27T14:16:27.773Z",
-           "datastore-snapshot": {
-             "interface-summary" : {
-               "interface-type": [
-                 {
-                   "interface-type-name": "IFT_GETHERNET",
-                   "interface-type-description": "GigabitEthernet",
-                   "interface-counts": {
-                     "interface-count": 5,
-                     "up-interface-count": 2,
-                     "down-interface-count": 0,
-                     "admin-down-interface-count": 3
-                   }
-                 }
-               ],
-               "interface-counts": {
-                 "interface-count": 8,
-                 "up-interface-count": 5,
-                 "down-interface-count": 0,
-                 "admin-down-interface-count": 3
+     "ietf-yp-lite:update": {
+       "id": 1011,
+       "path-prefix": "/ietf-interfaces:interfaces/interface",
+       "snapshot-type": "periodic",
+       "observation-time": "2024-10-10T08:00:05.11Z",
+       "updates": [
+         {
+           "target-path": "",
+           "data": {
+             "ietf-interfaces:interface": [
+               {
+                 "name": "eth0",
+                 "type": "iana-if-type:ethernetCsmacd",
+                 "enabled": true,
+                 "ietf-interfaces:oper-status": "up",
+                 "ietf-interfaces:admin-status": "up"
+               },
+               {
+                 "name": "eth1",
+                 "type": "iana-if-type:ethernetCsmacd",
+                 "enabled": true,
+                 "ietf-interfaces:oper-status": "up",
+                 "ietf-interfaces:admin-status": "up"
                }
-             }
+             ]
            }
          }
-       }
+       ],
+       "complete": [null]
      }
    }
-   <CODE ENDS>
 
-              Figure 26: Example YANG Push Lite update message
+           Figure 26: Example periodic update for interfaces list
 
-   The second periodic message is being published for the "Cisco-IOS-XR-
-   pfi-im-cmd-oper:interfaces/interfaces/interface" list, but again, it
-   is encoded rooted relative to the schema for "Cisco-IOS-XR-pfi-im-
-   cmd-oper:interfaces".  This message has a separate observation time
-   that represents the more accurate time that this periodic date was
-   read.
+   For the second notification related to the same subscription:
 
-   <CODE BEGINS> file "update-msg-2.json"
+   *  the second periodic message is published for only the statistics
+      associated with the interfaces.
+
+   *  as above, the _path-prefix_ is still to the subscription subtree.
+
+   *  the second notification uses a separate observation-time, but
+      would use the same event-time in the notification header so that
+      the two messages can be correlated to the same periodic collection
+      event.
+
+   *  the second periodic message has set the _complete_ flag to
+      indicate that it is the last notification as part of the periodic
+      collection.  A separate _update-complete_ notification could have
+      been sent instead.
+
    {
-     "ietf-yp-notification:envelope": {
-       "event-time": "2024-09-27T14:16:27.973Z",
-       "hostname": "example-router",
-       "sequence-number": 67,
-       "contents": {
-         "ietf-yp-ext:update": {
-           "id": 1,
-           "subscription-path":
-             "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces",
-           "target-path":
-             "Cisco-IOS-XR-pfi-im-cmd-oper:
-             interfaces/interfaces/interface[]",
-           "snapshot-type": "periodic"
-           "observation-time": "2024-09-27T14:16:27.973Z",
-           "datastore-snapshot": {
-             "interfaces": {
-               "interface": [
-                 {
-                   "interface-name": "GigabitEthernet0/0/0/0",
-                   "interface": "GigabitEthernet0/0/0/0",
-                   "state": "im-state-admin-down",
-                   "line-state": "im-state-admin-down"
-                 },
-                 {
-                   "interface-name": "GigabitEthernet0/0/0/4",
-                   "interface": "GigabitEthernet0/0/0/4",
-                   "state": "im-state-admin-down",
-                   "line-state": "im-state-admin-down"
-                 },
-               ]
-             }
+     "ietf-yp-lite:update": {
+       "id": 1011,
+       "path-prefix": "/ietf-interfaces:interfaces/interface",
+       "snapshot-type": "periodic",
+       "observation-time": "2024-10-10T08:00:05.21Z",
+       "updates": [
+         {
+           "target-path": "",
+           "data": {
+             "ietf-interfaces:interface": [
+               {
+                 "name": "eth0",
+                 "statistics": {
+                   "in-octets": 123456,
+                   "out-octets": 654321
+                 }
+               },
+               {
+                 "name": "eth1",
+                 "statistics": {
+                   "in-octets": 789012,
+                   "out-octets": 210987
+                 }
+               }
+             ]
            }
          }
-       }
+       ]
      }
    }
-   <CODE ENDS>
 
-            Figure 27: 2nd example YANG Push Lite update message
-
-   Each child subscription would use the same period and anchor time as
-   the configured subscription, possibly with a little bit of initial
-   jitter to avoid all daemons attempting to publish the data at exactly
-   the same time.
+        Figure 27: Example periodic update for interface statistics
 
 C.2.  Example of an on-change-update notification using the new style
       update message
@@ -5466,37 +5614,78 @@ C.2.  Example of an on-change-update notification using the new style
 C.3.  Example of an on-change-delete notification using the new style
       update message
 
+C.3.1.  Update message with single deleted data node
+
    If the interface was deleted, and if the system was capable of
    reporting on-change events for the delete event, then an on-change
-   delete message would be encoded as per the following message.  Of
-   note:
+   delete message would be encoded as per the following message.
 
-   *  The on-change-delete snapshot type doesn't include a "datastore-
-      snapshot", instead it represents a delete of the list entry at the
-      path identified by the target-path, which is similar to a YANG
-      Patch delete notification.
+   Of note:
 
-   <CODE BEGINS> file "on-change-delete-msg.json"
+   *  The ietf-yp-notification:envelope has been elided
+
+   *  The deleted data is identified by the target node in the _updates/
+      target-path_ element.
+
+   *  The observation time represents the time at which the delete event
+      occurred, e.g., perhaps when the system processed a configuration
+      change.
+
    {
-     "ietf-yp-notification:envelope": {
-       "event-time": "2024-09-27T14:16:40.973Z",
-       "contents": {
-         "ietf-yp-ext:update": {
-           "id": 1,
-           "subscription-path":
-             "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces",
-           "target-path":
-             "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interfaces/
-             interface[interface=GigabitEthernet0/0/0/0]",
-           "snapshot-type": "on-change-delete"
-           "observation-time": "2024-09-27T14:16:40.973Z",
+     "ietf-yp-lite:update": {
+       "id": 1012,
+       "snapshot-type": "on-change-delete",
+       "observation-time": "2025-10-10T08:16:15.11Z",
+       "updates": [
+         {
+           "target-path": "/ietf-interfaces:interfaces/interface[name='eth0']"
          }
-       }
+       ]
      }
    }
-   <CODE ENDS>
 
          Figure 29: Example YANG Push Lite on-change delete message
+
+C.3.2.  Update message with multiple on-change deletes
+
+   This follow example illustrates how a single update notification
+   message can contain multiple on-change delete events for different
+   data nodes.  In this example, two separate interfaces are being
+   deleted.
+
+   Of note:
+
+   *  The ietf-yp-notification:envelope has been elided
+
+   *  _prefix-path_ is used to shorten the target-paths, the full paths
+      can be constructed concatenating the _prefix-path_ with each
+      _target-path_ in the _updates_ list.
+
+   *  all delete events share a common observation-time of when the
+      delete events occurred.  If it is necessary to identify separate
+      observation times then the publisher would send separate messages.
+
+   *  data node subtrees that are deleted (list entries in this case)
+      are identified by separate entries in the _updates_ list.
+
+   {
+     "ietf-yp-lite:update": {
+       "id": 1013,
+       "path-prefix": "/ietf-interfaces:interfaces",
+       "snapshot-type": "on-change-delete",
+       "observation-time": "2025-10-10T08:16:16.11Z",
+       "updates": [
+         {
+           "target-path": "interface[name='eth0']"
+         },
+         {
+           "target-path": "interface[name='eth1']"
+         }
+       ]
+     }
+   }
+
+         Figure 30: Example YANG Push Lite on-change delete message
 
 C.4.  Subscription RPC examples (from RFC 8641)
 
@@ -5641,7 +5830,7 @@ Appendix D.  Summary of Open Issues & Potential Enhancements
    document.  I.e., to make it easier to review/update sections of the
    document.
 
-D.1.  Issues related to general IETF process:
+D.1.  Issues related to general IETF process
 
    1.  If this work progresses we will need simple bis versions of the
        transports document so that they augment into the new data model
@@ -5664,7 +5853,7 @@ D.1.  Issues related to general IETF process:
        that this is only specifying implementing a subset of the
        functionality.
 
-D.2.  Issue related to Terminology/Definitions:
+D.2.  Issue related to Terminology/Definitions
 
    1.  Should we use the object terminology?
 
@@ -5673,13 +5862,13 @@ D.2.  Issue related to Terminology/Definitions:
 
        *  Rob: This issue can be a place holder, to go through and
           check/update the terminology used, and see if any of the
-          referenced terminology isn't neeed in YP Lite.
+          referenced terminology isn't needed in YP Lite.
 
        *  Rob: Update, possible should refine the definition of object
           to make it clear that it may refer to a single data node or
           set of data nodes.
 
-D.3.  Issues related to YANG Push Lite Overview.
+D.3.  Issues related to YANG Push Lite Overview
 
    None currently.
 
@@ -5828,7 +6017,7 @@ D.6.1.  Constraints on supporting multiple receivers:
 D.6.2.  Issues related to Transports:
 
    1.  Section 8.2 lists quite a lot of rules on what are valid
-       transports and what negotation/etc is required.  I think we need
+       transports and what negotiation/etc is required.  I think we need
        to check whether we can weaken some of these (although it is
        possible that these were imposed during a transport directorate
        review).
@@ -6024,11 +6213,11 @@ D.8.  Issues related to Subscription Lifecycle
 
           -  It could be under the subscription list, which would
              effectively be equivalent to forcing the subscription to
-             terminate and re-initialise across all receivers.
+             terminate and re-initialize across all receivers.
 
           -  It could also be under the receiver list, which would
              effectively be equivalent to forcing all subscriptions
-             using that receiver to terminate and re-initialise.
+             using that receiver to terminate and re-initialize.
 
           -  *We also need to consider whether this would clear
              subscription counters or not.*
@@ -6038,7 +6227,7 @@ D.8.  Issues related to Subscription Lifecycle
              each subscription uses a separate transport session, or
              whether this is down to the transport session definition.
              This decision may impact the design of the data model, and
-             pehaps the transport requirements text.*
+             perhaps the transport requirements text.*
 
           -  *Rob: I've written up some text for the reset action on a
              subscription and under the receiver (that applies to all
@@ -6083,7 +6272,7 @@ D.10.  Issues related to Conformance and Capabilities
        features (both for configured and dynamic subscriptions)?
 
        *  The current doc uses a mixture of both (e.g., features for
-          supporting config vs dyanmic subscriptions), capabilities for
+          supporting config vs dynamic subscriptions), capabilities for
           advertising other capabilities that either cannot be
           advertised via features, or would arguably be too fine
           grained.
@@ -6102,7 +6291,7 @@ D.10.  Issues related to Conformance and Capabilities
        *  Further discussion is required on how to manage SID files.
 
    4.  Check of the current approach in the draft of using a separate
-       tree for YP Lite capbilities rather than reusing the YP
+       tree for YP Lite capabilities rather than reusing the YP
        capabilities (and augmentations) previously defined.
 
        *  Rob: The draft currently includes a separate tree, which I
@@ -6149,7 +6338,7 @@ D.13.  Issues related to the IANA
 
    None open.
 
-D.14.   Issues related to the Appendixes
+D.14.  Issues related to the Appendixes
 
 D.14.1.  Examples related issues/questions:
 
@@ -6171,19 +6360,21 @@ D.15.  Summary of closed/resolved issues
        implementations to implement one or both of them.  (Decided 21
        Feb 25)
 
-   4.  Dynamic susbcriptions require the encoding to be specified.
+   4.  Dynamic subscriptions require the encoding to be specified.
        (Decided 21 Feb 25)
 
    5.  DSCP settings are only specified under the receiver (for
        configured subscriptions) (Decided 21 Feb 25)
 
+   6.  Config and dynamic subscriptions should be aligned as much as
+       possible.
+
 D.16.  Changes
 
    1.  Aligned configured and dynamic subscription data models: - Both
-       are configured by name.  - Made "purpose" field common and
-       renamed to "description" (limited to 1k max characters,
-       previously unrestricted), i.e., now available for dynamic
-       subscriptions.
+       are configured by name. - Made "purpose" field common and renamed
+       to "description" (limited to 1k max characters, previously
+       unrestricted), i.e., now available for dynamic subscriptions.
 
 Authors' Addresses
 

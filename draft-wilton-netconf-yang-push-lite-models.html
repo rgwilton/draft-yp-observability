@@ -14,25 +14,24 @@
 <meta content="
        YANG Push Lite is a YANG datastore telemetry solution, as an alternative specification to the Subscribed Notifications and YANG Push solution, specifically optimized for the efficient observability of operational data. 
     " name="description">
-<meta content="xml2rfc 3.30.2" name="generator">
+<meta content="xml2rfc 3.31.0" name="generator">
 <meta content="YANG Push" name="keyword">
 <meta content="Observability" name="keyword">
 <meta content="Network Telemetry" name="keyword">
 <meta content="Operational Data" name="keyword">
 <meta content="draft-wilton-netconf-yang-push-lite-models-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.30.2
-    Python 3.12.11
+  xml2rfc 3.31.0
+    Python 3.12.12
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.6
     lxml 5.3.1
-    platformdirs 4.4.0
+    platformdirs 4.5.0
     pycountry 24.6.1
     PyYAML 6.0.2
     requests 2.32.5
-    setuptools 80.9.0
     wcwidth 0.2.14
 -->
 <link href="draft-wilton-netconf-yang-push-lite-models.xml" rel="alternate" type="application/rfc+xml">
@@ -1056,7 +1055,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Wilton, et al.</td>
-<td class="center">Expires 20 April 2026</td>
+<td class="center">Expires 23 April 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1069,12 +1068,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-wilton-netconf-yang-push-lite-models-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-10-17" class="published">17 October 2025</time>
+<time datetime="2025-10-20" class="published">20 October 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-04-20">20 April 2026</time></dd>
+<dd class="expires"><time datetime="2026-04-23">23 April 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1145,7 +1144,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 20 April 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 23 April 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1990,7 +1989,7 @@ module: ietf-yp-lite-config
             /ypl:filter:
     +--:(by-reference)
   augment /ypl:subscription-started/ypl:target:
-    +-- filter-ref    filter-ref
+    +-- filter-ref?   filter-ref
 </pre>
 </div>
 <figcaption><a href="#figure-1" class="selfRef">Figure 1</a></figcaption></figure>
@@ -2173,7 +2172,7 @@ module: ietf-yp-lite-config
             /ypl:filter:
     +--:(by-reference)
   augment /ypl:subscription-started/ypl:target:
-    +-- filter-ref    filter-ref
+    +-- filter-ref?   filter-ref
 </pre>
 </div>
 <figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
@@ -2388,7 +2387,7 @@ module: ietf-yp-lite-config
             /ypl:filter:
     +--:(by-reference)
   augment /ypl:subscription-started/ypl:target:
-    +-- filter-ref    filter-ref
+    +-- filter-ref?   filter-ref
 </pre>
 </div>
 <figcaption><a href="#figure-7" class="selfRef">Figure 7</a>:
@@ -2630,14 +2629,15 @@ State Descriptions:
 <p id="section-9.1-7">Below is a tree diagram for the "subscriptions" container.  All objects contained in this tree are described in the YANG module in <a href="#yp-lite-yang-module" class="auto internal xref">Section 13.2</a>.  In the operational datastore <span>[<a href="#RFC8342" class="cite xref">RFC8342</a>]</span>, the "subscription" list contains entries both for configured and dynamic subscriptions.<a href="#section-9.1-7" class="pilcrow">¶</a></p>
 <span id="name-subscriptions-container-tre"></span><div id="SubscriptionYangTree">
 <figure id="figure-8">
-          <div class="lang-yangtree sourcecode" id="section-9.1-8.1">
+          <div class="breakable lang-yangtree sourcecode" id="section-9.1-8.1">
 <pre>
 module: ietf-yp-lite-config
   +--rw datastore-telemetry!
      +--rw subscriptions
         +--rw subscription* [name]
-           +--rw name              subscription-name
-           +--rw description?      string
+           +--rw name
+           |       subscription-name
+           +--rw description?                        string
            +--rw target
            |  +--rw datastore?          identityref
            |  +--rw (filter)
@@ -2658,11 +2658,30 @@ module: ietf-yp-lite-config
            +--rw receivers* [name]
            |  +--rw name
            |  |       -&gt; /datastore-telemetry/receivers/receiver/name
-           |  +--ro status?   enumeration
-           +--ro id                ypl:subscription-id
-           +--ro status?           ypl:subscription-status
+           |  +--ro status?       enumeration
+           |  +--ro statistics
+           |     +--ro receiver-disconnected-count?
+           |             yang:zero-based-counter64
+           +--ro id
+           |       ypl:subscription-id
+           +--ro status?
+           |       ypl:subscription-status
+           +--ro last-sequence-number?
+           |       yang:zero-based-counter64
+           +--ro last-notification-time?
+           |       yang:date-and-time
+           +--ro last-periodic-collection-time?
+           |       yang:date-and-time
+           +--ro last-on-change-notification-time?
+           |       yang:date-and-time
            +--ro statistics
-           |  +--ro update-record-count?
+           |  +--ro started-notification-count?
+           |  |       yang:zero-based-counter64
+           |  +--ro terminated-notification-count?
+           |  |       yang:zero-based-counter64
+           |  +--ro update-notification-count?
+           |  |       yang:zero-based-counter64
+           |  +--ro periodic-collection-count?
            |  |       yang:zero-based-counter64
            |  +--ro excluded-event-records?
            |          yang:zero-based-counter64
@@ -2672,7 +2691,7 @@ module: ietf-yp-lite-config
             /ypl:filter:
     +--:(by-reference)
   augment /ypl:subscription-started/ypl:target:
-    +-- filter-ref    filter-ref
+    +-- filter-ref?   filter-ref
 </pre>
 </div>
 <figcaption><a href="#figure-8" class="selfRef">Figure 8</a>:
@@ -4910,7 +4929,7 @@ continuous and total filtering of a subscription's content for every update reco
 <dl class="references">
 <dt id="I-D.draft-ietf-netconf-notif-envelope">[I-D.draft-ietf-netconf-notif-envelope]</dt>
         <dd>
-<span class="refAuthor">Feng, A. H.</span>, <span class="refAuthor">Francois, P.</span>, <span class="refAuthor">Graf, T.</span>, and <span class="refAuthor">B. Claise</span>, <span class="refTitle">"Extensible YANG Model for YANG-Push Notifications"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-netconf-notif-envelope-02</span>, <time datetime="2025-06-17" class="refDate">17 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-netconf-notif-envelope-02">https://datatracker.ietf.org/doc/html/draft-ietf-netconf-notif-envelope-02</a>&gt;</span>. </dd>
+<span class="refAuthor">Feng, A. H.</span>, <span class="refAuthor">Francois, P.</span>, <span class="refAuthor">Graf, T.</span>, and <span class="refAuthor">B. Claise</span>, <span class="refTitle">"Extensible YANG Model for YANG-Push Notifications"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-netconf-notif-envelope-03</span>, <time datetime="2025-10-20" class="refDate">20 October 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-netconf-notif-envelope-03">https://datatracker.ietf.org/doc/html/draft-ietf-netconf-notif-envelope-03</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
@@ -5003,7 +5022,7 @@ continuous and total filtering of a subscription's content for every update reco
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-netconf-distributed-notif">[I-D.draft-ietf-netconf-distributed-notif]</dt>
         <dd>
-<span class="refAuthor">Zhou, T.</span>, <span class="refAuthor">Zheng, G.</span>, <span class="refAuthor">Voit, E.</span>, <span class="refAuthor">Graf, T.</span>, and <span class="refAuthor">P. Francois</span>, <span class="refTitle">"Subscription to Notifications in a Distributed Architecture"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-netconf-distributed-notif-15</span>, <time datetime="2025-07-04" class="refDate">4 July 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-15">https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-15</a>&gt;</span>. </dd>
+<span class="refAuthor">Zhou, T.</span>, <span class="refAuthor">Zheng, G.</span>, <span class="refAuthor">Voit, E.</span>, <span class="refAuthor">Graf, T.</span>, and <span class="refAuthor">P. Francois</span>, <span class="refTitle">"Subscription to Notifications in a Distributed Architecture"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-netconf-distributed-notif-16</span>, <time datetime="2025-10-19" class="refDate">19 October 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-16">https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-16</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-netconf-https-notif">[I-D.draft-ietf-netconf-https-notif]</dt>
         <dd>
@@ -5023,7 +5042,7 @@ continuous and total filtering of a subscription's content for every update reco
 <dd class="break"></dd>
 <dt id="I-D.ietf-netconf-distributed-notif">[I-D.ietf-netconf-distributed-notif]</dt>
         <dd>
-<span class="refAuthor">Zhou, T.</span>, <span class="refAuthor">Zheng, G.</span>, <span class="refAuthor">Voit, E.</span>, <span class="refAuthor">Graf, T.</span>, and <span class="refAuthor">P. Francois</span>, <span class="refTitle">"Subscription to Notifications in a Distributed Architecture"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-netconf-distributed-notif-15</span>, <time datetime="2025-07-04" class="refDate">4 July 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-15">https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-15</a>&gt;</span>. </dd>
+<span class="refAuthor">Zhou, T.</span>, <span class="refAuthor">Zheng, G.</span>, <span class="refAuthor">Voit, E.</span>, <span class="refAuthor">Graf, T.</span>, and <span class="refAuthor">P. Francois</span>, <span class="refTitle">"Subscription to Notifications in a Distributed Architecture"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-netconf-distributed-notif-16</span>, <time datetime="2025-10-19" class="refDate">19 October 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-16">https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-16</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-nmop-network-anomaly-architecture">[I-D.ietf-nmop-network-anomaly-architecture]</dt>
         <dd>
@@ -5031,7 +5050,7 @@ continuous and total filtering of a subscription's content for every update reco
 <dd class="break"></dd>
 <dt id="I-D.ietf-nmop-yang-message-broker-integration">[I-D.ietf-nmop-yang-message-broker-integration]</dt>
         <dd>
-<span class="refAuthor">Graf, T.</span> and <span class="refAuthor">A. Elhassany</span>, <span class="refTitle">"An Architecture for YANG-Push to Message Broker Integration"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-nmop-yang-message-broker-integration-08</span>, <time datetime="2025-07-07" class="refDate">7 July 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-nmop-yang-message-broker-integration-08">https://datatracker.ietf.org/doc/html/draft-ietf-nmop-yang-message-broker-integration-08</a>&gt;</span>. </dd>
+<span class="refAuthor">Graf, T.</span> and <span class="refAuthor">A. Elhassany</span>, <span class="refTitle">"An Architecture for YANG-Push to Message Broker Integration"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-nmop-yang-message-broker-integration-09</span>, <time datetime="2025-10-20" class="refDate">20 October 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-nmop-yang-message-broker-integration-09">https://datatracker.ietf.org/doc/html/draft-ietf-nmop-yang-message-broker-integration-09</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.tgraf-netconf-notif-sequencing">[I-D.tgraf-netconf-notif-sequencing]</dt>
         <dd>
