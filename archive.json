@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-19T00:21:10.001075+00:00",
+  "timestamp": "2025-10-21T00:19:10.187541+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -234,9 +234,9 @@
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
-      "body": "Document check/cleanup (mostly editorial) tasks:\n\n- [ ] Check/prune terminology, any extra, missing, consistency.\n- [ ] Remove dead/commented text in the draft.\n- [ ] Remove dead/commented code from YANG modules.\n- [ ] Check everyone has been acknowledged.\n- [ ] Check that the change list for add/update messages.\n- [ ] Add and validate examples.\n- [ ] Simplify and update the list of dependencies on the various YANG modules (once the structure of them is more stable).\n",
+      "body": "Document check/cleanup (mostly editorial) tasks:\n\n- [ ] Check/prune terminology, any extra, missing, consistency.\n- [ ] Remove dead/commented text in the draft.\n- [ ] Remove dead/commented code from YANG modules.\n- [ ] Check everyone has been acknowledged.\n- [ ] Check that the change list for add/update messages.\n- [ ] Add and validate examples.\n  - [ ] Some (maybe all) should be validated with the new envelope structure (which requires changes to yanglint to support that format)\n  - [ ] Update the tooling to add folding to the examples, if necessary.\n- [ ] Simplify and update the list of dependencies on the various YANG modules (once the structure of them is more stable).\n",
       "createdAt": "2025-10-14T10:14:11Z",
-      "updatedAt": "2025-10-16T14:50:37Z",
+      "updatedAt": "2025-10-20T19:33:57Z",
       "closedAt": null,
       "comments": []
     },
