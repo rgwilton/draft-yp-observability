@@ -5,11 +5,12 @@
 
 package build
 
-import mill._
-import uk.org.wilton.ietf.yang.mill.plugin._
+import mill.*, scalalib.*
+import uk.org.wilton.ietf.yang.mill.plugin.*
 
-object `package` extends IETF {
-  def draft = Task.Source { "draft-wilton-netconf-yang-push-lite.md" }
+object `package` extends IETF:
+  def draft = Task.Source:
+    "draft-wilton-netconf-yang-push-lite.md"
 
   // All RFCs that we need to extract YANG from.
   def rfcDeps = List(
@@ -76,10 +77,15 @@ object `package` extends IETF {
     ("ietf-yp-lite-tree.txt", "-n update-complete", "<end>", "update-complete.txt"),
   )
 
-  def all = Task {
+  def all = Task:
     checkDraftLatest()
     make()
-  }
 
-}
+
+  object publisher extends ScalaModule:
+    def scalaVersion = "3.7.3"
+    def mvnDeps = Seq(
+      mvn"com.lihaoyi::upickle:4.3.1",
+      mvn"com.lihaoyi::mainargs:0.7.6"
+    )
 
