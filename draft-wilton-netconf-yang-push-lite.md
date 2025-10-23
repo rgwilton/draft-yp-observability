@@ -527,7 +527,8 @@ A delete of a specific individual data node or subtree may be notified in two di
 
 On-change subscriptions also support the following additional parameters:
 
-- *sync-on-start* defines whether or not a complete snapshot of all subscribed data is sent at the start of a subscription.  Such early synchronization establishes the frame of reference for subsequent updates.
+- *sync-on-start* defines whether or not a complete snapshot of all subscribed data is sent at the start of a subscription.  Such early synchronization establishes the frame of reference for subsequent updates.  For each data node covered by an on-change with sync-on-start subscription, then an *sync-on-start* *update* notification containing the current state MUST be sent before any on-change *update* notifications for those same data nodes.  However, *sync-on-start* and *on-change* *update* notifications may be interleaved for different data-nodes under the subscription.  Unsolicited *sync-on-start update* notifications MUST NOT be sent, they MUST only be sent after a subscription has started.
+
 
 ### On-Change Notifiable Datastore Nodes {#OnChangeConsiderations}
 
@@ -772,7 +773,7 @@ Some IETF standards for YANG encodings known at the time of publication are:
 - CBOR, defined in {{RFC9254}}, and {{RFC9595}} for using compressed schema identifiers (YANG SIDs)
 - XML, defined in {{RFC7950}}
 
-To maximize interoperability, all implementations are RECOMMENDED to support both JSON and CBOR encodings.  Constrained platforms may not be able to support JSON and hence may choose to only support CBOR encoding.  JSON encoding may not be supported in the scenario that another encoding becomes the defacto standard (e.g., as JSON has largely replaced XML as the defacto choice for text based encoding).  Support for the XML encoding and/or CBOR encoding using YANG SIDs is OPTIONAL.
+To maximize interoperability, all implementations are RECOMMENDED to support both JSON and CBOR encodings (using regular YANG identifiers).  Constrained platforms may not be able to support JSON and hence may choose to only support CBOR encoding.  JSON encoding may not be supported in the scenario that another encoding becomes the defacto standard (e.g., as JSON has largely replaced XML as the defacto choice for text based encoding).  Support for the XML encoding and/or CBOR encoding using YANG SIDs is OPTIONAL.
 
 Encodings are defined in the *ietf-yp-lite.yang* as YANG identities that derive from the *encoding* base identity.  Additional encodings can be defined by defining and implementing new identities that derive from the *encoding* base identity, and also advertising those identities as part of the ietf-yp-lite-capabilities YANG module's transport capabilities {{yp-lite-yang-capabilities-module}}.
 
@@ -851,11 +852,12 @@ Below is a state diagram illustrating the states, and the likely changes between
                             |
                             |
     .-------------------.   |    .-------------------.
-    |                   |<------>|                   |
-    |    Active         |        |     Partial       |
+    |                   |   |    |                   |
+    |    Active         |<------>|     Partial       |
     |                   |        |                   |
     '-------------------'        '-------------------'
 
+                            v
                   .-------------------.
                   |                   |
                   |    Terminated     |
@@ -932,18 +934,17 @@ If the settings associated with a receiver are changed, then the publisher has t
 
 ### Terminating Subscriptions {#TerminatingSubscriptions}
 
-Subscriptions can be terminated by the publisher due to any of the following circumstances:
+Subscriptions MUST be terminated by the publisher due to any of the following circumstances:
 
 1. The subscription has been unconfigured.
 1. Some subscription, receiver, transport or encoding configuration has been removed, e.g., receiver configuration, such that there is no longer the sufficient minimum information to maintain the subscription.
 1. A dynamic subscription has been terminated via a *delete-subscription* or *kill-subscription* YANG RPC.
 1. Transport connectivity to all receivers have been lost, either due to network issues, or a failure in the security session state.
 1. The publisher doesn't have sufficient resources to honor the terms of the subscription, i.e., it is generating too many *update* notifications, or attempting to send too much data.
-1. The subscription parameters have changed in such a way that means the subscription needs to be reset by terminating and recreating it, i.e., as described for some changes in {{ChangingSubscriptionConfiguration}}.
+1. The subscription parameters have changed in such a way, i.e., as defined in {{ChangingSubscriptionConfiguration}}, that means the subscription needs to be reset by terminating and recreating it.
 1. The *reset* RPC is invoked on a configured subscription, or on the referenced receiver associated with a configured subscription.
-1. From a receiver perspective, if transport connectivity is lost, then that is equivalent to terminating the subscription via a *subscription-terminated* notification.
 
-**TODO, check this list, some of these are not really MAYs, but MUSTs, but perhaps those are the references into this section.**
+In addition, from a receiver's perspective, if transport connectivity is lost, then that is equivalent to terminating the subscription via a *subscription-terminated* notification.
 
 If possible, the publisher MUST try and close the subscription gracefully by generating a *subscription-terminated* notification to all receivers before closing any sessions to any receivers that have no remaining subscriptions.  Publishers MAY complete their current collection if one is in progress before generating the *subscription-terminated* notification.  Obviously, if transport connectivity to a receiver has been lost then neither of these two actions will be possible.
 
@@ -1468,6 +1469,11 @@ sourcecode-name="ietf-yp-lite-config.yang#0.1.0" title="YANG module ietf-yp-lite
 
 This section shows the tree output for ietf-yp-lite-capabilities YANG module, which augments the ietf-system-capabilities YANG module {{RFC9196}}.
 
+~~~~ yangtree
+{::include generated-tree-output/ietf-yp-lite-capabilities-tree.txt}
+~~~~
+{: align="left" title="YANG tree for YANG Push Lite Capabilities Module Tree Output "}
+
 ## ietf-yp-lite-capabilities YANG Model {#yp-lite-yang-capabilities-module}
 
 This module imports typedefs from the yang-push-lite YANG module.
@@ -1479,12 +1485,6 @@ This module augments the ietf-system-capabilities YANG module {{RFC9196}}.
 ~~~~
 {: align="left" sourcecode-markers="true"
 sourcecode-name="ietf-yp-lite-capabilities.yang#0.1.0" title="YANG module ietf-yp-lite-capabilities"}
-
-~~~~ yangtree
-{::include generated-tree-output/ietf-yp-lite-capabilities-tree.txt}
-~~~~
-{: align="left" title="YANG tree for YANG Push Lite Capabilities Module Tree Output "}
-
 
 # Security Considerations {#security}
 
@@ -1625,11 +1625,15 @@ This section lists functionality specified in {{RFC8639}} and YANG Push which is
 
 - The YANG Patch format {{RFC8072}} is no longer used for on-change subscriptions.
 
+- Configured subscriptions with multiple receivers must use the same encoding for all receivers.
+
 ## Changed Functionality
 
 This section documents behavior that exists in both YANG Push and YANG Push Lite, but the behavior differs between the two:
 
 - All YANG Push Lite notifications messages use {{I-D.draft-ietf-netconf-notif-envelope}} rather than {{RFC5277}} used by YANG Push {{RFC8641}}.
+
+- There is a lot more alignment in data model, behavior, and state machined in YANG Push Lite, aiming to minimize differences.
 
 - Changes to handling receivers:
 
@@ -1648,6 +1652,12 @@ This section documents behavior that exists in both YANG Push and YANG Push Lite
   - Invoking the *reset* RPC operation on a receiver requires and forces a reset of any transport sessions associated with that receiver.  Previously, the sessions would not be reset if they were used by other subscriptions.
 
 - Periodic and on-change message uses a common *update* notification message format, allowing for the messages to be processed by clients in a similar fashion and to support combined periodic and on-change subscriptions.
+
+- Changes related to the configuration model:
+
+  - Subscriptions are primarily identified by a string identifier rather than a numeric identifier.
+
+  - Purpose has been renamed to Description (since it is a more generic term), limited to 1k characters, but also available for dynamic subscriptions.
 
 - On-change dampening:
 
@@ -2012,29 +2022,6 @@ a subscription that had previously been established using an
 "delete-subscription" RPC, which takes as its only input the
 subscription's "id".  This RPC is unmodified from [RFC8639].
 
-###  "resync-subscription" RPC
-
-This RPC is supported only for on-change subscriptions previously
-established using an "establish-subscription" RPC.  For example:
-
-~~~~
-  <rpc message-id="103"
-        xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
-    <resync-subscription
-        xmlns="urn:ietf:params:xml:ns:yang:ietf-yang-push">
-      <id>1011</id>
-    </resync-subscription>
-  </rpc>
-
-                  Figure 15: "resync-subscription"
-~~~~
-
-On receipt, a publisher must either (1) accept the request and
-quickly follow with a "push-update" or (2) send an appropriate error
-in an RPC error response.  In its error response, the publisher MAY
-include, in the yang-data structure "resync-subscription-error",
-supplemental information about the reasons for the error.
-
 # Summary of Open Issues & Potential Enhancements {#OpenIssuesTracker}
 
 This temporary section lists open issues and enhancements that require further discussion by the authors, or the WG.  Once adopted, it is anticipated that tracking the open issues would move to github.
@@ -2043,19 +2030,16 @@ The issues are ordered/grouped by the sections in the current document.  I.e., t
 
 ## Issues related to general IETF process
 
-1. If this work progresses we will need simple bis versions of the transports document so that they augment into the new data model paths.  Drafts that would need to be updated as documented in  {{DraftRelationships}}.
+1. If this work progresses we will need simple bis versions of the transports document so that they augment into the new data model paths.  Drafts that would need to be updated as documented in  {{DraftRelationships}}.  [Issue 27](https://github.com/rgwilton/draft-yp-observability/issues/27)
 
-1. Do we need to fold in any text from RFC 8640? and RESTCONF.  I.e., there was this text in the one of the previous docs:   Bindings for subscribed event record delivery for NETCONF and RESTCONF are defined in {{RFC8640}} and **RESTCONF-Notif**, respectively.
-   - Rob: If text is needed for NETCONF and/or RESTCONF then I suspect that it would be better added to this document than to require small separate documents (as was done before).
+1. Do we need to fold in any text from RFC 8640? and RESTCONF? [Issue 26](https://github.com/rgwilton/draft-yp-observability/issues/26)
 
-1. What is the right name.  Should we be calling this Yang Push 2 (YPv2) to more clearly indicate that this is intended to be a replacement for Yang Push?  We need to be slightly careful in that this is only specifying implementing a subset of the functionality.
+1. What is the right protocol (and document) name.  Should we be calling this Yang Push 2 (YPv2) to more clearly indicate that this is intended to be a replacement for Yang Push? [Issue 25](https://github.com/rgwilton/draft-yp-observability/issues/25)
 
 ## Issue related to Terminology/Definitions
 
-1. Should we use the object terminology?
-   - Holger: should try and use same terminology as existing YANG Push RFCs.
-   - Rob: This issue can be a place holder, to go through and check/update the terminology used, and see if any of the referenced terminology isn't needed in YP Lite.
-   - Rob: Update, possible should refine the definition of object to make it clear that it may refer to a single data node or set of data nodes.
+1. Should we use the object terminology? Tracked as editorial, in [Issue 15](https://github.com/rgwilton/draft-yp-observability/issues/15)
+
 
 ## Issues related to YANG Push Lite Overview
 
@@ -2063,75 +2047,27 @@ None currently.
 
 ## Issues related to Subscription Paths and Selection Filters
 
-1. This draft introduces a new simple yang path (ypath) format that is like a JSON instance data path, that all implementations MUST support.
-   - Vendors already support a simple JSON like path (e.g., using module-names rather than XML namespaces).
-   - **Open questions (for further discussion):**
-      - Do we support filtering on non-keys, e.g., this example from Thomas (but which filters on a non-key):
-         /if:interfaces-state/if:interface\[if:type='ianaift:ethernetCsmacd'\]/if:statistics
-      - Do we support simple regex filtering on the keys (and if so, how would that be expressed, would it be compatible with JSON Path)
-      - Do we need any more complex filtering (e.g., Holger's example of only getting entries from a list if they are in a particular state.), or do we always use subtree filters for that?
-   - **Authors: I provides some suggested text in {{YPaths}}, but I expect further discussion may be needed. (E.g., how multiple keys should be expressed)**
+1. This draft introduces a new simple yang path (ypath) format that is like a JSON instance data path, that all implementations MUST support.  [Issue 29](https://github.com/rgwilton/draft-yp-observability/issues/29)
 
-1. Advertising subscription schema: https://github.com/rgwilton/draft-yp-observability/issues/11
+1. Advertising subscription schema: [Issue 11](https://github.com/rgwilton/draft-yp-observability/issues/11)
 
-## Issues related to Datastore Event Streams
+## Issues related to Datastore Event Streams & message format
 
-### Further refinements on how a subscription can be decomposed internally into child subscriptions with the data returned for each child subscription:
+1. Agree format and usage of *update* notification. [Issue 32](https://github.com/rgwilton/draft-yp-observability/issues/32)
 
-1. Handling lists with separate producers of list entries.
-
-   - If a subscription is decomposed, then should the subscription started message for the configured subscription indicate how that subscription has been decomposed?
-
-   - Do we need to add an optional replay-end (i.e., after a sync-on-start) or collection-end (i.e., after every collection) notification so that clients can determine when data can be implicitly deleted.
-     - Rob: I think that we should add the latter, but make it a subscription config option to turn it on.
-     - Holger, strong support for adding this, often requested.
-     - Thomas, yes we need this, but need to determine whether this is per subscription or per publisher.
-
-
-### Questions/comments on the notification message format:
-
-1. We allow multiple updates within a single message (primary use case is for the on-change case).  What about the timestamp, which is still just once per message (like gNMI)?  Should message bundling be optional/configurable to implement (if they all use a single shared timestamp)?
-
-   - on-change deletes are implicit by an update that replaces an existing entry with an empty data node (e.g., "{}" in JSON)
-
-     - An alternative choice here could be an explicit delete flag, we need to decide which would be simpler/better.
-
-   - The update message also currently includes a path-prefix to allow (like gNMI) so that they don't necessarily need to be encoded from root, specifically, I think that this makes on-change messages nicer, since the on-change is rooted to the thing that is changing rather than the root of the tree.  We need to define semantics of how this works, e.g., this should probably be controlled via configuration.
-      - Ideally, the path prefix would be exactly the same as the YPath format that is being specified for configuration.
-
-     - Thomas: We should keep this.
-
-  - *Further discussion of this issue is needed*
 
 ## Issues related to Receivers, Transports, & Encodings
 
 ### Constraints on supporting multiple receivers:
 
-1. Encoding is set per receiver, but do we need to support a subscription supporting more than one receiver with different encodings?
-   - Rob: Note, it is always possible for a client to setup different subscriptions.
-   - Thomas: This could be useful, e.g., when migrating from one encoding to another, particularly, if it reduced the load on the publisher (compared to creating a new separate subscription).
-   - Rob: I don't think that we would end up optimizing for this case (but would need to check).
-   - Also need to check with Nokia/Huawei would support this.
-   - **Current status: Left open for further discussion.**
-   - Note: This may also have a minor impact on the data model.
+1. Encoding is set per receiver, but do we need to support a subscription supporting more than one receiver with different encodings? Tracked as part of [Issue 17](https://github.com/rgwilton/draft-yp-observability/issues/17)
 
-1. Lifecycle message should be sent per subscription, not per receiver (i.e., every receiver gets the same message (ignoring transport headers)):
-    - Consensus agreed this is the right thing to do.
-    - **Action on Rob to check/update the draft.**
-    - Notes:
-       - Every receiver gets the same sequence number in the message.
-       - subscription-created notification could perhaps have an enum giving a reason for the notification (e.g., new subscription, receiver added).
-
-1. Do we need a per-receiver notification to indicate to a specific receiver that it has been disconnected?
-   - This would seem to only apply to configured subscriptions (since dynamic cannot have more than one receiver).
-   - If the transport session went down, then the publisher would be expected to reconnect anyway.
-   - So, the specific use case is likely to be unconfiguring a receiver for a subscription that has multiple receivers.
-   - **Currently parked for further discussion.**
+1. Do we need a per-receiver notification to indicate to a specific receiver that it has been disconnected? [Issue 28](https://github.com/rgwilton/draft-yp-observability/issues/28)
 
 ### Issues related to Transports:
 
 1. {{transports}} lists quite a lot of rules on what are valid transports and what negotiation/etc is required.  I think we need to check whether we can weaken some of these (although it is possible that these were imposed during a transport directorate review).
-    - **Rob: Authors, I've updated the transport section, {{transports}}, please can you re-review.**
+    - **Rob: Authors, I've updated the transport section, {{transports}}, please can you re-review.**. Tracked as part of [Issue 17](https://github.com/rgwilton/draft-yp-observability/issues/17)
 
 1. James: We also need to add some text into security section.
    - Rob: Is this transport specific, or related to application layer authorization?
@@ -2142,80 +2078,28 @@ None currently.
 
 ### Issues related to the configuration model:
 
-Note some of these apply or impact dynamic subscriptions as well.
+1. YP Lite is somewhat different (separate namespace, separate receivers, no event filters, some config has moved to a separate receivers list).  See the data model and {{DifferencesFromYangPush}}.  Note some of these apply or impact dynamic subscriptions as well. [Issue 30](https://github.com/rgwilton/draft-yp-observability/issues/30)
 
-1. YP Lite is somewhat different (separate namespace, separate receivers, no event filters, some config has moved to a separate receivers list.)  See the data model and {{DifferencesFromYangPush}}.
-
-1. We should allow devices to limit which datastores subscriptions can be made against (e.g., not candidate or factory-default as some obvious examples).  Should these be advertised in the capabilities?
-
-1. (James) Should we even document the configuration data model in this document at all, or should it be in a separate document?
-
-1. Some other changes/proposed changes:
-   - I've removed some of the YANG features for 'small' one/two changes in configuration.  I propose that we don't need features for these at all (e.g., DSCP settings), or in other cases we can use operational capabilities, or rely on deviations.
-      - I've renamed the encodings (e.g., from "encode-json" to just "json")
-
-      - Maybe further simplification of the receivers list under the subscription.  E.g., do we need stats per subscription per receiver, or just per subscription?  Do want stats across all subscriptions to a given receiver?
-        - Holger: Stats per subscription should be sufficient.  No need for per subscription/pre-receiver stats (which would allow the data model to be simplified a little bit).
-
-      - Subscription-ids are currently numeric values with the space split between configured and dynamic subscriptions, but I think that the config model would be cleaner if we used names for the configured subscriptions (and we could reserve a prefix "dyn-" for dynamic subscriptions).
-        - Holger, Rob: Strong preference to names.
-        - Thomas, keep ids, but rename 'purpose' to name.  Also give receivers an ids and be keyed this.
 
 ### Issues related to dynamic subscriptions:
 
-1. In YP Lite, dynamic subscriptions are designed to be closer to configured subscriptions and share more of the data model and lifecycle handling.  I.e., the primary differentiator is meant to be how they are instantiated.
-   - James, Rob: More alignment is better.
-
-1. Do we want to change how RPC errors are reported?  E.g., change the RPC ok response to indicate whether the subscription was successfully created or not, or included extra error information.  Note NETCONF and RESTCONF already define how errors are encoded in XML and JSON (for RESTCONF only).
-
-1. Do we need to allow a dynamic subscription to be modified?  If we do, then it would be better to change the establish-subscription RPC to have an optional existing subscription-id rather than define a separate RPC.  However, my preference is that the existing subscription is deleted and recreated (or if we allow the client to specify the subscription-id then they could just overwrite the subscription)
-   - Holger: Overwrite is a neat idea, but delete/recreate would also be sufficient.
-   - Rob: Related to this, do we allow the client to optionally name dynamic subscriptions (what is config and dynamic subscription names collide)?
-
-1. For operational data, should be list dynamic receivers in the receiver list so that they are handled the same as configured subscription?  Or should the information for them be inlined in the subscriptions container?
-   - Rob this requires further thought on exactly how configured/dynamic subscriptions may to underlying transport sessions.  I.e., how fixed or flexible is this depending on the transport.
+1. Do we want to change how RPC errors are reported?  E.g., change the RPC ok response to indicate whether the subscription was successfully created or not, or included extra error information.  Note NETCONF and RESTCONF already define how errors are encoded in XML and JSON (for RESTCONF only), is it possible to unify this so we don't need large extra separate documents.
 
 ## Issues related to Subscription Lifecycle
 
-1. Use subscription name as the unique identifier for the subscription configuration.  Subscription id identifies a subscription session.  I.e., if a configured subscription is terminated and re-established then a new subscription id is allocated.
+1. Use subscription name as the unique identifier for the subscription configuration.  Subscription id identifies a subscription session.  I.e., if a configured subscription is terminated and re-established then a new subscription id is allocated. [Issue 19](https://github.com/rgwilton/draft-yp-observability/issues/19)
 
-1. Should subscription-started notification include a fingerprint of the schema that is covered by the subscription that would guaranteed to change if the subscription changes?
-   - Tracked via https://github.com/rgwilton/draft-yp-observability/issues/11
+1. Should subscription-started notification include a fingerprint of the schema that is covered by the subscription that would guaranteed to change if the subscription changes? [Issue 11](https://github.com/rgwilton/draft-yp-observability/issues/11)
 
-1. If a subscription references a filter, then should that be included inline in the subscription started notification (as per the RFC 8641 text), or should it indicate that it is a referenced filter?
-     - Thomas: Do we need referenced filters at all?  Subscriptions could be simplified if everything was done inline.
-     - gNMI is only done inline.
-     - Juniper also supports filters.
-     - Thomas try to simplify as much as possible, then do we need templating?
+1. If a subscription references a filter, then should that be included inline in the subscription started notification (as per the RFC 8641 text), or should it indicate that it is a referenced filter? [Issue 20](https://github.com/rgwilton/draft-yp-observability/issues/20)
 
-1. When a subscription is terminated, should it be MUST NOT send any more notifications after the terminated message, or SHOULD NOT?  For a dynamic subscription, should the RPC be synchronous and not reply until it knows that all queues have been drained?
-      - Tracked via https://github.com/rgwilton/draft-yp-observability/issues/13
+1. When a subscription is terminated, should it be MUST NOT send any more notifications after the terminated message, or SHOULD NOT?  For a dynamic subscription, should the RPC be synchronous and not reply until it knows that all queues have been drained? [Issue 13](https://github.com/rgwilton/draft-yp-observability/issues/13)
 
-1. Is a publisher allowed to arbitrarily send a sync-on-start resync, e.g., if it detects data loss, or should it always just terminate and reinitialize the subscription?
-    - Holger, terminate & recreate.
-    - gNMI, not specified.
-    - Thomas: Keep this as implementation detail.
-    - Sequence-id indicates that a client is dropping message anyway.
-    - Receiver can already monitor and see that there is a problem anyway.
+1. Is a publisher allowed to arbitrarily send a sync-on-start resync, e.g., if it detects data loss, or should it always just terminate and reinitialize the subscription? [Issue 22](https://github.com/rgwilton/draft-yp-observability/issues/22)
 
-1. If the parameters for a subscription change in any way (e.g., the config changes for a configured subscription, or a referenced filter changes in a dynamic subscription) then do we want to say that the subscription MUST be killed and recreated.  I.e., with subscription-terminated/subscription-started notifications? (Section 11)
-     - Holger, kill/re-create.
-     - Collector would need to no.
-     - Ebben: Includes addition or deletion of the path.
-     - Benoit: Which parameters are changing, this could impact.  It depends.  Maybe forcing it down keeps it simple.  Would need further definition of what parameters would cause this to be pulled down.
-     - Locally relevant, e.g., modifying transport parameters doesn't force a change.
-     - Benoit: If you are not sure what you are doing you must recreate.
+1. Should we have a YANG Action to reset a receiver or a subscription?  E.g., discussed in {{reset}}. [Issue 24](https://github.com/rgwilton/draft-yp-observability/issues/24)
 
-1. Should we have a YANG Action to reset a receiver or a subscription?  E.g., discussed in {{reset}}.
-   - There seems to be consensus that having/keeping such a YANG action is useful if a configured subscription is stuck.
-   - Further discussion is needed to indicate where such an RPC should be in the data model, and what effect it should have:
-      - It could be under the subscription list, which would effectively be equivalent to forcing the subscription to terminate and re-initialize across all receivers.
-      - It could also be under the receiver list, which would effectively be equivalent to forcing all subscriptions using that receiver to terminate and re-initialize.
-      - **We also need to consider whether this would clear subscription counters or not.**
-      - **We also consider whether configured subscription MAY/SHOULD share transport sessions where possible, or whether each subscription uses a separate transport session, or whether this is down to the transport session definition.  This decision may impact the design of the data model, and perhaps the transport requirements text.**
-      - **Rob: I've written up some text for the reset action on a subscription and under the receiver (that applies to all subscriptions that reference the receiver configuration).  Unlike the existing reset action, I've removed the return parameter (timestamp of when it took effect), and I think that we should allow it to be processed asynchronously w.r.t the RPC caller.  Authors, please check the latest text.**
-
-1. Should we support configurable subscription-level keepalives?
+1. Should we support configurable subscription-level keepalives? [Issue 14](https://github.com/rgwilton/draft-yp-observability/issues/14)
 
 ## Issues related to Performance, Reliability & Subscription Monitoring
 
@@ -2223,29 +2107,17 @@ Note some of these apply or impact dynamic subscriptions as well.
 
 1. Should we define some additional operational data to help operators check that the telemetry infrastructure is performing correctly, to get an approximation of the load, etc.
    - Rob: probably, but lower priority.
+   - Tracked by [Issue 31](https://github.com/rgwilton/draft-yp-observability/issues/31)
 
-1. Should dynamic subscriptions use the same receivers structure as for configured subscriptions, or should they be inline in the configured subscription?
-   - Thomas: Two sets of counters, one is at the subscription which is about fetching the data, and the other is on the receiver.
-   - James: Can think of some uses cases where listing drop counters per subscription may be helpful.
-   - Rob: Thinking about it further, it probably needs to be separate, since for some transports, each subscription may open a separate transport session to the receiver rather than trying to mux into a single transport (e.g., TCP).
+1. Should dynamic subscriptions use the same receivers structure as for configured subscriptions, or should they be inline in the configured subscription?  Also tracked by [Issue 31](https://github.com/rgwilton/draft-yp-observability/issues/31)
 
 ## Issues related to Conformance and Capabilities
 
 1. Do we advertise that conformance via capabilities and/or YANG features (both for configured and dynamic subscriptions)?
-
-   - The current doc uses a mixture of both (e.g., features for supporting config vs dynamic subscriptions), capabilities for advertising other capabilities that either cannot be advertised via features, or would arguably be too fine grained.
-
-1. For on-change, should a subscription be rejected (or not brought up) if there are no on-change notifiable nodes?  Alternative is to offer implementation flexibility between these two approaches.
-   - Holger: Prefer for the subscription to be rejected.
-
-1. CBOR SID encoding:
-   - In terms of conformance, we have SHOULD for CBOR, but the draft is silent on whether this means with SIDs or not.
-   - Further discussion is required on how to manage SID files.
-
-1. Check of the current approach in the draft of using a separate tree for YP Lite capabilities rather than reusing the YP capabilities (and augmentations) previously defined.
-   - Rob: The draft currently includes a separate tree, which I think is necessary because the supported functionality is different (e.g., dampening), and a implementation may support both YANG Push and YANG Push Lite.
-
+1. For on-change, should a subscription be rejected (or not brought up) if there are no on-change notifiable nodes?
 1. Further work and discussion is required for advertising capabilities for filter paths.  E.g., listing all of the paths that support on-change could be a very long list.  Related, does the draft need to advertise at what points a publisher would decompose a higher subscription into more specific subscriptions.
+
+All tracked via [Issue 18](https://github.com/rgwilton/draft-yp-observability/issues/18)
 
 ## Issues related to the YANG Modules
 
@@ -2254,16 +2126,13 @@ None open.
 ## Issues related to the Security Considerations (& NACM filtering)
 
 1. Need to consider how NACM applies to YANG Push Lite, which may differ for dynamic vs configured subscription, but generally we want the permissions to be checked when the subscription is created rather than each time a path is accessed.
-
-   - (James) Take out tight binding to NACM from YANG Push Lite altogether.  I.e., decouple YANG Push Lite from what security mechanism is being used.
-
-   - (Rob) Another choice could be to use NACM as an example rather than the only way.
-
 1. Where should this be in the document (current it in the security considerations section)
 
 1. Do we want to retain the the current text in {{events}} introduction related to terminating a subscription if permissions change?
 
 1. Also note, text was removed from the transport section related to RPC authorization, and which should be moved to an application (rather than transport) layer security mechanism.
+
+All tracked via [Issue 33](https://github.com/rgwilton/draft-yp-observability/issues/33)
 
 ## Issues related to the IANA
 
@@ -2273,7 +2142,7 @@ None open.
 
 ### Examples related issues/questions:
 
-1. Not a question, but a note that most of the examples need to be updated to reflect the data models currently in the draft.
+1. Not a question, but a note that many examples need to be updated to reflect the data models currently in the draft.
 
 ## Summary of closed/resolved issues
 
@@ -2291,8 +2160,12 @@ This appendix is only intended while the authors/WG are working on the document,
 
 1. Config and dynamic subscriptions should be aligned as much as possible.
 
-## Changes
+1. If subscription parameters change then force subscription down and up again, [issue 14](https://github.com/rgwilton/draft-yp-observability/issues/14)
 
-1. Aligned configured and dynamic subscription data models:
-- Both are configured by name.
-- Made "purpose" field common and renamed to "description" (limited to 1k max characters, previously unrestricted), i.e., now available for dynamic subscriptions.
+1. No RPC to modify a dynamic subscription, use delete-subscription then create-subscription.
+
+1. Lifecycle messages (except receiver-disconnected) are sent per subscription (to all receivers) rather than per receiver.
+
+1. Encoding is set per subscription, and we don't allow different per-receiver encodings for a subscription with more than one receiver.  [issue 17](https://github.com/rgwilton/draft-yp-observability/issues/17)
+
+1. We have a updated-completed flag/notification to allow deleted data to be implicitly detected.  Something similar may be added to gNMI.  [issue 12](https://github.com/rgwilton/draft-yp-observability/issues/12)

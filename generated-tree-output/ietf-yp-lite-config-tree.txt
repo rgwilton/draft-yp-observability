@@ -43,6 +43,7 @@ module: ietf-yp-lite-config
      |     |       ypl:subscription-id
      |     +--ro status?
      |     |       ypl:subscription-status
+     |     +--ro encoding?                           ypl:encoding
      |     +--ro last-sequence-number?
      |     |       yang:zero-based-counter64
      |     +--ro last-notification-time?

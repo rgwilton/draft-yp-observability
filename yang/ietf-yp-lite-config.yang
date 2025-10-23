@@ -259,6 +259,13 @@ module ietf-yp-lite-config {
              of the subscription as established by the publisher.";
         }
 
+        leaf encoding {
+          type ypl:encoding;
+          config false;
+          description
+            "The type of encoding for notification messages.";
+        }
+
         leaf last-sequence-number {
           type yang:zero-based-counter64;
           config false;

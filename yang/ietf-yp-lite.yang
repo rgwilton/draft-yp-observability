@@ -297,6 +297,8 @@ module ietf-yp-lite {
     type string {
       length "1..64";
       // TODO, is it reasonable to limit this to 64 characters?
+      // TODO, should we ban certain characters, e.g., whitespace?
+      // TODO, should we limit this to latin-alphabetic characters?
     } 
     description
       "A user friendly name for a subscription.";
