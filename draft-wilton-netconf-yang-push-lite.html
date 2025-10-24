@@ -1055,7 +1055,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Wilton, et al.</td>
-<td class="center">Expires 26 April 2026</td>
+<td class="center">Expires 27 April 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1068,12 +1068,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-wilton-netconf-yang-push-lite-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-10-23" class="published">23 October 2025</time>
+<time datetime="2025-10-24" class="published">24 October 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-04-26">26 April 2026</time></dd>
+<dd class="expires"><time datetime="2026-04-27">27 April 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1144,7 +1144,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 26 April 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 27 April 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1521,13 +1521,16 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.23.2.4">
-                <p id="section-toc.1-1.23.2.4.1"><a href="#appendix-C.4" class="auto internal xref">C.4</a>.  <a href="#name-subscription-rpc-examples-f" class="internal xref">Subscription RPC examples (from RFC 8641)</a></p>
+                <p id="section-toc.1-1.23.2.4.1"><a href="#appendix-C.4" class="auto internal xref">C.4</a>.  <a href="#name-netconf-dynamic-subscriptio" class="internal xref">NETCONF Dynamic Subscription RPC examples</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.23.2.4.2.1">
-                    <p id="section-toc.1-1.23.2.4.2.1.1"><a href="#appendix-C.4.1" class="auto internal xref">C.4.1</a>.  <a href="#name-establish-subscription-rpc" class="internal xref">"establish-subscription" RPC</a></p>
+                    <p id="section-toc.1-1.23.2.4.2.1.1"><a href="#appendix-C.4.1" class="auto internal xref">C.4.1</a>.  <a href="#name-successful-periodic-subscri" class="internal xref">Successful periodic subscription</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.23.2.4.2.2">
-                    <p id="section-toc.1-1.23.2.4.2.2.1"><a href="#appendix-C.4.2" class="auto internal xref">C.4.2</a>.  <a href="#name-delete-subscription-rpc" class="internal xref">"delete-subscription" RPC</a></p>
+                    <p id="section-toc.1-1.23.2.4.2.2.1"><a href="#appendix-C.4.2" class="auto internal xref">C.4.2</a>.  <a href="#name-failed-periodic-subscriptio" class="internal xref">Failed periodic subscription</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.23.2.4.2.3">
+                    <p id="section-toc.1-1.23.2.4.2.3.1"><a href="#appendix-C.4.3" class="auto internal xref">C.4.3</a>.  <a href="#name-delete-subscription-rpc" class="internal xref">"delete-subscription" RPC</a></p>
 </li>
                 </ul>
 </li>
@@ -6578,75 +6581,82 @@ addition to those that were already defined in <span>[<a href="#RFC8639" class="
 </div>
 </section>
 </div>
-<div id="subscription-rpc-examples-from-rfc-8641">
+<div id="netconf-dynamic-subscription-rpc-examples">
 <section id="appendix-C.4">
-        <h3 id="name-subscription-rpc-examples-f">
-<a href="#appendix-C.4" class="section-number selfRef">C.4. </a><a href="#name-subscription-rpc-examples-f" class="section-name selfRef">Subscription RPC examples (from RFC 8641)</a>
+        <h3 id="name-netconf-dynamic-subscriptio">
+<a href="#appendix-C.4" class="section-number selfRef">C.4. </a><a href="#name-netconf-dynamic-subscriptio" class="section-name selfRef">NETCONF Dynamic Subscription RPC examples</a>
         </h3>
-<p id="appendix-C.4-1">YANG-Push subscriptions are established, modified, and deleted using
-RPCs augmented from <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>.<a href="#appendix-C.4-1" class="pilcrow">¶</a></p>
-<div id="establish-subscription-rpc">
+<p id="appendix-C.4-1">The examples in this section illustrate NETCONF RPCs for establishing and deleting dynamic subscriptions using Yang Push Lite.  The examples include one successfully establishing a subscription, and a second to illustrate how errors are returned if a request to establish the subscription fails.  Examples of the <em>update</em> and subscription lifecycle notifications have been given in the previous section.<a href="#appendix-C.4-1" class="pilcrow">¶</a></p>
+<div id="successful-periodic-subscription">
 <section id="appendix-C.4.1">
-          <h4 id="name-establish-subscription-rpc">
-<a href="#appendix-C.4.1" class="section-number selfRef">C.4.1. </a><a href="#name-establish-subscription-rpc" class="section-name selfRef">"establish-subscription" RPC</a>
+          <h4 id="name-successful-periodic-subscri">
+<a href="#appendix-C.4.1" class="section-number selfRef">C.4.1. </a><a href="#name-successful-periodic-subscri" class="section-name selfRef">Successful periodic subscription</a>
           </h4>
-<p id="appendix-C.4.1-1">The subscriber sends an "establish-subscription" RPC with the
-parameters listed in Section 3.1.  An example might look like:<a href="#appendix-C.4.1-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-C.4.1-2">
+<p id="appendix-C.4.1-1">The subscriber sends an "establish-subscription" RPC with the parameters listed in <a href="#EstablishDynamic" class="auto internal xref">Section 9.4.1</a>  An example might look like:<a href="#appendix-C.4.1-1" class="pilcrow">¶</a></p>
+<span id="name-example-establish-subscript"></span><figure id="figure-31">
+            <div class="lang-XML sourcecode" id="appendix-C.4.1-2.1">
 <pre>
- &lt;netconf:rpc message-id="101"
-     xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
-   &lt;establish-subscription
-       xmlns="urn:ietf:params:xml:ns:yang:ietf-subscribed-notifications"
-       xmlns:yp="urn:ietf:params:xml:ns:yang:ietf-yang-push"&gt;
-     &lt;yp:datastore
-          xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores"&gt;
-       ds:operational
-     &lt;/yp:datastore&gt;
-     &lt;yp:datastore-xpath-filter
-         xmlns:ex="https://example.com/sample-data/1.0"&gt;
-       /ex:foo
-     &lt;/yp:datastore-xpath-filter&gt;
-     &lt;yp:periodic&gt;
-       &lt;yp:period&gt;500&lt;/yp:period&gt;
-     &lt;/yp:periodic&gt;
-   &lt;/establish-subscription&gt;
- &lt;/netconf:rpc&gt;
-
-                  Figure 10: "establish-subscription" RPC
-</pre><a href="#appendix-C.4.1-2" class="pilcrow">¶</a>
+&lt;netconf:rpc
+message-id="101" xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
+  &lt;establish-subscription xmlns="urn:ietf:params:xml:ns:yang:ietf-yp-lite"&gt;
+    &lt;name&gt;if-stats-sub&lt;/name&gt;
+    &lt;description&gt;Subscribe to interface statistics&lt;/description&gt;
+    &lt;target&gt;
+      &lt;datastore xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores"&gt;
+        ds:operational
+      &lt;/datastore&gt;
+      &lt;path&gt;/ietf-interfaces:interfaces/interface/statistics&lt;/path&gt;
+    &lt;/target&gt;
+    &lt;update-trigger&gt;
+      &lt;periodic&gt;
+        &lt;period&gt;3000&lt;/period&gt;
+      &lt;/periodic&gt;
+    &lt;/update-trigger&gt;
+    &lt;encoding&gt;json&lt;/encoding&gt;
+  &lt;/establish-subscription&gt;
+&lt;/netconf:rpc&gt;
+</pre>
 </div>
-<p id="appendix-C.4.1-3">A positive response includes the "id" of the accepted subscription.
-In that case, a publisher may respond as follows:<a href="#appendix-C.4.1-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-C.4.1-4">
+<figcaption><a href="#figure-31" class="selfRef">Figure 31</a>:
+<a href="#name-example-establish-subscript" class="selfRef">Example establish-subscription RPC for interface statistics</a>
+            </figcaption></figure>
+<p id="appendix-C.4.1-3">If a publisher is happy to accept the subscription, then it returns a positive response that includes the "id" of the accepted subscription.  For example,<a href="#appendix-C.4.1-3" class="pilcrow">¶</a></p>
+<span id="name-example-establish-subscripti"></span><figure id="figure-32">
+            <div class="lang-XML sourcecode" id="appendix-C.4.1-4.1">
 <pre>
- &lt;rpc-reply message-id="101"
-    xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
-    &lt;id
-      xmlns="urn:ietf:params:xml:ns:yang:ietf-subscribed-notifications"&gt;
-       52
-    &lt;/id&gt;
- &lt;/rpc-reply&gt;
-
-         Figure 11: "establish-subscription" Positive RPC Response
-</pre><a href="#appendix-C.4.1-4" class="pilcrow">¶</a>
+&lt;rpc-reply
+message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
+  &lt;id xmlns="urn:ietf:params:xml:ns:yang:ietf-yp-lite"&gt;52&lt;/id&gt;
+&lt;/rpc-reply&gt;
+</pre>
 </div>
-<p id="appendix-C.4.1-5">A subscription can be rejected for multiple reasons, including the
+<figcaption><a href="#figure-32" class="selfRef">Figure 32</a>:
+<a href="#name-example-establish-subscripti" class="selfRef">Example establish-subscription RPC successful reply</a>
+            </figcaption></figure>
+<p id="appendix-C.4.1-5">Once established, the publisher would send a <em>subscription-started</em> notification message followed by <em>update</em> notification messages at the requested periodic cadence.<a href="#appendix-C.4.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="failed-periodic-subscription">
+<section id="appendix-C.4.2">
+          <h4 id="name-failed-periodic-subscriptio">
+<a href="#appendix-C.4.2" class="section-number selfRef">C.4.2. </a><a href="#name-failed-periodic-subscriptio" class="section-name selfRef">Failed periodic subscription</a>
+          </h4>
+<p id="appendix-C.4.2-1">A subscription can be rejected for multiple reasons, including the
 lack of authorization to establish a subscription, no capacity to
 serve the subscription at the publisher, or the inability of the
-publisher to select datastore content at the requested cadence.<a href="#appendix-C.4.1-5" class="pilcrow">¶</a></p>
-<p id="appendix-C.4.1-6">If a request is rejected because the publisher is not able to serve
+publisher to select datastore content at the requested cadence.<a href="#appendix-C.4.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-C.4.2-2">If a request is rejected because the publisher is not able to serve
 it, the publisher <span class="bcp14">SHOULD</span> include in the returned error hints that
 help a subscriber understand what subscription parameters might have
 been accepted for the request.  These hints would be included in the
 yang-data structure "establish-subscription-error-datastore".
 However, even with these hints, there are no guarantees that
-subsequent requests will in fact be accepted.<a href="#appendix-C.4.1-6" class="pilcrow">¶</a></p>
-<p id="appendix-C.4.1-7">The specific parameters to be returned as part of the RPC error
+subsequent requests will in fact be accepted.<a href="#appendix-C.4.2-2" class="pilcrow">¶</a></p>
+<p id="appendix-C.4.2-3">The specific parameters to be returned as part of the RPC error
 response depend on the specific transport that is used to manage the
 subscription.  For NETCONF, those parameters are defined in
-<span>[<a href="#RFC8640" class="cite xref">RFC8640</a>]</span>.  For example, for the following NETCONF request:<a href="#appendix-C.4.1-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-C.4.1-8">
+<span>[<a href="#RFC8640" class="cite xref">RFC8640</a>]</span>.  For example, for the following NETCONF request:<a href="#appendix-C.4.2-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-C.4.2-4">
 <pre>
   &lt;rpc message-id="101"
       xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
@@ -6668,11 +6678,11 @@ subscription.  For NETCONF, those parameters are defined in
   &lt;/rpc&gt;
 
       Figure 12: "establish-subscription" Request: Example 2
-</pre><a href="#appendix-C.4.1-8" class="pilcrow">¶</a>
+</pre><a href="#appendix-C.4.2-4" class="pilcrow">¶</a>
 </div>
-<p id="appendix-C.4.1-9">A publisher that cannot serve on-change updates but can serve
-periodic updates might return the following NETCONF response:<a href="#appendix-C.4.1-9" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-C.4.1-10">
+<p id="appendix-C.4.2-5">A publisher that cannot serve on-change updates but can serve
+periodic updates might return the following NETCONF response:<a href="#appendix-C.4.2-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-C.4.2-6">
 <pre>
  &lt;rpc-reply message-id="101"
    xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"
@@ -6691,20 +6701,20 @@ periodic updates might return the following NETCONF response:<a href="#appendix-
  &lt;/rpc-reply&gt;
 
        Figure 13: "establish-subscription" Error Response: Example 2
-</pre><a href="#appendix-C.4.1-10" class="pilcrow">¶</a>
+</pre><a href="#appendix-C.4.2-6" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="delete-subscription-rpc">
-<section id="appendix-C.4.2">
+<section id="appendix-C.4.3">
           <h4 id="name-delete-subscription-rpc">
-<a href="#appendix-C.4.2" class="section-number selfRef">C.4.2. </a><a href="#name-delete-subscription-rpc" class="section-name selfRef">"delete-subscription" RPC</a>
+<a href="#appendix-C.4.3" class="section-number selfRef">C.4.3. </a><a href="#name-delete-subscription-rpc" class="section-name selfRef">"delete-subscription" RPC</a>
           </h4>
-<p id="appendix-C.4.2-1">To stop receiving updates from a subscription and effectively delete
+<p id="appendix-C.4.3-1">To stop receiving updates from a subscription and effectively delete
 a subscription that had previously been established using an
 "establish-subscription" RPC, a subscriber can send a
 "delete-subscription" RPC, which takes as its only input the
-subscription's "id".  This RPC is unmodified from <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>.<a href="#appendix-C.4.2-1" class="pilcrow">¶</a></p>
+subscription's "id".  This RPC is unmodified from <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>.<a href="#appendix-C.4.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>

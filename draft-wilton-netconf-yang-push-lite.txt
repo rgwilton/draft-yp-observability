@@ -5,7 +5,7 @@
 Network Configuration                                     R. Wilton, Ed.
 Internet-Draft                                             Cisco Systems
 Intended status: Standards Track                               H. Keller
-Expires: 26 April 2026                                 Deuetsche Telekom
+Expires: 27 April 2026                                 Deuetsche Telekom
                                                                B. Claise
                                                           Everything OPS
                                                                 E. Aries
@@ -14,7 +14,7 @@ Expires: 26 April 2026                                 Deuetsche Telekom
                                                                    Nokia
                                                                  T. Graf
                                                                 Swisscom
-                                                         23 October 2025
+                                                         24 October 2025
 
 
                YANG Datastore Telemetry (YANG Push Lite)
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 April 2026.
+   This Internet-Draft will expire on 27 April 2026.
 
 Copyright Notice
 
@@ -183,9 +183,10 @@ Table of Contents
            style update message
        C.3.1.  Update message with single deleted data node
        C.3.2.  Update message with multiple on-change deletes
-     C.4.  Subscription RPC examples (from RFC 8641)
-       C.4.1.  "establish-subscription" RPC
-       C.4.2.  "delete-subscription" RPC
+     C.4.  NETCONF Dynamic Subscription RPC examples
+       C.4.1.  Successful periodic subscription
+       C.4.2.  Failed periodic subscription
+       C.4.3.  "delete-subscription" RPC
    Appendix D.  Summary of Open Issues & Potential Enhancements
      D.1.  Issues related to general IETF process
      D.2.  Issue related to Terminology/Definitions
@@ -5713,49 +5714,60 @@ C.3.2.  Update message with multiple on-change deletes
 
          Figure 30: Example YANG Push Lite on-change delete message
 
-C.4.  Subscription RPC examples (from RFC 8641)
+C.4.  NETCONF Dynamic Subscription RPC examples
 
-   YANG-Push subscriptions are established, modified, and deleted using
-   RPCs augmented from [RFC8639].
+   The examples in this section illustrate NETCONF RPCs for establishing
+   and deleting dynamic subscriptions using Yang Push Lite.  The
+   examples include one successfully establishing a subscription, and a
+   second to illustrate how errors are returned if a request to
+   establish the subscription fails.  Examples of the _update_ and
+   subscription lifecycle notifications have been given in the previous
+   section.
 
-C.4.1.  "establish-subscription" RPC
+C.4.1.  Successful periodic subscription
 
    The subscriber sends an "establish-subscription" RPC with the
-   parameters listed in Section 3.1.  An example might look like:
+   parameters listed in Section 9.4.1 An example might look like:
 
- <netconf:rpc message-id="101"
-     xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0">
-   <establish-subscription
-       xmlns="urn:ietf:params:xml:ns:yang:ietf-subscribed-notifications"
-       xmlns:yp="urn:ietf:params:xml:ns:yang:ietf-yang-push">
-     <yp:datastore
-          xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores">
-       ds:operational
-     </yp:datastore>
-     <yp:datastore-xpath-filter
-         xmlns:ex="https://example.com/sample-data/1.0">
-       /ex:foo
-     </yp:datastore-xpath-filter>
-     <yp:periodic>
-       <yp:period>500</yp:period>
-     </yp:periodic>
-   </establish-subscription>
- </netconf:rpc>
+   <netconf:rpc
+   message-id="101" xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0">
+     <establish-subscription xmlns="urn:ietf:params:xml:ns:yang:ietf-yp-lite">
+       <name>if-stats-sub</name>
+       <description>Subscribe to interface statistics</description>
+       <target>
+         <datastore xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores">
+           ds:operational
+         </datastore>
+         <path>/ietf-interfaces:interfaces/interface/statistics</path>
+       </target>
+       <update-trigger>
+         <periodic>
+           <period>3000</period>
+         </periodic>
+       </update-trigger>
+       <encoding>json</encoding>
+     </establish-subscription>
+   </netconf:rpc>
 
-                  Figure 10: "establish-subscription" RPC
+        Figure 31: Example establish-subscription RPC for interface
+                                 statistics
 
-   A positive response includes the "id" of the accepted subscription.
-   In that case, a publisher may respond as follows:
+   If a publisher is happy to accept the subscription, then it returns a
+   positive response that includes the "id" of the accepted
+   subscription.  For example,
 
- <rpc-reply message-id="101"
-    xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
-    <id
-      xmlns="urn:ietf:params:xml:ns:yang:ietf-subscribed-notifications">
-       52
-    </id>
- </rpc-reply>
+   <rpc-reply
+   message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+     <id xmlns="urn:ietf:params:xml:ns:yang:ietf-yp-lite">52</id>
+   </rpc-reply>
 
-         Figure 11: "establish-subscription" Positive RPC Response
+       Figure 32: Example establish-subscription RPC successful reply
+
+   Once established, the publisher would send a _subscription-started_
+   notification message followed by _update_ notification messages at
+   the requested periodic cadence.
+
+C.4.2.  Failed periodic subscription
 
    A subscription can be rejected for multiple reasons, including the
    lack of authorization to establish a subscription, no capacity to
@@ -5817,7 +5829,7 @@ C.4.1.  "establish-subscription" RPC
 
        Figure 13: "establish-subscription" Error Response: Example 2
 
-C.4.2.  "delete-subscription" RPC
+C.4.3.  "delete-subscription" RPC
 
    To stop receiving updates from a subscription and effectively delete
    a subscription that had previously been established using an
