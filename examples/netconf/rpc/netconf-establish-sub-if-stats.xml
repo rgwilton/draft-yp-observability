@@ -1,0 +1,19 @@
+<netconf:rpc 
+message-id="101" xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <establish-subscription xmlns="urn:ietf:params:xml:ns:yang:ietf-yp-lite">
+    <name>if-stats-sub</name>
+    <description>Subscribe to interface statistics</description>
+    <target>
+      <datastore xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores">
+        ds:operational
+      </datastore>
+      <path>/ietf-interfaces:interfaces/interface/statistics</path>
+    </target>
+    <update-trigger>
+      <periodic>
+        <period>3000</period>
+      </periodic>
+    </update-trigger>
+    <encoding>json</encoding>
+  </establish-subscription>
+</netconf:rpc>

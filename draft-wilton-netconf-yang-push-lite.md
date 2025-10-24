@@ -1092,7 +1092,7 @@ Configured subscriptions can be modified due to configuration changes in the sub
 
 Configured subscriptions can be deleted via configuration.  After the configuration change has been accepted by the system the subscription is terminated, as per {{TerminatingSubscriptions}}.
 
-###  Resetting a Configured Subscription {#reset}
+### Resetting a Configured Subscription {#reset}
 
 Configured subscriptions are generally expected to self-monitor and automatically reconnect to the receivers if they experience network or transport issues.  However, the data model also defines explicit YANG *actions* to either: (i) reset a single subscription, or (ii) reset all subscriptions and the transports(s) associated with a specific configured receiver instance.
 
@@ -1902,53 +1902,29 @@ Of note:
 {: align="left" sourcecode-name="on-change-multi-delete-msg.json" title="Example YANG Push Lite on-change delete message"}
 
 
-## Subscription RPC examples (from RFC 8641)
+## NETCONF Dynamic Subscription RPC examples
 
-YANG-Push subscriptions are established, modified, and deleted using
-RPCs augmented from [RFC8639].
+The examples in this section illustrate NETCONF RPCs for establishing and deleting dynamic subscriptions using Yang Push Lite.  The examples include one successfully establishing a subscription, and a second to illustrate how errors are returned if a request to establish the subscription fails.  Examples of the *update* and subscription lifecycle notifications have been given in the previous section.
 
-### "establish-subscription" RPC
+### Successful periodic subscription
 
-The subscriber sends an "establish-subscription" RPC with the
-parameters listed in Section 3.1.  An example might look like:
+The subscriber sends an "establish-subscription" RPC with the parameters listed in {{EstablishDynamic}}  An example might look like:
 
+~~~~ XML
+{::include examples/netconf/rpc/netconf-establish-sub-if-stats.xml}
 ~~~~
- <netconf:rpc message-id="101"
-     xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0">
-   <establish-subscription
-       xmlns="urn:ietf:params:xml:ns:yang:ietf-subscribed-notifications"
-       xmlns:yp="urn:ietf:params:xml:ns:yang:ietf-yang-push">
-     <yp:datastore
-          xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores">
-       ds:operational
-     </yp:datastore>
-     <yp:datastore-xpath-filter
-         xmlns:ex="https://example.com/sample-data/1.0">
-       /ex:foo
-     </yp:datastore-xpath-filter>
-     <yp:periodic>
-       <yp:period>500</yp:period>
-     </yp:periodic>
-   </establish-subscription>
- </netconf:rpc>
+{: align="left" sourcecode-name="netconf-establish-sub-if-stats.xml" title="Example establish-subscription RPC for interface statistics"}
 
-                  Figure 10: "establish-subscription" RPC
+If a publisher is happy to accept the subscription, then it returns a positive response that includes the "id" of the accepted subscription.  For example,
+
+~~~~ XML
+{::include examples/netconf/rpc/establish-subscription-reply.xml}
 ~~~~
+{: align="left" sourcecode-name="establish-subscription-reply.xml" title="Example establish-subscription RPC successful reply"}
 
-A positive response includes the "id" of the accepted subscription.
-In that case, a publisher may respond as follows:
+Once established, the publisher would send a *subscription-started* notification message followed by *update* notification messages at the requested periodic cadence.
 
-~~~~
- <rpc-reply message-id="101"
-    xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
-    <id
-      xmlns="urn:ietf:params:xml:ns:yang:ietf-subscribed-notifications">
-       52
-    </id>
- </rpc-reply>
-
-         Figure 11: "establish-subscription" Positive RPC Response
-~~~~
+### Failed periodic subscription
 
 A subscription can be rejected for multiple reasons, including the
 lack of authorization to establish a subscription, no capacity to
