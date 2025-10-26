@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-23T00:19:14.117377+00:00",
+  "timestamp": "2025-10-26T00:20:31.695661+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -47,6 +47,11 @@
       "name": "wontfix",
       "description": "This will not be worked on",
       "color": "ffffff"
+    },
+    {
+      "name": "for discussion",
+      "description": "This issue is one that we should discuss to try and make progress on.",
+      "color": "d93f0b"
     }
   ],
   "issues": [
@@ -201,12 +206,29 @@
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "for discussion"
+      ],
       "body": "When a subscription is terminated, should it be MUST NOT send any more notifications after the terminated message, or SHOULD NOT?\n       \n      - Holger, Thomas, Benoit: MUST NOT\n      - James: SHOULD NOT\n      - MUST NOT is clearer from an implementation POV, but probably doesn't really matter.\n      - What does the receiver do when it gets this message anyway?  I.e., does a receiver check/know to ignore messages received after a subscription-terminated, or before a subscription-started?\n\nProposal: Change the draft to \"MUST NOT\" for now.\n\nRelated question on dynamic-subscriptions:\n- is a terminate-subscription RPC allowed to be asynchronous with respect to the caller.  I.e., is it allowed to return before the subscription has actually stopped?  Or more importantly, after the RPC returns, I think that a client must be able to recreate a new subscription using the same subscription name.\n- is a kill-subscription RPC allowed to be asynchronous with respect to the caller.  I.e., is it allowed to return before the subscription has actually stopped?  For kill-subscription I think that it should be asynchronous - I think that makes more sense given that it generally expected to be a third party and not actively consuming the subscription.\n- Do we wait for a \"establish-subscription\" RPC to return before starting to send events to a client?  YP had this restriction, but I was considering removing it, but I don't know if that would make life more difficult for clients.\n- All of these questions really relate to how much tie there should be better the config and operational flows.",
       "createdAt": "2025-10-09T14:38:14Z",
-      "updatedAt": "2025-10-22T08:33:17Z",
+      "updatedAt": "2025-10-24T15:02:04Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Proposal:\n- establish-subscription.  If the subscription is accepted then publishers MAY start generating notifications *subscription-started* and *update* notifications before the *establish-subscription* RPC returns.\n- once terminate-subscription returns clients MUST be able to create a new subscription with the same identifier.  It is decoupled from notifications, so *update* and *subscription-terminated* notifications may still be sent after the RPC has returned.\n- *kill-subscription* should be treated the same as a *terminate-subscription*.\n-  the *reset* actions are entirely asynchronous with respect to the caller.  I.e., the publisher can reply to the RPC before starting to process the reset.\n",
+          "createdAt": "2025-10-24T11:02:31Z",
+          "updatedAt": "2025-10-24T11:02:31Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Benoit/Ebben needs to read offline.\nThomas is okay, as long as, notifications are always in proper order.\n",
+          "createdAt": "2025-10-24T15:02:03Z",
+          "updatedAt": "2025-10-24T15:02:03Z"
+        }
+      ]
     },
     {
       "number": 14,
@@ -283,16 +305,16 @@
     {
       "number": 18,
       "id": "I_kwDOM-PT7s7R9Loj",
-      "title": "Capabilities",
+      "title": "Conformance & Capabilities",
       "url": "https://github.com/rgwilton/draft-yp-observability/issues/18",
       "state": "OPEN",
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
-      "body": "Do we need to add capabilities to indicate:\n\n1. Which fields are on-change notifiable.\n\n1. At which level *bags* exist internally (for performance reasons).\n\n1. The points at which subscriptions are decomposed to.",
+      "body": "Do we advertise conformance via capabilities and/or YANG features, or NETCONF capabilities.\n\nProposal:\n- We should use YANG features where appropriate, for coarse granularity (e.g., whether to support dynamic subscriptions), but minimise YANG features for single leaves, where we should be pushing for consistency, or the use of deviations.\n- We should use capabilities to advertise more precise details that cannot be expressed cleanly/nicely through the list of supported modules or features.\n- YP Lite uses a separate capabilities tree from YP because it is a separate protocol with different capabilities and to avoid any confusion.\n\nDo we need to add capabilities to indicate:\n\n1. Which fields are on-change notifiable?\n    - There is a concern that this could be a very long list, or is that okay?\n    - Would there be better ways to group this information, e.g., per-module?\n1. Are there optimised paths within the schema tree that should be advertised.  E.g., the points at which a device may decompose subscriptions to, or publish data separately.\n1. ~Support for CBOR vs CBOR-SIDs~ - Rob: this is already covered by having separate identities for cbor vs cbor-sids encoding.\n\nFor on-change, should a subscription be rejected (or not brought up) if there are no on-change notifiable nodes?  Alternative is to offer implementation flexibility between these two approaches.\n   - Holger: Prefer for the subscription to be rejected.",
       "createdAt": "2025-10-16T15:50:00Z",
-      "updatedAt": "2025-10-16T15:50:00Z",
+      "updatedAt": "2025-10-23T10:52:03Z",
       "closedAt": null,
       "comments": []
     },
@@ -321,10 +343,12 @@
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "for discussion"
+      ],
       "body": "The current draft:\n\n- Basic dynamic subscriptions require the subscription filter to be specified inline.\n\n- The IETF config model:\n  - allows filters to be specified inline, but also allows a reference to a filter (i.e., same as RFC 8641). \n  - also augments the dynamic establish-subscription RPC to allow a dynamic subscription to reference a configured subscription.\n\nThe subscription-started notification always includes the filter inline (even if it was referenced).  If the subscription was created using a referenced filter, then the name of the referenced filter is also included in the subscription started.\n\nIf a subscription is allowed to contain multiple filter paths then there is a question to whether a subscription would be allowed to referenced multiple filters.",
       "createdAt": "2025-10-22T12:11:09Z",
-      "updatedAt": "2025-10-22T12:14:32Z",
+      "updatedAt": "2025-10-24T14:51:46Z",
       "closedAt": null,
       "comments": [
         {
@@ -333,6 +357,13 @@
           "body": "     - Thomas: Do we need referenced filters at all?  Subscriptions could be simplified if everything was done inline.\n     - gNMI is only done inline.\n     - Juniper also supports filters.\n     - Thomas try to simplify as much as possible, then do we need templating?",
           "createdAt": "2025-10-22T12:14:32Z",
           "updatedAt": "2025-10-22T12:14:32Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Ebben:\n- Discussed adding an if-feature statement for filter-ref into dynamic subscription, but probably not needed.\n- Propose closing this issue.",
+          "createdAt": "2025-10-24T14:51:46Z",
+          "updatedAt": "2025-10-24T14:51:46Z"
         }
       ]
     },
@@ -393,12 +424,29 @@
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "for discussion"
+      ],
       "body": "   - There seems to be consensus that having/keeping such a YANG action is useful if a configured subscription is stuck.\n   - Further discussion is needed to indicate where such an RPC should be in the data model, and what effect it should have:\n      - It could be under the subscription list, which would effectively be equivalent to forcing the subscription to terminate and re-initialize across all receivers.\n      - It could also be under the receiver list, which would effectively be equivalent to forcing all subscriptions using that receiver to terminate and re-initialize.\n      - **We also need to consider whether this would clear subscription counters or not.**\n         - RobW - it should do whatever terminating and recreating the subscription does.  Some counters would expect to be updated, others not.\n      - **Rob: I've written up some text for the reset action on a subscription and under the receiver (that applies to all subscriptions that reference the receiver configuration).  Unlike the existing reset action, I've removed the return parameter (timestamp of when it took effect), and I think that we should allow it to be processed asynchronously w.r.t the RPC caller.  Authors, please check the latest text.**",
       "createdAt": "2025-10-22T13:26:08Z",
-      "updatedAt": "2025-10-22T13:26:08Z",
+      "updatedAt": "2025-10-24T14:39:52Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "I think that the current text needs to be tweaked a bit since it states to treat it as a config removal/addition, but I think that this should instead be regarded as a config change and I think that any counters associated with the subscription should be preserved rather than being reset.",
+          "createdAt": "2025-10-24T10:43:11Z",
+          "updatedAt": "2025-10-24T10:43:11Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Action on other authors to read and refer back if they are okay with the text.",
+          "createdAt": "2025-10-24T14:39:52Z",
+          "updatedAt": "2025-10-24T14:39:52Z"
+        }
+      ]
     },
     {
       "number": 25,
@@ -425,12 +473,22 @@
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "for discussion"
+      ],
       "body": "I.e., there was this text in the one of the previous docs:   Bindings for subscribed event record delivery for NETCONF and RESTCONF are defined in **RFC 8640** and **RFC 8650**, respectively.\n   - Rob: If text is needed for NETCONF and/or RESTCONF then I suspect that it would be better added to this document than to require small separate documents (as was done before).\n   - But ideally, we would try and keep the text as common/generic as possible and minimise the amount of text needed for NETCONF or RESTCONF specifics.  E.g., perhaps they are just informational example drafts.",
       "createdAt": "2025-10-22T17:11:18Z",
-      "updatedAt": "2025-10-22T17:11:18Z",
+      "updatedAt": "2025-10-24T10:53:37Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Both RFC 8640 and RFC 8650 are about 20 long.\n\nDo we fold the NETCONF doc into the core YP Lite spec?  Or do we keep it as a separate document, which I think would mean that some of examples currently in YP Lite regarding creating/managing subscriptions would move out to the separate document and be referenced.\n\nThe same question applies to RESTCONF.\n\nI.e., the core question is how much better is it to have a single doc that contains everything vs a small set of documents, e.g.,:\n1. core protocols (including notifications and RPC definitions)\n1. ietf config/oper data model\n1. YP Lite binding/examples for NETCONF\n1. YP Lite binding/examples for RESTCONF\n1. envelope (expect to reuse existing envelope draft)\n1. udp-notif (bis, or YP-Lite version of draft is needed).\n",
+          "createdAt": "2025-10-24T10:53:26Z",
+          "updatedAt": "2025-10-24T10:53:26Z"
+        }
+      ]
     },
     {
       "number": 27,
@@ -457,18 +515,27 @@
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "for discussion"
+      ],
       "body": "The draft currently documents this.\n\nThis is only lifecycle notification that would be send to a single receiver (which would either mean a gap in sequence numbers or a duplicate sequence number for that message ...)\nIf the receiver disconnected then it wouldn't get the message anyway.  Hence, the most realistic case that a receiver would get this message is if a receiver was unconfigured for a subscription, and an alternative action could be to just flap delete/re-create the subscription since it is a config change.\n- probably the delete-subscription/create-subscription notification should include an enum to indicate why that particular event occurred.\n- also what action is taken if a receiver is added, do we still flap the subscription?  Is that an issue?\n\nComments from discussing this previously:\n1. Do we need a per-receiver notification to indicate to a specific receiver that it has been disconnected?\n   - This would seem to only apply to configured subscriptions (since dynamic cannot have more than one receiver).\n   - If the transport session went down, then the publisher would be expected to reconnect anyway.\n   - So, the specific use case is likely to be unconfiguring a receiver for a subscription that has multiple receivers.\n   - **Currently parked for further discussion.**",
       "createdAt": "2025-10-22T17:45:18Z",
-      "updatedAt": "2025-10-22T17:46:43Z",
+      "updatedAt": "2025-10-24T14:37:14Z",
       "closedAt": null,
       "comments": [
         {
           "author": "rgwilton",
           "authorAssociation": "OWNER",
-          "body": "My latest thoughts:\n- We should get rid of a per receiver message.\n- Need to think carefully whether flapping the entire subscription when a receiver is added/removed is the right choice?\n- Possibly subscription-started message should list the names of the configured receivers.",
+          "body": "My latest thoughts:\n- We should get rid of a per receiver message.\n- Need to think carefully whether flapping the entire subscription when a receiver is added/removed is the right choice?\n- Possibly subscription-started message should list the names of the active receivers.",
           "createdAt": "2025-10-22T17:46:43Z",
-          "updatedAt": "2025-10-22T17:46:43Z"
+          "updatedAt": "2025-10-24T14:18:05Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "- Thomas: Like if notification are on subscription, okay with subscription-terminated & subscription-started message if we lose a receiver.\n- Benoit - Do we need to consider the impact of different transports (e.g., UDP wouldn't notice, but DTLS would)?\n- Thomas/Benoit - Do we really need to support multiple receivers at all?  + Ebben?  I.e., could just force the client to configure multiple subscriptions.\n- Park for further discussion.",
+          "createdAt": "2025-10-24T14:37:14Z",
+          "updatedAt": "2025-10-24T14:37:14Z"
         }
       ]
     },
@@ -501,6 +568,54 @@
       "body": "Note some of these apply or impact dynamic subscriptions as well.\n\n1. YP Lite is somewhat different (separate namespace, separate receivers, no event filters, some config has moved to a separate receivers list.)  See the data model and {{DifferencesFromYangPush}}.\n\n1. We should allow devices to limit which datastores subscriptions can be made against (e.g., not candidate or factory-default as some obvious examples).  Should these be advertised in the capabilities?\n\n1. (James) Should we even document the configuration data model in this document at all, or should it be in a separate document?\n\n1. Some other changes/proposed changes:\n   - I've removed some of the YANG features for 'small' one/two changes in configuration.  I propose that we don't need features for these at all (e.g., DSCP settings), or in other cases we can use operational capabilities, or rely on deviations.\n      - I've renamed the encodings (e.g., from \"encode-json\" to just \"json\")\n\n      - Maybe further simplification of the receivers list under the subscription.  E.g., do we need stats per subscription per receiver, or just per subscription?  Do want stats across all subscriptions to a given receiver?\n        - Holger: Stats per subscription should be sufficient.  No need for per subscription/pre-receiver stats (which would allow the data model to be simplified a little bit).\n\n      - Subscription-ids are currently numeric values with the space split between configured and dynamic subscriptions, but I think that the config model would be cleaner if we used names for the configured subscriptions (and we could reserve a prefix \"dyn-\" for dynamic subscriptions).\n        - Holger, Rob: Strong preference to names.\n        - Thomas, keep ids, but rename 'purpose' to name.  Also give receivers an ids and be keyed this.\n        - See #19 for more details.",
       "createdAt": "2025-10-22T18:09:11Z",
       "updatedAt": "2025-10-22T18:11:34Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 31,
+      "id": "I_kwDOM-PT7s7TOvlY",
+      "title": "What operational data should be reported and how should it be structured?",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/31",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "1. Should we define some additional operational data to help operators check that the telemetry infrastructure is performing correctly, to get an approximation of the load, etc.\n   - Rob: probably, but lower priority.\n\n1. Should dynamic subscriptions use the same receivers structure as for configured subscriptions, or should they be inline in the configured subscription?\n   - Thomas: Two sets of counters, one is at the subscription which is about fetching the data, and the other is on the receiver.\n   - James: Can think of some uses cases where listing drop counters per subscription may be helpful.\n   - Rob: Thinking about it further, it probably needs to be separate, since for some transports, each subscription may open a separate transport session to the receiver rather than trying to mux into a single transport (e.g., TCP).\n   - Rob: Proposal: Dynamic subscriptions don't appear in the receivers list.  What additional specific diags information is needed for dynamic subscriptions?  Is any of this transport specific and hence must be deferred to transport specific augmentations?",
+      "createdAt": "2025-10-23T09:23:10Z",
+      "updatedAt": "2025-10-23T09:23:10Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 32,
+      "id": "I_kwDOM-PT7s7TOzcF",
+      "title": "*update* notification message format",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/32",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "This high level issue is track issues/discussion related to the *update* notification message format:\n\n1. We allow multiple updates within a single message (primary use case is for the on-change case).  What about the timestamp, which is still just once per message (like gNMI)?  Should message bundling be optional/configurable to implement (if they all use a single shared timestamp)?\n\n   - on-change deletes are implicit by an update that replaces an existing entry with an empty data node (e.g., \"{}\" in JSON)\n\n     - An alternative choice here could be an explicit delete flag, we need to decide which would be simpler/better.\n\n   - The update message also currently includes a path-prefix to allow (like gNMI) so that they don't necessarily need to be encoded from root, specifically, I think that this makes on-change messages nicer, since the on-change is rooted to the thing that is changing rather than the root of the tree.  We need to define semantics of how this works, e.g., this should probably be controlled via configuration.\n      - Ideally, the path prefix would be exactly the same as the YPath format that is being specified for configuration.\n\n     - Thomas: We should keep this.\n\n  - *Further discussion of this issue is needed*",
+      "createdAt": "2025-10-23T09:27:22Z",
+      "updatedAt": "2025-10-23T09:27:22Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 33,
+      "id": "I_kwDOM-PT7s7TP9Rk",
+      "title": "NACM filtering (and other security considerations)",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/33",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "1. Need to consider how NACM applies to YANG Push Lite, which may differ for dynamic vs configured subscription, but generally we want the permissions to be checked when the subscription is created rather than each time a path is accessed.\n\n   - (James) Take out tight binding to NACM from YANG Push Lite altogether.  I.e., decouple YANG Push Lite from what security mechanism is being used.\n\n   - (Rob) Another choice could be to use NACM as an example rather than the only way.\n\n1. Where should this be in the document (current it in the security considerations section)\n\n1. Do we want to retain the the current text in {{events}} introduction related to terminating a subscription if permissions change?\n\n1. Also note, text was removed from the transport section related to RPC authorization, and which should be moved to an application (rather than transport) layer security mechanism.",
+      "createdAt": "2025-10-23T10:55:27Z",
+      "updatedAt": "2025-10-23T10:55:27Z",
       "closedAt": null,
       "comments": []
     }
