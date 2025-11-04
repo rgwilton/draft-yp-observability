@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-26T00:20:31.695661+00:00",
+  "timestamp": "2025-11-04T00:18:58.470103+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -551,9 +551,17 @@
       "labels": [],
       "body": "1. This draft introduces a new simple yang path (ypath) format that is like a JSON instance data path, that all implementations MUST support.\n   - Vendors already support a simple JSON like path (e.g., using module-names rather than XML namespaces).\n   - **Open questions (for further discussion):**\n      - Do we support filtering on non-keys, e.g., this example from Thomas (but which filters on a non-key):\n         /if:interfaces-state/if:interface\\[if:type='ianaift:ethernetCsmacd'\\]/if:statistics\n      - Do we support simple regex filtering on the keys (and if so, how would that be expressed, would it be compatible with JSON Path)\n      - Do we need any more complex filtering (e.g., Holger's example of only getting entries from a list if they are in a particular state.), or do we always use subtree filters for that?\n   - **Authors: I provides some suggested text in {{YPaths}}, but I expect further discussion may be needed. (E.g., how multiple keys should be expressed)**",
       "createdAt": "2025-10-22T18:06:33Z",
-      "updatedAt": "2025-10-22T18:06:33Z",
+      "updatedAt": "2025-11-02T15:31:30Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Andy commented that we should probably split this out into a separate draft.",
+          "createdAt": "2025-11-02T15:31:30Z",
+          "updatedAt": "2025-11-02T15:31:30Z"
+        }
+      ]
     },
     {
       "number": 30,
