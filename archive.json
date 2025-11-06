@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-04T00:18:58.470103+00:00",
+  "timestamp": "2025-11-06T00:19:15.253302+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -520,22 +520,29 @@
       ],
       "body": "The draft currently documents this.\n\nThis is only lifecycle notification that would be send to a single receiver (which would either mean a gap in sequence numbers or a duplicate sequence number for that message ...)\nIf the receiver disconnected then it wouldn't get the message anyway.  Hence, the most realistic case that a receiver would get this message is if a receiver was unconfigured for a subscription, and an alternative action could be to just flap delete/re-create the subscription since it is a config change.\n- probably the delete-subscription/create-subscription notification should include an enum to indicate why that particular event occurred.\n- also what action is taken if a receiver is added, do we still flap the subscription?  Is that an issue?\n\nComments from discussing this previously:\n1. Do we need a per-receiver notification to indicate to a specific receiver that it has been disconnected?\n   - This would seem to only apply to configured subscriptions (since dynamic cannot have more than one receiver).\n   - If the transport session went down, then the publisher would be expected to reconnect anyway.\n   - So, the specific use case is likely to be unconfiguring a receiver for a subscription that has multiple receivers.\n   - **Currently parked for further discussion.**",
       "createdAt": "2025-10-22T17:45:18Z",
-      "updatedAt": "2025-10-24T14:37:14Z",
+      "updatedAt": "2025-11-05T17:18:50Z",
       "closedAt": null,
       "comments": [
         {
           "author": "rgwilton",
           "authorAssociation": "OWNER",
-          "body": "My latest thoughts:\n- We should get rid of a per receiver message.\n- Need to think carefully whether flapping the entire subscription when a receiver is added/removed is the right choice?\n- Possibly subscription-started message should list the names of the active receivers.",
+          "body": "My latest thoughts:\n- We should get rid of a per receiver message.\n- Need to think carefully whether flapping the entire subscription when a receiver is added/removed is the right choice?\n- Possibly subscription-started message should list the count or names of the active receivers (although the names are logically only a locally scoped identifier on the device).",
           "createdAt": "2025-10-22T17:46:43Z",
-          "updatedAt": "2025-10-24T14:18:05Z"
+          "updatedAt": "2025-11-05T15:04:29Z"
         },
         {
           "author": "rgwilton",
           "authorAssociation": "OWNER",
-          "body": "- Thomas: Like if notification are on subscription, okay with subscription-terminated & subscription-started message if we lose a receiver.\n- Benoit - Do we need to consider the impact of different transports (e.g., UDP wouldn't notice, but DTLS would)?\n- Thomas/Benoit - Do we really need to support multiple receivers at all?  + Ebben?  I.e., could just force the client to configure multiple subscriptions.\n- Park for further discussion.",
+          "body": "- Thomas: Prefers notification are on subscription, okay with subscription-terminated & subscription-started message if we lose a receiver.\n- Benoit - Do we need to consider the impact of different transports (e.g., UDP wouldn't notice, but DTLS would)?\n- Thomas/Benoit - Do we really need to support multiple receivers at all?  + Ebben?  I.e., could just force the client to configure multiple subscriptions.\n- Park for further discussion.",
           "createdAt": "2025-10-24T14:37:14Z",
-          "updatedAt": "2025-10-24T14:37:14Z"
+          "updatedAt": "2025-11-05T15:03:40Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "All messages are processed at the subscription level, so per subscription message is removed.\n\nFor adding receivers:\n- subscription-started notification includes count of number of receivers (defaults to 1, so only included if there is more than on receiver.\n- a new subscription-started notification is sent out (to all receivers) if a receiver is added.\n\nFor removing receivers:\n- subscription-terminated notification is sent out (to all receivers)\n- terminated-reason: \"receiver removed\"\n- new subscription-started notification is sent out (to all receivers) indicating the current receiver count and includes the reason.",
+          "createdAt": "2025-11-05T17:18:50Z",
+          "updatedAt": "2025-11-05T17:18:50Z"
         }
       ]
     },
@@ -624,6 +631,22 @@
       "body": "1. Need to consider how NACM applies to YANG Push Lite, which may differ for dynamic vs configured subscription, but generally we want the permissions to be checked when the subscription is created rather than each time a path is accessed.\n\n   - (James) Take out tight binding to NACM from YANG Push Lite altogether.  I.e., decouple YANG Push Lite from what security mechanism is being used.\n\n   - (Rob) Another choice could be to use NACM as an example rather than the only way.\n\n1. Where should this be in the document (current it in the security considerations section)\n\n1. Do we want to retain the the current text in {{events}} introduction related to terminating a subscription if permissions change?\n\n1. Also note, text was removed from the transport section related to RPC authorization, and which should be moved to an application (rather than transport) layer security mechanism.",
       "createdAt": "2025-10-23T10:55:27Z",
       "updatedAt": "2025-10-23T10:55:27Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 34,
+      "id": "I_kwDOM-PT7s7WHAm_",
+      "title": "Don't require a subscription-terminated notification if it isn't necessary.",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/34",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "If the configuration is being changed, then a new subscription-started notification should be sufficient.  We should minimise the cases of when we generate a subscription-terminated notification to when they are needed.",
+      "createdAt": "2025-11-05T17:44:53Z",
+      "updatedAt": "2025-11-05T17:44:53Z",
       "closedAt": null,
       "comments": []
     }
