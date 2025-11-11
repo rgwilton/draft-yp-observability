@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-06T00:19:15.253302+00:00",
+  "timestamp": "2025-11-11T00:20:04.603702+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -52,6 +52,11 @@
       "name": "for discussion",
       "description": "This issue is one that we should discuss to try and make progress on.",
       "color": "d93f0b"
+    },
+    {
+      "name": "proposed resolution",
+      "description": "This issue has a proposed resolution for discussion and agreement",
+      "color": "f6e000"
     }
   ],
   "issues": [
@@ -287,10 +292,13 @@
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "for discussion",
+        "proposed resolution"
+      ],
       "body": "Note I've updated the document to allow a single configured subscription to have different transports - I was trying to avoid this to keep it simple, but as soon as you secure transports any benefit you would have disappears anyway, so the limitation doesn't really help in the general case.\n\nHowever, the current draft only allows for a single encoding per subscription.\n\nAlso a generate note that the transports section has been updated, particularly the transport considerations and should be re-reviewed.",
       "createdAt": "2025-10-16T15:49:25Z",
-      "updatedAt": "2025-10-22T18:02:53Z",
+      "updatedAt": "2025-11-10T13:44:12Z",
       "closedAt": null,
       "comments": [
         {
@@ -299,6 +307,13 @@
           "body": "Previous notes when this was discussed:\n   - Rob: Note, it is always possible for a client to setup different subscriptions.\n   - Thomas: This could be useful, e.g., when migrating from one encoding to another, particularly, if it reduced the load on the publisher (compared to creating a new separate subscription).\n   - Rob: I don't think that we would end up optimizing for this case (but would need to check).\n   - Also need to check with Nokia/Huawei would support this.\n   - **Current status: Left open for further discussion.**\n   - Note: This may also have a minor impact on the data model.",
           "createdAt": "2025-10-22T17:51:29Z",
           "updatedAt": "2025-10-22T17:51:29Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Propose closing: the intention is only support a single receiver per subscription.",
+          "createdAt": "2025-11-10T13:42:57Z",
+          "updatedAt": "2025-11-10T13:42:57Z"
         }
       ]
     },
@@ -516,11 +531,12 @@
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [
-        "for discussion"
+        "for discussion",
+        "proposed resolution"
       ],
       "body": "The draft currently documents this.\n\nThis is only lifecycle notification that would be send to a single receiver (which would either mean a gap in sequence numbers or a duplicate sequence number for that message ...)\nIf the receiver disconnected then it wouldn't get the message anyway.  Hence, the most realistic case that a receiver would get this message is if a receiver was unconfigured for a subscription, and an alternative action could be to just flap delete/re-create the subscription since it is a config change.\n- probably the delete-subscription/create-subscription notification should include an enum to indicate why that particular event occurred.\n- also what action is taken if a receiver is added, do we still flap the subscription?  Is that an issue?\n\nComments from discussing this previously:\n1. Do we need a per-receiver notification to indicate to a specific receiver that it has been disconnected?\n   - This would seem to only apply to configured subscriptions (since dynamic cannot have more than one receiver).\n   - If the transport session went down, then the publisher would be expected to reconnect anyway.\n   - So, the specific use case is likely to be unconfiguring a receiver for a subscription that has multiple receivers.\n   - **Currently parked for further discussion.**",
       "createdAt": "2025-10-22T17:45:18Z",
-      "updatedAt": "2025-11-05T17:18:50Z",
+      "updatedAt": "2025-11-10T13:45:10Z",
       "closedAt": null,
       "comments": [
         {
@@ -543,6 +559,13 @@
           "body": "All messages are processed at the subscription level, so per subscription message is removed.\n\nFor adding receivers:\n- subscription-started notification includes count of number of receivers (defaults to 1, so only included if there is more than on receiver.\n- a new subscription-started notification is sent out (to all receivers) if a receiver is added.\n\nFor removing receivers:\n- subscription-terminated notification is sent out (to all receivers)\n- terminated-reason: \"receiver removed\"\n- new subscription-started notification is sent out (to all receivers) indicating the current receiver count and includes the reason.",
           "createdAt": "2025-11-05T17:18:50Z",
           "updatedAt": "2025-11-05T17:18:50Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Propose closing: the intention is only support a single receiver per subscription.\n\nAlso see #17 ",
+          "createdAt": "2025-11-10T13:45:10Z",
+          "updatedAt": "2025-11-10T13:45:10Z"
         }
       ]
     },
