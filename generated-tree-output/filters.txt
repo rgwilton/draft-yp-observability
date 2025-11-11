@@ -7,7 +7,7 @@ module: ietf-yp-lite-config
               +--:(path)
               |  +--rw path       ypath
               +--:(subtree)
-              |  +--rw subtree    <anydata> {ypl:subtree}?
+              |  +--rw subtree    <anydata>
               +--:(xpath)
                  +--rw xpath      yang:xpath1.0 {ypl:xpath}?
 

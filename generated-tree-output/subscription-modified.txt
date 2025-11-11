@@ -1,7 +1,7 @@
-    +---n subscription-started
-    |  +--ro name                       subscription-name
-    |  +--ro update-id?                 subscription-id
-    |  +--ro description?               string
+    +---n subscription-modified
+    |  +--ro name              subscription-name
+    |  +--ro update-id?        subscription-id
+    |  +--ro description?      string
     |  +--ro target
     |  |  +--ro datastore?                 identityref
     |  |  +--ro (filter)
@@ -20,5 +20,4 @@
     |  |  |  +--ro anchor-time?   yang:date-and-time
     |  |  +--ro on-change! {on-change}?
     |  |     +--ro sync-on-start?   boolean
-    |  +--ro yang-library-content-id?
-    |          -> /yanglib:yang-library/content-id
+    |  +--ro reason            subscription-change

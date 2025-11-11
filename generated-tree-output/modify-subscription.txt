@@ -1,6 +1,6 @@
-    +---x establish-subscription {dynamic}?
+    +---x modify-subscription {dynamic}?
     |  +---w input
-    |     +---w name?             subscription-name
+    |     +---w name              subscription-name
     |     +---w update-id?        subscription-id
     |     +---w description?      string
     |     +---w target
@@ -18,5 +18,4 @@
     |     |  |  +---w anchor-time?   yang:date-and-time
     |     |  +---w on-change! {on-change}?
     |     |     +---w sync-on-start?   boolean
-    |     +---w encoding          encoding
     |     +---w dscp?             inet:dscp

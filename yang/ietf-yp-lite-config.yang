@@ -165,89 +165,54 @@ module ietf-yp-lite-config {
 
         uses ypl:subscription-common;
 
-        list receivers {
-          key "name";
-          min-elements 1;
-          description
-            "A host intended as a recipient for the notification
-            messages of a subscription.  For configured
-            subscriptions, transport-specific network parameters
-            (or a leafref to those parameters) may be augmented to a
-            specific receiver in this list.";
-          leaf name {
-            type leafref {
-              path "/datastore-telemetry/receivers/receiver/name";
-            }
-            description
-              "Identifies a unique receiver for a subscription.";
+        leaf receiver {
+          type leafref {
+            path "/datastore-telemetry/receivers/receiver/name";
           }
-
-          leaf status {
-            type enumeration {
-              enum disconnected {
-                description
-                  "This subscription does not have an active session
-                   with the receiver, and it is not trying to
-                   connect.
-
-                  E.g., this state may be reported if the
-                  subscription is not valid, or has not been started
-                  yet.";
-              }
-              enum connecting {
-                description
-                  "The publisher is trying to establish a session
-                   with the receiver for this subscription.
-
-                   For a session less transport, this state may be
-                   used to indicate that there is no route to the
-                   receiver.
-
-                   A receiver in connecting state may indicate that
-                   the transport or associated security session
-                   could not be established, and the publisher is
-                   periodically trying to establish the connection.";
-              }
-              enum active {
-                description
-                  "The publisher has successfully connected (if over
-                   a session based transport) to the receiver for
-                   this subscription, and the publisher is able to
-                   send notifications to the receiver.";
-              }
-            }
-            config false;
-            description
-              "Specifies the connection status of the receiver for
-               this subscription.";
-          }
-
-          container statistics {
-            config false;
-            description
-              "Statistics related to the number of messages sent to
-               this specific receiver for this subscription.";
-
-            leaf receiver-disconnected-count {
-              type yang:zero-based-counter64;
-              config false;
-              description
-                "The number of times that the receiver has been
-                 disconnected since the subscription
-                 receiver entry was created and the configuration
-                 was applied by the publisher";
-            }
-          }
-        }
-
-        leaf id {
-          type ypl:subscription-id;
-          config false;
           mandatory true;
           description
-            "Publisher allocated identifier for a subscription;
-              Unique in a given publisher.";
+            "Identifies the receiver for a subscription.";
         }
+
+        // leaf status {
+        //   type enumeration {
+        //     enum disconnected {
+        //       description
+        //         "This subscription does not have an active session
+        //           with the receiver, and it is not trying to
+        //           connect.
+
+        //         E.g., this state may be reported if the
+        //         subscription is not valid, or has not been started
+        //         yet.";
+        //     }
+        //     enum connecting {
+        //       description
+        //         "The publisher is trying to establish a session
+        //           with the receiver for this subscription.
+
+        //           For a session less transport, this state may be
+        //           used to indicate that there is no route to the
+        //           receiver.
+
+        //           A receiver in connecting state may indicate that
+        //           the transport or associated security session
+        //           could not be established, and the publisher is
+        //           periodically trying to establish the connection.";
+        //     }
+        //     enum active {
+        //       description
+        //         "The publisher has successfully connected (if over
+        //           a session based transport) to the receiver for
+        //           this subscription, and the publisher is able to
+        //           send notifications to the receiver.";
+        //     }
+        //   }
+        //   config false;
+        //   description
+        //     "Specifies the connection status of the receiver for
+        //       this subscription.";
+        // }
 
         leaf status {
           type ypl:subscription-status;
@@ -322,7 +287,7 @@ module ietf-yp-lite-config {
             "Statistics related to the number of messages generated
              for this subscription.";
 
-          leaf started-notification-count {
+          leaf started-notifications {
             type yang:zero-based-counter64;
             config false;
             description
@@ -332,7 +297,7 @@ module ietf-yp-lite-config {
                was applied by the publisher.";
           }
 
-          leaf terminated-notification-count {
+          leaf terminated-notifications {
             type yang:zero-based-counter64;
             config false;
             description
@@ -342,7 +307,7 @@ module ietf-yp-lite-config {
                was applied by the publisher.";
           }
 
-          leaf update-notification-count {
+          leaf update-notifications {
             type yang:zero-based-counter64;
             config false;
             description
@@ -359,7 +324,7 @@ module ietf-yp-lite-config {
                any receiver.";
           }
 
-          leaf periodic-collection-count {
+          leaf periodic-collections {
             type yang:zero-based-counter64;
             config false;
             description
@@ -375,7 +340,7 @@ module ietf-yp-lite-config {
                any receiver.";
           }
 
-          leaf excluded-event-records {
+          leaf excluded-events {
             type yang:zero-based-counter64;
             config false;
             description
@@ -384,6 +349,16 @@ module ietf-yp-lite-config {
               filter so that they are not passed to a receiver.
               This count is set to zero each time
               'sent-event-records' is initialized.";
+          }
+
+          leaf receiver-disconnects {
+            type yang:zero-based-counter64;
+            config false;
+            description
+              "The number of times that the receiver has been
+                disconnected since the subscription
+                receiver entry was created and the configuration
+                was applied by the publisher";
           }
         }
 

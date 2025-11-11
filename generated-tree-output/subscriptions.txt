@@ -4,6 +4,7 @@ module: ietf-yp-lite-config
         +--rw subscription* [name]
            +--rw name
            |       subscription-name
+           +--rw update-id?                          subscription-id
            +--rw description?                        string
            +--rw target
            |  +--rw datastore?          identityref
@@ -11,7 +12,7 @@ module: ietf-yp-lite-config
            |     +--:(path)
            |     |  +--rw path          ypath
            |     +--:(subtree)
-           |     |  +--rw subtree       <anydata> {ypl:subtree}?
+           |     |  +--rw subtree       <anydata>
            |     +--:(xpath)
            |     |  +--rw xpath         yang:xpath1.0 {ypl:xpath}?
            |     +--:(by-reference)
@@ -22,15 +23,8 @@ module: ietf-yp-lite-config
            |  |  +--rw anchor-time?   yang:date-and-time
            |  +--rw on-change! {on-change}?
            |     +--rw sync-on-start?   boolean
-           +--rw receivers* [name]
-           |  +--rw name
-           |  |       -> /datastore-telemetry/receivers/receiver/name
-           |  +--ro status?       enumeration
-           |  +--ro statistics
-           |     +--ro receiver-disconnected-count?
-           |             yang:zero-based-counter64
-           +--ro id
-           |       ypl:subscription-id
+           +--rw receiver
+           |       -> /datastore-telemetry/receivers/receiver/name
            +--ro status?
            |       ypl:subscription-status
            +--ro encoding?                           ypl:encoding
@@ -43,15 +37,17 @@ module: ietf-yp-lite-config
            +--ro last-on-change-notification-time?
            |       yang:date-and-time
            +--ro statistics
-           |  +--ro started-notification-count?
+           |  +--ro started-notifications?
            |  |       yang:zero-based-counter64
-           |  +--ro terminated-notification-count?
+           |  +--ro terminated-notifications?
            |  |       yang:zero-based-counter64
-           |  +--ro update-notification-count?
+           |  +--ro update-notifications?
            |  |       yang:zero-based-counter64
-           |  +--ro periodic-collection-count?
+           |  +--ro periodic-collections?
            |  |       yang:zero-based-counter64
-           |  +--ro excluded-event-records?
+           |  +--ro excluded-events?
+           |  |       yang:zero-based-counter64
+           |  +--ro receiver-disconnects?
            |          yang:zero-based-counter64
            +---x reset
 

@@ -10,6 +10,7 @@
       "on-change": {
         "sync-on-start": true
       }
-    }
+    },
+    "reason": "new-subscription"
   }
 }

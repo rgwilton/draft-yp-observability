@@ -1,7 +1,7 @@
 //| mill-version: 1.0.6
 //| mill-jvm-version: temurin:21
 //| mvnDeps:
-//| - uk.org.wilton::ietf-yang-mill-plugin::0.0.10
+//| - uk.org.wilton::ietf-yang-mill-plugin::0.0.11
 
 package build
 
@@ -67,12 +67,13 @@ object `package` extends IETF:
   )
 
   def yangTreeSnippets = Seq(
-    ("ietf-yp-lite-tree.txt", "-x establish-subscription", "-x delete-subscription", "establish-subscription.txt"),
+    ("ietf-yp-lite-tree.txt", "-x establish-subscription", "-x modify-subscription", "establish-subscription.txt"),
+    ("ietf-yp-lite-tree.txt", "-x modify-subscription", "-x delete-subscription", "modify-subscription.txt"),
     ("ietf-yp-lite-tree.txt", "-x delete-subscription", "-x kill-subscription", "delete-subscription.txt"),
     ("ietf-yp-lite-tree.txt", "-x kill-subscription", "notifications", "kill-subscription.txt"),
-    ("ietf-yp-lite-tree.txt", "-n subscription-started", "subscription-terminated", "subscription-started.txt"),
+    ("ietf-yp-lite-tree.txt", "-n subscription-started", "subscription-modified", "subscription-started.txt"),
+    ("ietf-yp-lite-tree.txt", "-n subscription-modified", "subscription-terminated", "subscription-modified.txt"),
     ("ietf-yp-lite-tree.txt", "-n subscription-terminated", "receiver-disconnected", "subscription-terminated.txt"),
-    ("ietf-yp-lite-tree.txt", "-n receiver-disconnected", "-n update", "receiver-disconnected.txt"),
     ("ietf-yp-lite-tree.txt", "-n update$", "-n update-complete", "update-notification.txt"),
     ("ietf-yp-lite-tree.txt", "-n update-complete", "<end>", "update-complete.txt"),
   )
@@ -82,6 +83,8 @@ object `package` extends IETF:
   def all = Task:
     checkDraftLatest()
     make()
+    println(s"Task all Finished")
+
 
 
   object publisher extends ScalaModule:

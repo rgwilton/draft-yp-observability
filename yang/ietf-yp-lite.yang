@@ -28,6 +28,11 @@ module ietf-yp-lite {
     reference
       "RFC 8342: Network Management Datastore Architecture (NMDA)";
   }
+  import ietf-yang-library {
+    prefix yanglib;
+    reference
+      "RFC 8525: YANG Library";
+  }
 
   organization
     "IETF NETCONF (Network Configuration) Working Group";
@@ -294,7 +299,7 @@ module ietf-yp-lite {
   }
 
   typedef subscription-name {
-    type string {
+   type string {
       length "1..64";
       // TODO, is it reasonable to limit this to 64 characters?
       // TODO, should we ban certain characters, e.g., whitespace?
@@ -373,6 +378,43 @@ module ietf-yp-lite {
       "Indicates the status of a subscription";
   }
 
+  typedef subscription-change {
+    type enumeration {
+      enum new-subscription {
+        description
+          "This is a new subscription.";
+      }
+      enum deleted {
+        description
+          "The subscription has been unconfigured or deleted via
+           a delete-subscription RPC";
+      }
+      enum killed {
+        description
+          "A dynamic subscription has been killed via a
+           kill-subscription RPC";
+      }
+      enum receiver-added {
+        description
+          "A new receiver has been added to a configured
+           subscription, and has connected successfully.";
+      }
+      enum receiver-removed {
+        description
+          "A receiver has been removed from a configured
+           subscription, or has become disconnected.";
+      }
+      enum config-changed {
+        description
+          "The subscription configuration has been changed,
+           requiring the subscription to be restarted.";
+      }
+    }
+
+    description
+      "Indicates the reason why a subscription has changed.";
+  }
+
   /*
    * GROUPINGS
    */
@@ -410,7 +452,7 @@ module ietf-yp-lite {
            fixed value for list keys.  Each format is TODO";
       }
       anydata subtree {
-        if-feature "ypl:subtree";
+        //if-feature "ypl:subtree";
         mandatory true;
         description
           "This parameter identifies the portions of the
@@ -547,6 +589,13 @@ module ietf-yp-lite {
          it to be terminated.";
     }
 
+    leaf update-id {
+      type subscription-id;
+      description
+        "An optional unique numeric-id that identifies this
+         subscription in update messages.";
+    }
+
     leaf description {
       type string {
         length "1..1000";
@@ -597,7 +646,11 @@ module ietf-yp-lite {
        likelihood of succeeding in a subsequent
        'establish-subscription' request.";
     input {
-      uses subscription-common;
+      uses subscription-common {
+        refine name {
+          mandatory false;
+        }
+      }
 
       leaf encoding {
         type encoding;
@@ -609,14 +662,41 @@ module ietf-yp-lite {
       uses dscp;
 
     }
-    output {
-      leaf id {
-        type subscription-id;
-        mandatory true;
-        description
-          "Identifier used for this subscription.";
-      }
+    //output {
+      // leaf id {
+      //   type subscription-id;
+      //   mandatory true;
+      //   description
+      //     "Identifier used for this subscription.";
+      // }
+    //}
+  }
+
+  rpc modify-subscription {
+    if-feature "dynamic";
+    description
+      "This RPC allows a subscriber to modify a dynamic
+       subscription's parameters.  If successful, the changed
+       subscription parameters remain in effect for the duration of
+       the subscription, until the subscription is again modified, or
+       until the subscription is terminated.  In the case of an error
+       or an inability to meet the modified parameters, the
+       subscription is not modified and the original subscription
+       parameters remain in effect.";
+    input {
+      uses subscription-common;
+
+      uses dscp;
+
     }
+    //output {
+      // leaf id {
+      //   type subscription-id;
+      //   mandatory true;
+      //   description
+      //     "Identifier used for this subscription.";
+      // }
+    //}
   }
 
   sx:structure establish-subscription-stream-error-info {
@@ -723,21 +803,100 @@ module ietf-yp-lite {
    */
 
   notification subscription-started {
-    //ypl:subscription-state-notification;
     description
-      "This notification indicates that a configured subscription
-       has started and notifications will now be sent.";
-    leaf id {
-      type subscription-id;
+      "This notification indicates that a subscription has started
+       and notifications will now be sent.";
+    // leaf id {
+    //   type subscription-id;
+    //   mandatory true;
+    //   description
+    //     "This references the affected subscription.";
+    // }
+    uses subscription-common {
+      // refine id {
+      //   mandatory true;
+      // }
+      augment "target" {
+        description
+          "Augments fields to identify the target schema.";
+
+        leaf schema-id {
+          type string;
+          description
+            "Indicates the version of the YANG schema used for this
+            subscription.  The schema-id MUST change if the schema
+            associated with the subscription changes.  The schema-id
+            MAY change if the device schema changes, even if the 
+            change does not affect the subscription.";
+        }
+
+        leaf yang-library-content-id {
+          type leafref {
+            path "/yanglib:yang-library/yanglib:content-id";
+          }
+          description
+            "Contains the YANG library content identifier.";
+        }
+      }
+    }
+
+    leaf yang-library-content-id {
+      type leafref {
+        path "/yanglib:yang-library/yanglib:content-id";
+      }
+      description
+        "Contains the YANG library content identifier.";
+    }
+  }
+
+  notification subscription-modified {
+    description
+      "This notification indicates that subscription paramaters have
+       changed.";
+    // leaf id {
+    //   type subscription-id;
+    //   mandatory true;
+    //   description
+    //     "This references the affected subscription.";
+    // }
+    uses subscription-common {
+      // refine id {
+      //   mandatory true;
+      // }
+      augment "target" {
+        description
+          "Adds a schema id.";
+
+        leaf schema-id {
+          type string;
+          description
+            "Indicates the version of the YANG schema used for this
+            subscription.  The schema-id MUST change if the schema
+            associated with the subscription changes.  The schema-id
+            MAY change if the device schema changes, even if the 
+            change does not affect the subscription.";
+        }
+
+        leaf yang-library-content-id {
+          type leafref {
+            path "/yanglib:yang-library/yanglib:content-id";
+          }
+          description
+            "Contains the YANG library content identifier.";
+        }
+      }
+    }
+
+    leaf reason {
+      type subscription-change;
       mandatory true;
       description
-        "This references the affected subscription.";
+        "Gives a hint for the message recipient as to why the
+         notification has been sent.";
     }
-    uses subscription-common;
   }
 
   notification subscription-terminated {
-    //ypl:subscription-state-notification;
     description
       "This notification indicates that a subscription has been
        terminated.";
@@ -747,51 +906,15 @@ module ietf-yp-lite {
       description
         "The name of the subscription that has been terminated.";
     }
-    leaf id {
-      type subscription-id;
-      mandatory true;
-      description
-        "This references the affected subscription.";
-    }
+    // leaf id {
+    //   type subscription-id;
+    //   mandatory true;
+    //   description
+    //     "This references the affected subscription.";
+    // }
     leaf reason {
       type identityref {
         base subscription-terminated-reason;
-      }
-      mandatory true;
-      description
-        "Identifies the condition that resulted in the
-         termination.";
-    }
-  }
-
-  notification receiver-disconnected {
-    description
-      "This notification indicates that a receiver has been
-       disconnected from a subscription.  This notification is only
-       sent to the affected receiver if the transport is still
-       available, and only if the subscription remains active due
-       to other active receivers.
-
-       The receiver will not receive any further notifications
-       for this subscription unless it receives a new
-       'subscription-started' notification for this
-       subscription.";
-    leaf name {
-      type subscription-name;
-      mandatory true;
-      description
-        "The name of the subscription.";
-    }
-    leaf id {
-      type subscription-id;
-      mandatory true;
-      description
-        "The subscription identifier";
-    }
-    leaf reason {
-      type identityref {
-        base subscription-terminated-reason;
-          // TODO, add new receiver disconnected reasons.
       }
       mandatory true;
       description
@@ -808,11 +931,23 @@ module ietf-yp-lite {
        periodic updates.  It can also be used for synchronization
        updates of an on-change subscription.  This notification
        shall only be sent to receivers of a subscription.";
-    leaf id {
-      type subscription-id;
+    choice identifier {
+      mandatory true;
       description
-        "This references the subscription that drove the
-         notification to be sent.";
+        "Identifier for the subscription that is the source of
+         this notification.";
+      leaf name {
+        type subscription-name;
+        description
+          "The name of the subscription that is the source of
+           this notification.";
+      }
+      leaf id {
+        type subscription-id;
+        description
+          "The numeric identifier of the subscription that is the
+           source of this notification.";
+      }
     }
 
     leaf path-prefix {
@@ -862,6 +997,7 @@ module ietf-yp-lite {
              have been sent.";
         }
       }
+      mandatory true;
       description
         "This indicates the type of notification message that is
          being sent.";
@@ -922,13 +1058,9 @@ module ietf-yp-lite {
     }
   }
 
-  // TODO - Need to signal when an initial replay has completed, or
-  //        possibly when any period subscription has completed.
   // TODO - Need to think about list key entries that are no longer
   //        present.
   notification update-complete {
-    //ypl:subscription-state-notification;
-    //if-feature "replay";
     description
       "This notification indicates the end of a periodic collection
        or resync event for an on-change subscription, and can be used
@@ -940,11 +1072,23 @@ module ietf-yp-lite {
        Alternatively, the 'complete' flag in the update
        notification MAY be used instead of sending this notification
        as a separate message, and both are semantically equivalent.";
-    leaf id {
-      type subscription-id;
+    choice identifier {
       mandatory true;
       description
-        "This references the affected subscription.";
+        "Identifier for the subscription that is the source of
+         this notification.";
+      leaf name {
+        type subscription-name;
+        description
+          "The name of the subscription that is the source of
+           this notification.";
+      }
+      leaf id {
+        type subscription-id;
+        description
+          "The numeric identifier of the subscription that is the
+           source of this notification.";
+      }
     }
   }
 }

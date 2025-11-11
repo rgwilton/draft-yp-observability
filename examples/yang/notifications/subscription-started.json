@@ -11,6 +11,7 @@
         "period": 3000,
         "anchor-time": "2025-01-01T00:00:00.00Z"
       }
-    }
+    },
+    "reason": "new-subscription"
   }
 }

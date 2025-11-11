@@ -1,7 +1,11 @@
     +---n update
-    |  +--ro id?                 subscription-id
+    |  +--ro (identifier)
+    |  |  +--:(name)
+    |  |  |  +--ro name?         subscription-name
+    |  |  +--:(id)
+    |  |     +--ro id?           subscription-id
     |  +--ro path-prefix?        string
-    |  +--ro snapshot-type?      enumeration
+    |  +--ro snapshot-type       enumeration
     |  +--ro observation-time?   yang:date-and-time
     |  +--ro updates* [target-path]
     |  |  +--ro target-path    string
