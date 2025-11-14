@@ -10,7 +10,7 @@ import uk.org.wilton.ietf.yang.mill.plugin.*
 
 object `package` extends IETF:
   def draft = Task.Source:
-    "draft-wilton-netconf-yang-push-lite.md"
+    "draft-wilton-netconf-yang-push-2.md"
 
   // All RFCs that we need to extract YANG from.
   def rfcDeps = List(
@@ -50,32 +50,32 @@ object `package` extends IETF:
   )
 
   def yangCompiles = Seq(
-    Seq("ietf-yp-lite.yang", "ietf-yp-lite-config.yang"),
-    Seq("ietf-yp-lite-capabilities.yang", "ietf-yp-lite.yang"),
-    Seq("ietf-udp-notif-transport-2.yang", "ietf-yp-lite.yang")
+    Seq("ietf-yang-push-2.yang", "ietf-yang-push-2-config.yang"),
+    Seq("ietf-yang-push-2-capabilities.yang", "ietf-yang-push-2.yang"),
+    Seq("ietf-udp-notif-transport-2.yang", "ietf-yang-push-2.yang")
   )
 
   def yangTrees = Seq(
-    (Seq("ietf-yp-lite.yang"), "ietf-yp-lite-tree.txt", None),
-    (Seq("ietf-yp-lite-config.yang"), "filters.txt", Some("datastore-telemetry/filters")),
-    (Seq("ietf-yp-lite-config.yang"), "subscriptions.txt", Some("datastore-telemetry/subscriptions")),
-    (Seq("ietf-yp-lite-config.yang"), "update-trigger.txt", Some("datastore-telemetry/subscriptions/subscription/update-trigger")),
-    (Seq("ietf-yp-lite-config.yang"), "receivers.txt", Some("datastore-telemetry/receivers")),
-    (Seq("ietf-yp-lite-config.yang"), "ietf-yp-lite-config-tree.txt", None),
-    (Seq("ietf-yp-lite-capabilities.yang"), "ietf-yp-lite-capabilities-tree.txt", None),
-    (Seq("ietf-yp-lite-capabilities.yang", "ietf-system-capabilities@2022-02-17.yang"), "ietf-system-capabilities-tree.txt", None)
+    (Seq("ietf-yang-push-2.yang"), "ietf-yang-push-2-tree.txt", None),
+    (Seq("ietf-yang-push-2-config.yang"), "filters.txt", Some("datastore-telemetry/filters")),
+    (Seq("ietf-yang-push-2-config.yang"), "subscriptions.txt", Some("datastore-telemetry/subscriptions")),
+    (Seq("ietf-yang-push-2-config.yang"), "update-trigger.txt", Some("datastore-telemetry/subscriptions/subscription/update-trigger")),
+    (Seq("ietf-yang-push-2-config.yang"), "receivers.txt", Some("datastore-telemetry/receivers")),
+    (Seq("ietf-yang-push-2-config.yang"), "ietf-yang-push-2-config-tree.txt", None),
+    (Seq("ietf-yang-push-2-capabilities.yang"), "ietf-yang-push-2-capabilities-tree.txt", None),
+    (Seq("ietf-yang-push-2-capabilities.yang", "ietf-system-capabilities@2022-02-17.yang"), "ietf-system-capabilities-tree.txt", None)
   )
 
   def yangTreeSnippets = Seq(
-    ("ietf-yp-lite-tree.txt", "-x establish-subscription", "-x modify-subscription", "establish-subscription.txt"),
-    ("ietf-yp-lite-tree.txt", "-x modify-subscription", "-x delete-subscription", "modify-subscription.txt"),
-    ("ietf-yp-lite-tree.txt", "-x delete-subscription", "-x kill-subscription", "delete-subscription.txt"),
-    ("ietf-yp-lite-tree.txt", "-x kill-subscription", "notifications", "kill-subscription.txt"),
-    ("ietf-yp-lite-tree.txt", "-n subscription-started", "subscription-modified", "subscription-started.txt"),
-    ("ietf-yp-lite-tree.txt", "-n subscription-modified", "subscription-terminated", "subscription-modified.txt"),
-    ("ietf-yp-lite-tree.txt", "-n subscription-terminated", "receiver-disconnected", "subscription-terminated.txt"),
-    ("ietf-yp-lite-tree.txt", "-n update$", "-n update-complete", "update-notification.txt"),
-    ("ietf-yp-lite-tree.txt", "-n update-complete", "<end>", "update-complete.txt"),
+    ("ietf-yang-push-2-tree.txt", "-x establish-subscription", "-x modify-subscription", "establish-subscription.txt"),
+    ("ietf-yang-push-2-tree.txt", "-x modify-subscription", "-x delete-subscription", "modify-subscription.txt"),
+    ("ietf-yang-push-2-tree.txt", "-x delete-subscription", "-x kill-subscription", "delete-subscription.txt"),
+    ("ietf-yang-push-2-tree.txt", "-x kill-subscription", "notifications", "kill-subscription.txt"),
+    ("ietf-yang-push-2-tree.txt", "-n subscription-started", "subscription-modified", "subscription-started.txt"),
+    ("ietf-yang-push-2-tree.txt", "-n subscription-modified", "subscription-terminated", "subscription-modified.txt"),
+    ("ietf-yang-push-2-tree.txt", "-n subscription-terminated", "receiver-disconnected", "subscription-terminated.txt"),
+    ("ietf-yang-push-2-tree.txt", "-n update$", "-n update-complete", "update-notification.txt"),
+    ("ietf-yang-push-2-tree.txt", "-n update-complete", "<end>", "update-complete.txt"),
   )
 
 

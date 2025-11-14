@@ -3,8 +3,8 @@ module ietf-udp-notif-transport-2 {
   namespace
     "urn:ietf:params:xml:ns:yang:ietf-udp-notif-transport-2";
   prefix unt;
-  import ietf-yp-lite {
-    prefix ypl;
+  import ietf-yang-push-2 {
+    prefix yp2;
     reference
       "RFC 8639: Subscription to YANG Notifications";
   }
@@ -84,15 +84,15 @@ module ietf-udp-notif-transport-2 {
   * IDENTITIES
   */
   identity udp-notif {
-    base ypl:transport;
-    base ypl:configurable-encoding;
+    base yp2:transport;
+    base yp2:configurable-encoding;
     description
       "UDP-Notif is used as transport for notification messages
         and state change notifications.";
   }
 
   identity encode-cbor {
-    base ypl:encoding;
+    base yp2:encoding;
     description
       "Encode data using CBOR as described in RFC 9254.";
     reference
@@ -165,8 +165,8 @@ module ietf-udp-notif-transport-2 {
   }
 
 /* TODO - Temporary removal to shorten tree output.
-  augment "/ypl:datastore-telemetry/ypl:receivers/
-                              ypl:receiver/ypl:transport-type" {
+  augment "/yp2:datastore-telemetry/yp2:receivers/
+                              yp2:receiver/yp2:transport-type" {
     case udp-notif {
       container udp-notif-receiver {
         description

@@ -1,7 +1,8 @@
-module ietf-yp-lite-config {
+module ietf-yang-push-2-config {
   yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-yp-lite-config";
-  prefix yplco;
+  namespace
+    "urn:ietf:params:xml:ns:yang:ietf-yang-push-2-config";
+  prefix yp2co;
 
   import ietf-inet-types {
     prefix inet;
@@ -23,10 +24,10 @@ module ietf-yp-lite-config {
     reference
       "RFC 6991: Common YANG Data Types";
   }
-  import ietf-yp-lite {
-    prefix ypl;
+  import ietf-yang-push-2 {
+    prefix yp2;
     reference
-      "RFC XXXX: YANG Push Lite";
+      "RFC XXXX: YANG Datastore Telemetry (YANG Push version 2)";
   }
 
   organization
@@ -38,7 +39,7 @@ module ietf-yp-lite-config {
      Author:  Robert Wilton
               <mailto:rwilton@cisco.com>";
   description
-    "This module contains YANG specifications for YANG-Push lite
+    "This module contains YANG specifications for YANG-Push version 2
      configuration and operational state model.
 
      The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
@@ -65,7 +66,7 @@ module ietf-yp-lite-config {
     description
       "Initial revision.";
     reference
-      "XXX: YANG Push Lite";
+      "XXX: YANG Datastore Telemetry (YANG Push version 2)";
   }
 
   /*
@@ -123,7 +124,7 @@ module ietf-yp-lite-config {
   container datastore-telemetry {
     presence "Enables datastore telemetry";
     description
-    "YANG Push Lite Datastore Telemetry Configuration and State.";
+    "YANG Push v2 Datastore Telemetry Configuration and State.";
     container filters {
       description
         "Contains a list of configurable filters that can be applied
@@ -140,7 +141,7 @@ module ietf-yp-lite-config {
           description
             "A unique name to identify the selection filters.";
         }
-        uses ypl:filter-choice;
+        uses yp2:filter-choice;
       }
     }
     container subscriptions {
@@ -163,7 +164,7 @@ module ietf-yp-lite-config {
           'subscription-terminated' message is sent to any active or
           suspended receivers.";
 
-        uses ypl:subscription-common;
+        uses yp2:subscription-common;
 
         leaf receiver {
           type leafref {
@@ -215,7 +216,7 @@ module ietf-yp-lite-config {
         // }
 
         leaf status {
-          type ypl:subscription-status;
+          type yp2:subscription-status;
           config false;
           description
             "The presence of this leaf indicates that the
@@ -225,7 +226,7 @@ module ietf-yp-lite-config {
         }
 
         leaf encoding {
-          type ypl:encoding;
+          type yp2:encoding;
           config false;
           description
             "The type of encoding for notification messages.";
@@ -387,8 +388,8 @@ module ietf-yp-lite-config {
 
         leaf encoding {
   /*        when 'not(../transport) or derived-from(../transport,
-          "ypl:configurable-encoding")';*/
-          type ypl:encoding;
+          "yp2:configurable-encoding")';*/
+          type yp2:encoding;
           mandatory true;
           description
             "The type of encoding for notification messages.  For a
@@ -400,7 +401,7 @@ module ietf-yp-lite-config {
              underlying transport.";
         }
 
-        uses ypl:dscp;
+        uses yp2:dscp;
 
         action reset {
           description
@@ -469,8 +470,8 @@ module ietf-yp-lite-config {
     }
   }
 
-  augment "/ypl:establish-subscription/ypl:input/ypl:"
-        + "target/ypl:filter" {
+  augment "/yp2:establish-subscription/yp2:input/yp2:"
+        + "target/yp2:filter" {
 
     description
       "Augment the 'establish-subscription' RPC to allow
@@ -488,7 +489,7 @@ module ietf-yp-lite-config {
     }
   }
 
-  augment "/ypl:subscription-started/ypl:target" {
+  augment "/yp2:subscription-started/yp2:target" {
 
     description
       "Allow a subscription-started notification to include a

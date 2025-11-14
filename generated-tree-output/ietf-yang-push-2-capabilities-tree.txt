@@ -1,0 +1,26 @@
+module: ietf-yang-push-2-capabilities
+
+  augment /sysc:system-capabilities:
+    +--ro datastore-telemetry
+       +--ro periodic-notifications-supported?   notification-support
+       +--ro (update-period)?
+       |  +--:(minimum-update-period)
+       |  |  +--ro minimum-update-period?        uint32
+       |  +--:(supported-update-period)
+       |     +--ro supported-update-period*      uint32
+       +--ro on-change-supported?                notification-support
+       +--ro transport
+          +--ro transport-capability* [transport-protocol]
+             +--ro transport-protocol    identityref
+             +--ro security-protocol?    identityref
+             +--ro encoding-format*      identityref
+  augment /sysc:system-capabilities/sysc:datastore-capabilities
+            /sysc:per-node-capabilities:
+    +--ro datastore-telemetry
+       +--ro periodic-notifications-supported?   notification-support
+       +--ro (update-period)?
+       |  +--:(minimum-update-period)
+       |  |  +--ro minimum-update-period?        uint32
+       |  +--:(supported-update-period)
+       |     +--ro supported-update-period*      uint32
+       +--ro on-change-supported?                notification-support

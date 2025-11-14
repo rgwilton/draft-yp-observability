@@ -1,9 +1,9 @@
-module: ietf-yp-lite-config
+module: ietf-yang-push-2-config
   +--rw datastore-telemetry!
      +--rw receivers
         +--rw receiver* [name]
            +--rw name                      string
-           +--rw encoding                  ypl:encoding
+           +--rw encoding                  yp2:encoding
            +--rw dscp?                     inet:dscp
            +---x reset
            +--rw (notification-message-origin)?
@@ -15,8 +15,8 @@ module: ietf-yp-lite-config
            |     +--rw source-address?     inet:ip-address-no-zone
            +--rw (transport-type)
 
-  augment /ypl:establish-subscription/ypl:input/ypl:target
-            /ypl:filter:
+  augment /yp2:establish-subscription/yp2:input/yp2:target
+            /yp2:filter:
     +--:(by-reference)
-  augment /ypl:subscription-started/ypl:target:
+  augment /yp2:subscription-started/yp2:target:
     +-- filter-ref?   filter-ref

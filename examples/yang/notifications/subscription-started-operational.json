@@ -1,5 +1,5 @@
 {
-  "ietf-yp-lite-config:datastore-telemetry": {
+  "ietf-yang-push-2-config:datastore-telemetry": {
     "filters": {
       "filter": [
         {

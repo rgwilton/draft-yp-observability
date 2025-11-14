@@ -4,7 +4,7 @@
     "hostname": "example-router",
     "sequence-number": 3219,
     "contents": {
-      "ietf-yp-lite:update": {
+      "ietf-yang-push-2:update": {
         "id": 1011,
         "snapshot-type": "periodic",
         "observation-time": "2024-10-10T08:00:05.11Z",

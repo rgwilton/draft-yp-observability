@@ -1,4 +1,4 @@
-module: ietf-yp-lite-config
+module: ietf-yang-push-2-config
   +--rw datastore-telemetry!
      +--rw subscriptions
         +--rw subscription* [name]
@@ -9,8 +9,8 @@ module: ietf-yp-lite-config
               +--rw on-change! {on-change}?
                  +--rw sync-on-start?   boolean
 
-  augment /ypl:establish-subscription/ypl:input/ypl:target
-            /ypl:filter:
+  augment /yp2:establish-subscription/yp2:input/yp2:target
+            /yp2:filter:
     +--:(by-reference)
-  augment /ypl:subscription-started/ypl:target:
+  augment /yp2:subscription-started/yp2:target:
     +-- filter-ref?   filter-ref

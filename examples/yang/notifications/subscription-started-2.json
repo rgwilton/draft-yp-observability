@@ -1,6 +1,6 @@
 {
-  "ietf-yp-lite:subscription-started": {
-    "id": 1011,
+  "ietf-yang-push-2:subscription-started": {
+    "update-id": 1011,
     "name": "ExampleInterfaceSubscription",
     "target": {
       "datastore": "ietf-datastores:operational",
@@ -10,7 +10,6 @@
       "on-change": {
         "sync-on-start": true
       }
-    },
-    "reason": "new-subscription"
+    }
   }
 }

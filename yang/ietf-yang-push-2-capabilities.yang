@@ -1,7 +1,8 @@
-module ietf-yp-lite-capabilities {
+module ietf-yang-push-2-capabilities {
   yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-yp-lite-capabilities";
-  prefix yplca;
+  namespace
+    "urn:ietf:params:xml:ns:yang:ietf-yang-push-2-capabilities";
+  prefix yp2ca;
 
   import ietf-system-capabilities {
     prefix sysc;
@@ -9,10 +10,10 @@ module ietf-yp-lite-capabilities {
       "RFC 9196: YANG Modules Describing Capabilities for Systems
        and Datastore Update Notifications";
   }
-  import ietf-yp-lite {
-    prefix ypl;
+  import ietf-yang-push-2 {
+    prefix yp2;
     reference
-      "RFC XXX: YANG Push Lite";
+      "RFC XXX: YANG Datastore Telemetry (YANG Push version 2)";
   }
 
   organization
@@ -50,7 +51,7 @@ module ietf-yp-lite-capabilities {
     description
       "Initial revision.";
     reference
-      "XXX: YANG Push Lite";
+      "XXX: YANG Datastore Telemetry (YANG Push version 2)";
   }
 
   /*
@@ -206,7 +207,7 @@ module ietf-yp-lite-capabilities {
                   transport.";
         leaf transport-protocol {
           type identityref {
-            base ypl:transport;
+            base yp2:transport;
           }
           description
             "Indicates supported transport protocol for YANG-Push.";
@@ -220,7 +221,7 @@ module ietf-yp-lite-capabilities {
         }
         leaf-list encoding-format {
           type identityref {
-            base ypl:encoding;
+            base yp2:encoding;
           }
           description
             "Indicates supported encoding formats.";
@@ -236,7 +237,7 @@ module ietf-yp-lite-capabilities {
     uses yp-lite-capabilities;
   }
 
-  augment "/sysc:system-capabilities/yplca:datastore-telemetry" {
+  augment "/sysc:system-capabilities/yp2ca:datastore-telemetry" {
     description
       "Adds system level Yang Push Lite transport capabilities";
     uses yp-lite-transport-capabilities;

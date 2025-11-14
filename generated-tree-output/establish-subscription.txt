@@ -11,7 +11,7 @@
     |     |     +--:(subtree)
     |     |     |  +---w subtree    <anydata>
     |     |     +--:(xpath)
-    |     |        +---w xpath      yang:xpath1.0 {ypl:xpath}?
+    |     |        +---w xpath      yang:xpath1.0 {yp2:xpath}?
     |     +---w update-trigger
     |     |  +---w periodic!
     |     |  |  +---w period         centiseconds

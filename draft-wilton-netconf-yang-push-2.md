@@ -1,9 +1,9 @@
 ---
-title: "YANG Datastore Telemetry (YANG Push Lite)"
-abbrev: "YANG-Push Lite"
+title: "YANG Datastore Telemetry (YANG Push version 2)"
+abbrev: "YANG-Push v2"
 category: std
 
-docname: draft-wilton-netconf-yang-push-lite-latest
+docname: draft-wilton-netconf-yang-push-2-latest
 submissiontype: IETF
 number:
 date:
@@ -128,7 +128,7 @@ informative:
 
 --- abstract
 
-YANG Push Lite is a YANG datastore telemetry solution, as an alternative specification to the Subscribed Notifications and YANG Push solution, specifically optimized for the efficient observability of operational data.
+YANG Push version 2 is a YANG datastore telemetry solution, as an alternative lightweight specification to the Subscribed Notifications and YANG Push solution, specifically optimized for the efficient observability of operational data.
 
 --- middle
 
@@ -139,7 +139,7 @@ YANG Push Lite is a YANG datastore telemetry solution, as an alternative specifi
 
 Based on the feedback received during the IETF 121 NETCONF session, this document has currently been written as a self-contained lightweight protocol and document replacement for {{RFC8639}} and {{RFC8641}}, defining a separate configuration data model.
 
-**The comparison between YANG Push and YANG Push Lite is now in {{DifferencesFromYangPush}}.**
+**The comparison between YANG Push and YANG Push v2 is now in {{DifferencesFromYangPush}}.**
 
 **Open issues are either now being tracked inline in the text or in {{OpenIssuesTracker}} for the higher level issues.**
 
@@ -154,13 +154,13 @@ defined in {{RFC8340}}.
 
 {{I-D.ietf-nmop-yang-message-broker-integration}} describes an architecture for how YANG datastore telemetry, e.g., {{RFC8641}}, can be integrated effectively with message brokers, e.g., {{Kafka}}, that forms part of a wider architecture for a *Network Anomaly Detection Framework*, specified in {{I-D.ietf-nmop-network-anomaly-architecture}}.
 
-This document specifies "YANG Push Lite", an lightweight alternative to Subscribed Notifications {{RFC8639}} and YANG Push {{RFC8641}}. YANG Push Lite is a separate YANG datastore telemetry solution, which can be implemented independently or, if desired, alongside {{RFC8639}} and {{RFC8641}}.
+This document specifies "YANG Push v2", an lightweight alternative to Subscribed Notifications {{RFC8639}} and YANG Push {{RFC8641}}. YANG Push v2 is a separate YANG datastore telemetry solution, which can be implemented independently or, if desired, alongside {{RFC8639}} and {{RFC8641}}.
 
-At a high level, YANG Push Lite is designed to solve a similar set of requirements as YANG Push, and it reuses a significant subset of the ideas and base solution from YANG Push.  YANG Push Lite defines a separate data model to allow concurrent implementation of both protocols and to facilitate more significant changes in behavior, but many of the data nodes are taken from YANG Push and have the same, or very similar definitions.
+At a high level, YANG Push v2 is designed to solve a similar set of requirements as YANG Push, and it reuses a significant subset of the ideas and base solution from YANG Push.  YANG Push v2 defines a separate data model to allow concurrent implementation of both protocols and to facilitate more significant changes in behavior, but many of the data nodes are taken from YANG Push and have the same, or very similar definitions.
 
 The following sections give the background for the solution, and highlight the key ways that this specification differs from the specifications that it is derived from.
 
-## Background and Motivation for YANG Push Lite
+## Background and Motivation for YANG Push v2
 
 A push based telemetry solution, as described both in this document and also the YANG Push solution described by {{RFC8639}} and {{RFC8641}}, is beneficial because it allows operational data to be exported by publishers more immediately and efficiently compared to legacy poll based mechanisms, such as SNMP {{RFC3411}}.  Some further background information on the general motivations for push based telemetry, which equally apply here, can be found in the *Motivation* (section 1.1) of {{RFC8639}} and the Introduction (section 1) of {{RFC8641}}.  The remainder of this section is focused on the reasons why a new lightweight version of YANG Push has been specified, and what problems is aims to solve.
 
@@ -172,7 +172,7 @@ YANG Push {{RFC8641}} was standardized by the IETF in 2019, but market adoption 
 
 Hence, during 2024, the vendors and operators working towards YANG telemetry solutions agreed to a plan to implement a subset of {{RFC8639}} and {{RFC8641}}, including common agreements of features that are not needed and would not be implemented, and deviations from the standards for some aspects of encoding YANG data.  In addition, the implementation efforts identified the minimal subset of functionality needed to support the initial telemetry use cases, and areas of potential improvement and optimization to the overall YANG Push telemetry solution (which has been written up as a set of small internet drafts that augment or extend the base YANG Push solution).
 
-Out of this work, consensus was building to specify a cut down version of Subscribed Notifications {{RFC8639}} and YANG Push {{RFC8641}} that is both more focussed on the operational telemetry use case and is also easier to implement, achieved by relaxing some of the constraints on consistency on the device, and removing, or simplifying some of the operational features.  This has resulted in this specification, YANG Push Lite.
+Out of this work, consensus was building to specify a cut down version of Subscribed Notifications {{RFC8639}} and YANG Push {{RFC8641}} that is both more focussed on the operational telemetry use case and is also easier to implement, achieved by relaxing some of the constraints on consistency on the device, and removing, or simplifying some of the operational features.  This has resulted in this specification, YANG Push v2.
 
 The implementation efforts also gave rise to potential improvements to the protocol and encoding of notification messages.
 
@@ -210,7 +210,7 @@ Hence, this document introduces the fairly intuitive "periodic-and-on-change" up
 
 ## Relationships to existing RFCs and Internet Drafts {#DraftRelationships}
 
-This document, specifying YANG Push Lite, is intended to be a lightweight alternative for {{RFC8639}} and {{RFC8641}}, but that also incorporates various extensions since those RFCs were written.  Often substantial parts of those documents and models have been incorporated almost verbatim, but modified to fit the YANG Push Lite functionality and module structure.
+This document, specifying YANG Push v2, is intended to be a lightweight alternative for {{RFC8639}} and {{RFC8641}}, but that also incorporates various extensions since those RFCs were written.  Often substantial parts of those documents and models have been incorporated almost verbatim, but modified to fit the YANG Push v2 functionality and module structure.
 
 Hence, the authors of this draft would like to sincerely thank and acknowledge the very significant effort put into those RFCs and drafts by authors, contributors and reviewers.  In particular, We would like to thank the listed authors of these documents: Eric Voit, Alex Clemm, Alberto Gonzalez Prieto, Einar Nilsen-Nygaard, Ambika Prasad Tripathy, Balazs Lengyel, Alexander Clemm, Benoit Claise, Qin Wu, Qiufang Ma, Alex Huang Feng, Thomas Graf, Pierre Francois.
 
@@ -218,9 +218,9 @@ Hence, the authors of this draft would like to sincerely thank and acknowledge t
 
 This document is primarily intended to be a lightweight alternative for {{RFC8639}} and {{RFC8641}}, but it intentionally reuses substantial parts of the design and data model of those RFCs.
 
-YANG Push Lite is defined using a separate module namespace, and hence can be implemented independently or, if desired, alongside {{RFC8639}} and {{RFC8641}}, and the various extensions to YANG Push.
+YANG Push v2 is defined using a separate module namespace, and hence can be implemented independently or, if desired, alongside {{RFC8639}} and {{RFC8641}}, and the various extensions to YANG Push.
 
-A more complete description of the main differences in YANG Push Lite compares to {{RFC8639}} and {{RFC8641}} is given in {{DifferencesFromYangPush}}.
+A more complete description of the main differences in YANG Push v2 compares to {{RFC8639}} and {{RFC8641}} is given in {{DifferencesFromYangPush}}.
 
 ### {{I-D.draft-ietf-netconf-notif-envelope}} and RFC 5277
 
@@ -234,25 +234,25 @@ This document uses the capabilities concepts defined in {{RFC9196}}.
 
 In particular, it augments into the ietf-system-capabilities YANG module, but defines an equivalent alternative capability structure for the ietf-notification-capabilities YANG module, which defines the capabilities for YANG Push {{RFC8641}}.
 
-The generic transport capabilities defined in {{I-D.draft-netana-netconf-yp-transport-capabilities}} have been incorporated into the ietf-yp-lite YANG module, to augment YANG Push Lite transport capabilities and to use the different identities.
+The generic transport capabilities defined in {{I-D.draft-netana-netconf-yp-transport-capabilities}} have been incorporated into the ietf-yang-push-2 YANG module, to augment YANG Push v2 transport capabilities and to use the different identities.
 
 ### {{I-D.draft-ietf-netconf-https-notif}} and {{I-D.draft-ietf-netconf-udp-notif}}
 
-The ietf-yp-lite YANG module has subsumed and extended the *receivers* data model defined in the ietf-subscribed-notif-receivers YANG module defined in {{I-D.draft-ietf-netconf-https-notif}}.
+The ietf-yang-push-2 YANG module has subsumed and extended the *receivers* data model defined in the ietf-subscribed-notif-receivers YANG module defined in {{I-D.draft-ietf-netconf-https-notif}}.
 
-The overall YANG Push Lite solution anticipates and requires new bis versions of both of these transports documents that augment into the *receivers/receiver/transport-type* choice statement, and also augment the transport identity defined in the ietf-yp-lite data model.
+The overall YANG Push v2 solution anticipates and requires new bis versions of both of these transports documents that augment into the *receivers/receiver/transport-type* choice statement, and also augment the transport identity defined in the ietf-yang-push-2 data model.
 
 ### {{I-D.draft-ietf-netconf-distributed-notif}}
 
 **TODO.  It is likely that some of the base support for distributed notifications will be incorporated into this draft.  If so, add acknowledgements to the authors.**
 
-# YANG Push Lite Overview {#overview}
+# YANG Push v2 Overview {#overview}
 
 This document specifies a lightweight telemetry solution that provides a subscription service for updates to the state and changes in state from a chosen datastore.
 
 Subscriptions specify when notification messages (also referred to as *updates*) should be sent, what data to include in the update records, and where those notifications should be sent.
 
-A YANG Push lite subscription comprises:
+A YANG Push v2 subscription comprises:
 
 - a target datastore for the subscription, where the monitored subscription data is logically sourced from.
 
@@ -278,7 +278,7 @@ While the functionality defined in this document is transport agnostic, transpor
 
 **TODO Introduce capabilities and operational monitoring**
 
-This document defines a YANG data model, that includes RPCs and notifications, for configuring and managing subscriptions and associated configuration, and to define the format of a *update* notification message.  The YANG model is defined in {{yp-lite-yang-module}} and associated tree view in {{yp-lite-tree}}.  The YANG data model defined in this document conforms to the Network Management Datastore Architecture defined in [RFC8342].
+This document defines a YANG data model, that includes RPCs and notifications, for configuring and managing subscriptions and associated configuration, and to define the format of a *update* notification message.  The YANG model is defined in {{yang-push-2-yang-module}} and associated tree view in {{yang-push-2-tree}}.  The YANG data model defined in this document conforms to the Network Management Datastore Architecture defined in [RFC8342].
 
 # Definitions {#terminology}
 
@@ -354,7 +354,7 @@ A key part of a subscription is to select which data nodes should be monitored, 
 
 Filters can either be defined inline within a configured subscription ({{SubscriptionYangTree}}), a dynamic subscription's *establish-subscription* RPC ({{EstablishSubscriptionYangTree}}), or as part of the *datastore-telemetry/filters* container ({{FilterContainerYangTree}}) which can then be referenced from a configured or dynamic subscription.
 
-The following selection filter types are included in the YANG Push Lite data model and may be applied against a datastore:
+The following selection filter types are included in the YANG Push v2 data model and may be applied against a datastore:
 
 - *YPaths*: A list of basic YANG path selection filters that defines a path to a subtree of data nodes in the data tree, with some simple constraints on keys. See {{YPaths}}.
 
@@ -402,7 +402,7 @@ Some examples of YPaths:
 
 The "filters" container maintains a list of all datastore subscription filters that persist outside the lifecycle of a single subscription.  This enables predefined filters that may be referenced by more than one configured or dynamic subscription.
 
-Below is a tree diagram for the "filters" container.  All objects contained in this tree are described in the YANG module in {{ietf-yp-lite-yang}}.
+Below is a tree diagram for the "filters" container.  All objects contained in this tree are described in the YANG module in {{ietf-yang-push-2-yang}}.
 
 ~~~~ yangtree
 {::include generated-tree-output/filters.txt}
@@ -411,7 +411,7 @@ Below is a tree diagram for the "filters" container.  All objects contained in t
 
 ## Decomposing Subscription Filters
 
-In order to address the issues described in {{OperationalModellingComplexities}}, YANG Push Lite allows for publishers to send subtrees of data nodes in separate *update* notifications, rather than requiring that the subscription data be returned as a single datastore *update* notification covering all data nodes matched by the subscription filter.  This better facilitates publishers that internally group some of their operational data fields together into larger structures for efficiency, and avoids publishers or receivers having to consume potentially very large notification messages.  For example, each entry in the */ietf-interfaces:interface/interface* list could be represented as an object of data internally within the publisher.  In essence, a client specified subscription filter can be decomposed by a publisher into more specific non-overlapping filters that are then used to return the data.
+In order to address the issues described in {{OperationalModellingComplexities}}, YANG Push v2 allows for publishers to send subtrees of data nodes in separate *update* notifications, rather than requiring that the subscription data be returned as a single datastore *update* notification covering all data nodes matched by the subscription filter.  This better facilitates publishers that internally group some of their operational data fields together into larger structures for efficiency, and avoids publishers or receivers having to consume potentially very large notification messages.  For example, each entry in the */ietf-interfaces:interface/interface* list could be represented as an object of data internally within the publisher.  In essence, a client specified subscription filter can be decomposed by a publisher into more specific non-overlapping filters that are then used to return the data.
 
 In particular:
 
@@ -431,7 +431,7 @@ To ensure that clients can reasonably process data returned via decomposed filte
 
 # Datastore Event Streams {#events}
 
-In YANG Push Lite, a subscription, based on the selected filters, will generate a ordered stream of datastore *update* records that is referred to as an event stream.  Each subscription logically has a different event stream of update records, even if multiple subscriptions use the same filters to select datastore nodes.
+In YANG Push v2, a subscription, based on the selected filters, will generate a ordered stream of datastore *update* records that is referred to as an event stream.  Each subscription logically has a different event stream of update records, even if multiple subscriptions use the same filters to select datastore nodes.
 
 As YANG-defined event records are created by a system, they may be assigned to one or more streams.  The event record is distributed to a subscription's receiver(s) where (1) a subscription includes the identified stream and (2) subscription filtering does not exclude the event record from that receiver.
 
@@ -465,7 +465,7 @@ The schema for this notifications is given in the following tree diagram:
 ~~~~
 {: align="left" title="'update' notification"}
 
-The normative definitions for the notifications fields are given in the YANG module in {{ietf-yp-lite-yang}}.  The fields can be informatively summarized as:
+The normative definitions for the notifications fields are given in the YANG module in {{ietf-yang-push-2-yang}}.  The fields can be informatively summarized as:
 
 - *id* - identifies the subscription the notification relates to.
 
@@ -497,7 +497,7 @@ The schema for the update-trigger container is given in the following tree diagr
 ~~~~
 {: align="left" title="'update-trigger' container"}
 
-The normative definitions for the update-trigger fields are given in the *ietf-yp-lite* YANG module in {{ietf-yp-lite-yang}}.  They are also described in the following sections.
+The normative definitions for the update-trigger fields are given in the *ietf-yang-push-2* YANG module in {{ietf-yang-push-2-yang}}.  They are also described in the following sections.
 
 ## Periodic events
 
@@ -552,7 +552,7 @@ On-change subscriptions allow receivers to receive updates whenever changes to t
 
 On-change subscriptions tend to be more difficult to implement than periodic subscriptions.  Accordingly, on-change subscriptions may not be supported by all implementations or for every object.
 
-Whether or not to accept or reject on-change subscription requests when the scope of the subscription contains objects for which on-change is not supported is up to the publisher implementation.  A publisher MAY accept an on-change subscription even when the scope of the subscription contains objects for which on-change is not supported.  In that case, updates are sent only for those objects within the scope of the subscription that do support on-change updates, whereas other objects are excluded from update records, even if their values change.  In order for a subscriber to determine whether objects support on-change subscriptions, objects are marked accordingly on a publisher.  Accordingly, when subscribing, it is the responsibility of the subscriber to ensure that it is aware of which objects support on-change and which do not.  For more on how objects are so marked, see Section 3.10. **TODO Is this paragraph and the one below still the right choice for YANG Push Lite?**
+Whether or not to accept or reject on-change subscription requests when the scope of the subscription contains objects for which on-change is not supported is up to the publisher implementation.  A publisher MAY accept an on-change subscription even when the scope of the subscription contains objects for which on-change is not supported.  In that case, updates are sent only for those objects within the scope of the subscription that do support on-change updates, whereas other objects are excluded from update records, even if their values change.  In order for a subscriber to determine whether objects support on-change subscriptions, objects are marked accordingly on a publisher.  Accordingly, when subscribing, it is the responsibility of the subscriber to ensure that it is aware of which objects support on-change and which do not.  For more on how objects are so marked, see Section 3.10. **TODO Is this paragraph and the one below still the right choice for YANG Push v2?**
 
 Alternatively, a publisher MAY decide to simply reject an on-change subscription if the scope of the subscription contains objects for which on-change is not supported.  In the case of a configured subscription, the publisher MAY suspend the subscription.
 
@@ -637,7 +637,7 @@ For configured subscriptions, receivers are configured independently from the su
 
 <!--All subscription notifications, including lifecycle notifications ({{LifecycleNotifications}}).-->
 
-Below is a tree diagram for *datastore-telemetry/receivers* container. All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.
+Below is a tree diagram for *datastore-telemetry/receivers* container. All objects contained in this tree are described in the YANG module in {{yang-push-2-yang-module}}.
 
 These parameters identify how to connect to each receiver.  For each subscription, the publisher uses the referenced receiver configuration to establish transport connectivity to the receiver.
 
@@ -666,9 +666,9 @@ Each configured receiver has the following associated properties:
 
   If none of the above parameters are set, the publisher MAY choose which interface(s) and address(es) to source subscription notifications from.
 
-This specification is transport independent, e.g., see {{transports}}, and thus the YANG module defined in {{yp-lite-yang-module}} cannot directly define and expose these transport parameters.  Instead, receiver-specific transport connectivity parameters MUST be configured via transport-specific augmentations to the YANG choice node */datastore-telemetry/receivers/receiver/transport-type*.
+This specification is transport independent, e.g., see {{transports}}, and thus the YANG module defined in {{yang-push-2-yang-module}} cannot directly define and expose these transport parameters.  Instead, receiver-specific transport connectivity parameters MUST be configured via transport-specific augmentations to the YANG choice node */datastore-telemetry/receivers/receiver/transport-type*.
 
-A publisher supporting configured subscriptions clearly must support at least one YANG data model that augments transport connectivity parameters onto */datastore-telemetry/receivers/receiver/transport-type*.  For an example of a similar such augmentation (but for YANG Push), see {{I-D.draft-ietf-netconf-udp-notif}}. **TODO, this reference and text will need to be updated to a UDP-notif bis document, that augments the new YANG Push Lite receiver path.**
+A publisher supporting configured subscriptions clearly must support at least one YANG data model that augments transport connectivity parameters onto */datastore-telemetry/receivers/receiver/transport-type*.  For an example of a similar such augmentation (but for YANG Push), see {{I-D.draft-ietf-netconf-udp-notif}}. **TODO, this reference and text will need to be updated to a UDP-notif bis document, that augments the new YANG Push v2 receiver path.**
 
 ### Receivers for Dynamic Subscriptions {#DynamicSubscriptionReceivers}
 
@@ -682,7 +682,7 @@ Dynamic subscriptions MUST specify an encoding (see {{Encodings}}) and MAY speci
 
 Each subscription will need to establish a subscription to the specified receiver.  Multiple subscriptions may share one or more transport sessions to the same receiver.
 
-A receiver in YANG Push Lite can be in one of the following states:
+A receiver in YANG Push v2 can be in one of the following states:
 
 - **Configured**: The receiver has been configured on the publisher, but the receiver is not referenced by any valid subscriptions and hence there is no attempt to establish a connection to the receiver.
 
@@ -725,17 +725,17 @@ If the configuration has changed such that there were previously connections to 
 
 ## Transports {#transports}
 
-This document describes a transport-agnostic mechanism for subscribing to YANG datastore telemetry.  Hence, separate specifications are required to define transports that support YANG Push Lite.  The requirements for these transport specifications are documented in the following section:
+This document describes a transport-agnostic mechanism for subscribing to YANG datastore telemetry.  Hence, separate specifications are required to define transports that support YANG Push v2.  The requirements for these transport specifications are documented in the following section:
 
-### Requirements for Yang Push Lite Transport Specifications
+### Requirements for YANG Push v2 Transport Specifications
 
-This section provides requirements for any transport specifications supporting the YANG Push Lite solution presented in this document.
+This section provides requirements for any transport specifications supporting the YANG Push v2 solution presented in this document.
 
 The transport specification MUST provide YANG modules, to be implemented by publishers implementing the YANG Push configuration model in {{config-subs-data-model}}, that:
 
 - augments the *datastore-telemetry/receivers/transport-type* choice statement with a container that both identifies the transport and contains all transport specific parameters.
 
-- augments */sysc:system-capabilities/transport/transport-capabilities/* container with any transport specific capabilities or options (conditional on a YANG *when* statement).  Note, encodings for a given transport are advertised directly via the ietf-yp-lite-capabilities YANG Model {{yp-lite-yang-capabilities-module}}.
+- augments */sysc:system-capabilities/transport/transport-capabilities/* container with any transport specific capabilities or options (conditional on a YANG *when* statement).  Note, encodings for a given transport are advertised directly via the ietf-yang-push-2-capabilities YANG Model {{yang-push-2-yang-capabilities-module}}.
 
 Using a secure transport is RECOMMENDED.  Thus, any transport specification MUST provide a mechanism to ensure secure communication between the publisher and receiver in a hostile environment, e.g., through the use of transport layer encryption.  Transport specifications MAY also specify a mechanism for unencrypted communications, which can be used when transport layer security is not required, e.g., if the transport session is being secured via another mechanism, or when operating within a controlled environment or test lab.
 
@@ -747,7 +747,7 @@ The transport specification MUST specifying how multiple subscriptions referenci
 
 A specification for a transport built upon this document can choose whether to use the same logical channel for the RPCs and the event records.  However, the *update* records and the subscription state change notifications MUST be sent on the same transport session.
 
-The transport specification MAY specify a keepalive mechanism to keep the transport session alive.  There is no YANG Push Lite protocol or application level keepalive mechanism.
+The transport specification MAY specify a keepalive mechanism to keep the transport session alive.  There is no YANG Push v2 protocol or application level keepalive mechanism.
 
 **TODO, do we need to mention anything about transport session timeouts, e.g., which would cause a subscription to be terminated.  What about buffering?  Is that a transport consideration?**
 
@@ -755,7 +755,7 @@ Additional transport requirements may be dictated by the choice of transport use
 
 #### DSCP Marking {#DSCP}
 
-YANG Push Lite supports *dscp* marking to differentiate prioritization of notification messages during network transit.
+YANG Push v2 supports *dscp* marking to differentiate prioritization of notification messages during network transit.
 
 A receiver with a *dscp* leaf results in a corresponding Differentiated Services Code Point (DSCP) marking {{RFC2474}}} being placed in the IP header of any resulting *update* notification messages and subscription state change notifications.  A publisher MUST respect the DSCP markings for subscription traffic egressing that publisher.
 
@@ -773,7 +773,7 @@ Some IETF standards for YANG encodings known at the time of publication are:
 
 To maximize interoperability, all implementations are RECOMMENDED to support both JSON and CBOR encodings (using regular YANG identifiers).  Constrained platforms may not be able to support JSON and hence may choose to only support CBOR encoding.  JSON encoding may not be supported in the scenario that another encoding becomes the defacto standard (e.g., as JSON has largely replaced XML as the defacto choice for text based encoding).  Support for the XML encoding and/or CBOR encoding using YANG SIDs is OPTIONAL.
 
-Encodings are defined in the *ietf-yp-lite.yang* as YANG identities that derive from the *encoding* base identity.  Additional encodings can be defined by defining and implementing new identities that derive from the *encoding* base identity, and also advertising those identities as part of the ietf-yp-lite-capabilities YANG module's transport capabilities {{yp-lite-yang-capabilities-module}}.
+Encodings are defined in the *ietf-yang-push-2.yang* as YANG identities that derive from the *encoding* base identity.  Additional encodings can be defined by defining and implementing new identities that derive from the *encoding* base identity, and also advertising those identities as part of the ietf-yang-push-2-capabilities YANG module's transport capabilities {{yang-push-2-yang-capabilities-module}}.
 
 # Setting up and Managing Subscriptions {#ConfiguredAndDynamic}
 
@@ -815,7 +815,7 @@ A publisher MAY terminate a dynamic subscription at any time. Similarly, it MAY 
 
 ### Subscription States
 
-YANG Push Lite has a small set of simple states for a subscription on a publisher.  These states are intended to help clients easily determine the health and status of a subscription.
+YANG Push v2 has a small set of simple states for a subscription on a publisher.  These states are intended to help clients easily determine the health and status of a subscription.
 
 - **Invalid**: a subscription that is invalid for any reason.  E.g., the subscription references an invalid filter expression for the current device schema.  Normally, invalid configurations should be rejected by the system, whether due to subscription configuration or *establish-subscription* RPC, and hence this state should rarely be seen.
 
@@ -962,7 +962,7 @@ The *subscription-started* notification is sent for any of these reasons:
 1. A configured subscription previously failed, and was terminated.  After the publisher has successfully re-established a connection to the receiver and is ready to send datastore event records again.
 
 
-Below is the tree diagram for the *subscription-started* notification.  All data nodes contained in this tree diagram are described in the YANG module in {{yp-lite-yang-module}}.
+Below is the tree diagram for the *subscription-started* notification.  All data nodes contained in this tree diagram are described in the YANG module in {{yang-push-2-yang-module}}.
 
 ~~~~ yangtree
 {::include generated-tree-output/subscription-started.txt}
@@ -975,7 +975,7 @@ The *subscription-modified* notification is sent to a receiver to indicate that 
 
 Below is the tree diagram for the *subscription-modified* notification.  Other than the notification name, the parameters for a *subscription-modified* notification are the same as for the *subscription-started* notification. **TODO should reason also be in subscription-started?**.  Robust receivers are expected to handle *subscription-started* and *subscription-modified* notifications equivalently.
 
-All data nodes contained in this tree diagram are described in the YANG module in {{yp-lite-yang-module}}.
+All data nodes contained in this tree diagram are described in the YANG module in {{yang-push-2-yang-module}}.
 
 ~~~~ yangtree
 {::include generated-tree-output/subscription-modified.txt}
@@ -1000,7 +1000,7 @@ The subscription terminated notification may be sent to a receiver for any of th
 
     - Any transport level buffer to the receiver has become full, and the hence the publisher is dropping *update* notifications.
 
-Below is a tree diagram for "subscription-terminated".  All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.
+Below is a tree diagram for "subscription-terminated".  All objects contained in this tree are described in the YANG module in {{yang-push-2-yang-module}}.
 
 ~~~~ yangtree
 {::include generated-tree-output/subscription-terminated.txt}
@@ -1030,7 +1030,7 @@ Below is a tree diagram for *update-complete*.  All objects contained in this tr
 
 Configured subscriptions allow the management of subscriptions via configuration so that a publisher can send notification messages to a receiver.
 
-This document specifies the ietf-yp-lite-config YANG module {{yp-lite-config-yang-module}} that defines an configuration model for configuring subscriptions.  Support for this YANG module is OPTIONAL and is advertised using the normal YANG mechanisms, e.g., {{RFC8525}}. **TODO, do we also advertise support via capabilities, i.e., [issue 16](https://github.com/rgwilton/draft-yp-observability/issues/16)**
+This document specifies the ietf-yang-push-2-config YANG module {{yang-push-2-config-yang-module}} that defines an configuration model for configuring subscriptions.  Support for this YANG module is OPTIONAL and is advertised using the normal YANG mechanisms, e.g., {{RFC8525}}. **TODO, do we also advertise support via capabilities, i.e., [issue 16](https://github.com/rgwilton/draft-yp-observability/issues/16)**
 
 In addition to the common subscription parameters described in {{CommonSubscriptionParameters}}, a configured subscription also includes:
 
@@ -1082,7 +1082,7 @@ The reset action on a receiver is handled equivalently to removing and re-adding
 
 Dynamic subscriptions are where a subscriber initiates a subscription negotiation with a publisher via a YANG RPC {{RFC7950}}.
 
-Support for dynamic subscriptions is OPTIONAL, with its availability advertised via the *dynamic* YANG feature in the ietf-yp-lite YANG module {{yp-lite-yang-module}}, and also via the capabilities module {{yp-lite-yang-capabilities-module}}.
+Support for dynamic subscriptions is OPTIONAL, with its availability advertised via the *dynamic* YANG feature in the ietf-yang-push-2 YANG module {{yang-push-2-yang-module}}, and also via the capabilities module {{yang-push-2-yang-capabilities-module}}.
 
 Dynamic subscription differ from configured subscription in the following ways:
 
@@ -1146,7 +1146,7 @@ The *establish-subscription* RPC allows a subscriber to request the creation of 
 
 In addition to the common subscription parameters described in {{CommonSubscriptionParameters}}, the *establish-subscription* YANG RPC:
 
-- includes the *encoding* to be used for all YANG push lite notifications
+- includes the *encoding* to be used for all YANG Push v2 notifications
 
 - optionally includes DSCP settings to use for the transport.
 
@@ -1158,7 +1158,7 @@ If the publisher can satisfy the *establish-subscription* request, it replies wi
 
 A dynamic subscription request MUST be declined if a publisher determines that it may be unable to provide update records meeting the terms of an *establish-subscription* RPC request.
 
-Below is a tree diagram for *establish-subscription* YANG RPC.  All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.
+Below is a tree diagram for *establish-subscription* YANG RPC.  All objects contained in this tree are described in the YANG module in {{yang-push-2-yang-module}}.
 
 ~~~~ yangtree
 {::include generated-tree-output/establish-subscription.txt}
@@ -1170,7 +1170,7 @@ A publisher MAY reject the "establish-subscription" RPC for many reasons, as des
 <!--
 TODO - Decide the simplest mechanism for returning RPC errors.
 
-Below is a tree diagram for "establish-subscription-stream-error-info" RPC yang-data.  All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.
+Below is a tree diagram for "establish-subscription-stream-error-info" RPC yang-data.  All objects contained in this tree are described in the YANG module in {{yang-push-2-yang-module}}.
 
 ~~~~
     yang-data establish-subscription-stream-error-info
@@ -1192,7 +1192,7 @@ If the modification to the subscription is accepted by the publisher then it is 
 
 The publisher MUST reply to the *modify-subscription* RPC before sending any subscription lifecycle notifications, i.e., a pair of *subscription-terminated*/*subscription-started* notifications, or a*subscription-modified* notification.
 
-Below is a tree diagram for the *modify-subscription* YANG RPC.  All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.
+Below is a tree diagram for the *modify-subscription* YANG RPC.  All objects contained in this tree are described in the YANG module in {{yang-push-2-yang-module}}.
 
 ~~~~ yangtree
 {::include generated-tree-output/modify-subscription.txt}
@@ -1215,7 +1215,7 @@ The publisher responds to the request in the following way:
 
 - Otherwise, the request is failed with an "unknown subscription" error message.
 
-Below is the tree diagram for the *delete-subscription* RPC.  All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.
+Below is the tree diagram for the *delete-subscription* RPC.  All objects contained in this tree are described in the YANG module in {{yang-push-2-yang-module}}.
 
 ~~~~ yangtree
 {::include generated-tree-output/delete-subscription.txt}
@@ -1228,7 +1228,7 @@ The *kill-subscription* RPC operation permits a client, that has the required ac
 
 The publisher MAY reply back to the client before the subscription has been terminated, i.e., it may act asynchronously with respect to the delete request, however, the publisher MUST allow the client to create a new subscription using the same name immediately after the *subscription-terminated* notification ({{SubscriptionTerminatedNotification}}) has been transmitted.
 
-Below is the tree diagram for the *kill-subscription* RPC.  All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.
+Below is the tree diagram for the *kill-subscription* RPC.  All objects contained in this tree are described in the YANG module in {{yang-push-2-yang-module}}.
 
 ~~~~ yangtree
 {::include generated-tree-output/kill-subscription.txt}
@@ -1298,7 +1298,7 @@ transport-layer RPC structures.  These structures are:
 
 ## Robustness and Reliability
 
-It is important for clients to have confidence that the telemetry data that they receive is correct and complete.  The design of YANG Push Lite achieves this in several ways:
+It is important for clients to have confidence that the telemetry data that they receive is correct and complete.  The design of YANG Push v2 achieves this in several ways:
 
 - the *complete* flag in *update* notification, or the equivalent *update-complete* notification, are used to signal when all data for a periodic collection event has been enqueued.  This allows clients to delete stale information and monitor the performance and behavior of the publisher.
 
@@ -1351,7 +1351,7 @@ Each subscription in the operational state datastore is represented as a list el
 To understand the flow of event records in a subscription, there are two counters available for each receiver.  The first counter is "sent-event-records", which shows the number of events identified for sending to a receiver.  The second counter is "excluded-event-records", which shows the number of event records not sent to a receiver.  "excluded-event-records" shows the combined results of both access control and per-subscription filtering.  For configured subscriptions, counters are reset whenever the subscription's state is evaluated as "valid" (see (1) in Figure 8).
 
 // Taken from another section.
-In addition, the YANG Push Lite operational data gives an indication of the overall telemetry load on the device and hence gives an indication to whether a particular telemetry request is likely to be accepted, and honored.
+In addition, the YANG Push v2 operational data gives an indication of the overall telemetry load on the device and hence gives an indication to whether a particular telemetry request is likely to be accepted, and honored.
 -->
 
 
@@ -1363,17 +1363,17 @@ Whether or not a subscription can be supported will be determined by a combinati
 
 # Conformance and Capabilities {#ConformanceAndCapabilities}
 
-The normative text in this document already indicates which parts of the specification must or should be implemented for a compliant YANG Push Lite implementation via the use of {{RFC2119}} language.  It also sets out some additional related requirements, e.g., on transports {{transports}}, that add in additional functionality.
+The normative text in this document already indicates which parts of the specification must or should be implemented for a compliant YANG Push v2 implementation via the use of {{RFC2119}} language.  It also sets out some additional related requirements, e.g., on transports {{transports}}, that add in additional functionality.
 
 Some parts of this specification are optional to implement.  Some of these optional parts can be identified through the use of YANG Library {{RFC8525}} specifying the list of implemented YANG modules and YANG features.  But, the broader approach adopted by this specification is via extending the ietf-system-capabilities YANG module specified in {{RFC9196}} to make capability information available as standard YANG described operational data.
 
 ## Capabilities
 
-Publishers SHOULD implement the ietf-system-capabilities YANG module, defined in {{RFC9196}}, and the ietf-yp-lite-capabilities YANG module, defined in {{yp-lite-yang-capabilities-module}}) that augments ietf-system-capabilities.
+Publishers SHOULD implement the ietf-system-capabilities YANG module, defined in {{RFC9196}}, and the ietf-yang-push-2-capabilities YANG module, defined in {{yang-push-2-yang-capabilities-module}}) that augments ietf-system-capabilities.
 
-The ietf-yp-lite-capabilities module contains capabilities to indicate what types of subscriptions and transports may be configured, along with acceptable subscription parameter for given subtrees.
+The ietf-yang-push-2-capabilities module contains capabilities to indicate what types of subscriptions and transports may be configured, along with acceptable subscription parameter for given subtrees.
 
-The schema tree for the ietf-system-capabilities augmented by ietf-yp-lite-capabilities is given below.
+The schema tree for the ietf-system-capabilities augmented by ietf-yang-push-2-capabilities is given below.
 
 ~~~~ yangtree
 {::include generated-tree-output/ietf-system-capabilities-tree.txt}
@@ -1392,21 +1392,21 @@ The set of modules, revisions, features, and deviations can change at runtime (i
 
 **TODO, this section should be updated so that a subscription is restarted if the schema that it is using changes, and to incorporate ideas to fingerprint the subscription schema in the subscription-started notification.**
 
-# Core YANG Push Lite YANG Data Model {#ietf-yp-lite-yang}
+# Core YANG Push v2 YANG Data Model {#ietf-yang-push-2-yang}
 
-## ietf-yp-lite YANG tree {#yp-lite-tree}
+## ietf-yang-push-2 YANG tree {#yang-push-2-tree}
 
-This section shows the full tree output for ietf-yp-lite YANG module.
+This section shows the full tree output for ietf-yang-push-2 YANG module.
 
 Note, this output does not include support for any transport configuration, and for any implementation that supports configured subscriptions using this YANG module then at least one transport would expect to be configurable.
 
 ~~~~ yangtree
-{::include generated-tree-output/ietf-yp-lite-tree.txt}
+{::include generated-tree-output/ietf-yang-push-2-tree.txt}
 ~~~~
-{: align="left" title="YANG tree for YANG Push Lite Module Tree Output "}
+{: align="left" title="YANG tree for YANG Push v2 Module Tree Output "}
 
 
-## ietf-yp-lite YANG Model {#yp-lite-yang-module}
+## ietf-yang-push-2 YANG Model {#yang-push-2-yang-module}
 
 This module imports typedefs from {{RFC6991}}, {{RFC8343}}, {{RFC8341}}, {{RFC8529}}, and {{RFC8342}}.  It references {{RFC6241}}, {{XPATH}} ("XML Path Language (XPath) Version 1.0"), {{RFC7049}}, {{RFC8259}}, {{RFC7950}}, {{RFC7951}}, and {{RFC7540}}.
 
@@ -1414,68 +1414,68 @@ This YANG module imports typedefs from {{RFC6991}}, identities from
 [RFC8342], and the "sx:structure" extension from {{RFC8791}}. It also references {{RFC6241}}, {{XPATH}}, and {{RFC7950}}.
 
 ~~~~ yang
-{::include yang/ietf-yp-lite.yang}
+{::include yang/ietf-yang-push-2.yang}
 ~~~~
 {: align="left" sourcecode-markers="true"
-sourcecode-name="ietf-yp-lite.yang#0.1.0" title="YANG module ietf-yp-lite"}
+sourcecode-name="ietf-yang-push-2.yang#0.1.0" title="YANG module ietf-yang-push-2"}
 
 # Configured Subscription YANG Data Model {#config-subs-data-model}
 
-This document specifies the ietf-yp-lite-config YANG module {{yp-lite-config-yang-module}} that defines an NMDA {{RFC8342}} compatible YANG data model for configuring subscriptions.  Support for this YANG module is OPTIONAL and is advertised using the normal mechanisms, e.g., {{RFC8525}}.
+This document specifies the ietf-yang-push-2-config YANG module {{yang-push-2-config-yang-module}} that defines an NMDA {{RFC8342}} compatible YANG data model for configuring subscriptions.  Support for this YANG module is OPTIONAL and is advertised using the normal mechanisms, e.g., {{RFC8525}}.
 
-Below is a tree diagram for the "subscriptions" container.  All objects contained in this tree are described in the YANG module in {{yp-lite-yang-module}}.  In the operational datastore {{RFC8342}}, the "subscription" list contains entries both for configured and dynamic subscriptions.
+Below is a tree diagram for the "subscriptions" container.  All objects contained in this tree are described in the YANG module in {{yang-push-2-yang-module}}.  In the operational datastore {{RFC8342}}, the "subscription" list contains entries both for configured and dynamic subscriptions.
 
 ~~~~ yangtree
 {::include generated-tree-output/subscriptions.txt}
 ~~~~
 {: title="subscriptions container Tree Diagram" #SubscriptionYangTree }
 
-An overview of the behavior for configured subscriptions is specified in {{configured-subscriptions}}, with further details specified in the ietf-yp-lite-config YANG module.
+An overview of the behavior for configured subscriptions is specified in {{configured-subscriptions}}, with further details specified in the ietf-yang-push-2-config YANG module.
 
-## ietf-yp-lite-config YANG tree {#yp-lite-config-tree}
+## ietf-yang-push-2-config YANG tree {#yang-push-2-config-tree}
 
-This section shows the full tree output for ietf-yp-lite-config YANG module.
+This section shows the full tree output for ietf-yang-push-2-config YANG module.
 
 Note, this output does not include support for any transport configuration, and for any implementation that supports configured subscriptions using this YANG module then at least one transport would expect to be configurable.
 
 ~~~~ yangtree
-{::include generated-tree-output/ietf-yp-lite-config-tree.txt}
+{::include generated-tree-output/ietf-yang-push-2-config-tree.txt}
 ~~~~
-{: align="left" title="YANG tree for YANG Push Lite Config Module Tree Output "}
+{: align="left" title="YANG tree for YANG Push v2 Config Module Tree Output "}
 
-## ietf-yp-lite-config YANG Model {#yp-lite-config-yang-module}
+## ietf-yang-push-2-config YANG Model {#yang-push-2-config-yang-module}
 
 This module has import dependencies on {{RFC6991}}, {{RFC8343}}, and {{RFC8529}}, and ietf-yang-push-lite.yang (this RFC).  In addition, this YANG module references {{BCP14}} ({{RFC2119}} {{RFC8174}}), and {{RFC8529}}.
 
 ~~~~ yang
-{::include yang/ietf-yp-lite-config.yang}
+{::include yang/ietf-yang-push-2-config.yang}
 ~~~~
 {: align="left" sourcecode-markers="true"
-sourcecode-name="ietf-yp-lite-config.yang#0.1.0" title="YANG module ietf-yp-lite-config"}
+sourcecode-name="ietf-yang-push-2-config.yang#0.1.0" title="YANG module ietf-yang-push-2-config"}
 
 
 # Capabilities YANG Data Model
 
-## ietf-yp-lite-capabilities YANG tree {#yp-lite-capabilities-tree}
+## ietf-yang-push-2-capabilities YANG tree {#yang-push-2-capabilities-tree}
 
-This section shows the tree output for ietf-yp-lite-capabilities YANG module, which augments the ietf-system-capabilities YANG module {{RFC9196}}.
+This section shows the tree output for ietf-yang-push-2-capabilities YANG module, which augments the ietf-system-capabilities YANG module {{RFC9196}}.
 
 ~~~~ yangtree
-{::include generated-tree-output/ietf-yp-lite-capabilities-tree.txt}
+{::include generated-tree-output/ietf-yang-push-2-capabilities-tree.txt}
 ~~~~
-{: align="left" title="YANG tree for YANG Push Lite Capabilities Module Tree Output "}
+{: align="left" title="YANG tree for YANG Push v2 Capabilities Module Tree Output "}
 
-## ietf-yp-lite-capabilities YANG Model {#yp-lite-yang-capabilities-module}
+## ietf-yang-push-2-capabilities YANG Model {#yang-push-2-yang-capabilities-module}
 
 This module imports typedefs from the yang-push-lite YANG module.
 
 This module augments the ietf-system-capabilities YANG module {{RFC9196}}.
 
 ~~~~ yang
-{::include yang/ietf-yp-lite-capabilities.yang}
+{::include yang/ietf-yang-push-2-capabilities.yang}
 ~~~~
 {: align="left" sourcecode-markers="true"
-sourcecode-name="ietf-yp-lite-capabilities.yang#0.1.0" title="YANG module ietf-yp-lite-capabilities"}
+sourcecode-name="ietf-yang-push-2-capabilities.yang#0.1.0" title="YANG module ietf-yang-push-2-capabilities"}
 
 # Security Considerations {#security}
 
@@ -1487,7 +1487,7 @@ For dynamic subscriptions, implementations need to protect against malicious or 
 
 Using DNS names for configured subscription's receiver "name" lookups can cause situations where the name resolves differently than expected on the publisher, so the recipient would be different than expected.
 
-## Use of YANG Push Lite with NACM
+## Use of YANG Push v2 with NACM
 
 **TODO, do we even need this section?**
 
@@ -1529,7 +1529,7 @@ If read access into previously accessible nodes has been lost due to a receiver 
 
 This section is modeled after the template described in Section 3.7.1 of {{I-D.draft-ietf-netmod-rfc8407bis}}.
 
-The "ietf-yp-lite" YANG module defines a data model that is designed to be accessed via YANG-based management protocols, such as NETCONF {{RFC6241}} and RESTCONF {{RFC8040}}. These protocols have to use a secure transport layer (e.g., SSH {{RFC4252}}, TLS {{RFC8446}}, and QUIC {{RFC9000}}) and have to use mutual authentication.
+The "ietf-yang-push-2" YANG module defines a data model that is designed to be accessed via YANG-based management protocols, such as NETCONF {{RFC6241}} and RESTCONF {{RFC8040}}. These protocols have to use a secure transport layer (e.g., SSH {{RFC4252}}, TLS {{RFC8446}}, and QUIC {{RFC9000}}) and have to use mutual authentication.
 
 The Network Configuration Access Control Model (NACM) {{RFC8341}} provides the means to restrict access for particular NETCONF or RESTCONF users to a pre-configured subset of all available NETCONF or RESTCONF protocol operations and content.
 
@@ -1552,9 +1552,9 @@ Some of the RPC or action operations in this YANG module may be considered sensi
 This document registers the following namespace URI in the "IETF XML Registry" {{RFC3688}}:
 
 | URI |
-| urn:ietf:params:xml:ns:yang:ietf-yp-lite |
-| urn:ietf:params:xml:ns:yang:ietf-yp-lite-config |
-| urn:ietf:params:xml:ns:yang:ietf-yp-lite-capabilities |
+| urn:ietf:params:xml:ns:yang:ietf-yang-push-2 |
+| urn:ietf:params:xml:ns:yang:ietf-yang-push-2-config |
+| urn:ietf:params:xml:ns:yang:ietf-yang-push-2-capabilities |
 {: title="Namespace URI registrations"}
 
 For all registrations:
@@ -1567,9 +1567,9 @@ For all registrations:
 This document registers the following YANG modules in the "YANG Module Names" registry {{RFC6020}}:
 
 | Name | Namespace | Prefix |
-| ietf-yp-lite | urn:ietf:params:xml:ns:yang:ietf-yp-lite | ypl |
-| ietf-yp-lite-config | urn:ietf:params:xml:ns:yang:ietf-yp-lite-config | yplco |
-| ietf-yp-lite-capabilities | urn:ietf:params:xml:ns:yang:ietf-yp-lite-capabilities | yplca |
+| ietf-yang-push-2 | urn:ietf:params:xml:ns:yang:ietf-yang-push-2 | ypl |
+| ietf-yang-push-2-config | urn:ietf:params:xml:ns:yang:ietf-yang-push-2-config | yplco |
+| ietf-yang-push-2-capabilities | urn:ietf:params:xml:ns:yang:ietf-yang-push-2-capabilities | yplca |
 {: title="YANG Module Name Registrations"}
 
 For all registration the reference is "RFC XXXX".
@@ -1588,15 +1588,15 @@ The following individuals have actively contributed to this draft and the YANG P
 
 --- back
 
-# Functional changes between YANG Push Lite and YANG Push {#DifferencesFromYangPush}
+# Functional changes between YANG Push v2 and YANG Push {#DifferencesFromYangPush}
 
-This non-normative section highlights the significant functional changes where the YANG Push Lite implementation differs from YANG Push.  However, the main body of this document, from {{overview}} onwards, provides the normative definition of the YANG Push Lite specification, except for any text or sections that explicitly indicate that they are informative rather being normative.
+This non-normative section highlights the significant functional changes where the YANG Push v2 implementation differs from YANG Push.  However, the main body of this document, from {{overview}} onwards, provides the normative definition of the YANG Push v2 specification, except for any text or sections that explicitly indicate that they are informative rather being normative.
 
 *Note to reviewers: If you notice mistakes in this section during development of the document and solution then please point them out to the authors and the working group.* **(RFC editor, please remove this paragraph prior to publication)**
 
 ## Removed Functionality
 
-This section lists functionality specified in {{RFC8639}} and YANG Push which is not specified in YANG Push Lite.
+This section lists functionality specified in {{RFC8639}} and YANG Push which is not specified in YANG Push v2.
 
 - Negotiation and hints of failed subscriptions.
 
@@ -1620,11 +1620,11 @@ This section lists functionality specified in {{RFC8639}} and YANG Push which is
 
 ## Changed Functionality
 
-This section documents behavior that exists in both YANG Push and YANG Push Lite, but the behavior differs between the two:
+This section documents behavior that exists in both YANG Push and YANG Push v2, but the behavior differs between the two:
 
-- All YANG Push Lite notifications messages use {{I-D.draft-ietf-netconf-notif-envelope}} rather than {{RFC5277}} used by YANG Push {{RFC8641}}.
+- All YANG Push v2 notifications messages use {{I-D.draft-ietf-netconf-notif-envelope}} rather than {{RFC5277}} used by YANG Push {{RFC8641}}.
 
-- There is a lot more alignment in data model, behavior, and state machined in YANG Push Lite, aiming to minimize differences.
+- There is a lot more alignment in data model, behavior, and state machined in YANG Push v2, aiming to minimize differences.
 
 - Changes to handling receivers:
 
@@ -1648,9 +1648,9 @@ This section documents behavior that exists in both YANG Push and YANG Push Lite
 
   - Client configurable on-change dampening has been removed.
 
-  - However, YANG Push Lite allows a publisher to limit the rate at which a data node is sampled for on-change notifications.  See {{OnChangeConsiderations}} for further details.
+  - However, YANG Push v2 allows a publisher to limit the rate at which a data node is sampled for on-change notifications.  See {{OnChangeConsiderations}} for further details.
 
-- Dynamic subscriptions are no longer mandatory to implement, either or both of Configured and Dynamic Subscriptions may be implemented in YANG Push Lite.
+- Dynamic subscriptions are no longer mandatory to implement, either or both of Configured and Dynamic Subscriptions may be implemented in YANG Push v2.
 
 - The solution focuses solely on datastore subscriptions that each have their own event stream.  Filters cannot be applied to the event stream, only to the set of datastore data nodes that are monitored by the subscription.
 
@@ -1662,7 +1662,7 @@ This section documents behavior that exists in both YANG Push and YANG Push Lite
 
 - The encoding identities have been extended with CBOR encodings, and the "encoding-" prefix has been removed (so that there is a better on the wire representation).
 
-- YANG Push Lite allows for a publisher to provide an eventually consistent distributed view of the operational datastore, rather than a fully consistent datastore where on-change updates are sent as logic diffs to that datastore.
+- YANG Push v2 allows for a publisher to provide an eventually consistent distributed view of the operational datastore, rather than a fully consistent datastore where on-change updates are sent as logic diffs to that datastore.
 
 ## Added Functionality
 
@@ -1680,7 +1680,7 @@ This section documents behavior that exists in both YANG Push and YANG Push Lite
 
 - TODO - More operational data on the subscription load and performance.
 
-- All YANG Push Lite configuration is under a new *datastore-telemetry* presence container
+- All YANG Push v2 configuration is under a new *datastore-telemetry* presence container
 
 # Subscription Errors (from RFC 8641)
 
@@ -1849,7 +1849,7 @@ If the subscription is for on-change notifications, or periodic-and-on-change-no
   }
 }
 ~~~~
-{: align="left" sourcecode-markers="true" sourcecode-name="on-change-msg.json" title="Example YANG Push Lite on-change update message"}
+{: align="left" sourcecode-markers="true" sourcecode-name="on-change-msg.json" title="Example YANG Push v2 on-change update message"}
 
 ## Example of an on-change-delete notification using the new style update message
 
@@ -1867,7 +1867,7 @@ Of note:
 ~~~~ JSON
 {::include examples/yang/notifications/on-change-delete.json}
 ~~~~
-{: align="left" sourcecode-name="on-change-delete-msg.json" title="Example YANG Push Lite on-change delete message"}
+{: align="left" sourcecode-name="on-change-delete-msg.json" title="Example YANG Push v2 on-change delete message"}
 
 
 ### Update message with multiple on-change deletes
@@ -1884,12 +1884,12 @@ Of note:
 ~~~~ JSON
 {::include examples/yang/notifications/on-change-multi-delete.json}
 ~~~~
-{: align="left" sourcecode-name="on-change-multi-delete-msg.json" title="Example YANG Push Lite on-change delete message"}
+{: align="left" sourcecode-name="on-change-multi-delete-msg.json" title="Example YANG Push v2 on-change delete message"}
 
 
 ## NETCONF Dynamic Subscription RPC examples
 
-The examples in this section illustrate NETCONF RPCs for establishing and deleting dynamic subscriptions using Yang Push Lite.  The examples include one successfully establishing a subscription, and a second to illustrate how errors are returned if a request to establish the subscription fails.  Examples of the *update* and subscription lifecycle notifications have been given in the previous section.
+The examples in this section illustrate NETCONF RPCs for establishing and deleting dynamic subscriptions using YANG Push v2.  The examples include one successfully establishing a subscription, and a second to illustrate how errors are returned if a request to establish the subscription fails.  Examples of the *update* and subscription lifecycle notifications have been given in the previous section.
 
 ### Successful periodic subscription
 
@@ -2002,7 +2002,7 @@ The issues are ordered/grouped by the sections in the current document.  I.e., t
 1. Should we use the object terminology? Tracked as editorial, in [Issue 15](https://github.com/rgwilton/draft-yp-observability/issues/15)
 
 
-## Issues related to YANG Push Lite Overview
+## Issues related to YANG Push v2 Overview
 
 None currently.
 
@@ -2080,7 +2080,7 @@ None open.
 
 ## Issues related to the Security Considerations (& NACM filtering)
 
-1. Need to consider how NACM applies to YANG Push Lite, which may differ for dynamic vs configured subscription, but generally we want the permissions to be checked when the subscription is created rather than each time a path is accessed.
+1. Need to consider how NACM applies to YANG Push v2, which may differ for dynamic vs configured subscription, but generally we want the permissions to be checked when the subscription is created rather than each time a path is accessed.
 1. Where should this be in the document (current it in the security considerations section)
 
 1. Do we want to retain the the current text in {{events}} introduction related to terminating a subscription if permissions change?

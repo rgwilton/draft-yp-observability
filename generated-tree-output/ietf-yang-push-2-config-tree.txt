@@ -1,0 +1,83 @@
+module: ietf-yang-push-2-config
+  +--rw datastore-telemetry!
+     +--rw filters
+     |  +--rw filter* [name]
+     |     +--rw name             string
+     |     +--rw (filter)
+     |        +--:(path)
+     |        |  +--rw path       ypath
+     |        +--:(subtree)
+     |        |  +--rw subtree    <anydata>
+     |        +--:(xpath)
+     |           +--rw xpath      yang:xpath1.0 {yp2:xpath}?
+     +--rw subscriptions
+     |  +--rw subscription* [name]
+     |     +--rw name
+     |     |       subscription-name
+     |     +--rw update-id?                          subscription-id
+     |     +--rw description?                        string
+     |     +--rw target
+     |     |  +--rw datastore?          identityref
+     |     |  +--rw (filter)
+     |     |     +--:(path)
+     |     |     |  +--rw path          ypath
+     |     |     +--:(subtree)
+     |     |     |  +--rw subtree       <anydata>
+     |     |     +--:(xpath)
+     |     |     |  +--rw xpath         yang:xpath1.0 {yp2:xpath}?
+     |     |     +--:(by-reference)
+     |     |        +--rw filter-ref    filter-ref
+     |     +--rw update-trigger
+     |     |  +--rw periodic!
+     |     |  |  +--rw period         centiseconds
+     |     |  |  +--rw anchor-time?   yang:date-and-time
+     |     |  +--rw on-change! {on-change}?
+     |     |     +--rw sync-on-start?   boolean
+     |     +--rw receiver
+     |     |       -> /datastore-telemetry/receivers/receiver/name
+     |     +--ro status?
+     |     |       yp2:subscription-status
+     |     +--ro encoding?                           yp2:encoding
+     |     +--ro last-sequence-number?
+     |     |       yang:zero-based-counter64
+     |     +--ro last-notification-time?
+     |     |       yang:date-and-time
+     |     +--ro last-periodic-collection-time?
+     |     |       yang:date-and-time
+     |     +--ro last-on-change-notification-time?
+     |     |       yang:date-and-time
+     |     +--ro statistics
+     |     |  +--ro started-notifications?
+     |     |  |       yang:zero-based-counter64
+     |     |  +--ro terminated-notifications?
+     |     |  |       yang:zero-based-counter64
+     |     |  +--ro update-notifications?
+     |     |  |       yang:zero-based-counter64
+     |     |  +--ro periodic-collections?
+     |     |  |       yang:zero-based-counter64
+     |     |  +--ro excluded-events?
+     |     |  |       yang:zero-based-counter64
+     |     |  +--ro receiver-disconnects?
+     |     |          yang:zero-based-counter64
+     |     +---x reset
+     +--rw receivers
+        +--rw receiver* [name]
+           +--rw name                      string
+           +--rw encoding                  yp2:encoding
+           +--rw dscp?                     inet:dscp
+           +---x reset
+           +--rw (notification-message-origin)?
+           |  +--:(interface-originated)
+           |  |  +--rw source-interface?   if:interface-ref
+           |  |          {interface-designation}?
+           |  +--:(address-originated)
+           |     +--rw source-vrf?         leafref {supports-vrf}?
+           |     +--rw source-address?     inet:ip-address-no-zone
+           +--rw (transport-type)
+
+  augment /yp2:establish-subscription/yp2:input/yp2:target
+            /yp2:filter:
+    +--:(by-reference)
+       +-- filter-ref?   filter-ref
+  augment /yp2:subscription-started/yp2:target:
+    +-- filter-ref?   filter-ref

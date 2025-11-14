@@ -8,28 +8,28 @@ module: ietf-system-capabilities
      |     |  +--:(node-selector)
      |     |     +--ro node-selector?
      |     |             nacm:node-instance-identifier
-     |     +--ro yplca:datastore-telemetry
-     |        +--ro yplca:periodic-notifications-supported?
+     |     +--ro yp2ca:datastore-telemetry
+     |        +--ro yp2ca:periodic-notifications-supported?
      |        |       notification-support
-     |        +--ro (yplca:update-period)?
-     |        |  +--:(yplca:minimum-update-period)
-     |        |  |  +--ro yplca:minimum-update-period?        uint32
-     |        |  +--:(yplca:supported-update-period)
-     |        |     +--ro yplca:supported-update-period*      uint32
-     |        +--ro yplca:on-change-supported?
+     |        +--ro (yp2ca:update-period)?
+     |        |  +--:(yp2ca:minimum-update-period)
+     |        |  |  +--ro yp2ca:minimum-update-period?        uint32
+     |        |  +--:(yp2ca:supported-update-period)
+     |        |     +--ro yp2ca:supported-update-period*      uint32
+     |        +--ro yp2ca:on-change-supported?
      |                notification-support
-     +--ro yplca:datastore-telemetry
-        +--ro yplca:periodic-notifications-supported?
+     +--ro yp2ca:datastore-telemetry
+        +--ro yp2ca:periodic-notifications-supported?
         |       notification-support
-        +--ro (yplca:update-period)?
-        |  +--:(yplca:minimum-update-period)
-        |  |  +--ro yplca:minimum-update-period?        uint32
-        |  +--:(yplca:supported-update-period)
-        |     +--ro yplca:supported-update-period*      uint32
-        +--ro yplca:on-change-supported?
+        +--ro (yp2ca:update-period)?
+        |  +--:(yp2ca:minimum-update-period)
+        |  |  +--ro yp2ca:minimum-update-period?        uint32
+        |  +--:(yp2ca:supported-update-period)
+        |     +--ro yp2ca:supported-update-period*      uint32
+        +--ro yp2ca:on-change-supported?
         |       notification-support
-        +--ro yplca:transport
-           +--ro yplca:transport-capability* [transport-protocol]
-              +--ro yplca:transport-protocol    identityref
-              +--ro yplca:security-protocol?    identityref
-              +--ro yplca:encoding-format*      identityref
+        +--ro yp2ca:transport
+           +--ro yp2ca:transport-capability* [transport-protocol]
+              +--ro yp2ca:transport-protocol    identityref
+              +--ro yp2ca:security-protocol?    identityref
+              +--ro yp2ca:encoding-format*      identityref

@@ -10,7 +10,7 @@
     |  |  |  +--:(subtree)
     |  |  |  |  +--ro subtree              <anydata>
     |  |  |  +--:(xpath)
-    |  |  |     +--ro xpath                yang:xpath1.0 {ypl:xpath}?
+    |  |  |     +--ro xpath                yang:xpath1.0 {yp2:xpath}?
     |  |  +--ro schema-id?                 string
     |  |  +--ro yang-library-content-id?
     |  |          -> /yanglib:yang-library/content-id

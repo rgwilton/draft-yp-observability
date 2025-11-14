@@ -1,6 +1,6 @@
 {
-  "ietf-yp-lite:subscription-started": {
-    "id": 1011,
+  "ietf-yang-push-2:subscription-started": {
+    "update-id": 1011,
     "name": "ExampleStatsSubscription",
     "target": {
       "datastore": "ietf-datastores:operational",
@@ -11,7 +11,6 @@
         "period": 3000,
         "anchor-time": "2025-01-01T00:00:00.00Z"
       }
-    },
-    "reason": "new-subscription"
+    }
   }
 }

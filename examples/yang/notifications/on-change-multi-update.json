@@ -1,5 +1,5 @@
 {
-  "ietf-yp-lite:update": {
+  "ietf-yang-push-2:update": {
     "id": 1013,
     "path-prefix": "/ietf-interfaces:interfaces",
     "snapshot-type": "on-change-update",

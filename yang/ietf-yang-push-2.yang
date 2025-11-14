@@ -1,7 +1,7 @@
-module ietf-yp-lite {
+module ietf-yang-push-2 {
   yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-yp-lite";
-  prefix ypl;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-yang-push-2";
+  prefix yp2;
 
   import ietf-inet-types {
     prefix inet;
@@ -43,7 +43,7 @@ module ietf-yp-lite {
      Author:  Robert Wilton
               <mailto:rwilton@cisco.com>";
   description
-    "This module contains YANG specifications for YANG-Push lite,
+    "This module contains YANG specifications for YANG-Push version 2,
      a simplified version of the YANG-Push [RFC 8641] protocol.
 
      The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
@@ -70,7 +70,7 @@ module ietf-yp-lite {
     description
       "Initial revision.";
     reference
-      "XXXX: YANG Push Lite";
+      "XXXX: YANG Datastore Telemetry (YANG Push version 2)";
   }
 
   /*
@@ -452,7 +452,7 @@ module ietf-yp-lite {
            fixed value for list keys.  Each format is TODO";
       }
       anydata subtree {
-        //if-feature "ypl:subtree";
+        //if-feature "yp2:subtree";
         mandatory true;
         description
           "This parameter identifies the portions of the
@@ -462,7 +462,7 @@ module ietf-yp-lite {
                      Section 6";
       }
       leaf xpath {
-        if-feature "ypl:xpath";
+        if-feature "yp2:xpath";
         type yang:xpath1.0;
         mandatory true;
         description
