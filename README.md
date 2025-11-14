@@ -1,13 +1,13 @@
 <!-- regenerate: off (set to off if you edit this file) -->
 
-# YANG Datastore Telemetry (YANG Push Lite)
+# YANG Datastore Telemetry (YANG Push version 2)
 
-This is the working area for the individual Internet-Draft, "YANG Datastore Telemetry (YANG Push Lite)".
+This is the working area for the individual Internet-Draft, "YANG Datastore Telemetry (YANG Push version 2)".
 
-* [Editor's Copy](https://rgwilton.github.io/draft-yp-observability/#go.draft-wilton-netconf-yang-push-lite.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-wilton-netconf-yang-push-lite)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-wilton-netconf-yang-push-lite)
-* [Compare Editor's Copy to Individual Draft](https://rgwilton.github.io/draft-yp-observability/#go.draft-wilton-netconf-yang-push-lite.diff)
+* [Editor's Copy](https://rgwilton.github.io/draft-yp-observability/#go.draft-wilton-netconf-yang-2.html)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-wilton-netconf-yang-push-2)
+* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-wilton-netconf-yang-push-2)
+* [Compare Editor's Copy to Individual Draft](https://rgwilton.github.io/draft-yp-observability/#go.draft-wilton-netconf-yang-2.diff)
 
 This respository uses two separate build systems (and associated build files):
  - *mill* is used to fetch, compile, and check the YANG files.
