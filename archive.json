@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-11T00:20:04.603702+00:00",
+  "timestamp": "2025-11-16T00:21:20.815011+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -670,6 +670,22 @@
       "body": "If the configuration is being changed, then a new subscription-started notification should be sufficient.  We should minimise the cases of when we generate a subscription-terminated notification to when they are needed.",
       "createdAt": "2025-11-05T17:44:53Z",
       "updatedAt": "2025-11-05T17:44:53Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 35,
+      "id": "I_kwDOM-PT7s7X3AFf",
+      "title": "How to handle empty containers in a response",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/35",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Should we mandate that empty containers are removed from the output or leave this as an implementation decision, on the assumption that mandating that they are included makes no sense.  Either way, I think that it would be good for the draft to be explicit on this point - i.e., a known unknown.",
+      "createdAt": "2025-11-13T14:42:25Z",
+      "updatedAt": "2025-11-13T14:42:25Z",
       "closedAt": null,
       "comments": []
     }
