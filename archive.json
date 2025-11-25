@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-16T00:21:20.815011+00:00",
+  "timestamp": "2025-11-25T00:18:46.288864+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -342,10 +342,12 @@
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "for discussion"
+      ],
       "body": "YP used numeric identifiers with a purpose statement.  These are harder to manage (and much less meaningful identifiers for clients, but have the advantage that they are small in notifications.\n\nYP Lite has been changed to primarily use named identifiers (max 64 chars), with purpose renamed to description.\n\nThe current YP Lite design is for:\n- the device to allocate numeric ids when the subscription is instantiated, which are included in the subscription started notification\n- the numeric values are used in update messages (to save space).\n- this requires clients to maintain a mapping between the configured subscription name and the dynamic subscription.\n\nSome design alternatives are:\n1. go back to using numeric identifiers (I really don't like this option)\n1. use the named identifier rather than a numeric identifier in the update messages.  This would be slightly less efficient for small updates, but probably won't make much difference in most messages.\n   1. allow clients to optionally also configure/provide the numeric id, but with the name still being the primary key.  The publisher would allocate the numeric id if the client hadn't provided it. \n   2. allow clients to optionally also configure/provide the numeric id, but with the name still being the primary key.  The messages would use the named identifier unless a numeric id had also been provided, in which case that would be used.  Note, that we don't even need to force the numeric-id to be unique, you could just leave it to the client to manage the namespace of numeric ids.\n\nFor dynamic subscriptions, although thought is that we could allow the RPC to exclude both name and id, and have the device allocate the id, and construct a name like \"dyn-<allocated-id>\"\n\nFinally, should we put any other restrictions on the identifier, e.g., disallow spaces, or restrict it to something like \"a-zA-Z0-9-_\".  I'm thinking that we should probably keep this unrestricted in the spec, leaving it to the implementation, but perhaps saying that all implementations MUST support \"a-zA-Z0-9-_\", but MAY support additional characters.",
       "createdAt": "2025-10-22T10:42:29Z",
-      "updatedAt": "2025-10-22T10:58:21Z",
+      "updatedAt": "2025-11-24T16:50:00Z",
       "closedAt": null,
       "comments": []
     },
@@ -472,12 +474,22 @@
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "for discussion"
+      ],
       "body": "Is it yang-push-2 or yang-push-lite.\n\nRelated:\n- what are the name of the YANG modules? (probably should minor the draft)\n- what is the name of the top level container?",
       "createdAt": "2025-10-22T17:02:02Z",
-      "updatedAt": "2025-10-22T17:02:02Z",
+      "updatedAt": "2025-11-24T16:49:20Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "The latest version to github has been labelled as YANG Push v2.",
+          "createdAt": "2025-11-24T16:49:14Z",
+          "updatedAt": "2025-11-24T16:49:14Z"
+        }
+      ]
     },
     {
       "number": 26,
