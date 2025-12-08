@@ -1,22 +1,23 @@
     +---x establish-subscription {dynamic}?
     |  +---w input
-    |     +---w name?             subscription-name
-    |     +---w update-id?        subscription-id
-    |     +---w description?      string
-    |     +---w target
-    |     |  +---w datastore?       identityref
-    |     |  +---w (filter)
-    |     |     +--:(path)
-    |     |     |  +---w path       ypath
-    |     |     +--:(subtree)
-    |     |     |  +---w subtree    <anydata>
-    |     |     +--:(xpath)
-    |     |        +---w xpath      yang:xpath1.0 {yp2:xpath}?
-    |     +---w update-trigger
-    |     |  +---w periodic!
-    |     |  |  +---w period         centiseconds
-    |     |  |  +---w anchor-time?   yang:date-and-time
-    |     |  +---w on-change! {on-change}?
-    |     |     +---w sync-on-start?   boolean
-    |     +---w encoding          encoding
-    |     +---w dscp?             inet:dscp
+    |  |  +---w id?               subscription-id
+    |  |  +---w description?      string
+    |  |  +---w target
+    |  |  |  +---w datastore?       identityref
+    |  |  |  +---w (filter)
+    |  |  |     +--:(path)
+    |  |  |     |  +---w path       ypath
+    |  |  |     +--:(subtree)
+    |  |  |     |  +---w subtree    <anydata>
+    |  |  |     +--:(xpath)
+    |  |  |        +---w xpath      yang:xpath1.0 {yp2:xpath}?
+    |  |  +---w update-trigger
+    |  |  |  +---w periodic!
+    |  |  |  |  +---w period         centiseconds
+    |  |  |  |  +---w anchor-time?   yang:date-and-time
+    |  |  |  +---w on-change! {on-change}?
+    |  |  |     +---w sync-on-start?   boolean
+    |  |  +---w encoding          encoding
+    |  |  +---w dscp?             inet:dscp
+    |  +--ro output
+    |     +--ro id    subscription-id

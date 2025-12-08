@@ -153,7 +153,7 @@ module ietf-yang-push-2-config {
         RPC primitives as well as subscriptions that have been
         established via configuration.";
       list subscription {
-        key "name";
+        key "id";
         description
           "The identity and specific parameters of a subscription.
           Subscriptions in this list can be created using a control

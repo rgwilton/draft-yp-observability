@@ -1,6 +1,6 @@
 {
   "ietf-yang-push-2:update": {
-    "id": 1013,
+    "id": "interfaces",
     "path-prefix": "/ietf-interfaces:interfaces",
     "snapshot-type": "on-change-delete",
     "observation-time": "2025-10-10T08:16:16.11Z",

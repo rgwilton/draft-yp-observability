@@ -43,8 +43,9 @@ module ietf-yang-push-2 {
      Author:  Robert Wilton
               <mailto:rwilton@cisco.com>";
   description
-    "This module contains YANG specifications for YANG-Push version 2,
-     a simplified version of the YANG-Push [RFC 8641] protocol.
+    "This module contains YANG specifications for YANG-Push
+     version 2, a simplified version of the YANG-Push [RFC 8641]
+     protocol.
 
      The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
      NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
@@ -298,21 +299,14 @@ module ietf-yang-push-2 {
       "Specifies a data encoding, e.g., for a data subscription.";
   }
 
-  typedef subscription-name {
+  typedef subscription-id {
    type string {
       length "1..64";
-      // TODO, is it reasonable to limit this to 64 characters?
-      // TODO, should we ban certain characters, e.g., whitespace?
-      // TODO, should we limit this to latin-alphabetic characters?
+      pattern '[A-Za-z0-9._-]+';
+      // TODO, should we included characters from other languages?
     } 
     description
-      "A user friendly name for a subscription.";
-  }
-
-  typedef subscription-id {
-    type uint32;
-    description
-      "A type for subscription identifiers.";
+      "A used friendly string identifier for a subscription.";
   }
 
   typedef transport {
@@ -360,8 +354,8 @@ module ietf-yang-push-2 {
       enum inactive {
         description
           "The subscription is supportable with its current
-          parameters, but it is not currently connected to any
-          connected receivers";
+          parameters, but it is not currently connected to a
+          receiver";
       }
       enum active {
         description
@@ -577,8 +571,8 @@ module ietf-yang-push-2 {
       "Common settings that are shared between dynamic and
        configured subscriptions.";
 
-    leaf name {
-      type subscription-name;
+    leaf id {
+      type subscription-id;
       mandatory true;
       description
         "The client provided name for the subscription.
@@ -587,13 +581,6 @@ module ietf-yang-push-2 {
          a subscription with a name already used by a dynamic
          subscription will replace the dynamic subscription, forcing
          it to be terminated.";
-    }
-
-    leaf update-id {
-      type subscription-id;
-      description
-        "An optional unique numeric-id that identifies this
-         subscription in update messages.";
     }
 
     leaf description {
@@ -647,8 +634,16 @@ module ietf-yang-push-2 {
        'establish-subscription' request.";
     input {
       uses subscription-common {
-        refine name {
+        refine id {
           mandatory false;
+          description
+            "A optional unique identifier for a dynamic
+             subscription.
+
+             If not provided, the publisher MUST generate a unique
+             identifier for the subscription, with an identifier
+             that starts with 'dyn-', which is returned to the
+             client in the RPC reply.";
         }
       }
 
@@ -662,14 +657,14 @@ module ietf-yang-push-2 {
       uses dscp;
 
     }
-    //output {
-      // leaf id {
-      //   type subscription-id;
-      //   mandatory true;
-      //   description
-      //     "Identifier used for this subscription.";
-      // }
-    //}
+    output {
+      leaf id {
+        type subscription-id;
+        mandatory true;
+        description
+          "Identifier used for this subscription.";
+      }
+    }
   }
 
   rpc modify-subscription {
@@ -744,8 +739,8 @@ module ietf-yang-push-2 {
        where the 'error-info' field MAY contain a
        'delete-subscription-error-info' structure.";
     input {
-      leaf name {
-        type subscription-name;
+      leaf id {
+        type subscription-id;
         mandatory true;
         description
           "The name of the dynamic subscription to be deleted.";
@@ -768,8 +763,8 @@ module ietf-yang-push-2 {
        where the 'error-info' field MAY contain a
        'delete-subscription-error-info' structure.";
     input {
-      leaf name {
-        type subscription-name;
+      leaf id {
+        type subscription-id;
         mandatory true;
         description
           "The name of the dynamic subscription to be deleted.";
@@ -806,16 +801,7 @@ module ietf-yang-push-2 {
     description
       "This notification indicates that a subscription has started
        and notifications will now be sent.";
-    // leaf id {
-    //   type subscription-id;
-    //   mandatory true;
-    //   description
-    //     "This references the affected subscription.";
-    // }
     uses subscription-common {
-      // refine id {
-      //   mandatory true;
-      // }
       augment "target" {
         description
           "Augments fields to identify the target schema.";
@@ -853,16 +839,7 @@ module ietf-yang-push-2 {
     description
       "This notification indicates that subscription paramaters have
        changed.";
-    // leaf id {
-    //   type subscription-id;
-    //   mandatory true;
-    //   description
-    //     "This references the affected subscription.";
-    // }
     uses subscription-common {
-      // refine id {
-      //   mandatory true;
-      // }
       augment "target" {
         description
           "Adds a schema id.";
@@ -900,18 +877,12 @@ module ietf-yang-push-2 {
     description
       "This notification indicates that a subscription has been
        terminated.";
-    leaf name {
-      type subscription-name;
+    leaf id {
+      type subscription-id;
       mandatory true;
       description
         "The name of the subscription that has been terminated.";
     }
-    // leaf id {
-    //   type subscription-id;
-    //   mandatory true;
-    //   description
-    //     "This references the affected subscription.";
-    // }
     leaf reason {
       type identityref {
         base subscription-terminated-reason;
@@ -931,23 +902,11 @@ module ietf-yang-push-2 {
        periodic updates.  It can also be used for synchronization
        updates of an on-change subscription.  This notification
        shall only be sent to receivers of a subscription.";
-    choice identifier {
-      mandatory true;
+    leaf id {
+      type subscription-id;
       description
-        "Identifier for the subscription that is the source of
+        "The identifier of the subscription that is the source of
          this notification.";
-      leaf name {
-        type subscription-name;
-        description
-          "The name of the subscription that is the source of
-           this notification.";
-      }
-      leaf id {
-        type subscription-id;
-        description
-          "The numeric identifier of the subscription that is the
-           source of this notification.";
-      }
     }
 
     leaf path-prefix {
@@ -1068,27 +1027,15 @@ module ietf-yang-push-2 {
        subscribed data at the event-time, and hence the client MAY
        use this as a signal that it can purge stale state
        information.
-       
+
        Alternatively, the 'complete' flag in the update
        notification MAY be used instead of sending this notification
        as a separate message, and both are semantically equivalent.";
-    choice identifier {
-      mandatory true;
+    leaf id {
+      type subscription-id;
       description
-        "Identifier for the subscription that is the source of
-         this notification.";
-      leaf name {
-        type subscription-name;
-        description
-          "The name of the subscription that is the source of
-           this notification.";
-      }
-      leaf id {
-        type subscription-id;
-        description
-          "The numeric identifier of the subscription that is the
-           source of this notification.";
-      }
+        "The name of the subscription that is the source of
+          this notification.";
     }
   }
 }

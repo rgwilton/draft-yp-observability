@@ -1,6 +1,5 @@
     +---n subscription-started
-    |  +--ro name                       subscription-name
-    |  +--ro update-id?                 subscription-id
+    |  +--ro id                         subscription-id
     |  +--ro description?               string
     |  +--ro target
     |  |  +--ro datastore?                 identityref

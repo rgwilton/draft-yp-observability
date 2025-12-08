@@ -1,7 +1,7 @@
 module: ietf-yang-push-2-config
   +--rw datastore-telemetry!
      +--rw subscriptions
-        +--rw subscription* [name]
+        +--rw subscription* [id]
            +--rw update-trigger
               +--rw periodic!
               |  +--rw period         centiseconds

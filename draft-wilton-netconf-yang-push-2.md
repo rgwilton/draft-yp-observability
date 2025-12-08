@@ -334,7 +334,7 @@ The following terms are taken from {{RFC8641}}:
 
 - *Selection filter*: Evaluation and/or selection criteria that may be applied against a targeted set of objects.
 
-- *Update record*: A representation of one or more datastore node updates.  In addition, an update record may contain which type of update led to the datastore node update (e.g., whether the datastore node was added, changed, or deleted).  Also included in the update record may be other metadata, such as a subscription ID of the subscription for which the update record was generated.  In this document, update records are often also simply referred to as "updates".
+- *Update record*: A representation of one or more datastore node updates.  In addition, an update record may contain which type of update led to the datastore node update (e.g., whether the datastore node was added, changed, or deleted).  Also included in the update record may be other metadata, such as a subscription id of the subscription for which the update record was generated.  In this document, update records are often also simply referred to as "updates".
 
 - *Update trigger*: A mechanism that determines when an update record needs to be generated.
 
@@ -790,7 +790,7 @@ The core behavior for both configured and dynamic subscription is the same, with
 
 All subscriptions require the following state to be instantiated:
 
-- a *name* to identify the subscription.
+- an *id* to identify the subscription.
 - the *target* for the subscription, comprising:
   - the target datastore, as per {{RFC8342}}
   - a set of selection filters to choose which datastore nodes the subscription is monitoring or sampling, as described in {{pathsAndFilters}}.
@@ -891,7 +891,7 @@ If the subscription is in *Active* state, and hence a *subscription-started* not
 
 Changes to any of following parameters MUST terminate the subscription, as per {{TerminatingSubscriptions}}, before recreating it, as per {{CreatingSubscriptions}}:
 
-1. the subcription *name* or *update-id*
+1. the subcription *id*
 1. the *encoding*
 1. any *receiver* settings that change the encoding, transport, transport security, or receiver destination address/port
 1. the update-trigger to enable *sync-on-start*.
@@ -1186,7 +1186,7 @@ Below is a tree diagram for "establish-subscription-stream-error-info" RPC yang-
 
 ### Modifying a Dynamic Subscription {#ModifyDynamic}
 
-The *modify-subscription* RPC allows a subscriber to request the modification of parameters associated with a dynamic subscription. It uses the same parameters as the *establish-subscription* RPC defined in {{EstablishDynamic}}, except that the *name* leaf is mandatory.
+The *modify-subscription* RPC allows a subscriber to request the modification of parameters associated with a dynamic subscription. It uses the same parameters as the *establish-subscription* RPC defined in {{EstablishDynamic}}, except that the *id* leaf is mandatory.
 
 If the modification to the subscription is accepted by the publisher then it is processed as per {{ModifyingSubscriptions}}, otherwise an error is returned to the *modify-subscription* RPC and the subscription is left unmodified.
 
@@ -1209,7 +1209,7 @@ The *delete-subscription* operation permits canceling an existing dynamic subscr
 
 The publisher responds to the request in the following way:
 
-- If the name identifier matches a *dynamic* subscription created on the same transport session then it MUST terminate the subscription, as per {{TerminatingSubscriptions}}.
+- If the identifier matches a *dynamic* subscription created on the same transport session then it MUST terminate the subscription, as per {{TerminatingSubscriptions}}.
 
   The publisher MAY reply back to the client before the subscription has been terminated, i.e., it may act asynchronously with respect to the delete request, however, the publisher MUST allow the client to create a new subscription using the same name immediately after either the RPC operation completes or the *subscription-terminated* notification ({{SubscriptionTerminatedNotification}}) has been transmitted.
 
@@ -1224,9 +1224,9 @@ Below is the tree diagram for the *delete-subscription* RPC.  All objects contai
 
 ### Killing a Dynamic Subscription
 
-The *kill-subscription* RPC operation permits a client, that has the required access permissions, to forcibly terminate any arbitrary dynamic subscription, identified by subscription name, including those not associated with the transport session used for the *kill-subscription* RPC.  The subscription is terminated as per {{TerminatingSubscriptions}}.
+The *kill-subscription* RPC operation permits a client, that has the required access permissions, to forcibly terminate any arbitrary dynamic subscription, identified by subscription id, including those not associated with the transport session used for the *kill-subscription* RPC.  The subscription is terminated as per {{TerminatingSubscriptions}}.
 
-The publisher MAY reply back to the client before the subscription has been terminated, i.e., it may act asynchronously with respect to the delete request, however, the publisher MUST allow the client to create a new subscription using the same name immediately after the *subscription-terminated* notification ({{SubscriptionTerminatedNotification}}) has been transmitted.
+The publisher MAY reply back to the client before the subscription has been terminated, i.e., it may act asynchronously with respect to the delete request, however, the publisher MUST allow the client to create a new subscription using the same subscription id immediately after the *subscription-terminated* notification ({{SubscriptionTerminatedNotification}}) has been transmitted.
 
 Below is the tree diagram for the *kill-subscription* RPC.  All objects contained in this tree are described in the YANG module in {{yang-push-2-yang-module}}.
 
@@ -1382,7 +1382,17 @@ The schema tree for the ietf-system-capabilities augmented by ietf-yang-push-2-c
 
 **TODO, do we need additional capabilities, as per [Issue 18](https://github.com/rgwilton/draft-yp-observability/issues/18)**
 
-## Subscription Content Schema Identification
+## Subscription Content Versioning
+
+Many receivers will want to know what the schema is associated with a subscription and whether that schema has changed, e.g., due to a changing in software on the publisher.
+
+Various mechanisms are available to help receivers or collectors learn or monitor the schema associated with a subscription:
+
+1. The device schema is available in the YANG library module ietf-yang-library.yang as defined in {{RFC8525}}.  YANG library also provides a simple "yang-library-change" notification that informs the subscriber that the library has changed, or alternatively, the publisher may support an on-change telemetry subscription to
+
+
+
+ Content Schema Identification
 
 YANG Module Synchronization
 
@@ -1640,7 +1650,7 @@ This section documents behavior that exists in both YANG Push and YANG Push v2, 
 
 - Changes related to the configuration model:
 
-  - Subscriptions are primarily identified by a string identifier rather than a numeric identifier.
+  - Subscriptions are identified by a string identifier rather than a numeric identifier.
 
   - Purpose has been renamed to Description (since it is a more generic term), limited to 1k characters, but also available for dynamic subscriptions.
 
@@ -2124,3 +2134,5 @@ This appendix is only intended while the authors/WG are working on the document,
 1. Encoding is set per subscription, and we don't allow different per-receiver encodings for a subscription with more than one receiver.  [issue 17](https://github.com/rgwilton/draft-yp-observability/issues/17)
 
 1. We have a updated-completed flag/notification to allow deleted data to be implicitly detected.  Something similar may be added to gNMI.  [issue 12](https://github.com/rgwilton/draft-yp-observability/issues/12)
+
+1. We use a string identifier to uniquely identify a subscription rather than a numeric id.

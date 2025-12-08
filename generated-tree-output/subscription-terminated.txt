@@ -1,12 +1,8 @@
     +---n subscription-terminated
-    |  +--ro name      subscription-name
+    |  +--ro id        subscription-id
     |  +--ro reason    identityref
     +---n update
-    |  +--ro (identifier)
-    |  |  +--:(name)
-    |  |  |  +--ro name?         subscription-name
-    |  |  +--:(id)
-    |  |     +--ro id?           subscription-id
+    |  +--ro id?                 subscription-id
     |  +--ro path-prefix?        string
     |  +--ro snapshot-type       enumeration
     |  +--ro observation-time?   yang:date-and-time
@@ -15,8 +11,4 @@
     |  |  +--ro data?          <anydata>
     |  +--ro complete?           empty
     +---n update-complete
-       +--ro (identifier)
-          +--:(name)
-          |  +--ro name?   subscription-name
-          +--:(id)
-             +--ro id?     subscription-id
+       +--ro id?   subscription-id

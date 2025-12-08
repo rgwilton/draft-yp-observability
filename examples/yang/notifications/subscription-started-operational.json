@@ -11,7 +11,7 @@
     "subscriptions": {
       "subscription": [
         {
-          "name": "ExampleStatsSubscription",
+          "id": "interface-stats",
           "target": {
             "datastore": "ietf-datastores:operational",
             "filter-ref": "interface-stats-filter"

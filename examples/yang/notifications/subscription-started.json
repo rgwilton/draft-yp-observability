@@ -1,7 +1,6 @@
 {
   "ietf-yang-push-2:subscription-started": {
-    "update-id": 1011,
-    "name": "ExampleStatsSubscription",
+    "id": "interface-stats",
     "target": {
       "datastore": "ietf-datastores:operational",
       "path": "/ietf-interfaces:interfaces/interface/statistics"

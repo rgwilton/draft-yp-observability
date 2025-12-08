@@ -1,6 +1,6 @@
 {
   "ietf-yang-push-2:update": {
-    "id": 1012,
+    "id": "interfaces",
     "snapshot-type": "on-change-update",
     "observation-time": "2025-10-10T08:16:05.11Z",
     "updates": [

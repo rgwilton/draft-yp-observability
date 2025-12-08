@@ -1,10 +1,8 @@
 module: ietf-yang-push-2-config
   +--rw datastore-telemetry!
      +--rw subscriptions
-        +--rw subscription* [name]
-           +--rw name
-           |       subscription-name
-           +--rw update-id?                          subscription-id
+        +--rw subscription* [id]
+           +--rw id                                  subscription-id
            +--rw description?                        string
            +--rw target
            |  +--rw datastore?          identityref

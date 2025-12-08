@@ -3,30 +3,30 @@ module: ietf-yang-push-2
   rpcs:
     +---x establish-subscription {dynamic}?
     |  +---w input
-    |     +---w name?             subscription-name
-    |     +---w update-id?        subscription-id
-    |     +---w description?      string
-    |     +---w target
-    |     |  +---w datastore?       identityref
-    |     |  +---w (filter)
-    |     |     +--:(path)
-    |     |     |  +---w path       ypath
-    |     |     +--:(subtree)
-    |     |     |  +---w subtree    <anydata>
-    |     |     +--:(xpath)
-    |     |        +---w xpath      yang:xpath1.0 {yp2:xpath}?
-    |     +---w update-trigger
-    |     |  +---w periodic!
-    |     |  |  +---w period         centiseconds
-    |     |  |  +---w anchor-time?   yang:date-and-time
-    |     |  +---w on-change! {on-change}?
-    |     |     +---w sync-on-start?   boolean
-    |     +---w encoding          encoding
-    |     +---w dscp?             inet:dscp
+    |  |  +---w id?               subscription-id
+    |  |  +---w description?      string
+    |  |  +---w target
+    |  |  |  +---w datastore?       identityref
+    |  |  |  +---w (filter)
+    |  |  |     +--:(path)
+    |  |  |     |  +---w path       ypath
+    |  |  |     +--:(subtree)
+    |  |  |     |  +---w subtree    <anydata>
+    |  |  |     +--:(xpath)
+    |  |  |        +---w xpath      yang:xpath1.0 {yp2:xpath}?
+    |  |  +---w update-trigger
+    |  |  |  +---w periodic!
+    |  |  |  |  +---w period         centiseconds
+    |  |  |  |  +---w anchor-time?   yang:date-and-time
+    |  |  |  +---w on-change! {on-change}?
+    |  |  |     +---w sync-on-start?   boolean
+    |  |  +---w encoding          encoding
+    |  |  +---w dscp?             inet:dscp
+    |  +--ro output
+    |     +--ro id    subscription-id
     +---x modify-subscription {dynamic}?
     |  +---w input
-    |     +---w name              subscription-name
-    |     +---w update-id?        subscription-id
+    |     +---w id                subscription-id
     |     +---w description?      string
     |     +---w target
     |     |  +---w datastore?       identityref
@@ -46,15 +46,14 @@ module: ietf-yang-push-2
     |     +---w dscp?             inet:dscp
     +---x delete-subscription {dynamic}?
     |  +---w input
-    |     +---w name    subscription-name
+    |     +---w id    subscription-id
     +---x kill-subscription {dynamic}?
        +---w input
-          +---w name    subscription-name
+          +---w id    subscription-id
 
   notifications:
     +---n subscription-started
-    |  +--ro name                       subscription-name
-    |  +--ro update-id?                 subscription-id
+    |  +--ro id                         subscription-id
     |  +--ro description?               string
     |  +--ro target
     |  |  +--ro datastore?                 identityref
@@ -77,8 +76,7 @@ module: ietf-yang-push-2
     |  +--ro yang-library-content-id?
     |          -> /yanglib:yang-library/content-id
     +---n subscription-modified
-    |  +--ro name              subscription-name
-    |  +--ro update-id?        subscription-id
+    |  +--ro id                subscription-id
     |  +--ro description?      string
     |  +--ro target
     |  |  +--ro datastore?                 identityref
@@ -100,14 +98,10 @@ module: ietf-yang-push-2
     |  |     +--ro sync-on-start?   boolean
     |  +--ro reason            subscription-change
     +---n subscription-terminated
-    |  +--ro name      subscription-name
+    |  +--ro id        subscription-id
     |  +--ro reason    identityref
     +---n update
-    |  +--ro (identifier)
-    |  |  +--:(name)
-    |  |  |  +--ro name?         subscription-name
-    |  |  +--:(id)
-    |  |     +--ro id?           subscription-id
+    |  +--ro id?                 subscription-id
     |  +--ro path-prefix?        string
     |  +--ro snapshot-type       enumeration
     |  +--ro observation-time?   yang:date-and-time
@@ -116,8 +110,4 @@ module: ietf-yang-push-2
     |  |  +--ro data?          <anydata>
     |  +--ro complete?           empty
     +---n update-complete
-       +--ro (identifier)
-          +--:(name)
-          |  +--ro name?   subscription-name
-          +--:(id)
-             +--ro id?     subscription-id
+       +--ro id?   subscription-id

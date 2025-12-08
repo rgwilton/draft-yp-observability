@@ -1,7 +1,6 @@
     +---x modify-subscription {dynamic}?
     |  +---w input
-    |     +---w name              subscription-name
-    |     +---w update-id?        subscription-id
+    |     +---w id                subscription-id
     |     +---w description?      string
     |     +---w target
     |     |  +---w datastore?       identityref

@@ -1,6 +1,2 @@
     +---n update-complete
-       +--ro (identifier)
-          +--:(name)
-          |  +--ro name?   subscription-name
-          +--:(id)
-             +--ro id?     subscription-id
+       +--ro id?   subscription-id
