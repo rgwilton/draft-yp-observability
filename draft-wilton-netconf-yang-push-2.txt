@@ -5,7 +5,7 @@
 Network Configuration                                     R. Wilton, Ed.
 Internet-Draft                                             Cisco Systems
 Intended status: Standards Track                               H. Keller
-Expires: 18 May 2026                                   Deuetsche Telekom
+Expires: 11 June 2026                                  Deuetsche Telekom
                                                                B. Claise
                                                           Everything OPS
                                                                 E. Aries
@@ -14,7 +14,7 @@ Expires: 18 May 2026                                   Deuetsche Telekom
                                                                    Nokia
                                                                  T. Graf
                                                                 Swisscom
-                                                        14 November 2025
+                                                         8 December 2025
 
 
              YANG Datastore Telemetry (YANG Push version 2)
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 18 May 2026.
+   This Internet-Draft will expire on 11 June 2026.
 
 Copyright Notice
 
@@ -145,7 +145,7 @@ Table of Contents
      10.3.  Publisher Capacity
    11. Conformance and Capabilities
      11.1.  Capabilities
-     11.2.  Subscription Content Schema Identification
+     11.2.  Subscription Content Versioning
    12. Core YANG Push v2 YANG Data Model
      12.1.  ietf-yang-push-2 YANG tree
      12.2.  ietf-yang-push-2 YANG Model
@@ -665,7 +665,7 @@ Table of Contents
       updates.  In addition, an update record may contain which type of
       update led to the datastore node update (e.g., whether the
       datastore node was added, changed, or deleted).  Also included in
-      the update record may be other metadata, such as a subscription ID
+      the update record may be other metadata, such as a subscription id
       of the subscription for which the update record was generated.  In
       this document, update records are often also simply referred to as
       "updates".
@@ -972,11 +972,7 @@ Table of Contents
    diagram:
 
        +---n update
-       |  +--ro (identifier)
-       |  |  +--:(name)
-       |  |  |  +--ro name?         subscription-name
-       |  |  +--:(id)
-       |  |     +--ro id?           subscription-id
+       |  +--ro id?                 subscription-id
        |  +--ro path-prefix?        string
        |  +--ro snapshot-type       enumeration
        |  +--ro observation-time?   yang:date-and-time
@@ -1035,7 +1031,7 @@ Table of Contents
    module: ietf-yang-push-2-config
      +--rw datastore-telemetry!
         +--rw subscriptions
-           +--rw subscription* [name]
+           +--rw subscription* [id]
               +--rw update-trigger
                  +--rw periodic!
                  |  +--rw period         centiseconds
@@ -1606,7 +1602,7 @@ Table of Contents
 
    All subscriptions require the following state to be instantiated:
 
-   *  a _name_ to identify the subscription.
+   *  an _id_ to identify the subscription.
 
    *  the _target_ for the subscription, comprising:
 
@@ -1761,7 +1757,7 @@ Table of Contents
    subscription, as per Section 9.1.4, before recreating it, as per
    Section 9.1.2:
 
-   1.  the subcription _name_ or _update-id_
+   1.  the subcription _id_
 
    2.  the _encoding_
 
@@ -1913,8 +1909,7 @@ Table of Contents
    described in the YANG module in Section 12.2.
 
        +---n subscription-started
-       |  +--ro name                       subscription-name
-       |  +--ro update-id?                 subscription-id
+       |  +--ro id                         subscription-id
        |  +--ro description?               string
        |  +--ro target
        |  |  +--ro datastore?                 identityref
@@ -1957,8 +1952,7 @@ Table of Contents
    YANG module in Section 12.2.
 
        +---n subscription-modified
-       |  +--ro name              subscription-name
-       |  +--ro update-id?        subscription-id
+       |  +--ro id                subscription-id
        |  +--ro description?      string
        |  +--ro target
        |  |  +--ro datastore?                 identityref
@@ -2020,14 +2014,10 @@ Table of Contents
    Section 12.2.
 
        +---n subscription-terminated
-       |  +--ro name      subscription-name
+       |  +--ro id        subscription-id
        |  +--ro reason    identityref
        +---n update
-       |  +--ro (identifier)
-       |  |  +--:(name)
-       |  |  |  +--ro name?         subscription-name
-       |  |  +--:(id)
-       |  |     +--ro id?           subscription-id
+       |  +--ro id?                 subscription-id
        |  +--ro path-prefix?        string
        |  +--ro snapshot-type       enumeration
        |  +--ro observation-time?   yang:date-and-time
@@ -2036,11 +2026,7 @@ Table of Contents
        |  |  +--ro data?          <anydata>
        |  +--ro complete?           empty
        +---n update-complete
-          +--ro (identifier)
-             +--:(name)
-             |  +--ro name?   subscription-name
-             +--:(id)
-                +--ro id?     subscription-id
+          +--ro id?   subscription-id
 
         Figure 12: subscription-terminated Notification Tree Diagram
 
@@ -2067,11 +2053,7 @@ Table of Contents
    in this tree are described in the YANG module in Section 4.
 
        +---n update-complete
-          +--ro (identifier)
-             +--:(name)
-             |  +--ro name?   subscription-name
-             +--:(id)
-                +--ro id?     subscription-id
+          +--ro id?   subscription-id
 
             Figure 13: update-complete Notification Tree Diagram
 
@@ -2270,26 +2252,27 @@ Table of Contents
 
        +---x establish-subscription {dynamic}?
        |  +---w input
-       |     +---w name?             subscription-name
-       |     +---w update-id?        subscription-id
-       |     +---w description?      string
-       |     +---w target
-       |     |  +---w datastore?       identityref
-       |     |  +---w (filter)
-       |     |     +--:(path)
-       |     |     |  +---w path       ypath
-       |     |     +--:(subtree)
-       |     |     |  +---w subtree    <anydata>
-       |     |     +--:(xpath)
-       |     |        +---w xpath      yang:xpath1.0 {yp2:xpath}?
-       |     +---w update-trigger
-       |     |  +---w periodic!
-       |     |  |  +---w period         centiseconds
-       |     |  |  +---w anchor-time?   yang:date-and-time
-       |     |  +---w on-change! {on-change}?
-       |     |     +---w sync-on-start?   boolean
-       |     +---w encoding          encoding
-       |     +---w dscp?             inet:dscp
+       |  |  +---w id?               subscription-id
+       |  |  +---w description?      string
+       |  |  +---w target
+       |  |  |  +---w datastore?       identityref
+       |  |  |  +---w (filter)
+       |  |  |     +--:(path)
+       |  |  |     |  +---w path       ypath
+       |  |  |     +--:(subtree)
+       |  |  |     |  +---w subtree    <anydata>
+       |  |  |     +--:(xpath)
+       |  |  |        +---w xpath      yang:xpath1.0 {yp2:xpath}?
+       |  |  +---w update-trigger
+       |  |  |  +---w periodic!
+       |  |  |  |  +---w period         centiseconds
+       |  |  |  |  +---w anchor-time?   yang:date-and-time
+       |  |  |  +---w on-change! {on-change}?
+       |  |  |     +---w sync-on-start?   boolean
+       |  |  +---w encoding          encoding
+       |  |  +---w dscp?             inet:dscp
+       |  +--ro output
+       |     +--ro id    subscription-id
 
                  Figure 14: establish-subscription YANG RPC
 
@@ -2301,7 +2284,7 @@ Table of Contents
    The _modify-subscription_ RPC allows a subscriber to request the
    modification of parameters associated with a dynamic subscription.
    It uses the same parameters as the _establish-subscription_ RPC
-   defined in Section 9.4.1, except that the _name_ leaf is mandatory.
+   defined in Section 9.4.1, except that the _id_ leaf is mandatory.
 
    If the modification to the subscription is accepted by the publisher
    then it is processed as per Section 9.1.3, otherwise an error is
@@ -2319,8 +2302,7 @@ Table of Contents
 
        +---x modify-subscription {dynamic}?
        |  +---w input
-       |     +---w name              subscription-name
-       |     +---w update-id?        subscription-id
+       |     +---w id                subscription-id
        |     +---w description?      string
        |     +---w target
        |     |  +---w datastore?       identityref
@@ -2352,9 +2334,9 @@ Table of Contents
 
    The publisher responds to the request in the following way:
 
-   *  If the name identifier matches a _dynamic_ subscription created on
-      the same transport session then it MUST terminate the
-      subscription, as per Section 9.1.4.
+   *  If the identifier matches a _dynamic_ subscription created on the
+      same transport session then it MUST terminate the subscription, as
+      per Section 9.1.4.
 
       The publisher MAY reply back to the client before the subscription
       has been terminated, i.e., it may act asynchronously with respect
@@ -2373,7 +2355,7 @@ Table of Contents
 
        +---x delete-subscription {dynamic}?
        |  +---w input
-       |     +---w name    subscription-name
+       |     +---w id    subscription-id
 
                   Figure 16: delete-subscription YANG RPC
 
@@ -2381,17 +2363,17 @@ Table of Contents
 
    The _kill-subscription_ RPC operation permits a client, that has the
    required access permissions, to forcibly terminate any arbitrary
-   dynamic subscription, identified by subscription name, including
-   those not associated with the transport session used for the _kill-
+   dynamic subscription, identified by subscription id, including those
+   not associated with the transport session used for the _kill-
    subscription_ RPC.  The subscription is terminated as per
    Section 9.1.4.
 
    The publisher MAY reply back to the client before the subscription
    has been terminated, i.e., it may act asynchronously with respect to
    the delete request, however, the publisher MUST allow the client to
-   create a new subscription using the same name immediately after the
-   _subscription-terminated_ notification (Section 9.2.3) has been
-   transmitted.
+   create a new subscription using the same subscription id immediately
+   after the _subscription-terminated_ notification (Section 9.2.3) has
+   been transmitted.
 
    Below is the tree diagram for the _kill-subscription_ RPC.  All
    objects contained in this tree are described in the YANG module in
@@ -2399,7 +2381,7 @@ Table of Contents
 
        +---x kill-subscription {dynamic}?
           +---w input
-             +---w name    subscription-name
+             +---w id    subscription-id
 
                    Figure 17: kill-subscription YANG RPC
 
@@ -2633,7 +2615,22 @@ Table of Contents
    *TODO, do we need additional capabilities, as per Issue 18
    (https://github.com/rgwilton/draft-yp-observability/issues/18)*
 
-11.2.  Subscription Content Schema Identification
+11.2.  Subscription Content Versioning
+
+   Many receivers will want to know what the schema is associated with a
+   subscription and whether that schema has changed, e.g., due to a
+   changing in software on the publisher.
+
+   Various mechanisms are available to help receivers or collectors
+   learn or monitor the schema associated with a subscription:
+
+   1.  The device schema is available in the YANG library module ietf-
+       yang-library.yang as defined in [RFC8525].  YANG library also
+       provides a simple "yang-library-change" notification that informs
+       the subscriber that the library has changed, or alternatively,
+       the publisher may support an on-change telemetry subscription to
+
+   Content Schema Identification
 
    YANG Module Synchronization
 
@@ -2673,30 +2670,30 @@ Table of Contents
      rpcs:
        +---x establish-subscription {dynamic}?
        |  +---w input
-       |     +---w name?             subscription-name
-       |     +---w update-id?        subscription-id
-       |     +---w description?      string
-       |     +---w target
-       |     |  +---w datastore?       identityref
-       |     |  +---w (filter)
-       |     |     +--:(path)
-       |     |     |  +---w path       ypath
-       |     |     +--:(subtree)
-       |     |     |  +---w subtree    <anydata>
-       |     |     +--:(xpath)
-       |     |        +---w xpath      yang:xpath1.0 {yp2:xpath}?
-       |     +---w update-trigger
-       |     |  +---w periodic!
-       |     |  |  +---w period         centiseconds
-       |     |  |  +---w anchor-time?   yang:date-and-time
-       |     |  +---w on-change! {on-change}?
-       |     |     +---w sync-on-start?   boolean
-       |     +---w encoding          encoding
-       |     +---w dscp?             inet:dscp
+       |  |  +---w id?               subscription-id
+       |  |  +---w description?      string
+       |  |  +---w target
+       |  |  |  +---w datastore?       identityref
+       |  |  |  +---w (filter)
+       |  |  |     +--:(path)
+       |  |  |     |  +---w path       ypath
+       |  |  |     +--:(subtree)
+       |  |  |     |  +---w subtree    <anydata>
+       |  |  |     +--:(xpath)
+       |  |  |        +---w xpath      yang:xpath1.0 {yp2:xpath}?
+       |  |  +---w update-trigger
+       |  |  |  +---w periodic!
+       |  |  |  |  +---w period         centiseconds
+       |  |  |  |  +---w anchor-time?   yang:date-and-time
+       |  |  |  +---w on-change! {on-change}?
+       |  |  |     +---w sync-on-start?   boolean
+       |  |  +---w encoding          encoding
+       |  |  +---w dscp?             inet:dscp
+       |  +--ro output
+       |     +--ro id    subscription-id
        +---x modify-subscription {dynamic}?
        |  +---w input
-       |     +---w name              subscription-name
-       |     +---w update-id?        subscription-id
+       |     +---w id                subscription-id
        |     +---w description?      string
        |     +---w target
        |     |  +---w datastore?       identityref
@@ -2716,15 +2713,14 @@ Table of Contents
        |     +---w dscp?             inet:dscp
        +---x delete-subscription {dynamic}?
        |  +---w input
-       |     +---w name    subscription-name
+       |     +---w id    subscription-id
        +---x kill-subscription {dynamic}?
           +---w input
-             +---w name    subscription-name
+             +---w id    subscription-id
 
      notifications:
        +---n subscription-started
-       |  +--ro name                       subscription-name
-       |  +--ro update-id?                 subscription-id
+       |  +--ro id                         subscription-id
        |  +--ro description?               string
        |  +--ro target
        |  |  +--ro datastore?                 identityref
@@ -2747,8 +2743,7 @@ Table of Contents
        |  +--ro yang-library-content-id?
        |          -> /yanglib:yang-library/content-id
        +---n subscription-modified
-       |  +--ro name              subscription-name
-       |  +--ro update-id?        subscription-id
+       |  +--ro id                subscription-id
        |  +--ro description?      string
        |  +--ro target
        |  |  +--ro datastore?                 identityref
@@ -2770,14 +2765,10 @@ Table of Contents
        |  |     +--ro sync-on-start?   boolean
        |  +--ro reason            subscription-change
        +---n subscription-terminated
-       |  +--ro name      subscription-name
+       |  +--ro id        subscription-id
        |  +--ro reason    identityref
        +---n update
-       |  +--ro (identifier)
-       |  |  +--:(name)
-       |  |  |  +--ro name?         subscription-name
-       |  |  +--:(id)
-       |  |     +--ro id?           subscription-id
+       |  +--ro id?                 subscription-id
        |  +--ro path-prefix?        string
        |  +--ro snapshot-type       enumeration
        |  +--ro observation-time?   yang:date-and-time
@@ -2786,11 +2777,7 @@ Table of Contents
        |  |  +--ro data?          <anydata>
        |  +--ro complete?           empty
        +---n update-complete
-          +--ro (identifier)
-             +--:(name)
-             |  +--ro name?   subscription-name
-             +--:(id)
-                +--ro id?     subscription-id
+          +--ro id?   subscription-id
 
           Figure 19: YANG tree for YANG Push v2 Module Tree Output
 
@@ -2851,8 +2838,9 @@ Table of Contents
         Author:  Robert Wilton
                  <mailto:rwilton@cisco.com>";
      description
-       "This module contains YANG specifications for YANG-Push version 2,
-        a simplified version of the YANG-Push [RFC 8641] protocol.
+       "This module contains YANG specifications for YANG-Push
+        version 2, a simplified version of the YANG-Push [RFC 8641]
+        protocol.
 
         The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
         NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
@@ -3106,21 +3094,14 @@ Table of Contents
          "Specifies a data encoding, e.g., for a data subscription.";
      }
 
-     typedef subscription-name {
+     typedef subscription-id {
       type string {
          length "1..64";
-         // TODO, is it reasonable to limit this to 64 characters?
-         // TODO, should we ban certain characters, e.g., whitespace?
-         // TODO, should we limit this to latin-alphabetic characters?
+         pattern '[A-Za-z0-9._-]+';
+         // TODO, should we included characters from other languages?
        }
        description
-         "A user friendly name for a subscription.";
-     }
-
-     typedef subscription-id {
-       type uint32;
-       description
-         "A type for subscription identifiers.";
+         "A used friendly string identifier for a subscription.";
      }
 
      typedef transport {
@@ -3168,8 +3149,8 @@ Table of Contents
          enum inactive {
            description
              "The subscription is supportable with its current
-             parameters, but it is not currently connected to any
-             connected receivers";
+             parameters, but it is not currently connected to a
+             receiver";
          }
          enum active {
            description
@@ -3385,8 +3366,8 @@ Table of Contents
          "Common settings that are shared between dynamic and
           configured subscriptions.";
 
-       leaf name {
-         type subscription-name;
+       leaf id {
+         type subscription-id;
          mandatory true;
          description
            "The client provided name for the subscription.
@@ -3395,13 +3376,6 @@ Table of Contents
             a subscription with a name already used by a dynamic
             subscription will replace the dynamic subscription, forcing
             it to be terminated.";
-       }
-
-       leaf update-id {
-         type subscription-id;
-         description
-           "An optional unique numeric-id that identifies this
-            subscription in update messages.";
        }
 
        leaf description {
@@ -3455,8 +3429,16 @@ Table of Contents
           'establish-subscription' request.";
        input {
          uses subscription-common {
-           refine name {
+           refine id {
              mandatory false;
+             description
+               "A optional unique identifier for a dynamic
+                subscription.
+
+                If not provided, the publisher MUST generate a unique
+                identifier for the subscription, with an identifier
+                that starts with 'dyn-', which is returned to the
+                client in the RPC reply.";
            }
          }
 
@@ -3470,14 +3452,14 @@ Table of Contents
          uses dscp;
 
        }
-       //output {
-         // leaf id {
-         //   type subscription-id;
-         //   mandatory true;
-         //   description
-         //     "Identifier used for this subscription.";
-         // }
-       //}
+       output {
+         leaf id {
+           type subscription-id;
+           mandatory true;
+           description
+             "Identifier used for this subscription.";
+         }
+       }
      }
 
      rpc modify-subscription {
@@ -3552,8 +3534,8 @@ Table of Contents
           where the 'error-info' field MAY contain a
           'delete-subscription-error-info' structure.";
        input {
-         leaf name {
-           type subscription-name;
+         leaf id {
+           type subscription-id;
            mandatory true;
            description
              "The name of the dynamic subscription to be deleted.";
@@ -3576,8 +3558,8 @@ Table of Contents
           where the 'error-info' field MAY contain a
           'delete-subscription-error-info' structure.";
        input {
-         leaf name {
-           type subscription-name;
+         leaf id {
+           type subscription-id;
            mandatory true;
            description
              "The name of the dynamic subscription to be deleted.";
@@ -3614,16 +3596,7 @@ Table of Contents
        description
          "This notification indicates that a subscription has started
           and notifications will now be sent.";
-       // leaf id {
-       //   type subscription-id;
-       //   mandatory true;
-       //   description
-       //     "This references the affected subscription.";
-       // }
        uses subscription-common {
-         // refine id {
-         //   mandatory true;
-         // }
          augment "target" {
            description
              "Augments fields to identify the target schema.";
@@ -3661,16 +3634,7 @@ Table of Contents
        description
          "This notification indicates that subscription paramaters have
           changed.";
-       // leaf id {
-       //   type subscription-id;
-       //   mandatory true;
-       //   description
-       //     "This references the affected subscription.";
-       // }
        uses subscription-common {
-         // refine id {
-         //   mandatory true;
-         // }
          augment "target" {
            description
              "Adds a schema id.";
@@ -3708,18 +3672,12 @@ Table of Contents
        description
          "This notification indicates that a subscription has been
           terminated.";
-       leaf name {
-         type subscription-name;
+       leaf id {
+         type subscription-id;
          mandatory true;
          description
            "The name of the subscription that has been terminated.";
        }
-       // leaf id {
-       //   type subscription-id;
-       //   mandatory true;
-       //   description
-       //     "This references the affected subscription.";
-       // }
        leaf reason {
          type identityref {
            base subscription-terminated-reason;
@@ -3739,23 +3697,11 @@ Table of Contents
           periodic updates.  It can also be used for synchronization
           updates of an on-change subscription.  This notification
           shall only be sent to receivers of a subscription.";
-       choice identifier {
-         mandatory true;
+       leaf id {
+         type subscription-id;
          description
-           "Identifier for the subscription that is the source of
+           "The identifier of the subscription that is the source of
             this notification.";
-         leaf name {
-           type subscription-name;
-           description
-             "The name of the subscription that is the source of
-              this notification.";
-         }
-         leaf id {
-           type subscription-id;
-           description
-             "The numeric identifier of the subscription that is the
-              source of this notification.";
-         }
        }
 
        leaf path-prefix {
@@ -3880,23 +3826,11 @@ Table of Contents
           Alternatively, the 'complete' flag in the update
           notification MAY be used instead of sending this notification
           as a separate message, and both are semantically equivalent.";
-       choice identifier {
-         mandatory true;
+       leaf id {
+         type subscription-id;
          description
-           "Identifier for the subscription that is the source of
-            this notification.";
-         leaf name {
-           type subscription-name;
-           description
-             "The name of the subscription that is the source of
-              this notification.";
-         }
-         leaf id {
-           type subscription-id;
-           description
-             "The numeric identifier of the subscription that is the
-              source of this notification.";
-         }
+           "The name of the subscription that is the source of
+             this notification.";
        }
      }
    }
@@ -3921,10 +3855,8 @@ Table of Contents
    module: ietf-yang-push-2-config
      +--rw datastore-telemetry!
         +--rw subscriptions
-           +--rw subscription* [name]
-              +--rw name
-              |       subscription-name
-              +--rw update-id?                          subscription-id
+           +--rw subscription* [id]
+              +--rw id                                  subscription-id
               +--rw description?                        string
               +--rw target
               |  +--rw datastore?          identityref
@@ -4006,10 +3938,8 @@ Table of Contents
         |        +--:(xpath)
         |           +--rw xpath      yang:xpath1.0 {yp2:xpath}?
         +--rw subscriptions
-        |  +--rw subscription* [name]
-        |     +--rw name
-        |     |       subscription-name
-        |     +--rw update-id?                          subscription-id
+        |  +--rw subscription* [id]
+        |     +--rw id                                  subscription-id
         |     +--rw description?                        string
         |     +--rw target
         |     |  +--rw datastore?          identityref
@@ -4242,7 +4172,7 @@ Table of Contents
            RPC primitives as well as subscriptions that have been
            established via configuration.";
          list subscription {
-           key "name";
+           key "id";
            description
              "The identity and specific parameters of a subscription.
              Subscriptions in this list can be created using a control
@@ -5265,9 +5195,9 @@ Informative References
               Feng, A. H., Francois, P., Zhou, T., Graf, T., and P.
               Lucente, "UDP-based Transport for Configured
               Subscriptions", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-udp-notif-23, 14 October 2025,
+              ietf-netconf-udp-notif-24, 20 November 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              udp-notif-23>.
+              udp-notif-24>.
 
    [I-D.draft-ietf-netmod-rfc8407bis]
               Bierman, A., Boucadair, M., and Q. Wu, "Guidelines for
@@ -5297,9 +5227,9 @@ Informative References
               Graf, T., Du, W., Francois, P., and A. H. Feng, "A
               Framework for a Network Anomaly Detection Architecture",
               Work in Progress, Internet-Draft, draft-ietf-nmop-network-
-              anomaly-architecture-05, 6 September 2025,
+              anomaly-architecture-06, 21 November 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-nmop-
-              network-anomaly-architecture-05>.
+              network-anomaly-architecture-06>.
 
    [I-D.ietf-nmop-yang-message-broker-integration]
               Graf, T. and A. Elhassany, "An Architecture for YANG-Push
@@ -5497,8 +5427,8 @@ A.2.  Changed Functionality
 
    *  Changes related to the configuration model:
 
-      -  Subscriptions are primarily identified by a string identifier
-         rather than a numeric identifier.
+      -  Subscriptions are identified by a string identifier rather than
+         a numeric identifier.
 
       -  Purpose has been renamed to Description (since it is a more
          generic term), limited to 1k characters, but also available for
@@ -5687,7 +5617,7 @@ C.1.  Example of periodic update messages
 
    {
      "ietf-yang-push-2:update": {
-       "id": 1011,
+       "id": "interfaces",
        "path-prefix": "/ietf-interfaces:interfaces/interface",
        "snapshot-type": "periodic",
        "observation-time": "2024-10-10T08:00:05.11Z",
@@ -5739,7 +5669,7 @@ C.1.  Example of periodic update messages
 
    {
      "ietf-yang-push-2:update": {
-       "id": 1011,
+       "id": "interfaces",
        "path-prefix": "/ietf-interfaces:interfaces/interface",
        "snapshot-type": "periodic",
        "observation-time": "2024-10-10T08:00:05.21Z",
@@ -5865,7 +5795,7 @@ C.3.1.  Update message with single deleted data node
 
    {
      "ietf-yang-push-2:update": {
-       "id": 1012,
+       "id": "interfaces",
        "snapshot-type": "on-change-delete",
        "observation-time": "2025-10-10T08:16:15.11Z",
        "updates": [
@@ -5902,7 +5832,7 @@ C.3.2.  Update message with multiple on-change deletes
 
    {
      "ietf-yang-push-2:update": {
-       "id": 1013,
+       "id": "interfaces",
        "path-prefix": "/ietf-interfaces:interfaces",
        "snapshot-type": "on-change-delete",
        "observation-time": "2025-10-10T08:16:16.11Z",
@@ -6291,6 +6221,9 @@ D.15.  Summary of closed/resolved issues
         data to be implicitly detected.  Something similar may be added
         to gNMI.  issue 12 (https://github.com/rgwilton/draft-yp-
         observability/issues/12)
+
+   12.  We use a string identifier to uniquely identify a subscription
+        rather than a numeric id.
 
 Authors' Addresses
 
