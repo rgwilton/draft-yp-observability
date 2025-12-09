@@ -1204,7 +1204,7 @@ The publisher responds to the request in the following way:
 
 - If the identifier matches a *dynamic* subscription created on the same transport session then it MUST terminate the subscription, as per {{TerminatingSubscriptions}}.
 
-  The publisher MAY reply back to the client before the subscription has been terminated, i.e., it may act asynchronously with respect to the delete request, however, the publisher MUST allow the client to create a new subscription using the same name immediately after either the RPC operation completes or the *subscription-terminated* notification ({{SubscriptionTerminatedNotification}}) has been transmitted.
+  The publisher MAY reply back to the client before the subscription has been terminated, i.e., it may act asynchronously with respect to the delete request, however, the publisher MUST allow the client to create a new subscription using the same subscription id immediately after either the RPC operation completes or the *subscription-terminated* notification ({{SubscriptionTerminatedNotification}}) has been transmitted.
 
 - Otherwise, the request is failed with an "unknown subscription" error message.
 
@@ -1643,7 +1643,7 @@ This section documents behavior that exists in both YANG Push and YANG Push v2, 
 
 - Changes related to the configuration model:
 
-  - Subscriptions are identified by a string identifier rather than a numeric identifier.
+  - Subscriptions are identified by a string identifier rather than a numeric identifier.  The prefix 'dyn-' is reserved for publisher allocated dyanmic subscription ids.  Clients may provide the id to be used for dynamic subscriptions.  There is changed handling for conflicting subscription-ids between configured and dynamic.
 
   - Purpose has been renamed to Description (since it is a more generic term), limited to 1k characters, but also available for dynamic subscriptions.
 
@@ -2128,4 +2128,4 @@ This appendix is only intended while the authors/WG are working on the document,
 
 1. We have a updated-completed flag/notification to allow deleted data to be implicitly detected.  Something similar may be added to gNMI.  [issue 12](https://github.com/rgwilton/draft-yp-observability/issues/12)
 
-1. We use a string identifier to uniquely identify a subscription rather than a numeric id.
+1. We use a string identifier to uniquely identify a subscription rather than a numeric id.  Reserve 'dyn-' for server allocated dynamic subscription ids.
