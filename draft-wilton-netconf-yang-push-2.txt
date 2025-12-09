@@ -6040,11 +6040,6 @@ D.1.  Issues related to general IETF process
        Issue 26 (https://github.com/rgwilton/draft-yp-observability/
        issues/26)
 
-   3.  What is the right protocol (and document) name.  Should we be
-       calling this Yang Push 2 (YPv2) to more clearly indicate that
-       this is intended to be a replacement for Yang Push?  Issue 25
-       (https://github.com/rgwilton/draft-yp-observability/issues/25)
-
 D.2.  Issue related to Terminology/Definitions
 
    1.  Should we use the object terminology?  Tracked as editorial, in
@@ -6271,7 +6266,11 @@ D.15.  Summary of closed/resolved issues
 
    12.  We use a string identifier to uniquely identify a subscription
         rather than a numeric id.  Reserve 'dyn-' for server allocated
-        dynamic subscription ids.
+        dynamic subscription ids.  Agreed config/dynamic conflict
+        policy.  Restricted names for fitler-id and receiver name.
+        Don't use a union type (could be added in future).  (Dec 8th)
+
+   13.  Draft renamed from Yang Push Lite to Yang Push 2.  (Dec 8th)
 
 Authors' Addresses
 
