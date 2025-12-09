@@ -1998,8 +1998,6 @@ The issues are ordered/grouped by the sections in the current document.  I.e., t
 
 1. Do we need to fold in any text from RFC 8640? and RESTCONF? [Issue 26](https://github.com/rgwilton/draft-yp-observability/issues/26)
 
-1. What is the right protocol (and document) name.  Should we be calling this Yang Push 2 (YPv2) to more clearly indicate that this is intended to be a replacement for Yang Push? [Issue 25](https://github.com/rgwilton/draft-yp-observability/issues/25)
-
 ## Issue related to Terminology/Definitions
 
 1. Should we use the object terminology? Tracked as editorial, in [Issue 15](https://github.com/rgwilton/draft-yp-observability/issues/15)
@@ -2128,4 +2126,6 @@ This appendix is only intended while the authors/WG are working on the document,
 
 1. We have a updated-completed flag/notification to allow deleted data to be implicitly detected.  Something similar may be added to gNMI.  [issue 12](https://github.com/rgwilton/draft-yp-observability/issues/12)
 
-1. We use a string identifier to uniquely identify a subscription rather than a numeric id.  Reserve 'dyn-' for server allocated dynamic subscription ids.
+1. We use a string identifier to uniquely identify a subscription rather than a numeric id.  Reserve 'dyn-' for server allocated dynamic subscription ids.  Agreed config/dynamic conflict policy.  Restricted names for fitler-id and receiver name.  Don't use a union type (could be added in future). (Dec 8th)
+
+1. Draft renamed from Yang Push Lite to Yang Push 2. (Dec 8th)
