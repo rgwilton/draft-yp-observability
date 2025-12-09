@@ -5,7 +5,7 @@
 Network Configuration                                     R. Wilton, Ed.
 Internet-Draft                                             Cisco Systems
 Intended status: Standards Track                               H. Keller
-Expires: 11 June 2026                                  Deuetsche Telekom
+Expires: 12 June 2026                                  Deuetsche Telekom
                                                                B. Claise
                                                           Everything OPS
                                                                 E. Aries
@@ -14,7 +14,7 @@ Expires: 11 June 2026                                  Deuetsche Telekom
                                                                    Nokia
                                                                  T. Graf
                                                                 Swisscom
-                                                         8 December 2025
+                                                         9 December 2025
 
 
              YANG Datastore Telemetry (YANG Push version 2)
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 June 2026.
+   This Internet-Draft will expire on 12 June 2026.
 
 Copyright Notice
 
@@ -1625,23 +1625,23 @@ Table of Contents
       How these are provided differs for configured vs dynamic
       subscriptions and is further explained in the sections below.
 
-   Subscription names MUST be unique across all configured and dynamic
+   Subscription ids MUST be unique across all configured and dynamic
    subscriptions.  Configured subscription take precedence over dynamic
    subscription, so:
 
-   *  attempts to create a dynamic subscription with a name that
-      conflicts with any other subscription (configured or dynamic) MUST
-      fail,
+   *  attempts to create a dynamic subscription with a subscription id
+      that conflicts with any other subscription id (configured or
+      dynamic) MUST fail,
 
    *  configuring a subscription, assuming it passes configuration
-      validation, replaces any dynamic subscriptions with the same name.
-      Thus, causing the dynamic subscription to be immediately
-      terminated (see Section 9.1.4).
+      validation, replaces any dynamic subscriptions with the same
+      subscription id.  Thus, causing the dynamic subscription to be
+      immediately terminated (see Section 9.1.4).
 
-   *  *TODO: We want to make the name optional to be specified for
-      dynamic subscriptions?  If not provided then the publisher could
-      allocate using "dyn-<XXX>", where XXX is an increasing numeric
-      subscription id?*
+   *  subscription ids starting with dyn- are reserved for the publisher
+      to use for automatically allocate subscription ids for dynamic
+      subscriptions when the client has choosen not to provide one in
+      the _establish-subscription_ RPC.
 
 9.1.1.  Subscription States
 
@@ -1909,8 +1909,8 @@ Table of Contents
    described in the YANG module in Section 12.2.
 
        +---n subscription-started
-       |  +--ro id                         subscription-id
-       |  +--ro description?               string
+       |  +--ro id                subscription-id
+       |  +--ro description?      string
        |  +--ro target
        |  |  +--ro datastore?                 identityref
        |  |  +--ro (filter)
@@ -1924,13 +1924,11 @@ Table of Contents
        |  |  +--ro yang-library-content-id?
        |  |          -> /yanglib:yang-library/content-id
        |  +--ro update-trigger
-       |  |  +--ro periodic!
-       |  |  |  +--ro period         centiseconds
-       |  |  |  +--ro anchor-time?   yang:date-and-time
-       |  |  +--ro on-change! {on-change}?
-       |  |     +--ro sync-on-start?   boolean
-       |  +--ro yang-library-content-id?
-       |          -> /yanglib:yang-library/content-id
+       |     +--ro periodic!
+       |     |  +--ro period         centiseconds
+       |     |  +--ro anchor-time?   yang:date-and-time
+       |     +--ro on-change! {on-change}?
+       |        +--ro sync-on-start?   boolean
 
          Figure 10: subscription-started Notification Tree Diagram
 
@@ -2252,7 +2250,7 @@ Table of Contents
 
        +---x establish-subscription {dynamic}?
        |  +---w input
-       |  |  +---w id?               subscription-id
+       |  |  +---w id?               restricted-subscription-id
        |  |  +---w description?      string
        |  |  +---w target
        |  |  |  +---w datastore?       identityref
@@ -2499,11 +2497,12 @@ Table of Contents
    container maintains operational state for all configured and dynamic
    subscriptions.
 
-   Dynamic subscriptions are only present in the _datastore-
-   telemetry/subscriptions/subscription_ list when they are active, and
-   are removed as soon as they are terminated.  Whereas configured
-   subscriptions are present if the list if they are configured,
-   regardless of whether they are active.
+   Both configured and dynamic subscriptions are represented in the list
+   _ietf-yang-push-2-config:datastore-telemetry/subscriptions/
+   subscription_.  Dynamic subscriptions are only present in the list
+   when they are active, and are removed as soon as they are terminated.
+   Whereas, configured subscriptions are always present in the list when
+   they are configured, regardless of whether they are active.
 
    *TODO, should dynamic receivers be listed?  Do we need to report per-
    receiver stats for dynamic subscriptions?*
@@ -2670,7 +2669,7 @@ Table of Contents
      rpcs:
        +---x establish-subscription {dynamic}?
        |  +---w input
-       |  |  +---w id?               subscription-id
+       |  |  +---w id?               restricted-subscription-id
        |  |  +---w description?      string
        |  |  +---w target
        |  |  |  +---w datastore?       identityref
@@ -2720,8 +2719,8 @@ Table of Contents
 
      notifications:
        +---n subscription-started
-       |  +--ro id                         subscription-id
-       |  +--ro description?               string
+       |  +--ro id                subscription-id
+       |  +--ro description?      string
        |  +--ro target
        |  |  +--ro datastore?                 identityref
        |  |  +--ro (filter)
@@ -2735,13 +2734,11 @@ Table of Contents
        |  |  +--ro yang-library-content-id?
        |  |          -> /yanglib:yang-library/content-id
        |  +--ro update-trigger
-       |  |  +--ro periodic!
-       |  |  |  +--ro period         centiseconds
-       |  |  |  +--ro anchor-time?   yang:date-and-time
-       |  |  +--ro on-change! {on-change}?
-       |  |     +--ro sync-on-start?   boolean
-       |  +--ro yang-library-content-id?
-       |          -> /yanglib:yang-library/content-id
+       |     +--ro periodic!
+       |     |  +--ro period         centiseconds
+       |     |  +--ro anchor-time?   yang:date-and-time
+       |     +--ro on-change! {on-change}?
+       |        +--ro sync-on-start?   boolean
        +---n subscription-modified
        |  +--ro id                subscription-id
        |  +--ro description?      string
@@ -3000,6 +2997,21 @@ Table of Contents
           receiver.";
      }
 
+     identity conflicting-identifier {
+       base subscription-terminated-reason;
+       description
+         "The subscription identifier conflicts with another
+          subscription.
+
+          This can prevent a dynamic subscription from being
+          established, or cause a dynamic subscription to be terminated
+          if a configured subscription with the same id is created.";
+
+       // TODO - Should there be separate error codes for creating a subscription
+       // vs terminating an existing one?
+     }
+
+
      /* Identities for encodings */
 
      identity configurable-encoding {
@@ -3098,10 +3110,21 @@ Table of Contents
       type string {
          length "1..64";
          pattern '[A-Za-z0-9._-]+';
-         // TODO, should we included characters from other languages?
        }
        description
          "A used friendly string identifier for a subscription.";
+     }
+
+     typedef restricted-subscription-id {
+       type subscription-id {
+         pattern "dyn-.*" {
+           modifier "invert-match";
+         }
+       }
+       description
+         "A subscription identifier that cannot start with 'dyn-',
+          which is reserved for dynamically subscriptions created by
+          the publisher.";
      }
 
      typedef transport {
@@ -3361,22 +3384,62 @@ Table of Contents
        }
      }
 
-     grouping subscription-common {
+     grouping subscription-id {
        description
-         "Common settings that are shared between dynamic and
-          configured subscriptions.";
+         "This grouping describes the subscription identifier.";
 
        leaf id {
          type subscription-id;
          mandatory true;
          description
-           "The client provided name for the subscription.
-
-            This MUST be unique across all subscriptions.  Configuring
-            a subscription with a name already used by a dynamic
-            subscription will replace the dynamic subscription, forcing
-            it to be terminated.";
+           "The unique identifier for the subscription.";
        }
+     }
+
+     grouping client-subscription-id {
+       description
+         "This grouping describes a subscription identifier that
+          cannot start with 'dyn-', which is reserved for dynamically
+          created subscriptions.";
+
+       leaf id {
+         type restricted-subscription-id;
+         description
+           "A identifier for the subscription, that MUST be unique
+           across all configured and dynamic subscriptions.
+
+           MUST NOT start with 'dyn-'.";
+       }
+     }
+
+     grouping subscription-schema {
+       description
+         "This grouping describes schema information related to a
+          subscription.";
+
+         leaf schema-id {
+           type string;
+           description
+             "Indicates the version of the YANG schema used for this
+             subscription.  The schema-id MUST change if the schema
+             associated with the subscription changes.  The schema-id
+             MAY change if the device schema changes, even if the
+             change does not affect the subscription.";
+         }
+
+         leaf yang-library-content-id {
+           type leafref {
+             path "/yanglib:yang-library/yanglib:content-id";
+           }
+           description
+             "Contains the YANG library content identifier.";
+         }
+     }
+
+     grouping subscription-common {
+       description
+         "Common settings that are shared between dynamic and
+          configured subscriptions.";
 
        leaf description {
          type string {
@@ -3428,12 +3491,14 @@ Table of Contents
           likelihood of succeeding in a subsequent
           'establish-subscription' request.";
        input {
-         uses subscription-common {
+         uses client-subscription-id {
            refine id {
-             mandatory false;
              description
-               "A optional unique identifier for a dynamic
-                subscription.
+               "A optional identifier for a dynamic
+                subscription, that must be unique across all
+                configured and dynamic subscriptions.
+
+                MUST NOT start with 'dyn-'.
 
                 If not provided, the publisher MUST generate a unique
                 identifier for the subscription, with an identifier
@@ -3441,6 +3506,7 @@ Table of Contents
                 client in the RPC reply.";
            }
          }
+         uses subscription-common;
 
          leaf encoding {
            type encoding;
@@ -3474,6 +3540,7 @@ Table of Contents
           subscription is not modified and the original subscription
           parameters remain in effect.";
        input {
+         uses subscription-id;
          uses subscription-common;
 
          uses dscp;
@@ -3596,37 +3663,13 @@ Table of Contents
        description
          "This notification indicates that a subscription has started
           and notifications will now be sent.";
+       uses subscription-id;
        uses subscription-common {
          augment "target" {
            description
              "Augments fields to identify the target schema.";
-
-           leaf schema-id {
-             type string;
-             description
-               "Indicates the version of the YANG schema used for this
-               subscription.  The schema-id MUST change if the schema
-               associated with the subscription changes.  The schema-id
-               MAY change if the device schema changes, even if the
-               change does not affect the subscription.";
-           }
-
-           leaf yang-library-content-id {
-             type leafref {
-               path "/yanglib:yang-library/yanglib:content-id";
-             }
-             description
-               "Contains the YANG library content identifier.";
-           }
+           uses subscription-schema;
          }
-       }
-
-       leaf yang-library-content-id {
-         type leafref {
-           path "/yanglib:yang-library/yanglib:content-id";
-         }
-         description
-           "Contains the YANG library content identifier.";
        }
      }
 
@@ -3634,28 +3677,12 @@ Table of Contents
        description
          "This notification indicates that subscription paramaters have
           changed.";
+       uses subscription-id;
        uses subscription-common {
          augment "target" {
            description
              "Adds a schema id.";
-
-           leaf schema-id {
-             type string;
-             description
-               "Indicates the version of the YANG schema used for this
-               subscription.  The schema-id MUST change if the schema
-               associated with the subscription changes.  The schema-id
-               MAY change if the device schema changes, even if the
-               change does not affect the subscription.";
-           }
-
-           leaf yang-library-content-id {
-             type leafref {
-               path "/yanglib:yang-library/yanglib:content-id";
-             }
-             description
-               "Contains the YANG library content identifier.";
-           }
+           uses subscription-schema;
          }
        }
 
@@ -3672,12 +3699,7 @@ Table of Contents
        description
          "This notification indicates that a subscription has been
           terminated.";
-       leaf id {
-         type subscription-id;
-         mandatory true;
-         description
-           "The name of the subscription that has been terminated.";
-       }
+       uses subscription-id;
        leaf reason {
          type identityref {
            base subscription-terminated-reason;
@@ -3856,7 +3878,8 @@ Table of Contents
      +--rw datastore-telemetry!
         +--rw subscriptions
            +--rw subscription* [id]
-              +--rw id                                  subscription-id
+              +--rw id
+              |       restricted-subscription-id
               +--rw description?                        string
               +--rw target
               |  +--rw datastore?          identityref
@@ -3879,6 +3902,8 @@ Table of Contents
               |       -> /datastore-telemetry/receivers/receiver/name
               +--ro status?
               |       yp2:subscription-status
+              +--ro type?
+              |       yp2:subscription-type
               +--ro encoding?                           yp2:encoding
               +--ro last-sequence-number?
               |       yang:zero-based-counter64
@@ -3939,7 +3964,8 @@ Table of Contents
         |           +--rw xpath      yang:xpath1.0 {yp2:xpath}?
         +--rw subscriptions
         |  +--rw subscription* [id]
-        |     +--rw id                                  subscription-id
+        |     +--rw id
+        |     |       restricted-subscription-id
         |     +--rw description?                        string
         |     +--rw target
         |     |  +--rw datastore?          identityref
@@ -3962,6 +3988,8 @@ Table of Contents
         |     |       -> /datastore-telemetry/receivers/receiver/name
         |     +--ro status?
         |     |       yp2:subscription-status
+        |     +--ro type?
+        |     |       yp2:subscription-type
         |     +--ro encoding?                           yp2:encoding
         |     +--ro last-sequence-number?
         |     |       yang:zero-based-counter64
@@ -4156,7 +4184,10 @@ Table of Contents
              "A list of preconfigured filters that can be applied
              to datastore subscriptions.";
            leaf name {
-             type string;
+             type string {
+               length "1..64";
+               pattern '[A-Za-z0-9._-]+';
+             }
              description
                "A unique name to identify the selection filters.";
            }
@@ -4183,6 +4214,7 @@ Table of Contents
              'subscription-terminated' message is sent to any active or
              suspended receivers.";
 
+           uses yp2:client-subscription-id;
            uses yp2:subscription-common;
 
            leaf receiver {
@@ -4242,6 +4274,14 @@ Table of Contents
                 subscription originated from configuration, not through
                 a controlchannel or RPC.  The value indicates the state
                 of the subscription as established by the publisher.";
+           }
+
+           leaf type {
+             type yp2:subscription-type;
+             default "configured";
+             config false;
+             description
+               "Whether the subscription is configured or dynamic.";
            }
 
            leaf encoding {
@@ -4399,7 +4439,10 @@ Table of Contents
            key "name";
 
            leaf name {
-             type string;
+             type string {
+               length "1..64";
+               pattern '[A-Za-z0-9._-]+';
+             }
              description
                "An arbitrary but unique name for this receiver
                instance.";
