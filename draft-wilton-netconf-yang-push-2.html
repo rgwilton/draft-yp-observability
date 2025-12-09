@@ -3232,7 +3232,7 @@ If none of the above parameters are set, the publisher <span class="bcp14">MAY</
 <li class="normal" id="section-9.4.3-3.1">
               <p id="section-9.4.3-3.1.1">If the identifier matches a <em>dynamic</em> subscription created on the same transport session then it <span class="bcp14">MUST</span> terminate the subscription, as per <a href="#TerminatingSubscriptions" class="auto internal xref">Section 9.1.4</a>.<a href="#section-9.4.3-3.1.1" class="pilcrow">¶</a></p>
 <p id="section-9.4.3-3.1.2">
-The publisher <span class="bcp14">MAY</span> reply back to the client before the subscription has been terminated, i.e., it may act asynchronously with respect to the delete request, however, the publisher <span class="bcp14">MUST</span> allow the client to create a new subscription using the same name immediately after either the RPC operation completes or the <em>subscription-terminated</em> notification (<a href="#SubscriptionTerminatedNotification" class="auto internal xref">Section 9.2.3</a>) has been transmitted.<a href="#section-9.4.3-3.1.2" class="pilcrow">¶</a></p>
+The publisher <span class="bcp14">MAY</span> reply back to the client before the subscription has been terminated, i.e., it may act asynchronously with respect to the delete request, however, the publisher <span class="bcp14">MUST</span> allow the client to create a new subscription using the same subscription id immediately after either the RPC operation completes or the <em>subscription-terminated</em> notification (<a href="#SubscriptionTerminatedNotification" class="auto internal xref">Section 9.2.3</a>) has been transmitted.<a href="#section-9.4.3-3.1.2" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-9.4.3-3.2">
               <p id="section-9.4.3-3.2.1">Otherwise, the request is failed with an "unknown subscription" error message.<a href="#section-9.4.3-3.2.1" class="pilcrow">¶</a></p>
@@ -6276,7 +6276,7 @@ continuous and total filtering of a subscription's content for every update reco
             <p id="appendix-A.2-2.5.1">Changes related to the configuration model:<a href="#appendix-A.2-2.5.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-A.2-2.5.2.1">
-                <p id="appendix-A.2-2.5.2.1.1">Subscriptions are identified by a string identifier rather than a numeric identifier.<a href="#appendix-A.2-2.5.2.1.1" class="pilcrow">¶</a></p>
+                <p id="appendix-A.2-2.5.2.1.1">Subscriptions are identified by a string identifier rather than a numeric identifier.  The prefix 'dyn-' is reserved for publisher allocated dyanmic subscription ids.  Clients may provide the id to be used for dynamic subscriptions.  There is changed handling for conflicting subscription-ids between configured and dynamic.<a href="#appendix-A.2-2.5.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="appendix-A.2-2.5.2.2">
                 <p id="appendix-A.2-2.5.2.2.1">Purpose has been renamed to Description (since it is a more generic term), limited to 1k characters, but also available for dynamic subscriptions.<a href="#appendix-A.2-2.5.2.2.1" class="pilcrow">¶</a></p>
@@ -7210,7 +7210,7 @@ subscription's "id".  This RPC is unmodified from <span>[<a href="#RFC8639" clas
             <p id="appendix-D.15-2.11.1">We have a updated-completed flag/notification to allow deleted data to be implicitly detected.  Something similar may be added to gNMI.  <a href="https://github.com/rgwilton/draft-yp-observability/issues/12">issue 12</a><a href="#appendix-D.15-2.11.1" class="pilcrow">¶</a></p>
 </li>
           <li id="appendix-D.15-2.12">
-            <p id="appendix-D.15-2.12.1">We use a string identifier to uniquely identify a subscription rather than a numeric id.<a href="#appendix-D.15-2.12.1" class="pilcrow">¶</a></p>
+            <p id="appendix-D.15-2.12.1">We use a string identifier to uniquely identify a subscription rather than a numeric id.  Reserve 'dyn-' for server allocated dynamic subscription ids.<a href="#appendix-D.15-2.12.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>

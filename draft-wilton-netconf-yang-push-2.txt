@@ -2339,7 +2339,7 @@ Table of Contents
       The publisher MAY reply back to the client before the subscription
       has been terminated, i.e., it may act asynchronously with respect
       to the delete request, however, the publisher MUST allow the
-      client to create a new subscription using the same name
+      client to create a new subscription using the same subscription id
       immediately after either the RPC operation completes or the
       _subscription-terminated_ notification (Section 9.2.3) has been
       transmitted.
@@ -5471,7 +5471,11 @@ A.2.  Changed Functionality
    *  Changes related to the configuration model:
 
       -  Subscriptions are identified by a string identifier rather than
-         a numeric identifier.
+         a numeric identifier.  The prefix 'dyn-' is reserved for
+         publisher allocated dyanmic subscription ids.  Clients may
+         provide the id to be used for dynamic subscriptions.  There is
+         changed handling for conflicting subscription-ids between
+         configured and dynamic.
 
       -  Purpose has been renamed to Description (since it is a more
          generic term), limited to 1k characters, but also available for
@@ -6266,7 +6270,8 @@ D.15.  Summary of closed/resolved issues
         observability/issues/12)
 
    12.  We use a string identifier to uniquely identify a subscription
-        rather than a numeric id.
+        rather than a numeric id.  Reserve 'dyn-' for server allocated
+        dynamic subscription ids.
 
 Authors' Addresses
 
