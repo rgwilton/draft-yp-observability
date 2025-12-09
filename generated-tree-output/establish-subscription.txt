@@ -1,6 +1,6 @@
     +---x establish-subscription {dynamic}?
     |  +---w input
-    |  |  +---w id?               subscription-id
+    |  |  +---w id?               restricted-subscription-id
     |  |  +---w description?      string
     |  |  +---w target
     |  |  |  +---w datastore?       identityref

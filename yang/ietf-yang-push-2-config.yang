@@ -137,7 +137,10 @@ module ietf-yang-push-2-config {
           "A list of preconfigured filters that can be applied
           to datastore subscriptions.";
         leaf name {
-          type string;
+          type string {
+            length "1..64";
+            pattern '[A-Za-z0-9._-]+';
+          }
           description
             "A unique name to identify the selection filters.";
         }
@@ -164,6 +167,7 @@ module ietf-yang-push-2-config {
           'subscription-terminated' message is sent to any active or
           suspended receivers.";
 
+        uses yp2:client-subscription-id;
         uses yp2:subscription-common;
 
         leaf receiver {
@@ -223,6 +227,14 @@ module ietf-yang-push-2-config {
              subscription originated from configuration, not through
              a controlchannel or RPC.  The value indicates the state
              of the subscription as established by the publisher.";
+        }
+
+        leaf type {
+          type yp2:subscription-type;
+          default "configured";
+          config false;
+          description
+            "Whether the subscription is configured or dynamic.";
         }
 
         leaf encoding {
@@ -380,7 +392,10 @@ module ietf-yang-push-2-config {
         key "name";
 
         leaf name {
-          type string;
+          type string {
+            length "1..64";
+            pattern '[A-Za-z0-9._-]+';
+          }
           description
             "An arbitrary but unique name for this receiver
             instance.";

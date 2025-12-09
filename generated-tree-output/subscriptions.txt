@@ -2,7 +2,8 @@ module: ietf-yang-push-2-config
   +--rw datastore-telemetry!
      +--rw subscriptions
         +--rw subscription* [id]
-           +--rw id                                  subscription-id
+           +--rw id
+           |       restricted-subscription-id
            +--rw description?                        string
            +--rw target
            |  +--rw datastore?          identityref
@@ -25,6 +26,8 @@ module: ietf-yang-push-2-config
            |       -> /datastore-telemetry/receivers/receiver/name
            +--ro status?
            |       yp2:subscription-status
+           +--ro type?
+           |       yp2:subscription-type
            +--ro encoding?                           yp2:encoding
            +--ro last-sequence-number?
            |       yang:zero-based-counter64

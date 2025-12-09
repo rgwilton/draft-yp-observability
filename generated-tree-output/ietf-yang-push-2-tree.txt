@@ -3,7 +3,7 @@ module: ietf-yang-push-2
   rpcs:
     +---x establish-subscription {dynamic}?
     |  +---w input
-    |  |  +---w id?               subscription-id
+    |  |  +---w id?               restricted-subscription-id
     |  |  +---w description?      string
     |  |  +---w target
     |  |  |  +---w datastore?       identityref
@@ -53,8 +53,8 @@ module: ietf-yang-push-2
 
   notifications:
     +---n subscription-started
-    |  +--ro id                         subscription-id
-    |  +--ro description?               string
+    |  +--ro id                subscription-id
+    |  +--ro description?      string
     |  +--ro target
     |  |  +--ro datastore?                 identityref
     |  |  +--ro (filter)
@@ -68,13 +68,11 @@ module: ietf-yang-push-2
     |  |  +--ro yang-library-content-id?
     |  |          -> /yanglib:yang-library/content-id
     |  +--ro update-trigger
-    |  |  +--ro periodic!
-    |  |  |  +--ro period         centiseconds
-    |  |  |  +--ro anchor-time?   yang:date-and-time
-    |  |  +--ro on-change! {on-change}?
-    |  |     +--ro sync-on-start?   boolean
-    |  +--ro yang-library-content-id?
-    |          -> /yanglib:yang-library/content-id
+    |     +--ro periodic!
+    |     |  +--ro period         centiseconds
+    |     |  +--ro anchor-time?   yang:date-and-time
+    |     +--ro on-change! {on-change}?
+    |        +--ro sync-on-start?   boolean
     +---n subscription-modified
     |  +--ro id                subscription-id
     |  +--ro description?      string

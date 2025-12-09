@@ -799,19 +799,12 @@ All subscriptions require the following state to be instantiated:
   - *on-change*, for the publisher to send state updates when the internal state changes, i.e., event driven.
 - receiver, transport, and encoding parameters, as per {{receivers}}.  How these are provided differs for configured vs dynamic subscriptions and is further explained in the sections below.
 
-Subscription names MUST be unique across all configured and dynamic subscriptions.  Configured subscription take precedence over dynamic subscription, so:
+Subscription ids MUST be unique across all configured and dynamic subscriptions.  Configured subscription take precedence over dynamic subscription, so:
 
-- attempts to create a dynamic subscription with a name that conflicts with any other subscription (configured or dynamic) MUST fail,
-- configuring a subscription, assuming it passes configuration validation, replaces any dynamic subscriptions with the same name.  Thus, causing the dynamic subscription to be immediately terminated (see {{TerminatingSubscriptions}}).
-- **TODO: We want to make the name optional to be specified for dynamic subscriptions?  If not provided then the publisher could allocate using "dyn-\<XXX\>", where XXX is an increasing numeric subscription id?**
+- attempts to create a dynamic subscription with a subscription id that conflicts with any other subscription id (configured or dynamic) MUST fail,
+- configuring a subscription, assuming it passes configuration validation, replaces any dynamic subscriptions with the same subscription id.  Thus, causing the dynamic subscription to be immediately terminated (see {{TerminatingSubscriptions}}).
+- subscription ids starting with ```dyn-``` are reserved for the publisher to use for automatically allocate subscription ids for dynamic subscriptions when the client has choosen not to provide one in the *establish-subscription* RPC.
 
-<!--
-// This needs to be part of the management model part of the specification.
-
-Both configured and dynamic subscriptions are represented in the list *datastore-telemetry/subscriptions/subscription*, and most of the functionality and behavior of configured and dynamic subscriptions described in this document is specified to be the same or very similar.  However, they differ in how they are created and in the associated lifecycle management, described in the following sections:
-
-A publisher MAY terminate a dynamic subscription at any time. Similarly, it MAY decide to temporarily suspend the sending of notification messages for any dynamic subscription, or for one or more receivers of a configured subscription.  Such termination or suspension is driven by internal considerations of the publisher.
--->
 
 ### Subscription States
 
@@ -1329,7 +1322,7 @@ The solution builds on [RFC8639].  As defined therein, any loss of an underlying
 
 In the operational state datastore, the *datastore-telemetry* container maintains operational state for all configured and dynamic subscriptions.
 
-Dynamic subscriptions are only present in the *datastore-telemetry/subscriptions/subscription* list when they are active, and are removed as soon as they are terminated.  Whereas configured subscriptions are present if the list if they are configured, regardless of whether they are active.
+Both configured and dynamic subscriptions are represented in the list *ietf-yang-push-2-config:datastore-telemetry/subscriptions/subscription*.  Dynamic subscriptions are only present in the list when they are active, and are removed as soon as they are terminated.  Whereas, configured subscriptions are always present in the list when they are configured, regardless of whether they are active.
 
 **TODO, should dynamic receivers be listed?  Do we need to report per-receiver stats for dynamic subscriptions?**
 

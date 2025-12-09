@@ -205,6 +205,21 @@ module ietf-yang-push-2 {
        receiver.";
   }
 
+  identity conflicting-identifier {
+    base subscription-terminated-reason;
+    description
+      "The subscription identifier conflicts with another
+       subscription.
+
+       This can prevent a dynamic subscription from being
+       established, or cause a dynamic subscription to be terminated
+       if a configured subscription with the same id is created.";
+
+    // TODO - Should there be separate error codes for creating a subscription
+    // vs terminating an existing one?
+  }
+
+
   /* Identities for encodings */
 
   identity configurable-encoding {
@@ -303,10 +318,21 @@ module ietf-yang-push-2 {
    type string {
       length "1..64";
       pattern '[A-Za-z0-9._-]+';
-      // TODO, should we included characters from other languages?
-    } 
+    }
     description
       "A used friendly string identifier for a subscription.";
+  }
+
+  typedef restricted-subscription-id {
+    type subscription-id {
+      pattern "dyn-.*" {
+        modifier "invert-match";
+      }
+    }
+    description
+      "A subscription identifier that cannot start with 'dyn-',
+       which is reserved for dynamically subscriptions created by
+       the publisher.";
   }
 
   typedef transport {
@@ -566,22 +592,62 @@ module ietf-yang-push-2 {
     }
   }
 
-  grouping subscription-common {
+  grouping subscription-id {
     description
-      "Common settings that are shared between dynamic and
-       configured subscriptions.";
+      "This grouping describes the subscription identifier.";
 
     leaf id {
       type subscription-id;
       mandatory true;
       description
-        "The client provided name for the subscription.
-
-         This MUST be unique across all subscriptions.  Configuring
-         a subscription with a name already used by a dynamic
-         subscription will replace the dynamic subscription, forcing
-         it to be terminated.";
+        "The unique identifier for the subscription.";
     }
+  }
+
+  grouping client-subscription-id {
+    description
+      "This grouping describes a subscription identifier that
+       cannot start with 'dyn-', which is reserved for dynamically
+       created subscriptions.";
+
+    leaf id {
+      type restricted-subscription-id;
+      description
+        "A identifier for the subscription, that MUST be unique
+        across all configured and dynamic subscriptions.
+
+        MUST NOT start with 'dyn-'.";
+    }
+  }
+
+  grouping subscription-schema {
+    description
+      "This grouping describes schema information related to a
+       subscription.";
+
+      leaf schema-id {
+        type string;
+        description
+          "Indicates the version of the YANG schema used for this
+          subscription.  The schema-id MUST change if the schema
+          associated with the subscription changes.  The schema-id
+          MAY change if the device schema changes, even if the 
+          change does not affect the subscription.";
+      }
+
+      leaf yang-library-content-id {
+        type leafref {
+          path "/yanglib:yang-library/yanglib:content-id";
+        }
+        description
+          "Contains the YANG library content identifier.";
+      }
+  }
+
+  grouping subscription-common {
+    description
+      "Common settings that are shared between dynamic and
+       configured subscriptions.";
 
     leaf description {
       type string {
@@ -633,12 +699,14 @@ module ietf-yang-push-2 {
        likelihood of succeeding in a subsequent
        'establish-subscription' request.";
     input {
-      uses subscription-common {
+      uses client-subscription-id {
         refine id {
-          mandatory false;
           description
-            "A optional unique identifier for a dynamic
-             subscription.
+            "A optional identifier for a dynamic
+             subscription, that must be unique across all
+             configured and dynamic subscriptions.
+
+             MUST NOT start with 'dyn-'.
 
              If not provided, the publisher MUST generate a unique
              identifier for the subscription, with an identifier
@@ -646,6 +714,7 @@ module ietf-yang-push-2 {
              client in the RPC reply.";
         }
       }
+      uses subscription-common;
 
       leaf encoding {
         type encoding;
@@ -679,6 +748,7 @@ module ietf-yang-push-2 {
        subscription is not modified and the original subscription
        parameters remain in effect.";
     input {
+      uses subscription-id;
       uses subscription-common;
 
       uses dscp;
@@ -801,37 +871,13 @@ module ietf-yang-push-2 {
     description
       "This notification indicates that a subscription has started
        and notifications will now be sent.";
+    uses subscription-id;
     uses subscription-common {
       augment "target" {
         description
           "Augments fields to identify the target schema.";
-
-        leaf schema-id {
-          type string;
-          description
-            "Indicates the version of the YANG schema used for this
-            subscription.  The schema-id MUST change if the schema
-            associated with the subscription changes.  The schema-id
-            MAY change if the device schema changes, even if the 
-            change does not affect the subscription.";
-        }
-
-        leaf yang-library-content-id {
-          type leafref {
-            path "/yanglib:yang-library/yanglib:content-id";
-          }
-          description
-            "Contains the YANG library content identifier.";
-        }
+        uses subscription-schema;
       }
-    }
-
-    leaf yang-library-content-id {
-      type leafref {
-        path "/yanglib:yang-library/yanglib:content-id";
-      }
-      description
-        "Contains the YANG library content identifier.";
     }
   }
 
@@ -839,28 +885,12 @@ module ietf-yang-push-2 {
     description
       "This notification indicates that subscription paramaters have
        changed.";
+    uses subscription-id;
     uses subscription-common {
       augment "target" {
         description
           "Adds a schema id.";
-
-        leaf schema-id {
-          type string;
-          description
-            "Indicates the version of the YANG schema used for this
-            subscription.  The schema-id MUST change if the schema
-            associated with the subscription changes.  The schema-id
-            MAY change if the device schema changes, even if the 
-            change does not affect the subscription.";
-        }
-
-        leaf yang-library-content-id {
-          type leafref {
-            path "/yanglib:yang-library/yanglib:content-id";
-          }
-          description
-            "Contains the YANG library content identifier.";
-        }
+        uses subscription-schema;
       }
     }
 
@@ -877,12 +907,7 @@ module ietf-yang-push-2 {
     description
       "This notification indicates that a subscription has been
        terminated.";
-    leaf id {
-      type subscription-id;
-      mandatory true;
-      description
-        "The name of the subscription that has been terminated.";
-    }
+    uses subscription-id;
     leaf reason {
       type identityref {
         base subscription-terminated-reason;

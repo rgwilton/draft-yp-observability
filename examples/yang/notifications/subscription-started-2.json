@@ -1,6 +1,6 @@
 {
   "ietf-yang-push-2:subscription-started": {
-    "id": "interfaces",
+    "id": "dyn-21",
     "target": {
       "datastore": "ietf-datastores:operational",
       "path": "ietf-interfaces:interfaces/interface/"

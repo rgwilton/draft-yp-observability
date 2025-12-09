@@ -1,6 +1,6 @@
     +---n subscription-started
-    |  +--ro id                         subscription-id
-    |  +--ro description?               string
+    |  +--ro id                subscription-id
+    |  +--ro description?      string
     |  +--ro target
     |  |  +--ro datastore?                 identityref
     |  |  +--ro (filter)
@@ -14,10 +14,8 @@
     |  |  +--ro yang-library-content-id?
     |  |          -> /yanglib:yang-library/content-id
     |  +--ro update-trigger
-    |  |  +--ro periodic!
-    |  |  |  +--ro period         centiseconds
-    |  |  |  +--ro anchor-time?   yang:date-and-time
-    |  |  +--ro on-change! {on-change}?
-    |  |     +--ro sync-on-start?   boolean
-    |  +--ro yang-library-content-id?
-    |          -> /yanglib:yang-library/content-id
+    |     +--ro periodic!
+    |     |  +--ro period         centiseconds
+    |     |  +--ro anchor-time?   yang:date-and-time
+    |     +--ro on-change! {on-change}?
+    |        +--ro sync-on-start?   boolean
