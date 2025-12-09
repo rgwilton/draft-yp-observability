@@ -2160,7 +2160,10 @@ Table of Contents
    subscription MUST be terminated, as per Section 9.1.4 before being
    recreated, as per Section 9.1.2.  The reset action also resets
    (terminated and re-establishes) any subscription specific transport
-   session that is not shared with any other subscriptions.
+   session that is not shared with any other subscriptions.  Any
+   counters associated with the subscription are also re-initialized in
+   a manner that is consistent with a client unconfiguring and then
+   reconfiguring the subscription.
 
    The reset action on a receiver is handled equivalently to removing
    and re-adding the receiver configuration for the receiver that has
@@ -2168,7 +2171,9 @@ Table of Contents
    receiver MUST be terminated, as per Section 9.1.4 before being
    recreated, as per Section 9.1.2.  Any transport sessions tied to the
    subscriptions referencing the reset receiver MUST also be terminated
-   and re-established.
+   and re-established.  Any counters associated with the receiver are
+   also re-initialized in a manner that is consistent with a client
+   unconfiguring and then reconfiguring the receiver configuration.
 
 9.4.  Dynamic Subscriptions
 
