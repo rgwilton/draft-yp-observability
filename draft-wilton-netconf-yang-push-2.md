@@ -882,7 +882,7 @@ If the subscription is in *Active* state, and hence a *subscription-started* not
 
 #### Modifications requiring subscription-terminated notification {#ChangesNeedingTermination}
 
-Changes to any of following parameters MUST terminate the subscription, as per {{TerminatingSubscriptions}}, before recreating it, as per {{CreatingSubscriptions}}:
+Changes to any of following parameters MUST terminate the subscription, as per {{TerminatingSubscriptions}}, before recreating it, clearing and reinitializing any associated statistics, as per {{CreatingSubscriptions}}:
 
 1. the subcription *id*
 1. the *encoding*
@@ -900,7 +900,8 @@ If changes to a subscription only include changes to the following parameters th
 1. the YANG schema (*schema-id*) associated with subscription target filter,
 1. the *update-trigger*, unless *sync-on-start* is enabled.
 1. the *description* field,
-1. any other fields that are included in a *subscription-started* notification message
+1. any other fields that are included in a *subscription-started* notification message, unless the definition of those fields explicitly specifies different
+behavior.
 
 #### Modifications requiring no lifecycle notification
 
@@ -1609,7 +1610,7 @@ This section lists functionality specified in {{RFC8639}} and YANG Push which is
 
 - Specifying a subscription stop time, and the corresponding subscription-completed notification have been removed.
 
-- Replaying of buffered event records are not supported.  The nearest equivalent is requesting a sync-on-start replay when the subscription transport session comes up which will reply the current state.
+- Replaying of buffered event records are not supported, for both configured and dynamic subscriptions.  The nearest equivalent is requesting a sync-on-start replay when the subscription transport session comes up which will reply the current state.
 
 - QoS weighting and dependency between subscriptions has been removed due to the complexity of implementation.
 
