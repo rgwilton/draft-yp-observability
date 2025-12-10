@@ -5,7 +5,7 @@
 Network Configuration                                     R. Wilton, Ed.
 Internet-Draft                                             Cisco Systems
 Intended status: Standards Track                               H. Keller
-Expires: 12 June 2026                                  Deuetsche Telekom
+Expires: 13 June 2026                                  Deuetsche Telekom
                                                                B. Claise
                                                           Everything OPS
                                                                 E. Aries
@@ -14,7 +14,7 @@ Expires: 12 June 2026                                  Deuetsche Telekom
                                                                    Nokia
                                                                  T. Graf
                                                                 Swisscom
-                                                         9 December 2025
+                                                        10 December 2025
 
 
              YANG Datastore Telemetry (YANG Push version 2)
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 June 2026.
+   This Internet-Draft will expire on 13 June 2026.
 
 Copyright Notice
 
@@ -1754,8 +1754,8 @@ Table of Contents
 9.1.3.1.  Modifications requiring subscription-terminated notification
 
    Changes to any of following parameters MUST terminate the
-   subscription, as per Section 9.1.4, before recreating it, as per
-   Section 9.1.2:
+   subscription, as per Section 9.1.4, before recreating it, clearing
+   and reinitializing any associated statistics, as per Section 9.1.2:
 
    1.  the subcription _id_
 
@@ -1793,7 +1793,8 @@ Table of Contents
    4.  the _description_ field,
 
    5.  any other fields that are included in a _subscription-started_
-       notification message
+       notification message, unless the definition of those fields
+       explicitly specifies different behavior.
 
 9.1.3.3.  Modifications requiring no lifecycle notification
 
@@ -5417,10 +5418,10 @@ A.1.  Removed Functionality
    *  Specifying a subscription stop time, and the corresponding
       subscription-completed notification have been removed.
 
-   *  Replaying of buffered event records are not supported.  The
-      nearest equivalent is requesting a sync-on-start replay when the
-      subscription transport session comes up which will reply the
-      current state.
+   *  Replaying of buffered event records are not supported, for both
+      configured and dynamic subscriptions.  The nearest equivalent is
+      requesting a sync-on-start replay when the subscription transport
+      session comes up which will reply the current state.
 
    *  QoS weighting and dependency between subscriptions has been
       removed due to the complexity of implementation.
