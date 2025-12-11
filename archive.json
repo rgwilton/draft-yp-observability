@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-12-09T00:20:19.983446+00:00",
+  "timestamp": "2025-12-11T00:20:59.688529+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -57,6 +57,11 @@
       "name": "proposed resolution",
       "description": "This issue has a proposed resolution for discussion and agreement",
       "color": "f6e000"
+    },
+    {
+      "name": "propose closing",
+      "description": "",
+      "color": "ae487f"
     }
   ],
   "issues": [
@@ -343,11 +348,12 @@
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [
-        "for discussion"
+        "for discussion",
+        "propose closing"
       ],
       "body": "YP used numeric identifiers with a purpose statement.  These are harder to manage (and much less meaningful identifiers for clients, but have the advantage that they are small in notifications.\n\nYP Lite has been changed to primarily use named identifiers (max 64 chars), with purpose renamed to description.\n\nThe current YP Lite design is for:\n- the device to allocate numeric ids when the subscription is instantiated, which are included in the subscription started notification\n- the numeric values are used in update messages (to save space).\n- this requires clients to maintain a mapping between the configured subscription name and the dynamic subscription.\n\nSome design alternatives are:\n1. go back to using numeric identifiers (I really don't like this option)\n1. use the named identifier rather than a numeric identifier in the update messages.  This would be slightly less efficient for small updates, but probably won't make much difference in most messages.\n   1. allow clients to optionally also configure/provide the numeric id, but with the name still being the primary key.  The publisher would allocate the numeric id if the client hadn't provided it. \n   2. allow clients to optionally also configure/provide the numeric id, but with the name still being the primary key.  The messages would use the named identifier unless a numeric id had also been provided, in which case that would be used.  Note, that we don't even need to force the numeric-id to be unique, you could just leave it to the client to manage the namespace of numeric ids.\n\nFor dynamic subscriptions, although thought is that we could allow the RPC to exclude both name and id, and have the device allocate the id, and construct a name like \"dyn-<allocated-id>\"\n\nFinally, should we put any other restrictions on the identifier, e.g., disallow spaces, or restrict it to something like \"a-zA-Z0-9-_\".  I'm thinking that we should probably keep this unrestricted in the spec, leaving it to the implementation, but perhaps saying that all implementations MUST support \"a-zA-Z0-9-_\", but MAY support additional characters.",
       "createdAt": "2025-10-22T10:42:29Z",
-      "updatedAt": "2025-12-08T11:52:32Z",
+      "updatedAt": "2025-12-09T10:28:03Z",
       "closedAt": null,
       "comments": [
         {
@@ -363,6 +369,20 @@
           "body": "Related to this was a short discussion of what happens if a user configures a subscription that conflicts with a dynamic subscription:\n- From our perspective, we would allow the configured subscriptions to have priority over a dynamic subscription with a conflicting id (i.e., so that if a config has been accepted as valid by the system would still be valid over say a device restart).  Note, this is what the draft currently states because I wrote the text before the discussion 2 weeks ago.\n- James has suggested that they would reject the config if the configured subscription id conflicts with an existing dynamic subscription.\n- It would be good to discuss/close on this one. ",
           "createdAt": "2025-12-08T11:52:32Z",
           "updatedAt": "2025-12-08T11:52:32Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Consensus on 8th Dec is to do the following:\n- Reserve \"dyn-\" for server allocated dynamic subscriptions, reject for any client provided id (configured or dynamic).\n- Clashing config id tears down dynamic subscription with same id.  Clashing dynamic id with configure subscription is rejected.\n- Id is optional to specify for dynamic subscription (same as YP today).\n- Limited the characters to basic ASCII, and 64 chars.  Also imposed a similar limit on receiver and filter names.\n- Added a leaf to the operational tree to indicate whether it is a configured or dynamic subscription.",
+          "createdAt": "2025-12-09T10:23:08Z",
+          "updatedAt": "2025-12-09T10:23:08Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Please check commits above (some changes were already made), and I also propose closing this issue.\n",
+          "createdAt": "2025-12-09T10:28:03Z",
+          "updatedAt": "2025-12-09T10:28:03Z"
         }
       ]
     },
@@ -461,7 +481,7 @@
       ],
       "body": "   - There seems to be consensus that having/keeping such a YANG action is useful if a configured subscription is stuck.\n   - Further discussion is needed to indicate where such an RPC should be in the data model, and what effect it should have:\n      - It could be under the subscription list, which would effectively be equivalent to forcing the subscription to terminate and re-initialize across all receivers.\n      - It could also be under the receiver list, which would effectively be equivalent to forcing all subscriptions using that receiver to terminate and re-initialize.\n      - **We also need to consider whether this would clear subscription counters or not.**\n         - RobW - it should do whatever terminating and recreating the subscription does.  Some counters would expect to be updated, others not.\n      - **Rob: I've written up some text for the reset action on a subscription and under the receiver (that applies to all subscriptions that reference the receiver configuration).  Unlike the existing reset action, I've removed the return parameter (timestamp of when it took effect), and I think that we should allow it to be processed asynchronously w.r.t the RPC caller.  Authors, please check the latest text.**",
       "createdAt": "2025-10-22T13:26:08Z",
-      "updatedAt": "2025-12-08T16:51:10Z",
+      "updatedAt": "2025-12-09T11:57:04Z",
       "closedAt": null,
       "comments": [
         {
@@ -491,6 +511,13 @@
           "body": "I haven't been strict enough splitting up the commits, so that would be tricky, probably best to look at the text here:\n\nIf you look at sections https://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yang-push-2.html#name-resetting-a-configured-subs.\n\nBut this is still treating a reset as a delete and create, but we now have a modify action, hence I think that there is argument that a reset should be less impactful, e.g., not resetting the counters that you would expect with a delete then re-creation.",
           "createdAt": "2025-12-08T16:51:10Z",
           "updatedAt": "2025-12-08T16:51:10Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Agreement on 8th Dec is:\n- Reset on subscription is equivalent to delete & re-create of the subscription which also causes any associated counters to be reset.\n\nWe have not explicitly confirmed the behaviour on calling reset on the receiver, i.e., equivalent to removing and re-adding the receiver config.  This is slightly different than the alternative which would be to treat the operation as a reset (delete/re-add) of every subscription referencing the receiver.  Need to check with Thomas/Holger on what, if any expectations they would have here.",
+          "createdAt": "2025-12-09T11:57:04Z",
+          "updatedAt": "2025-12-09T11:57:04Z"
         }
       ]
     },
@@ -499,7 +526,7 @@
       "id": "I_kwDOM-PT7s7TGREW",
       "title": "What is the new protocol called?",
       "url": "https://github.com/rgwilton/draft-yp-observability/issues/25",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
@@ -508,8 +535,8 @@
       ],
       "body": "Is it yang-push-2 or yang-push-lite.\n\nRelated:\n- what are the name of the YANG modules? (probably should minor the draft)\n- what is the name of the top level container?",
       "createdAt": "2025-10-22T17:02:02Z",
-      "updatedAt": "2025-12-08T16:53:21Z",
-      "closedAt": null,
+      "updatedAt": "2025-12-09T10:45:35Z",
+      "closedAt": "2025-12-09T10:45:35Z",
       "comments": [
         {
           "author": "rgwilton",
@@ -538,6 +565,13 @@
           "body": "> If we are to do this, then part of this work should be to obsolete the old version IMHO.\n\nThe intention is that at least initially this can live along side an older implementation.  Strategically, it might be better to delay any discussion about whether this should deprecate YANG Push until the draft is a lot more progressed (e.g., close to being finished).",
           "createdAt": "2025-12-08T16:53:20Z",
           "updatedAt": "2025-12-08T16:53:20Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Agreement was that we should call this Yang Push v2 for now.  And then wait to see if there is any further WG feedback.",
+          "createdAt": "2025-12-09T10:32:54Z",
+          "updatedAt": "2025-12-09T10:32:54Z"
         }
       ]
     },
@@ -683,9 +717,17 @@
       "labels": [],
       "body": "1. Should we define some additional operational data to help operators check that the telemetry infrastructure is performing correctly, to get an approximation of the load, etc.\n   - Rob: probably, but lower priority.\n\n1. Should dynamic subscriptions use the same receivers structure as for configured subscriptions, or should they be inline in the configured subscription?\n   - Thomas: Two sets of counters, one is at the subscription which is about fetching the data, and the other is on the receiver.\n   - James: Can think of some uses cases where listing drop counters per subscription may be helpful.\n   - Rob: Thinking about it further, it probably needs to be separate, since for some transports, each subscription may open a separate transport session to the receiver rather than trying to mux into a single transport (e.g., TCP).\n   - Rob: Proposal: Dynamic subscriptions don't appear in the receivers list.  What additional specific diags information is needed for dynamic subscriptions?  Is any of this transport specific and hence must be deferred to transport specific augmentations?",
       "createdAt": "2025-10-23T09:23:10Z",
-      "updatedAt": "2025-10-23T09:23:10Z",
+      "updatedAt": "2025-12-09T11:49:45Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "We should also consider https://github.com/rgwilton/draft-yp-observability/issues/24.\n\nSpecifically, we say that a reset on a subscriber is equivalent to removing and re-adding the subscriber config, and a reset on a receiver is equivalent to removing/re-adding the receiver configuration for all subscribers that reference the receiver, that will force the subscriptions to be terminated and recreated.\n\nAre the subscriber counters reset if a receiver goes down and comes up again?  If they are reset, then presumably the reset action should only occur when the subscription comes back up again.",
+          "createdAt": "2025-12-09T11:49:45Z",
+          "updatedAt": "2025-12-09T11:49:45Z"
+        }
+      ]
     },
     {
       "number": 32,
@@ -964,6 +1006,32 @@
       "headRepository": "earies/draft-yp-observability",
       "headRefName": "replay-completed",
       "headRefOid": "2862f6a5a6a1d02d670d8f31dfe7c4414b32585b",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 36,
+      "id": "PR_kwDOM-PT7s64M5C9",
+      "title": "Update affiliations",
+      "url": "https://github.com/rgwilton/draft-yp-observability/pull/36",
+      "state": "OPEN",
+      "author": "earies",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-12-10T18:40:32Z",
+      "updatedAt": "2025-12-10T18:40:32Z",
+      "baseRepository": "rgwilton/draft-yp-observability",
+      "baseRefName": "main",
+      "baseRefOid": "0cf2eb7de1a36efef915c7fc64bb7ad87b59a516",
+      "headRepository": "earies/draft-yp-observability",
+      "headRefName": "contact-info",
+      "headRefOid": "566f9a6b65cfec2978675b0a9f2107ad3b739127",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
