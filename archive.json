@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-12-11T00:20:59.688529+00:00",
+  "timestamp": "2025-12-16T00:21:28.336651+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -613,9 +613,17 @@
       "labels": [],
       "body": "draft-ietf-netconf-udp-notif augments into the YP Notif receiver namespace, whereas YP-Lite uses a separate namespace so their would need to be a bis version of udp-notif, or udp-notif-yp-lite that augments into the separate receiver tree (possibly with some slight config tweaks as well)?\n\n",
       "createdAt": "2025-10-22T17:14:18Z",
-      "updatedAt": "2025-10-22T17:14:18Z",
+      "updatedAt": "2025-12-15T10:50:10Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Should we also change the UDP model so that the default is that DTLS should be enabled and to force the client to explicitly disable DTLS if they don't want to use it?",
+          "createdAt": "2025-12-15T10:50:10Z",
+          "updatedAt": "2025-12-15T10:50:10Z"
+        }
+      ]
     },
     {
       "number": 28,
@@ -738,10 +746,12 @@
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "for discussion"
+      ],
       "body": "This high level issue is track issues/discussion related to the *update* notification message format:\n\n1. We allow multiple updates within a single message (primary use case is for the on-change case).  What about the timestamp, which is still just once per message (like gNMI)?  Should message bundling be optional/configurable to implement (if they all use a single shared timestamp)?\n\n   - on-change deletes are implicit by an update that replaces an existing entry with an empty data node (e.g., \"{}\" in JSON)\n\n     - An alternative choice here could be an explicit delete flag, we need to decide which would be simpler/better.\n\n   - The update message also currently includes a path-prefix to allow (like gNMI) so that they don't necessarily need to be encoded from root, specifically, I think that this makes on-change messages nicer, since the on-change is rooted to the thing that is changing rather than the root of the tree.  We need to define semantics of how this works, e.g., this should probably be controlled via configuration.\n      - Ideally, the path prefix would be exactly the same as the YPath format that is being specified for configuration.\n\n     - Thomas: We should keep this.\n\n  - *Further discussion of this issue is needed*",
       "createdAt": "2025-10-23T09:27:22Z",
-      "updatedAt": "2025-10-23T09:27:22Z",
+      "updatedAt": "2025-12-15T13:46:36Z",
       "closedAt": null,
       "comments": []
     },
