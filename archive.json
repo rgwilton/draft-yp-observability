@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-12-16T00:21:28.336651+00:00",
+  "timestamp": "2026-01-22T00:23:10.816006+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -800,6 +800,22 @@
       "body": "Should we mandate that empty containers are removed from the output or leave this as an implementation decision, on the assumption that mandating that they are included makes no sense.  Either way, I think that it would be good for the draft to be explicit on this point - i.e., a known unknown.",
       "createdAt": "2025-11-13T14:42:25Z",
       "updatedAt": "2025-11-13T14:42:25Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 37,
+      "id": "I_kwDOM-PT7s7kxbDz",
+      "title": "RFC 9196 Interaction",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/37",
+      "state": "OPEN",
+      "author": "bclaise",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "I don't understand this text: \"In particular, it augments into the ietf-system-capabilities YANG module, but defines an equivalent alternative capability structure for the ietf-notification-capabilities YANG module, which defines the capabilities for YANG Push [[RFC8641](https://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yang-push-2.html#RFC8641)].\"\n\nWhat does it mean, \"in particular\", and also \"an equivalent alternative capability...\"?\n\nFinally, why not a MUST in \"Publishers SHOULD implement the ietf-system-capabilities YANG module, defined in [[RFC9196](https://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yang-push-2.html#RFC9196)],\"",
+      "createdAt": "2026-01-21T12:56:14Z",
+      "updatedAt": "2026-01-21T12:56:42Z",
       "closedAt": null,
       "comments": []
     }
