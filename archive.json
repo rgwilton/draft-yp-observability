@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-01-22T00:23:10.816006+00:00",
+  "timestamp": "2026-02-03T00:27:16.848560+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -212,17 +212,18 @@
       "id": "I_kwDOM-PT7s7Qlbbu",
       "title": "Issues related to dynamic subscription lifecycles",
       "url": "https://github.com/rgwilton/draft-yp-observability/issues/13",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [
-        "for discussion"
+        "for discussion",
+        "propose closing"
       ],
       "body": "When a subscription is terminated, should it be MUST NOT send any more notifications after the terminated message, or SHOULD NOT?\n       \n      - Holger, Thomas, Benoit: MUST NOT\n      - James: SHOULD NOT\n      - MUST NOT is clearer from an implementation POV, but probably doesn't really matter.\n      - What does the receiver do when it gets this message anyway?  I.e., does a receiver check/know to ignore messages received after a subscription-terminated, or before a subscription-started?\n\nProposal: Change the draft to \"MUST NOT\" for now.\n\nRelated question on dynamic-subscriptions:\n- is a terminate-subscription RPC allowed to be asynchronous with respect to the caller.  I.e., is it allowed to return before the subscription has actually stopped?  Or more importantly, after the RPC returns, I think that a client must be able to recreate a new subscription using the same subscription name.\n- is a kill-subscription RPC allowed to be asynchronous with respect to the caller.  I.e., is it allowed to return before the subscription has actually stopped?  For kill-subscription I think that it should be asynchronous - I think that makes more sense given that it generally expected to be a third party and not actively consuming the subscription.\n- Do we wait for a \"establish-subscription\" RPC to return before starting to send events to a client?  YP had this restriction, but I was considering removing it, but I don't know if that would make life more difficult for clients.\n- All of these questions really relate to how much tie there should be better the config and operational flows.",
       "createdAt": "2025-10-09T14:38:14Z",
-      "updatedAt": "2025-10-24T15:02:04Z",
-      "closedAt": null,
+      "updatedAt": "2026-02-02T17:28:41Z",
+      "closedAt": "2026-02-02T17:28:41Z",
       "comments": [
         {
           "author": "rgwilton",
@@ -237,6 +238,13 @@
           "body": "Benoit/Ebben needs to read offline.\nThomas is okay, as long as, notifications are always in proper order.\n",
           "createdAt": "2025-10-24T15:02:03Z",
           "updatedAt": "2025-10-24T15:02:03Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Conclusion and agreement (and what is already written in the draft) is that it is MUST NOT.\n\n\n\n",
+          "createdAt": "2026-02-02T17:28:41Z",
+          "updatedAt": "2026-02-02T17:28:41Z"
         }
       ]
     },
@@ -343,7 +351,7 @@
       "id": "I_kwDOM-PT7s7TBMfj",
       "title": "Subscription identifiers (string vs numeric)",
       "url": "https://github.com/rgwilton/draft-yp-observability/issues/19",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
@@ -353,8 +361,8 @@
       ],
       "body": "YP used numeric identifiers with a purpose statement.  These are harder to manage (and much less meaningful identifiers for clients, but have the advantage that they are small in notifications.\n\nYP Lite has been changed to primarily use named identifiers (max 64 chars), with purpose renamed to description.\n\nThe current YP Lite design is for:\n- the device to allocate numeric ids when the subscription is instantiated, which are included in the subscription started notification\n- the numeric values are used in update messages (to save space).\n- this requires clients to maintain a mapping between the configured subscription name and the dynamic subscription.\n\nSome design alternatives are:\n1. go back to using numeric identifiers (I really don't like this option)\n1. use the named identifier rather than a numeric identifier in the update messages.  This would be slightly less efficient for small updates, but probably won't make much difference in most messages.\n   1. allow clients to optionally also configure/provide the numeric id, but with the name still being the primary key.  The publisher would allocate the numeric id if the client hadn't provided it. \n   2. allow clients to optionally also configure/provide the numeric id, but with the name still being the primary key.  The messages would use the named identifier unless a numeric id had also been provided, in which case that would be used.  Note, that we don't even need to force the numeric-id to be unique, you could just leave it to the client to manage the namespace of numeric ids.\n\nFor dynamic subscriptions, although thought is that we could allow the RPC to exclude both name and id, and have the device allocate the id, and construct a name like \"dyn-<allocated-id>\"\n\nFinally, should we put any other restrictions on the identifier, e.g., disallow spaces, or restrict it to something like \"a-zA-Z0-9-_\".  I'm thinking that we should probably keep this unrestricted in the spec, leaving it to the implementation, but perhaps saying that all implementations MUST support \"a-zA-Z0-9-_\", but MAY support additional characters.",
       "createdAt": "2025-10-22T10:42:29Z",
-      "updatedAt": "2025-12-09T10:28:03Z",
-      "closedAt": null,
+      "updatedAt": "2026-02-02T17:20:21Z",
+      "closedAt": "2026-02-02T17:20:21Z",
       "comments": [
         {
           "author": "rgwilton",
@@ -391,17 +399,18 @@
       "id": "I_kwDOM-PT7s7TCVi1",
       "title": "Subscription-filters (referenced filters and multiple-filters)",
       "url": "https://github.com/rgwilton/draft-yp-observability/issues/20",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [
-        "for discussion"
+        "for discussion",
+        "propose closing"
       ],
       "body": "The current draft:\n\n- Basic dynamic subscriptions require the subscription filter to be specified inline.\n\n- The IETF config model:\n  - allows filters to be specified inline, but also allows a reference to a filter (i.e., same as RFC 8641). \n  - also augments the dynamic establish-subscription RPC to allow a dynamic subscription to reference a configured subscription.\n\nThe subscription-started notification always includes the filter inline (even if it was referenced).  If the subscription was created using a referenced filter, then the name of the referenced filter is also included in the subscription started.\n\nIf a subscription is allowed to contain multiple filter paths then there is a question to whether a subscription would be allowed to referenced multiple filters.",
       "createdAt": "2025-10-22T12:11:09Z",
-      "updatedAt": "2025-10-24T14:51:46Z",
-      "closedAt": null,
+      "updatedAt": "2026-02-02T17:13:12Z",
+      "closedAt": "2026-02-02T17:13:12Z",
       "comments": [
         {
           "author": "rgwilton",
@@ -481,7 +490,7 @@
       ],
       "body": "   - There seems to be consensus that having/keeping such a YANG action is useful if a configured subscription is stuck.\n   - Further discussion is needed to indicate where such an RPC should be in the data model, and what effect it should have:\n      - It could be under the subscription list, which would effectively be equivalent to forcing the subscription to terminate and re-initialize across all receivers.\n      - It could also be under the receiver list, which would effectively be equivalent to forcing all subscriptions using that receiver to terminate and re-initialize.\n      - **We also need to consider whether this would clear subscription counters or not.**\n         - RobW - it should do whatever terminating and recreating the subscription does.  Some counters would expect to be updated, others not.\n      - **Rob: I've written up some text for the reset action on a subscription and under the receiver (that applies to all subscriptions that reference the receiver configuration).  Unlike the existing reset action, I've removed the return parameter (timestamp of when it took effect), and I think that we should allow it to be processed asynchronously w.r.t the RPC caller.  Authors, please check the latest text.**",
       "createdAt": "2025-10-22T13:26:08Z",
-      "updatedAt": "2025-12-09T11:57:04Z",
+      "updatedAt": "2026-02-02T17:58:57Z",
       "closedAt": null,
       "comments": [
         {
@@ -518,6 +527,13 @@
           "body": "Agreement on 8th Dec is:\n- Reset on subscription is equivalent to delete & re-create of the subscription which also causes any associated counters to be reset.\n\nWe have not explicitly confirmed the behaviour on calling reset on the receiver, i.e., equivalent to removing and re-adding the receiver config.  This is slightly different than the alternative which would be to treat the operation as a reset (delete/re-add) of every subscription referencing the receiver.  Need to check with Thomas/Holger on what, if any expectations they would have here.",
           "createdAt": "2025-12-09T11:57:04Z",
           "updatedAt": "2025-12-09T11:57:04Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "James: Why doesn't the kill rpc not also work with configured subscriptions?  Also open as a separate issue.\nRob: Are there any NETCONF examples?",
+          "createdAt": "2026-02-02T17:58:57Z",
+          "updatedAt": "2026-02-02T17:58:57Z"
         }
       ]
     },
@@ -589,7 +605,7 @@
       ],
       "body": "I.e., there was this text in the one of the previous docs:   Bindings for subscribed event record delivery for NETCONF and RESTCONF are defined in **RFC 8640** and **RFC 8650**, respectively.\n   - Rob: If text is needed for NETCONF and/or RESTCONF then I suspect that it would be better added to this document than to require small separate documents (as was done before).\n   - But ideally, we would try and keep the text as common/generic as possible and minimise the amount of text needed for NETCONF or RESTCONF specifics.  E.g., perhaps they are just informational example drafts.",
       "createdAt": "2025-10-22T17:11:18Z",
-      "updatedAt": "2025-10-24T10:53:37Z",
+      "updatedAt": "2026-02-02T17:39:24Z",
       "closedAt": null,
       "comments": [
         {
@@ -598,6 +614,13 @@
           "body": "Both RFC 8640 and RFC 8650 are about 20 long.\n\nDo we fold the NETCONF doc into the core YP Lite spec?  Or do we keep it as a separate document, which I think would mean that some of examples currently in YP Lite regarding creating/managing subscriptions would move out to the separate document and be referenced.\n\nThe same question applies to RESTCONF.\n\nI.e., the core question is how much better is it to have a single doc that contains everything vs a small set of documents, e.g.,:\n1. core protocols (including notifications and RPC definitions)\n1. ietf config/oper data model\n1. YP Lite binding/examples for NETCONF\n1. YP Lite binding/examples for RESTCONF\n1. envelope (expect to reuse existing envelope draft)\n1. udp-notif (bis, or YP-Lite version of draft is needed).\n",
           "createdAt": "2025-10-24T10:53:26Z",
           "updatedAt": "2025-10-24T10:53:26Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "James: Would be nice to NETCONF into YP2 draft, no obvious need for RESTCONF support.  Probably easier to do this as separate drafts?\nBenoit: These are only for dynamic subscriptions, do we agree that is all that we would need to document.\nRob/James: This seems to be focus on the error handling (i.e., mapping errors back).  Perhaps this could be done in a generic way in this draft meaning that separate drafts are not required.\n\nRob to look at these two docs again and come up with a concrete proposal of what we could add to YP and see what that looks like.\n ",
+          "createdAt": "2026-02-02T17:39:24Z",
+          "updatedAt": "2026-02-02T17:39:24Z"
         }
       ]
     },
@@ -1051,7 +1074,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2025-12-10T18:40:32Z",
-      "updatedAt": "2025-12-10T18:40:32Z",
+      "updatedAt": "2026-02-02T17:04:17Z",
       "baseRepository": "rgwilton/draft-yp-observability",
       "baseRefName": "main",
       "baseRefOid": "0cf2eb7de1a36efef915c7fc64bb7ad87b59a516",
@@ -1063,7 +1086,21 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOM-PT7s7e9887",
+          "commit": {
+            "abbreviatedOid": "566f9a6"
+          },
+          "author": "bclaise",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-02-02T17:04:17Z",
+          "updatedAt": "2026-02-02T17:04:17Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
