@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-03T00:27:16.848560+00:00",
+  "timestamp": "2026-02-17T00:27:26.412506+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -200,10 +200,12 @@
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "for discussion"
+      ],
       "body": "This replaces the replay-complete notification and may be used on any notification:\n\n- Does this need a flag to indicate that the update-complete notification is due to an initial-sync?  I'm not convinced, but we could potentially just include the *snapshot-type* from the notification message.\n- Check that there is agreement that a single notification is better than too separate notifications (less code paths).\n\n- Should clients have to configure on each subscription that they want to receive update-complete notifications on each subscription (we could also implement a hierarchical default)?  Or is this just default behaviour and these notifications should always be generated?\n\n- Note, that I also have a working assumption that even if a subscription is effectively decomposed internally (e.g., perhaps due to multiple subscription paths) then we would only have a single update-complete notification when all internal subscriptions have completed.",
       "createdAt": "2025-10-09T14:23:12Z",
-      "updatedAt": "2025-10-09T14:26:50Z",
+      "updatedAt": "2026-02-16T16:50:08Z",
       "closedAt": null,
       "comments": []
     },
@@ -453,12 +455,22 @@
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "for discussion"
+      ],
       "body": "    - Holger, terminate & recreate.\n    - gNMI, not specified.\n    - Thomas: Keep this as implementation detail.\n    - Sequence-id indicates that a client is dropping message anyway.\n    - Receiver can already monitor and see that there is a problem anyway.\n\nCurrent proposed text:\n\n```\nIn addition, publishers are not required to notify every change or value for an on-change monitored data node.  Instead, publishers MAY limit the rate at which changes are reported for a given data node, i.e., effectively deciding the interval at which an underlying value is sampled.  If a data node changes value and then reverts back to the original value within a sample interval then the publisher MAY not detect the change and it would go unreported.  However, if the data node changes to a new value after it has been sampled, then the change and latest state are reported to the receiver.  In addition, if a client was to query the value (e.g., through a NETCONF get-data RPC) then they MUST see the same observed value as would be notified.\n```",
       "createdAt": "2025-10-22T13:03:43Z",
-      "updatedAt": "2025-10-22T13:03:43Z",
+      "updatedAt": "2026-02-16T16:31:14Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "We need to decide what the behaviour is if the publisher fails to queue a message and hence drops it:\n- terminate the connection\n- carry on regardless (rely on clients to detect sequence number loss)\n- or is this configurable behaviour?\n- is this transport specific?  \n  - E.g., for a UDP based transport you can just drop because there are sequence numbers.\n  - But for a reliable transport, if the client is back pressuring the publisher then there is effectively no choice but to terminate the connection because it cannot buffer arbitrarily.",
+          "createdAt": "2026-02-16T16:31:14Z",
+          "updatedAt": "2026-02-16T16:31:14Z"
+        }
+      ]
     },
     {
       "number": 23,
@@ -839,6 +851,22 @@
       "body": "I don't understand this text: \"In particular, it augments into the ietf-system-capabilities YANG module, but defines an equivalent alternative capability structure for the ietf-notification-capabilities YANG module, which defines the capabilities for YANG Push [[RFC8641](https://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yang-push-2.html#RFC8641)].\"\n\nWhat does it mean, \"in particular\", and also \"an equivalent alternative capability...\"?\n\nFinally, why not a MUST in \"Publishers SHOULD implement the ietf-system-capabilities YANG module, defined in [[RFC9196](https://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yang-push-2.html#RFC9196)],\"",
       "createdAt": "2026-01-21T12:56:14Z",
       "updatedAt": "2026-01-21T12:56:42Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 38,
+      "id": "I_kwDOM-PT7s7rSpSR",
+      "title": "should kill-subscription apply to both configured and dynamic subscriptions?",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/38",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Raised by James:\n\nToday the model restricts the kill-subscription RPC to just dynamic subscriptions (i.e., mirroring the behaviour of legacy YANG Push).\n\nYANG Push v2 also defined a reset-action for configured subscriptions to either reset a single subscription or all subscription to the same receiver.\n\nJames is suggesting that we should align the \"kill-subscription\" so that it is also allowed to kill configured subscriptions, since similar RPCs exist to reset BGP sessions and apply whether it is a configured or dynamically created BGP session.\n\nSome comments:\n- the behaviour between dynamic and configured is different, since the configured subscription will just flap whereas for a dynamic subscription it won't come back unless the client re-creates it.\n- kill is potentially the wrong name for the action taken on a configured subscription, but perhaps could be called reset instead.\n- would we want an equivalent RPC that acts on all subscription to the same receiver.  E.g., if you know that there has been an issue with a collector then a single RPC could be used to flap all sessions rather requiring that the client knows what they all are, or iterates over them.\n- Same as the previous comment, but for all subscriptions.  I.e., a single RPC that acts on all subscriptions.\n- If we do make the RPC apply to both dynamic and configured subscriptions then does that mean that we would get rid of the action(s) in the config model?",
+      "createdAt": "2026-02-16T12:28:47Z",
+      "updatedAt": "2026-02-16T12:28:47Z",
       "closedAt": null,
       "comments": []
     }
