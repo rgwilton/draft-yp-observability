@@ -215,8 +215,8 @@ module ietf-yang-push-2 {
        established, or cause a dynamic subscription to be terminated
        if a configured subscription with the same id is created.";
 
-    // TODO - Should there be separate error codes for creating a subscription
-    // vs terminating an existing one?
+    // TODO - Should there be separate error codes for creating a
+    // subscription vs terminating an existing one?
   }
 
 
@@ -1011,20 +1011,42 @@ module ietf-yang-push-2 {
            path-prefix.";
       }
 
-      anydata data {
+      choice data {
         description
-          "This contains the updated data.  It constitutes a
-          snapshot at the time of update of the set of data that has
-          been subscribed to.  The snapshot corresponds to the same
-          snapshot that would be returned in a corresponding 'get'
-          operation with the same selection filter parameters
-          applied.
+          "This choice indicates the type of update that is being
+           performed at the target path.";
+        anydata merge {
+          description
+            "This contains the updated data that is to be merged with
+            the existing data at the target path.  It constitutes a
+            snapshot at the time of update of the set of data that
+            has been subscribed to.  The snapshot corresponds to the
+            same snapshot that would be returned in a corresponding
+            'get' operation with the same selection filter parameters
+            applied.
 
-          For an on-change delete notification, the
-          datastore-snapshot will be absent for the given target
-          path.
+            The snapshot is encoded relative to the combined path
+            defined by the common path-prefix and target-path";
+        }
+        anydata replaced-by {
+          description
+            "This contains the updated data that is to replace all
+            existing data at the target path.   It constitutes a
+            snapshot at the time of update of the set of data that
+            has been subscribed to.  The snapshot corresponds to the
+            same snapshot that would be returned in a corresponding
+            'get' operation with the same selection filter parameters
+            applied.
 
-          The snapshot is encoded relative to the path-prefix.";
+            The snapshot is encoded relative to the combined path
+            defined by the common path-prefix and target-path";
+        }
+        leaf deleted {
+          type empty;
+          description
+            "This indicates that the data at the target path has been
+             deleted.";
+        }
       }
     }
 

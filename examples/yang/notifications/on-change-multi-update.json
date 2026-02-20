@@ -7,32 +7,20 @@
     "updates": [
       {
         "target-path": "interface[name='eth0']",
-        "data": {
-          "ietf-interfaces:interfaces": {
-            "ietf-interfaces:interface": [
-              {
-                "name": "eth0",
-                "type": "iana-if-type:ethernetCsmacd",
-                "enabled": false,
-                "ietf-interfaces:oper-status": "down"
-              }
-            ]
-          }
+        "replaced-by": {
+          "name": "eth0",
+          "type": "iana-if-type:ethernetCsmacd",
+          "enabled": false,
+          "ietf-interfaces:oper-status": "down"
         }
       },
       {
         "target-path": "interface[name='eth1']",
-        "data": {
-          "ietf-interfaces:interfaces": {
-            "ietf-interfaces:interface": [
-              {
-                "name": "eth1",
-                "type": "iana-if-type:ethernetCsmacd",
-                "enabled": false,
-                "ietf-interfaces:oper-status": "down"
-              }
-            ]
-          }
+        "replaced-by": {
+          "name": "eth1",
+          "type": "iana-if-type:ethernetCsmacd",
+          "enabled": false,
+          "ietf-interfaces:oper-status": "down"
         }
       }
     ]

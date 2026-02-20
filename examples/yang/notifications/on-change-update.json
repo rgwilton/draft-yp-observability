@@ -6,17 +6,11 @@
     "updates": [
       {
         "target-path": "ietf-interfaces:interfaces/interface[name='eth0']",
-        "data": {
-          "ietf-interfaces:interfaces": {
-            "ietf-interfaces:interface": [
-              {
-                "name": "eth0",
-                "type": "iana-if-type:ethernetCsmacd",
-                "enabled": false,
-                "ietf-interfaces:oper-status": "down"
-              }
-            ]
-          }
+        "merge": {
+          "name": "eth0",
+          "type": "iana-if-type:ethernetCsmacd",
+          "enabled": false,
+          "ietf-interfaces:oper-status": "down"
         }
       }
     ]

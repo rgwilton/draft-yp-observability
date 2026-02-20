@@ -203,7 +203,7 @@ module ietf-yang-push-2-config {
         //           A receiver in connecting state may indicate that
         //           the transport or associated security session
         //           could not be established, and the publisher is
-        //           periodically trying to establish the connection.";
+        //         periodically trying to establish the connection.";
         //     }
         //     enum active {
         //       description
@@ -225,7 +225,7 @@ module ietf-yang-push-2-config {
           description
             "The presence of this leaf indicates that the
              subscription originated from configuration, not through
-             a controlchannel or RPC.  The value indicates the state
+             a control channel or RPC.  The value indicates the state
              of the subscription as established by the publisher.";
         }
 
@@ -423,9 +423,9 @@ module ietf-yang-push-2-config {
             "Resets all configured subscriptions that reference
              this receiver.
 
-             This action is directly equivalent to invoking the 
-             'reset' action on all subscriptions that references
-             this receiver configuration.";
+             This action is similar to invoking the 'reset' action
+             on all subscriptions that reference this receiver
+             configuration.";
         }
 
         choice notification-message-origin {

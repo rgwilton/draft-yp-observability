@@ -4,6 +4,12 @@
     |  +--ro snapshot-type       enumeration
     |  +--ro observation-time?   yang:date-and-time
     |  +--ro updates* [target-path]
-    |  |  +--ro target-path    string
-    |  |  +--ro data?          <anydata>
+    |  |  +--ro target-path          string
+    |  |  +--ro (data)?
+    |  |     +--:(merge)
+    |  |     |  +--ro merge?         <anydata>
+    |  |     +--:(replaced-by)
+    |  |     |  +--ro replaced-by?   <anydata>
+    |  |     +--:(deleted)
+    |  |        +--ro deleted?       empty
     |  +--ro complete?           empty

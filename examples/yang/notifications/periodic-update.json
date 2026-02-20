@@ -7,7 +7,7 @@
     "updates": [
       {
         "target-path": "",
-        "data": {
+        "merge": {
           "ietf-interfaces:interface": [
             {
               "name": "eth0",
