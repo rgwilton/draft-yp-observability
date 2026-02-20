@@ -5,7 +5,7 @@
 Network Configuration                                     R. Wilton, Ed.
 Internet-Draft                                             Cisco Systems
 Intended status: Standards Track                               H. Keller
-Expires: 13 June 2026                                  Deuetsche Telekom
+Expires: 24 August 2026                                Deuetsche Telekom
                                                                B. Claise
                                                           Everything OPS
                                                                 E. Aries
@@ -14,7 +14,7 @@ Expires: 13 June 2026                                  Deuetsche Telekom
                                                                    Nokia
                                                                  T. Graf
                                                                 Swisscom
-                                                        10 December 2025
+                                                        20 February 2026
 
 
              YANG Datastore Telemetry (YANG Push version 2)
@@ -60,11 +60,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 13 June 2026.
+   This Internet-Draft will expire on 24 August 2026.
 
 Copyright Notice
 
-   Copyright (c) 2025 IETF Trust and the persons identified as the
+   Copyright (c) 2026 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -146,22 +146,23 @@ Table of Contents
    11. Conformance and Capabilities
      11.1.  Capabilities
      11.2.  Subscription Content Versioning
-   12. Core YANG Push v2 YANG Data Model
-     12.1.  ietf-yang-push-2 YANG tree
-     12.2.  ietf-yang-push-2 YANG Model
-   13. Configured Subscription YANG Data Model
-     13.1.  ietf-yang-push-2-config YANG tree
-     13.2.  ietf-yang-push-2-config YANG Model
-   14. Capabilities YANG Data Model
-     14.1.  ietf-yang-push-2-capabilities YANG tree
-     14.2.  ietf-yang-push-2-capabilities YANG Model
-   15. Security Considerations
-     15.1.  Use of YANG Push v2 with NACM
-     15.2.  Receiver Authorization
-     15.3.  YANG Module Security Considerations
-   16. IANA Considerations
-     16.1.  Namespace URI registrations
-   17. YANG Module Name registrations
+   12. Distributed Notifications
+   13. Core YANG Push v2 YANG Data Model
+     13.1.  ietf-yang-push-2 YANG tree
+     13.2.  ietf-yang-push-2 YANG Model
+   14. Configured Subscription YANG Data Model
+     14.1.  ietf-yang-push-2-config YANG tree
+     14.2.  ietf-yang-push-2-config YANG Model
+   15. Capabilities YANG Data Model
+     15.1.  ietf-yang-push-2-capabilities YANG tree
+     15.2.  ietf-yang-push-2-capabilities YANG Model
+   16. Security Considerations
+     16.1.  Use of YANG Push v2 with NACM
+     16.2.  Receiver Authorization
+     16.3.  YANG Module Security Considerations
+   17. IANA Considerations
+     17.1.  Namespace URI registrations
+   18. YANG Module Name registrations
    Acknowledgments
    Contributors
    References
@@ -517,7 +518,7 @@ Table of Contents
    *  a choice of how update event notifications for the datastore's
       data nodes are triggered.  I.e., either periodic sampling of the
       current state, on-change event-driven, or both.  These are
-      described in *TODO, add reference*.
+      described in Section 7.3.
 
    *  a choice of encoding of the messages, e.g., JSON, or CBOR.
 
@@ -549,7 +550,7 @@ Table of Contents
 
    Security access control mechanisms, e.g., NACM {RFC8341}} can be used
    to ensure the receivers only get access to the information for which
-   they are allowed.  This is further described in Section 15.
+   they are allowed.  This is further described in Section 16.
 
    While the functionality defined in this document is transport
    agnostic, transports like the Network Configuration Protocol
@@ -569,8 +570,8 @@ Table of Contents
    This document defines a YANG data model, that includes RPCs and
    notifications, for configuring and managing subscriptions and
    associated configuration, and to define the format of a _update_
-   notification message.  The YANG model is defined in Section 12.2 and
-   associated tree view in Section 12.1.  The YANG data model defined in
+   notification message.  The YANG model is defined in Section 13.2 and
+   associated tree view in Section 13.1.  The YANG data model defined in
    this document conforms to the Network Management Datastore
    Architecture defined in [RFC8342].
 
@@ -800,7 +801,7 @@ Table of Contents
 
    Below is a tree diagram for the "filters" container.  All objects
    contained in this tree are described in the YANG module in
-   Section 12.
+   Section 13.
 
    module: ietf-yang-push-2-config
      +--rw datastore-telemetry!
@@ -977,14 +978,20 @@ Table of Contents
        |  +--ro snapshot-type       enumeration
        |  +--ro observation-time?   yang:date-and-time
        |  +--ro updates* [target-path]
-       |  |  +--ro target-path    string
-       |  |  +--ro data?          <anydata>
+       |  |  +--ro target-path          string
+       |  |  +--ro (data)?
+       |  |     +--:(merge)
+       |  |     |  +--ro merge?         <anydata>
+       |  |     +--:(replaced-by)
+       |  |     |  +--ro replaced-by?   <anydata>
+       |  |     +--:(deleted)
+       |  |        +--ro deleted?       empty
        |  +--ro complete?           empty
 
                       Figure 3: 'update' notification
 
    The normative definitions for the notifications fields are given in
-   the YANG module in Section 12.  The fields can be informatively
+   the YANG module in Section 13.  The fields can be informatively
    summarized as:
 
    *  _id_ - identifies the subscription the notification relates to.
@@ -1048,7 +1055,7 @@ Table of Contents
                     Figure 4: 'update-trigger' container
 
    The normative definitions for the update-trigger fields are given in
-   the _ietf-yang-push-2_ YANG module in Section 12.  They are also
+   the _ietf-yang-push-2_ YANG module in Section 13.  They are also
    described in the following sections.
 
 7.4.  Periodic events
@@ -1301,7 +1308,7 @@ Table of Contents
 
    Below is a tree diagram for _datastore-telemetry/receivers_
    container.  All objects contained in this tree are described in the
-   YANG module in Section 12.2.
+   YANG module in Section 13.2.
 
    These parameters identify how to connect to each receiver.  For each
    subscription, the publisher uses the referenced receiver
@@ -1369,7 +1376,7 @@ Table of Contents
       notifications from.
 
    This specification is transport independent, e.g., see Section 8.2,
-   and thus the YANG module defined in Section 12.2 cannot directly
+   and thus the YANG module defined in Section 13.2 cannot directly
    define and expose these transport parameters.  Instead, receiver-
    specific transport connectivity parameters MUST be configured via
    transport-specific augmentations to the YANG choice node _/datastore-
@@ -1476,7 +1483,7 @@ Table of Contents
 
    The transport specification MUST provide YANG modules, to be
    implemented by publishers implementing the YANG Push configuration
-   model in Section 13, that:
+   model in Section 14, that:
 
    *  augments the _datastore-telemetry/receivers/transport-type_ choice
       statement with a container that both identifies the transport and
@@ -1486,7 +1493,7 @@ Table of Contents
       capabilities/_ container with any transport specific capabilities
       or options (conditional on a YANG _when_ statement).  Note,
       encodings for a given transport are advertised directly via the
-      ietf-yang-push-2-capabilities YANG Model Section 14.2.
+      ietf-yang-push-2-capabilities YANG Model Section 15.2.
 
    Using a secure transport is RECOMMENDED.  Thus, any transport
    specification MUST provide a mechanism to ensure secure communication
@@ -1575,7 +1582,7 @@ Table of Contents
    encodings can be defined by defining and implementing new identities
    that derive from the _encoding_ base identity, and also advertising
    those identities as part of the ietf-yang-push-2-capabilities YANG
-   module's transport capabilities Section 14.2.
+   module's transport capabilities Section 15.2.
 
 9.  Setting up and Managing Subscriptions
 
@@ -1658,15 +1665,13 @@ Table of Contents
 
    *  *Inactive*: a valid subscription, but one that is not active
       because it has no associated receivers.  This state is unlikely to
-      be seen for dynamic subscriptions. *TODO, do we still need this
-      state?*
+      be seen for dynamic subscriptions.
 
    *  *Connecting*: a subscription that is valid, and has appropriate
       receiver configuration, but the publisher has not managed to
       successfully connect to the receiver yet, and hence has not sent a
       _subscription-started_ notification.  Transport security failures
-      would be in this state.  *TODO, what about no route to the
-      receiver?*
+      would be in this state.
 
    *  *Active*: a valid subscription, connected to the receiver, that
       has sent a _subscription-stated_ notification and is generating
@@ -1722,14 +1727,9 @@ Table of Contents
 
    After a subscription is successfully established, the publisher
    immediately sends a _subscription-started_ subscription state change
-   notification to each receiver.  It is quite possible that upon
+   notification to the receiver.  It is quite possible that upon
    configuration, reboot, or even steady-state operations, a transport
-   session may not be currently available to the receiver.  In this
-   case, when there is something to transport for an active
-   subscription, transport-specific "call home" operations [RFC8071]
-   will be used to establish the connection. *TODO - this should just
-   reference the transport RFCs*.  When transport connectivity is
-   available, notification messages may then be pushed.
+   session may not be currently available to the receiver.
 
    With active configured subscriptions, it is allowable to buffer event
    records even after a _subscription-started_ has been sent.  However,
@@ -1737,6 +1737,7 @@ Table of Contents
    being reached, a _subscription-terminated_ notification MUST be sent,
    followed by a new _subscription-started_ notification.  These
    notifications indicate an event record discontinuity has occurred.
+   *TODO, do we always want this behaviour or is it transport specific?*
 
 9.1.3.  Modifying Subscriptions
 
@@ -1907,7 +1908,7 @@ Table of Contents
 
    Below is the tree diagram for the _subscription-started_
    notification.  All data nodes contained in this tree diagram are
-   described in the YANG module in Section 12.2.
+   described in the YANG module in Section 13.2.
 
        +---n subscription-started
        |  +--ro id                subscription-id
@@ -1948,7 +1949,7 @@ Table of Contents
    equivalently.
 
    All data nodes contained in this tree diagram are described in the
-   YANG module in Section 12.2.
+   YANG module in Section 13.2.
 
        +---n subscription-modified
        |  +--ro id                subscription-id
@@ -2010,7 +2011,7 @@ Table of Contents
 
    Below is a tree diagram for "subscription-terminated".  All objects
    contained in this tree are described in the YANG module in
-   Section 12.2.
+   Section 13.2.
 
        +---n subscription-terminated
        |  +--ro id        subscription-id
@@ -2021,8 +2022,14 @@ Table of Contents
        |  +--ro snapshot-type       enumeration
        |  +--ro observation-time?   yang:date-and-time
        |  +--ro updates* [target-path]
-       |  |  +--ro target-path    string
-       |  |  +--ro data?          <anydata>
+       |  |  +--ro target-path          string
+       |  |  +--ro (data)?
+       |  |     +--:(merge)
+       |  |     |  +--ro merge?         <anydata>
+       |  |     +--:(replaced-by)
+       |  |     |  +--ro replaced-by?   <anydata>
+       |  |     +--:(deleted)
+       |  |        +--ro deleted?       empty
        |  +--ro complete?           empty
        +---n update-complete
           +--ro id?   subscription-id
@@ -2063,7 +2070,7 @@ Table of Contents
    receiver.
 
    This document specifies the ietf-yang-push-2-config YANG module
-   Section 13.2 that defines an configuration model for configuring
+   Section 14.2 that defines an configuration model for configuring
    subscriptions.  Support for this YANG module is OPTIONAL and is
    advertised using the normal YANG mechanisms, e.g., [RFC8525]. *TODO,
    do we also advertise support via capabilities, i.e., issue 16
@@ -2098,15 +2105,30 @@ Table of Contents
          recreated again, assuming the subscription configuration is
          still valid.
 
-      -  If transport connectivity to the receiver is broken, then any
-         subscriptions using that transport are terminated, but the
-         publisher MUST periodically attempt to re-establish connection
-         to the receiver and re-activate any configured subscriptions to
-         that receiver.
+      -  If the publisher detects that transport connectivity to the
+         receiver is broken, then any subscriptions using that transport
+         are terminated, but the publisher MUST periodically attempt to
+         re-establish connection to the receiver and re-activate any
+         configured subscriptions to that receiver.
 
-      -  Note, if there are no active subscriptions for a given receiver
-         then any transport session(s) associated with that receiver
-         MUST be closed, but that MAY be after a short delay.
+   *  The lifetime of any transport session(s) to receiver(s) are also
+      tied to the subscription configuration, but in a way that depends
+      on the behavior of the Yang Push 2 transport specificiation, i.e.,
+
+      -  For YANG Push transports that specify a separate transport
+         session for each subscription to the same receiver then a new
+         transport session is established whenever a valid subscription
+         is configured and the transport session MUST be closed if the
+         subscription configuration is removed or changed such that the
+         subscription is no longer valid.
+
+      -  For YANG Push transports that specify a shared transport
+         session for all subscriptions to the same receiver then a new
+         transport session is established for the first valid configured
+         subscription.  Note, if there are no active subscriptions for a
+         given receiver then any transport session(s) associated with
+         that receiver MUST be closed, but that MAY be after a short
+         delay.
 
    *  Other than the _reset_ YANG Action, described in Section 9.3.4,
       there are no YANG RPCs to dynamically create, modify, or delete a
@@ -2117,7 +2139,7 @@ Table of Contents
 
    Configured subscriptions are those created via changes to the
    publisher's configuration, e.g., using the YANG module defined in
-   Section 13, or an equivalent configuration mechanism, such as a
+   Section 14, or an equivalent configuration mechanism, such as a
    command-line interface, or alternative YANG configuration model.
 
    After the configuration change has been accepted by the system, then
@@ -2183,8 +2205,8 @@ Table of Contents
 
    Support for dynamic subscriptions is OPTIONAL, with its availability
    advertised via the _dynamic_ YANG feature in the ietf-yang-push-2
-   YANG module Section 12.2, and also via the capabilities module
-   Section 14.2.
+   YANG module Section 13.2, and also via the capabilities module
+   Section 15.2.
 
    Dynamic subscription differ from configured subscription in the
    following ways:
@@ -2252,7 +2274,7 @@ Table of Contents
 
    Below is a tree diagram for _establish-subscription_ YANG RPC.  All
    objects contained in this tree are described in the YANG module in
-   Section 12.2.
+   Section 13.2.
 
        +---x establish-subscription {dynamic}?
        |  +---w input
@@ -2302,7 +2324,7 @@ Table of Contents
 
    Below is a tree diagram for the _modify-subscription_ YANG RPC.  All
    objects contained in this tree are described in the YANG module in
-   Section 12.2.
+   Section 13.2.
 
        +---x modify-subscription {dynamic}?
        |  +---w input
@@ -2355,7 +2377,7 @@ Table of Contents
 
    Below is the tree diagram for the _delete-subscription_ RPC.  All
    objects contained in this tree are described in the YANG module in
-   Section 12.2.
+   Section 13.2.
 
        +---x delete-subscription {dynamic}?
        |  +---w input
@@ -2381,7 +2403,7 @@ Table of Contents
 
    Below is the tree diagram for the _kill-subscription_ RPC.  All
    objects contained in this tree are described in the YANG module in
-   Section 12.2.
+   Section 13.2.
 
        +---x kill-subscription {dynamic}?
           +---w input
@@ -2567,7 +2589,7 @@ Table of Contents
 
    Publishers SHOULD implement the ietf-system-capabilities YANG module,
    defined in [RFC9196], and the ietf-yang-push-2-capabilities YANG
-   module, defined in Section 14.2) that augments ietf-system-
+   module, defined in Section 15.2) that augments ietf-system-
    capabilities.
 
    The ietf-yang-push-2-capabilities module contains capabilities to
@@ -2658,9 +2680,85 @@ Table of Contents
    ideas to fingerprint the subscription schema in the subscription-
    started notification.*
 
-12.  Core YANG Push v2 YANG Data Model
+12.  Distributed Notifications
 
-12.1.  ietf-yang-push-2 YANG tree
+   This section describes the proposed approach to support distributed
+   notifications in YANG Push v2.  It is aligned with
+   [I-D.ietf-netconf-distributed-notif] in terms of goals and lifecycle,
+   but differs in how the publisher-id is conveyed.
+
+   Distributed notifications are used when there are multiple
+   publishers, each with a separate transport connection to the same
+   receiver.  Subscription lifecycle management (establishment,
+   modification, and termination) remains per subscription as described
+   in [I-D.ietf-netconf-distributed-notif].
+
+   Support for distributed notifications is [RFC2119] OPTIONAL to
+   implement.  If implemented, YANG data model additions are guarded by
+   a distributed-publishers YANG feature.
+
+   The key model and behavior changes are:
+
+   *  A per-subscription configuration parameter indicates whether
+      multiple publishers are allowed, with three states:
+
+      -  non-distributed (default, multiple publishers not allowed),
+
+      -  distributed (multiple publishers required; otherwise the
+         subscription is rejected),
+
+      -  distributed-optional (server decides whether to use distributed
+         publishers).
+
+   *  A publisher-id is added as an augmentation to the update envelope
+      (not inside the update messages themselves).  This differs from
+      [I-D.ietf-netconf-distributed-notif] and keeps the update contents
+      unchanged while still identifying the source publisher for each
+      update.
+
+   *  Subscription lifecycle notifications include a leaf-list of
+      publisher-id values.  If the list of publishers changes mid-
+      subscription, a subscription-modified notification is generated.
+
+   *  The per-update complete flag (or equivalent update-complete
+      notification) is scoped per publisher, i.e., per publisher-id.
+
+   *  The capabilities model is extended to indicate whether the device
+      allows distributed publishers.
+
+   Further clarifications intended by this approach are:
+
+   *  Publisher-id allocation is decided by the server.  Publisher-ids
+      are global to the server (or publishing subsystem) and shared
+      across subscriptions, i.e., they are not allocated per
+      subscription but per publishing process.
+
+   *  Transport parameters are identical for each publisher transport
+      session to the same receiver for a given subscription.
+
+   *  Different publishers may publish entries for the same list, but
+      any given list entry MUST be published by exactly one publisher at
+      any point in time.  If the publishing responsibility for entries
+      changes, this is reflected by an update to the publisher-id list
+      and a subscription-modified notification.
+
+   Open questions:
+
+   (1) Do we want to add this capability into the base YANG Push v2
+   draft, or does it introduce too much complexity in the base draft?
+
+   (2) Does it make sense for the configuration to be per subscription,
+   or should this just be a global flag to indicate that subscriptions
+   may be decomposed to multiple publisher processes?  Alternatively,
+   should this always be allowed, and if so does that put more burden on
+   the collector?
+
+   (3) Is having the update-complete notification per publisher
+   sufficient?
+
+13.  Core YANG Push v2 YANG Data Model
+
+13.1.  ietf-yang-push-2 YANG tree
 
    This section shows the full tree output for ietf-yang-push-2 YANG
    module.
@@ -2776,15 +2874,21 @@ Table of Contents
        |  +--ro snapshot-type       enumeration
        |  +--ro observation-time?   yang:date-and-time
        |  +--ro updates* [target-path]
-       |  |  +--ro target-path    string
-       |  |  +--ro data?          <anydata>
+       |  |  +--ro target-path          string
+       |  |  +--ro (data)?
+       |  |     +--:(merge)
+       |  |     |  +--ro merge?         <anydata>
+       |  |     +--:(replaced-by)
+       |  |     |  +--ro replaced-by?   <anydata>
+       |  |     +--:(deleted)
+       |  |        +--ro deleted?       empty
        |  +--ro complete?           empty
        +---n update-complete
           +--ro id?   subscription-id
 
           Figure 19: YANG tree for YANG Push v2 Module Tree Output
 
-12.2.  ietf-yang-push-2 YANG Model
+13.2.  ietf-yang-push-2 YANG Model
 
    This module imports typedefs from [RFC6991], [RFC8343], [RFC8341],
    [RFC8529], and [RFC8342].  It references [RFC6241], [XPATH] ("XML
@@ -3013,8 +3117,8 @@ Table of Contents
           established, or cause a dynamic subscription to be terminated
           if a configured subscription with the same id is created.";
 
-       // TODO - Should there be separate error codes for creating a subscription
-       // vs terminating an existing one?
+       // TODO - Should there be separate error codes for creating a
+       // subscription vs terminating an existing one?
      }
 
 
@@ -3809,20 +3913,42 @@ Table of Contents
               path-prefix.";
          }
 
-         anydata data {
+         choice data {
            description
-             "This contains the updated data.  It constitutes a
-             snapshot at the time of update of the set of data that has
-             been subscribed to.  The snapshot corresponds to the same
-             snapshot that would be returned in a corresponding 'get'
-             operation with the same selection filter parameters
-             applied.
+             "This choice indicates the type of update that is being
+              performed at the target path.";
+           anydata merge {
+             description
+               "This contains the updated data that is to be merged with
+               the existing data at the target path.  It constitutes a
+               snapshot at the time of update of the set of data that
+               has been subscribed to.  The snapshot corresponds to the
+               same snapshot that would be returned in a corresponding
+               'get' operation with the same selection filter parameters
+               applied.
 
-             For an on-change delete notification, the
-             datastore-snapshot will be absent for the given target
-             path.
+               The snapshot is encoded relative to the combined path
+               defined by the common path-prefix and target-path";
+           }
+           anydata replaced-by {
+             description
+               "This contains the updated data that is to replace all
+               existing data at the target path.   It constitutes a
+               snapshot at the time of update of the set of data that
+               has been subscribed to.  The snapshot corresponds to the
+               same snapshot that would be returned in a corresponding
+               'get' operation with the same selection filter parameters
+               applied.
 
-             The snapshot is encoded relative to the path-prefix.";
+               The snapshot is encoded relative to the combined path
+               defined by the common path-prefix and target-path";
+           }
+           leaf deleted {
+             type empty;
+             description
+               "This indicates that the data at the target path has been
+                deleted.";
+           }
          }
        }
 
@@ -3866,17 +3992,17 @@ Table of Contents
 
                   Figure 20: YANG module ietf-yang-push-2
 
-13.  Configured Subscription YANG Data Model
+14.  Configured Subscription YANG Data Model
 
    This document specifies the ietf-yang-push-2-config YANG module
-   Section 13.2 that defines an NMDA [RFC8342] compatible YANG data
+   Section 14.2 that defines an NMDA [RFC8342] compatible YANG data
    model for configuring subscriptions.  Support for this YANG module is
    OPTIONAL and is advertised using the normal mechanisms, e.g.,
    [RFC8525].
 
    Below is a tree diagram for the "subscriptions" container.  All
    objects contained in this tree are described in the YANG module in
-   Section 12.2.  In the operational datastore [RFC8342], the
+   Section 13.2.  In the operational datastore [RFC8342], the
    "subscription" list contains entries both for configured and dynamic
    subscriptions.
 
@@ -3946,7 +4072,7 @@ Table of Contents
    in Section 9.3, with further details specified in the ietf-yang-push-
    2-config YANG module.
 
-13.1.  ietf-yang-push-2-config YANG tree
+14.1.  ietf-yang-push-2-config YANG tree
 
    This section shows the full tree output for ietf-yang-push-2-config
    YANG module.
@@ -4043,7 +4169,7 @@ Table of Contents
 
       Figure 22: YANG tree for YANG Push v2 Config Module Tree Output
 
-13.2.  ietf-yang-push-2-config YANG Model
+14.2.  ietf-yang-push-2-config YANG Model
 
    This module has import dependencies on [RFC6991], [RFC8343], and
    [RFC8529], and ietf-yang-push-lite.yang (this RFC).  In addition,
@@ -4256,7 +4382,7 @@ Table of Contents
            //           A receiver in connecting state may indicate that
            //           the transport or associated security session
            //           could not be established, and the publisher is
-           //           periodically trying to establish the connection.";
+           //         periodically trying to establish the connection.";
            //     }
            //     enum active {
            //       description
@@ -4278,7 +4404,7 @@ Table of Contents
              description
                "The presence of this leaf indicates that the
                 subscription originated from configuration, not through
-                a controlchannel or RPC.  The value indicates the state
+                a control channel or RPC.  The value indicates the state
                 of the subscription as established by the publisher.";
            }
 
@@ -4476,9 +4602,9 @@ Table of Contents
                "Resets all configured subscriptions that reference
                 this receiver.
 
-                This action is directly equivalent to invoking the
-                'reset' action on all subscriptions that references
-                this receiver configuration.";
+                This action is similar to invoking the 'reset' action
+                on all subscriptions that reference this receiver
+                configuration.";
            }
 
            choice notification-message-origin {
@@ -4588,9 +4714,9 @@ Table of Contents
 
                Figure 23: YANG module ietf-yang-push-2-config
 
-14.  Capabilities YANG Data Model
+15.  Capabilities YANG Data Model
 
-14.1.  ietf-yang-push-2-capabilities YANG tree
+15.1.  ietf-yang-push-2-capabilities YANG tree
 
    This section shows the tree output for ietf-yang-push-2-capabilities
    YANG module, which augments the ietf-system-capabilities YANG module
@@ -4625,7 +4751,7 @@ Table of Contents
 
    Figure 24: YANG tree for YANG Push v2 Capabilities Module Tree Output
 
-14.2.  ietf-yang-push-2-capabilities YANG Model
+15.2.  ietf-yang-push-2-capabilities YANG Model
 
    This module imports typedefs from the yang-push-lite YANG module.
 
@@ -4889,7 +5015,7 @@ Table of Contents
 
             Figure 25: YANG module ietf-yang-push-2-capabilities
 
-15.  Security Considerations
+16.  Security Considerations
 
    With configured subscriptions, one or more publishers could be used
    to overwhelm a receiver.  To counter this, notification messages
@@ -4917,7 +5043,7 @@ Table of Contents
    expected on the publisher, so the recipient would be different than
    expected.
 
-15.1.  Use of YANG Push v2 with NACM
+16.1.  Use of YANG Push v2 with NACM
 
    *TODO, do we even need this section?*
 
@@ -4933,7 +5059,7 @@ Table of Contents
    *  NACM can be used to control access to the data included in the
       YANG _update_ notifications.
 
-15.2.  Receiver Authorization
+16.2.  Receiver Authorization
 
    *TODO Relax when access control must be checked.*
 
@@ -5004,7 +5130,7 @@ Table of Contents
    establishment or configured subscription reinitialization so that
    appropriate filtering is installed.
 
-15.3.  YANG Module Security Considerations
+16.3.  YANG Module Security Considerations
 
    This section is modeled after the template described in Section 3.7.1
    of [I-D.draft-ietf-netmod-rfc8407bis].
@@ -5050,9 +5176,9 @@ Table of Contents
       any dynamic subscription, even those created via other users, or
       other transport sessions.
 
-16.  IANA Considerations
+17.  IANA Considerations
 
-16.1.  Namespace URI registrations
+17.1.  Namespace URI registrations
 
    This document registers the following namespace URI in the "IETF XML
    Registry" [RFC3688]:
@@ -5075,7 +5201,7 @@ Table of Contents
 
    *  XML: N/A; the requested URI is an XML namespace.
 
-17.  YANG Module Name registrations
+18.  YANG Module Name registrations
 
    This document registers the following YANG modules in the "YANG
    Module Names" registry [RFC6020]:
@@ -5124,9 +5250,9 @@ Normative References
               Feng, A. H., Francois, P., Graf, T., and B. Claise,
               "Extensible YANG Model for YANG-Push Notifications", Work
               in Progress, Internet-Draft, draft-ietf-netconf-notif-
-              envelope-03, 20 October 2025,
+              envelope-04, 6 February 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              notif-envelope-03>.
+              notif-envelope-04>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -5209,6 +5335,10 @@ Normative References
               iDentifier (YANG SID)", RFC 9595, DOI 10.17487/RFC9595,
               July 2024, <https://www.rfc-editor.org/rfc/rfc9595>.
 
+   [RFC9911]  Schönwälder, J., Ed., "Common YANG Data Types", RFC 9911,
+              DOI 10.17487/RFC9911, December 2025,
+              <https://www.rfc-editor.org/rfc/rfc9911>.
+
 Informative References
 
    [Consistency]
@@ -5229,9 +5359,9 @@ Informative References
               Zhou, T., Zheng, G., Voit, E., Graf, T., and P. Francois,
               "Subscription to Notifications in a Distributed
               Architecture", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-distributed-notif-16, 19 October 2025,
+              ietf-netconf-distributed-notif-17, 4 February 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              distributed-notif-16>.
+              distributed-notif-17>.
 
    [I-D.draft-ietf-netconf-https-notif]
               Jethanandani, M. and K. Watsen, "An HTTPS-based Transport
@@ -5244,9 +5374,9 @@ Informative References
               Feng, A. H., Francois, P., Zhou, T., Graf, T., and P.
               Lucente, "UDP-based Transport for Configured
               Subscriptions", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-udp-notif-24, 20 November 2025,
+              ietf-netconf-udp-notif-25, 28 January 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              udp-notif-24>.
+              udp-notif-25>.
 
    [I-D.draft-ietf-netmod-rfc8407bis]
               Bierman, A., Boucadair, M., and Q. Wu, "Guidelines for
@@ -5268,25 +5398,25 @@ Informative References
               Zhou, T., Zheng, G., Voit, E., Graf, T., and P. Francois,
               "Subscription to Notifications in a Distributed
               Architecture", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-distributed-notif-16, 19 October 2025,
+              ietf-netconf-distributed-notif-17, 4 February 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              distributed-notif-16>.
+              distributed-notif-17>.
 
    [I-D.ietf-nmop-network-anomaly-architecture]
               Graf, T., Du, W., Francois, P., and A. H. Feng, "A
               Framework for a Network Anomaly Detection Architecture",
               Work in Progress, Internet-Draft, draft-ietf-nmop-network-
-              anomaly-architecture-06, 21 November 2025,
+              anomaly-architecture-07, 18 January 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-nmop-
-              network-anomaly-architecture-06>.
+              network-anomaly-architecture-07>.
 
    [I-D.ietf-nmop-yang-message-broker-integration]
               Graf, T. and A. Elhassany, "An Architecture for YANG-Push
               to Message Broker Integration", Work in Progress,
               Internet-Draft, draft-ietf-nmop-yang-message-broker-
-              integration-09, 20 October 2025,
+              integration-10, 18 January 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-nmop-
-              yang-message-broker-integration-09>.
+              yang-message-broker-integration-10>.
 
    [I-D.tgraf-netconf-notif-sequencing]
               Graf, T., Quilbeuf, J., and A. H. Feng, "Support of
@@ -5341,10 +5471,6 @@ Informative References
    [RFC8040]  Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
               Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
               <https://www.rfc-editor.org/rfc/rfc8040>.
-
-   [RFC8071]  Watsen, K., "NETCONF Call Home and RESTCONF Call Home",
-              RFC 8071, DOI 10.17487/RFC8071, February 2017,
-              <https://www.rfc-editor.org/rfc/rfc8071>.
 
    [RFC8072]  Bierman, A., Bjorklund, M., and K. Watsen, "YANG Patch
               Media Type", RFC 8072, DOI 10.17487/RFC8072, February
@@ -5677,7 +5803,7 @@ C.1.  Example of periodic update messages
        "updates": [
          {
            "target-path": "",
-           "data": {
+           "merge": {
              "ietf-interfaces:interface": [
                {
                  "name": "eth0",
@@ -5729,7 +5855,7 @@ C.1.  Example of periodic update messages
        "updates": [
          {
            "target-path": "",
-           "data": {
+           "merge": {
              "ietf-interfaces:interface": [
                {
                  "name": "eth0",
@@ -5853,7 +5979,8 @@ C.3.1.  Update message with single deleted data node
        "observation-time": "2025-10-10T08:16:15.11Z",
        "updates": [
          {
-           "target-path": "/ietf-interfaces:interfaces/interface[name='eth0']"
+           "target-path": "/ietf-interfaces:interfaces/interface[name='eth0']",
+           "deleted": []
          }
        ]
      }
