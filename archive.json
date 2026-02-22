@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-17T00:27:26.412506+00:00",
+  "timestamp": "2026-02-22T00:26:21.508899+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -867,6 +867,24 @@
       "body": "Raised by James:\n\nToday the model restricts the kill-subscription RPC to just dynamic subscriptions (i.e., mirroring the behaviour of legacy YANG Push).\n\nYANG Push v2 also defined a reset-action for configured subscriptions to either reset a single subscription or all subscription to the same receiver.\n\nJames is suggesting that we should align the \"kill-subscription\" so that it is also allowed to kill configured subscriptions, since similar RPCs exist to reset BGP sessions and apply whether it is a configured or dynamically created BGP session.\n\nSome comments:\n- the behaviour between dynamic and configured is different, since the configured subscription will just flap whereas for a dynamic subscription it won't come back unless the client re-creates it.\n- kill is potentially the wrong name for the action taken on a configured subscription, but perhaps could be called reset instead.\n- would we want an equivalent RPC that acts on all subscription to the same receiver.  E.g., if you know that there has been an issue with a collector then a single RPC could be used to flap all sessions rather requiring that the client knows what they all are, or iterates over them.\n- Same as the previous comment, but for all subscriptions.  I.e., a single RPC that acts on all subscriptions.\n- If we do make the RPC apply to both dynamic and configured subscriptions then does that mean that we would get rid of the action(s) in the config model?",
       "createdAt": "2026-02-16T12:28:47Z",
       "updatedAt": "2026-02-16T12:28:47Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 39,
+      "id": "I_kwDOM-PT7s7slg7J",
+      "title": "Support for multiple publisher processes (e.g., publishing from LCs)",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/39",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "for discussion"
+      ],
+      "body": "https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-17 is the IESG editor queue, and I'm pretty sure that there is an implementation that Thomas is testing with.\n\nDo we want to add similar support into YP v2?  If we did then I think that this should be optional to implement.\n\nI've added a proposed section that discusses the issue some more.\n\n```\n# Distributed Notifications {#distributed-notifications-summary}\n\nThis section describes the proposed approach to support distributed notifications in YANG Push v2.  It is aligned with {{I-D.ietf-netconf-distributed-notif}} in terms of goals and lifecycle, but differs in how the `publisher-id` is conveyed.\n\nDistributed notifications are used when there are multiple publishers, each with a separate transport connection to the same receiver.  Subscription lifecycle management (establishment, modification, and termination) remains per subscription as described in {{I-D.ietf-netconf-distributed-notif}}.\n\nSupport for distributed notifications is {{RFC2119}} OPTIONAL to implement.  If implemented, YANG data model additions are guarded by a `distributed-publishers` YANG feature.\n\nThe key model and behavior changes are:\n\n- A per-subscription configuration parameter indicates whether multiple publishers are allowed, with three states:\n  - `non-distributed` (default, multiple publishers not allowed),\n  - `distributed` (multiple publishers required; otherwise the subscription is rejected),\n  - `distributed-optional` (server decides whether to use distributed publishers).\n- A `publisher-id` is added as an augmentation to the update envelope (not inside the update messages themselves).  This differs from {{I-D.ietf-netconf-distributed-notif}} and keeps the update contents unchanged while still identifying the source publisher for each update.\n- Subscription lifecycle notifications include a leaf-list of `publisher-id` values.  If the list of publishers changes mid-subscription, a `subscription-modified` notification is generated.\n- The per-update `complete` flag (or equivalent `update-complete` notification) is scoped per publisher, i.e., per `publisher-id`.\n- The capabilities model is extended to indicate whether the device allows distributed publishers.\n\nFurther clarifications intended by this approach are:\n\n- Publisher-id allocation is decided by the server.  Publisher-ids are global to the server (or publishing subsystem) and shared across subscriptions, i.e., they are not allocated per subscription but per publishing process.\n- Transport parameters are identical for each publisher transport session to the same receiver for a given subscription.\n- Different publishers may publish entries for the same list, but any given list entry MUST be published by exactly one publisher at any point in time.  If the publishing responsibility for entries changes, this is reflected by an update to the publisher-id list and a `subscription-modified` notification.\n\nOpen questions:\n\n(1) Do we want to add this capability into the base YANG Push v2 draft, or does it introduce too much complexity in the base draft?\n\n(2) Does it make sense for the configuration to be per subscription, or should this just be a global flag to indicate that subscriptions may be decomposed to multiple publisher processes?  Alternatively, should this always be allowed, and if so does that put more burden on the collector?\n\n(3) Is having the update-complete notification per publisher sufficient?\n```\n\n",
+      "createdAt": "2026-02-20T16:03:54Z",
+      "updatedAt": "2026-02-20T16:04:03Z",
       "closedAt": null,
       "comments": []
     }
