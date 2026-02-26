@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-22T00:26:21.508899+00:00",
+  "timestamp": "2026-02-26T00:24:44.702112+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -887,6 +887,30 @@
       "updatedAt": "2026-02-20T16:04:03Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 40,
+      "id": "I_kwDOM-PT7s7tyoaB",
+      "title": "Dependency on draft-ietf-netconf-notif-envelope",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/40",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Hi,\n\nWe are planning on using the ietf-yp-notification for Yang Push 2, but I noticed when trying to compile against this module that it has some unexpected and undesirable dependencies.\n\nIn ietf-yp-notification, here are two augments that are specific to Yang Push and not Yang Push 2: \n\n     // Subscription container\n     augment \"/sn:subscriptions\" {\n       description\n         \"This augmentation adds the configuration switches for\n          enabling the notification envelope and metadata.\";\n       leaf enable-notification-envelope {\n\nIs specific to YANG Push/Subscribed notifications and isn't needed for YP2.  Unfortunately, it then pulls in a dependency on ietf-subscribed-notifications, which in turn has a dependency on RESTCONF.  Neither of these dependencies are desirable in YP2.\n\nIn addition, this second augment is also really YP specific and won't apply to YP 2 since all YP notifications are required to use the new envelope header.\n\n     // YANG-Push Capabilities extension\n     augment \"/sysc:system-capabilities\"\n           + \"/notc:subscription-capabilities\" {\n\nWould it be possible to split out these two augmentations into a separate YANG module to keep ietf-yp-notification clean and easily reusable?\n\nKind regards,\nRob\n",
+      "createdAt": "2026-02-25T13:23:29Z",
+      "updatedAt": "2026-02-25T13:28:04Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "There are a few choices on how to resolve this:\n1) Base envelope spec changes now.\n2) We change the base envelope spec in a bis draft (but this would be a breaking change in future).\n3) We live with the rubbish dependencies.  I.e., YP 2 will always have a dependency on the YP 1 subscribed notifications YANG module.\n4) We remove the dependency on the draft-ietf-netconf-notif-envelope YANG module and define an equivalent envelope structure as part of this draft.\n\nI have a strong dislike of doing (3).  My preference is (1) if that is pragmatic, or an agreement to do (2).",
+          "createdAt": "2026-02-25T13:28:04Z",
+          "updatedAt": "2026-02-25T13:28:04Z"
+        }
+      ]
     }
   ],
   "pulls": [
