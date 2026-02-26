@@ -12,4 +12,4 @@
     |  |     |  +--ro replaced-by?   <anydata>
     |  |     +--:(deleted)
     |  |        +--ro deleted?       empty
-    |  +--ro complete?           empty
+    |  +--ro complete?           boolean

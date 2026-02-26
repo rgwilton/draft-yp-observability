@@ -6,7 +6,7 @@
     "updates": [
       {
         "target-path": "/ietf-interfaces:interfaces/interface[name='eth0']",
-        "deleted": []
+        "deleted": [null]
       }
     ]
   }

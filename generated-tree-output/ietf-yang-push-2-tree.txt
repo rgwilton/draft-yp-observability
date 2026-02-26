@@ -53,29 +53,8 @@ module: ietf-yang-push-2
 
   notifications:
     +---n subscription-started
-    |  +--ro id                subscription-id
-    |  +--ro description?      string
-    |  +--ro target
-    |  |  +--ro datastore?                 identityref
-    |  |  +--ro (filter)
-    |  |  |  +--:(path)
-    |  |  |  |  +--ro path                 ypath
-    |  |  |  +--:(subtree)
-    |  |  |  |  +--ro subtree              <anydata>
-    |  |  |  +--:(xpath)
-    |  |  |     +--ro xpath                yang:xpath1.0 {yp2:xpath}?
-    |  |  +--ro schema-id?                 string
-    |  |  +--ro yang-library-content-id?
-    |  |          -> /yanglib:yang-library/content-id
-    |  +--ro update-trigger
-    |     +--ro periodic!
-    |     |  +--ro period         centiseconds
-    |     |  +--ro anchor-time?   yang:date-and-time
-    |     +--ro on-change! {on-change}?
-    |        +--ro sync-on-start?   boolean
-    +---n subscription-modified
-    |  +--ro id                subscription-id
-    |  +--ro description?      string
+    |  +--ro id                    subscription-id
+    |  +--ro description?          string
     |  +--ro target
     |  |  +--ro datastore?                 identityref
     |  |  +--ro (filter)
@@ -94,7 +73,32 @@ module: ietf-yang-push-2
     |  |  |  +--ro anchor-time?   yang:date-and-time
     |  |  +--ro on-change! {on-change}?
     |  |     +--ro sync-on-start?   boolean
-    |  +--ro reason            subscription-change
+    |  +--ro message-publishers
+    |     +--ro publisher-id*   uint32
+    +---n subscription-modified
+    |  +--ro id                    subscription-id
+    |  +--ro description?          string
+    |  +--ro target
+    |  |  +--ro datastore?                 identityref
+    |  |  +--ro (filter)
+    |  |  |  +--:(path)
+    |  |  |  |  +--ro path                 ypath
+    |  |  |  +--:(subtree)
+    |  |  |  |  +--ro subtree              <anydata>
+    |  |  |  +--:(xpath)
+    |  |  |     +--ro xpath                yang:xpath1.0 {yp2:xpath}?
+    |  |  +--ro schema-id?                 string
+    |  |  +--ro yang-library-content-id?
+    |  |          -> /yanglib:yang-library/content-id
+    |  +--ro update-trigger
+    |  |  +--ro periodic!
+    |  |  |  +--ro period         centiseconds
+    |  |  |  +--ro anchor-time?   yang:date-and-time
+    |  |  +--ro on-change! {on-change}?
+    |  |     +--ro sync-on-start?   boolean
+    |  +--ro message-publishers
+    |  |  +--ro publisher-id*   uint32
+    |  +--ro reason                subscription-change
     +---n subscription-terminated
     |  +--ro id        subscription-id
     |  +--ro reason    identityref
@@ -112,6 +116,6 @@ module: ietf-yang-push-2
     |  |     |  +--ro replaced-by?   <anydata>
     |  |     +--:(deleted)
     |  |        +--ro deleted?       empty
-    |  +--ro complete?           empty
+    |  +--ro complete?           boolean
     +---n update-complete
        +--ro id?   subscription-id

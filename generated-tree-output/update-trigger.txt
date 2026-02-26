@@ -9,8 +9,5 @@ module: ietf-yang-push-2-config
               +--rw on-change! {on-change}?
                  +--rw sync-on-start?   boolean
 
-  augment /yp2:establish-subscription/yp2:input/yp2:target
-            /yp2:filter:
-    +--:(by-reference)
   augment /yp2:subscription-started/yp2:target:
     +-- filter-ref?   filter-ref

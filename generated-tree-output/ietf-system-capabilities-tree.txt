@@ -8,6 +8,21 @@ module: ietf-system-capabilities
      |     |  +--:(node-selector)
      |     |     +--ro node-selector?
      |     |             nacm:node-instance-identifier
+     |     +--ro notc:subscription-capabilities
+     |     |  +--ro notc:max-nodes-per-update?               uint32
+     |     |  +--ro notc:periodic-notifications-supported?
+     |     |  |       notification-support
+     |     |  +--ro (notc:update-period)?
+     |     |  |  +--:(notc:minimum-update-period)
+     |     |  |  |  +--ro notc:minimum-update-period?        uint32
+     |     |  |  +--:(notc:supported-update-period)
+     |     |  |     +--ro notc:supported-update-period*      uint32
+     |     |  +--ro notc:on-change-supported?
+     |     |  |       notification-support {yp:on-change}?
+     |     |  +--ro notc:minimum-dampening-period?           uint32
+     |     |  |       {yp:on-change}?
+     |     |  +--ro notc:supported-excluded-change-type*     union
+     |     |          {yp:on-change}?
      |     +--ro yp2ca:datastore-telemetry
      |        +--ro yp2ca:periodic-notifications-supported?
      |        |       notification-support
@@ -18,18 +33,38 @@ module: ietf-system-capabilities
      |        |     +--ro yp2ca:supported-update-period*      uint32
      |        +--ro yp2ca:on-change-supported?
      |                notification-support
+     +--ro notc:subscription-capabilities
+     |  +--ro notc:max-nodes-per-update?               uint32
+     |  +--ro notc:periodic-notifications-supported?
+     |  |       notification-support
+     |  +--ro (notc:update-period)?
+     |  |  +--:(notc:minimum-update-period)
+     |  |  |  +--ro notc:minimum-update-period?        uint32
+     |  |  +--:(notc:supported-update-period)
+     |  |     +--ro notc:supported-update-period*      uint32
+     |  +--ro notc:on-change-supported?
+     |  |       notification-support {yp:on-change}?
+     |  +--ro notc:minimum-dampening-period?           uint32
+     |  |       {yp:on-change}?
+     |  +--ro notc:supported-excluded-change-type*     union
+     |  |       {yp:on-change}?
+     |  +--ro inotenv:notification-metadata
+     |     +--ro inotenv:notification-envelope?   boolean
+     |     +--ro inotenv:metadata
+     |        +--ro inotenv:hostname-sequence-number?   boolean
      +--ro yp2ca:datastore-telemetry
-        +--ro yp2ca:periodic-notifications-supported?
-        |       notification-support
-        +--ro (yp2ca:update-period)?
-        |  +--:(yp2ca:minimum-update-period)
-        |  |  +--ro yp2ca:minimum-update-period?        uint32
-        |  +--:(yp2ca:supported-update-period)
-        |     +--ro yp2ca:supported-update-period*      uint32
-        +--ro yp2ca:on-change-supported?
-        |       notification-support
-        +--ro yp2ca:transport
-           +--ro yp2ca:transport-capability* [transport-protocol]
-              +--ro yp2ca:transport-protocol    identityref
-              +--ro yp2ca:security-protocol?    identityref
-              +--ro yp2ca:encoding-format*      identityref
+     |  +--ro yp2ca:periodic-notifications-supported?
+     |  |       notification-support
+     |  +--ro (yp2ca:update-period)?
+     |  |  +--:(yp2ca:minimum-update-period)
+     |  |  |  +--ro yp2ca:minimum-update-period?        uint32
+     |  |  +--:(yp2ca:supported-update-period)
+     |  |     +--ro yp2ca:supported-update-period*      uint32
+     |  +--ro yp2ca:on-change-supported?
+     |  |       notification-support
+     |  +--ro yp2ca:transport
+     |     +--ro yp2ca:transport-capability* [transport-protocol]
+     |        +--ro yp2ca:transport-protocol    identityref
+     |        +--ro yp2ca:security-protocol?    identityref
+     |        +--ro yp2ca:encoding-format*      identityref
+     +--ro yp2ca:distributed-notifications-supported?   boolean

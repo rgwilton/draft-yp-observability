@@ -33,6 +33,15 @@ module ietf-yang-push-2 {
     reference
       "RFC 8525: YANG Library";
   }
+  import ietf-yp-notification {
+    prefix iypn;
+    reference
+     "draft-ietf-netconf-notif-envelope: Extensible YANG Model for
+      YANG-Push Notifications
+
+      TODO: RFC Editor please replace with latest draft/RFC version
+     at publication time.";
+  }
 
   organization
     "IETF NETCONF (Network Configuration) Working Group";
@@ -455,6 +464,22 @@ module ietf-yang-push-2 {
     }
   }
 
+  grouping publishers {
+    description
+      "Grouping describes the list of publisher-ids";
+    leaf-list publisher-id {
+      type uint32;
+      default 0;
+      config false;
+      description
+        "Identifies the software process which publishes notification
+        messages (e.g., processor 1 on line card 1). This field
+        is used to notify the receiver which publisher processes
+        are going to publish. The identifiers are locally unique to
+        the Network Node.";
+    }
+  }
+
   grouping filter-choice {
     description
       "This grouping defines the types of selectors for objects
@@ -625,23 +650,23 @@ module ietf-yang-push-2 {
       "This grouping describes schema information related to a
        subscription.";
 
-      leaf schema-id {
-        type string;
-        description
-          "Indicates the version of the YANG schema used for this
-          subscription.  The schema-id MUST change if the schema
-          associated with the subscription changes.  The schema-id
-          MAY change if the device schema changes, even if the 
-          change does not affect the subscription.";
-      }
+    leaf schema-id {
+      type string;
+      description
+        "Indicates the version of the YANG schema used for this
+        subscription.  The schema-id MUST change if the schema
+        associated with the subscription changes.  The schema-id
+        MAY change if the device schema changes, even if the 
+        change does not affect the subscription.";
+    }
 
-      leaf yang-library-content-id {
-        type leafref {
-          path "/yanglib:yang-library/yanglib:content-id";
-        }
-        description
-          "Contains the YANG library content identifier.";
+    leaf yang-library-content-id {
+      type leafref {
+        path "/yanglib:yang-library/yanglib:content-id";
       }
+      description
+        "Contains the YANG library content identifier.";
+    }
   }
 
   grouping subscription-common {
@@ -867,10 +892,11 @@ module ietf-yang-push-2 {
    * NOTIFICATIONS
    */
 
-  notification subscription-started {
+  grouping subscription-update-common {
     description
-      "This notification indicates that a subscription has started
-       and notifications will now be sent.";
+      "Data nodes common to both subscription-started and
+       subscription-modified notifications.";
+
     uses subscription-id;
     uses subscription-common {
       augment "target" {
@@ -879,20 +905,26 @@ module ietf-yang-push-2 {
         uses subscription-schema;
       }
     }
+    container message-publishers {
+      description
+        "Holds the publisher-ids for all processes currently
+         associated with the subscription";
+        uses yp2:publishers;
+    }
+  }
+
+  notification subscription-started {
+    description
+      "This notification indicates that a subscription has started
+       and notifications will now be sent.";
+       uses subscription-update-common;
   }
 
   notification subscription-modified {
     description
       "This notification indicates that subscription paramaters have
        changed.";
-    uses subscription-id;
-    uses subscription-common {
-      augment "target" {
-        description
-          "Adds a schema id.";
-        uses subscription-schema;
-      }
-    }
+    uses subscription-update-common;
 
     leaf reason {
       type subscription-change;
@@ -1051,7 +1083,8 @@ module ietf-yang-push-2 {
     }
 
     leaf complete {
-      type empty;
+      type boolean;
+      default "false";
       description
         "This flag indicates that this is the last
          notification in a series of notifications that together
@@ -1064,8 +1097,6 @@ module ietf-yang-push-2 {
     }
   }
 
-  // TODO - Need to think about list key entries that are no longer
-  //        present.
   notification update-complete {
     description
       "This notification indicates the end of a periodic collection
@@ -1083,6 +1114,19 @@ module ietf-yang-push-2 {
       description
         "The name of the subscription that is the source of
           this notification.";
+    }
+  }
+
+  sx:augment-structure "/iypn:envelope" {
+    leaf publisher-id {
+      type uint32;
+      default 0;
+      description
+        "Identifies the software process which publishes notification
+         messages (e.g., processor 1 on line card 1). This field
+         is used to notify the receiver which publisher process
+         published which message. The identifier is locally unique to
+         the Network Node.";
     }
   }
 }

@@ -15,8 +15,9 @@ object `package` extends IETF:
   // All RFCs that we need to extract YANG from.
   def rfcDeps = List(
     8525, // Replaces 7895
-    8072, 8341, 8342, 8343, 8344, 8529, 8639, 8641, 9196, 9640, 9641, 9642,
-    9643, 9645, 9911
+    8072, 8341, 8342, 8343, 8344, 8529, 8641, 8791, 9196, 9640, 9641, 9642,
+    9643, 9645, 9911,
+    8040, 8639 // SHOULD NOT BE NEEDED.  Req to add publisher-id to envelope.
   )
 
   // All drafts that we need to extract YANG from.

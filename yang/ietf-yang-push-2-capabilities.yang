@@ -108,7 +108,7 @@ module ietf-yang-push-2-capabilities {
   }
 
 
-  grouping yp-lite-capabilities {
+  grouping yp2-capabilities {
     description
       "Capabilities related to YANG Push Lite subscriptions
        and notifications";
@@ -194,7 +194,7 @@ module ietf-yang-push-2-capabilities {
     }
   }
 
-  grouping yp-lite-transport-capabilities {
+  grouping yp2-transport-capabilities {
     description
       "Capabilities related to transports supporting Yang Push Lite";
     container transport {
@@ -234,19 +234,27 @@ module ietf-yang-push-2-capabilities {
   augment "/sysc:system-capabilities" {
     description
       "Adds system level capabilities for YANG Push Lite";
-    uses yp-lite-capabilities;
+    uses yp2-capabilities;
+
+    leaf distributed-notifications-supported {
+      type boolean;
+      description
+        "Indicates whether the server supports distributed
+          notifications and may source message from different
+          Message Publishers.";
+    }
   }
 
   augment "/sysc:system-capabilities/yp2ca:datastore-telemetry" {
     description
       "Adds system level Yang Push Lite transport capabilities";
-    uses yp-lite-transport-capabilities;
+    uses yp2-transport-capabilities;
   }
 
   augment "/sysc:system-capabilities/sysc:datastore-capabilities"
         + "/sysc:per-node-capabilities" {
     description
       "Add datastore and node-level capabilities";
-    uses yp-lite-capabilities;
+    uses yp2-capabilities;
   }
 }

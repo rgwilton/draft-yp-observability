@@ -206,7 +206,8 @@ There are two ways in which this may be useful:
 
 1. For data that is generally polled on a periodic basis (e.g., once every 10 minutes) and put into a time series database, then it may be helpful for some data trees to also get more immediate notifications that the data has changed.  Hence, a combined periodic and on-change subscription, would facilitate more frequent notifications of changes of the state, to reduce the need of having to always wait for the next periodic event.
 
-Hence, this document introduces the fairly intuitive "periodic-and-on-change" update trigger that creates a combined periodic and on-change subscription, and allows the same parameters to be configured.  For some use cases, e.g., where a time-series database is being updated, the new encoding format proposed previously may be most useful.
+Hence, this document allows a single subscription to be configured as both periodic and on-change.
+
 
 ## Relationships to existing RFCs and Internet Drafts {#DraftRelationships}
 
@@ -244,7 +245,7 @@ The overall YANG Push v2 solution anticipates and requires new bis versions of b
 
 ### {{I-D.draft-ietf-netconf-distributed-notif}}
 
-**TODO.  It is likely that some of the base support for distributed notifications will be incorporated into this draft.  If so, add acknowledgements to the authors.**
+This document reuses the work from {{I-D.draft-ietf-netconf-distributed-notif}}, but with some changes to work with the YANG Push v2 data models.  This is described in {{distributed-notifications}}.
 
 # YANG Push v2 Overview {#overview}
 
@@ -347,6 +348,8 @@ This document introduces the following terms:
 - *Subscription Identifier*: A numerical identifier for a configured or dynamic subscription.  Also referred to as the subscription-id.
 
 - *YANG-Push-Lite*: The light weight subscription and push mechanism for datastore updates that is specified in this document. **Add comment**
+
+This document also uses the terminology from {{I-D.ietf-netconf-distributed-notif}} in {{distributed-notifications}} and the related examples in {{distrib-notif-example}}.
 
 # Subscription paths and selection filters {#pathsAndFilters}
 
@@ -1348,13 +1351,31 @@ The set of modules, revisions, features, and deviations can change at runtime (i
 
 **TODO, this section should be updated so that a subscription is restarted if the schema that it is using changes, and to incorporate ideas to fingerprint the subscription schema in the subscription-started notification.**
 
-# Distributed Notifications {#distributed-notifications-summary}
+# Distributed Notifications - Multiple Publishing Processes {#distributed-notifications}
 
-This section describes the proposed approach to support distributed notifications in YANG Push v2.  It is aligned with {{I-D.ietf-netconf-distributed-notif}} in terms of goals and lifecycle, but differs in how the `publisher-id` is conveyed.
+Distributed notifications is the concept of allowing subscriptions to be served from multiple different agent publisher processes on the same device.  As a simple example, an implementation could choose to have separate publishing processes for each linecard in a network device, so that data that is local to that linecard can be published directly from the linecard, perhaps directly from the linecard data interfaces, without been sent to the RP process that could act a bottleneck.
 
-Distributed notifications are used when there are multiple publishers, each with a separate transport connection to the same receiver.  Subscription lifecycle management (establishment, modification, and termination) remains per subscription as described in {{I-D.ietf-netconf-distributed-notif}}.
+The YANG Push 2 specification supports distributed notifications as described in {{I-D.ietf-netconf-distributed-notif}}, and using the terminology defined therewithin, but with some differences due to the different YANG data models, which are described below.
 
-Support for distributed notifications is {{RFC2119}} OPTIONAL to implement.  If implemented, YANG data model additions are guarded by a `distributed-publishers` YANG feature.
+It is OPTIONAL for YANG Push 2 publishers to support multiple publisher agents since they always have the option of handling all subscriptions from a single publisher process on each server.  Receivers and consumers of YANG Push 2 subscription data MUST support accommodate servers that publish their data from multiple publishing processes, e.g., they may need to correlate the update-complete notification across multiple publishing processes.
+
+The differences for supporting {{I-D.ietf-netconf-distributed-notif}} with YANG Push 2 are:
+
+- the publisher-id leaf, that identities the Message Publisher ID of the publishing process, is augmented in the envelope notification {{I-D.draft-ietf-netconf-notif-envelope}} rather than the *push-update* and *push-change-update* messages.  This means that all messages sent by any Message Publishers (e.g., including Subscription Lifecyle Notifications) will indicate which Message Publisher sent the message.
+
+- the publisher-id leaf has a default value of 0.  It is RECOMMENDED that the server allocates a publisher-id of 0 to the default Publisher Parent, since that allows for the publisher-id leaf to be omitted from notification messages sent from the Publisher Parent.
+
+- the *subscription-started* and *subscription-modified* notifications have a *message-publishers/publisher-id* leaf-list that identifies all Message Publishers that will send messages as part of the subscription.  This leaf-list defaults to a single entry of 0, so MAY be ommitted if there is only a single Message Publisher and it has an publisher-id of 0.
+
+  - As per {{I-D.ietf-netconf-distributed-notif}}, the list of Message Publishers serving an active subscription can change during the lifetime of the subscription and the Publisher Parent MUST send a *subscription-modified* notification of any change in publisher-ids.
+
+  - Yang Push 2 does not return the list of publisher-ids as part of the establish-subscription response output because the dynamic subscription will receive a *subscription-started* notification instead, which also provides a more robust mechanism consistent with configured subscriptions.
+
+- the *subscriptions/subscription* has a *message-publishers/publisher-id* leaf-list to report the current list of Message Publishers associated with a subscription.
+
+- A capability flag is used to indicate whether the server might use distributed notifications.
+
+- the *update-complete* notifications, or the equivalent *complete* leaf as part of an *update* notification are generated per Message Publisher, and scoped as such.  I.e., this may require clients to count and correlate update complete indications across Message Publishers for a given subscription.
 
 The key model and behavior changes are:
 
@@ -1567,6 +1588,8 @@ For all registration the reference is "RFC XXXX".
 {:numbered="false"}
 
 This initial draft is early work is based on discussions with various folk, particularly Thomas Graf, Holger Keller, Dan Voyer, Nils Warnke, and Alex Huang Feng; but also wider conversations that include: Benoit Claise, Pierre Francois, Paolo Lucente, Jean Quilbeuf, among others.
+
+In addition, as described in the introduction, the authors would like to acknowledge that this work builds on work of others, such as, Subscribed Notifications, YANG Push, and various extensions to that work.
 
 # Contributors
 {:numbered="false"}
@@ -1963,6 +1986,11 @@ periodic updates might return the following NETCONF response:
 
        Figure 13: "establish-subscription" Error Response: Example 2
 ~~~~
+
+## Distributed Notification subscription {#distrib-notif-example}
+
+TODO - Add an example of a distributed notification, and two update messages
+sent from different publishers.
 
 ###  "delete-subscription" RPC
 

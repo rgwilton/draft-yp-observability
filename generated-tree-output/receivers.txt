@@ -15,8 +15,5 @@ module: ietf-yang-push-2-config
            |     +--rw source-address?     inet:ip-address-no-zone
            +--rw (transport-type)
 
-  augment /yp2:establish-subscription/yp2:input/yp2:target
-            /yp2:filter:
-    +--:(by-reference)
   augment /yp2:subscription-started/yp2:target:
     +-- filter-ref?   filter-ref

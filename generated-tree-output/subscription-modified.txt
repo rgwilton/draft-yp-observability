@@ -1,6 +1,6 @@
     +---n subscription-modified
-    |  +--ro id                subscription-id
-    |  +--ro description?      string
+    |  +--ro id                    subscription-id
+    |  +--ro description?          string
     |  +--ro target
     |  |  +--ro datastore?                 identityref
     |  |  +--ro (filter)
@@ -19,4 +19,6 @@
     |  |  |  +--ro anchor-time?   yang:date-and-time
     |  |  +--ro on-change! {on-change}?
     |  |     +--ro sync-on-start?   boolean
-    |  +--ro reason            subscription-change
+    |  +--ro message-publishers
+    |  |  +--ro publisher-id*   uint32
+    |  +--ro reason                subscription-change
