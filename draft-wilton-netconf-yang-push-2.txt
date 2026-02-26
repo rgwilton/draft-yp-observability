@@ -5,7 +5,7 @@
 Network Configuration                                     R. Wilton, Ed.
 Internet-Draft                                             Cisco Systems
 Intended status: Standards Track                               H. Keller
-Expires: 24 August 2026                                Deuetsche Telekom
+Expires: 30 August 2026                                Deuetsche Telekom
                                                                B. Claise
                                                           Everything OPS
                                                                 E. Aries
@@ -14,7 +14,7 @@ Expires: 24 August 2026                                Deuetsche Telekom
                                                                    Nokia
                                                                  T. Graf
                                                                 Swisscom
-                                                        20 February 2026
+                                                        26 February 2026
 
 
              YANG Datastore Telemetry (YANG Push version 2)
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 August 2026.
+   This Internet-Draft will expire on 30 August 2026.
 
 Copyright Notice
 
@@ -146,7 +146,7 @@ Table of Contents
    11. Conformance and Capabilities
      11.1.  Capabilities
      11.2.  Subscription Content Versioning
-   12. Distributed Notifications
+   12. Distributed Notifications - Multiple Publishing Processes
    13. Core YANG Push v2 YANG Data Model
      13.1.  ietf-yang-push-2 YANG tree
      13.2.  ietf-yang-push-2 YANG Model
@@ -186,7 +186,8 @@ Table of Contents
      C.4.  NETCONF Dynamic Subscription RPC examples
        C.4.1.  Successful periodic subscription
        C.4.2.  Failed periodic subscription
-       C.4.3.  "delete-subscription" RPC
+     C.5.  Distributed Notification subscription
+       C.5.1.  "delete-subscription" RPC
    Appendix D.  Summary of Open Issues & Potential Enhancements
      D.1.  Issues related to general IETF process
      D.2.  Issue related to Terminology/Definitions
@@ -412,12 +413,8 @@ Table of Contents
        frequent notifications of changes of the state, to reduce the
        need of having to always wait for the next periodic event.
 
-   Hence, this document introduces the fairly intuitive "periodic-and-
-   on-change" update trigger that creates a combined periodic and on-
-   change subscription, and allows the same parameters to be configured.
-   For some use cases, e.g., where a time-series database is being
-   updated, the new encoding format proposed previously may be most
-   useful.
+   Hence, this document allows a single subscription to be configured as
+   both periodic and on-change.
 
 3.4.  Relationships to existing RFCs and Internet Drafts
 
@@ -492,9 +489,10 @@ Table of Contents
 
 3.4.5.  [I-D.draft-ietf-netconf-distributed-notif]
 
-   *TODO.  It is likely that some of the base support for distributed
-   notifications will be incorporated into this draft.  If so, add
-   acknowledgements to the authors.*
+   This document reuses the work from
+   [I-D.draft-ietf-netconf-distributed-notif], but with some changes to
+   work with the YANG Push v2 data models.  This is described in
+   Section 12.
 
 4.  YANG Push v2 Overview
 
@@ -690,6 +688,10 @@ Table of Contents
       for datastore updates that is specified in this document. *Add
       comment*
 
+   This document also uses the terminology from
+   [I-D.ietf-netconf-distributed-notif] in Section 12 and the related
+   examples in Appendix C.5.
+
 6.  Subscription paths and selection filters
 
    A key part of a subscription is to select which data nodes should be
@@ -816,9 +818,6 @@ Table of Contents
                  +--:(xpath)
                     +--rw xpath      yang:xpath1.0 {yp2:xpath}?
 
-     augment /yp2:establish-subscription/yp2:input/yp2:target
-               /yp2:filter:
-       +--:(by-reference)
      augment /yp2:subscription-started/yp2:target:
        +-- filter-ref?   filter-ref
 
@@ -986,7 +985,7 @@ Table of Contents
        |  |     |  +--ro replaced-by?   <anydata>
        |  |     +--:(deleted)
        |  |        +--ro deleted?       empty
-       |  +--ro complete?           empty
+       |  +--ro complete?           boolean
 
                       Figure 3: 'update' notification
 
@@ -1046,9 +1045,6 @@ Table of Contents
                  +--rw on-change! {on-change}?
                     +--rw sync-on-start?   boolean
 
-     augment /yp2:establish-subscription/yp2:input/yp2:target
-               /yp2:filter:
-       +--:(by-reference)
      augment /yp2:subscription-started/yp2:target:
        +-- filter-ref?   filter-ref
 
@@ -1331,9 +1327,6 @@ Table of Contents
               |     +--rw source-address?     inet:ip-address-no-zone
               +--rw (transport-type)
 
-     augment /yp2:establish-subscription/yp2:input/yp2:target
-               /yp2:filter:
-       +--:(by-reference)
      augment /yp2:subscription-started/yp2:target:
        +-- filter-ref?   filter-ref
 
@@ -1911,8 +1904,8 @@ Table of Contents
    described in the YANG module in Section 13.2.
 
        +---n subscription-started
-       |  +--ro id                subscription-id
-       |  +--ro description?      string
+       |  +--ro id                    subscription-id
+       |  +--ro description?          string
        |  +--ro target
        |  |  +--ro datastore?                 identityref
        |  |  +--ro (filter)
@@ -1926,11 +1919,13 @@ Table of Contents
        |  |  +--ro yang-library-content-id?
        |  |          -> /yanglib:yang-library/content-id
        |  +--ro update-trigger
-       |     +--ro periodic!
-       |     |  +--ro period         centiseconds
-       |     |  +--ro anchor-time?   yang:date-and-time
-       |     +--ro on-change! {on-change}?
-       |        +--ro sync-on-start?   boolean
+       |  |  +--ro periodic!
+       |  |  |  +--ro period         centiseconds
+       |  |  |  +--ro anchor-time?   yang:date-and-time
+       |  |  +--ro on-change! {on-change}?
+       |  |     +--ro sync-on-start?   boolean
+       |  +--ro message-publishers
+       |     +--ro publisher-id*   uint32
 
          Figure 10: subscription-started Notification Tree Diagram
 
@@ -1952,8 +1947,8 @@ Table of Contents
    YANG module in Section 13.2.
 
        +---n subscription-modified
-       |  +--ro id                subscription-id
-       |  +--ro description?      string
+       |  +--ro id                    subscription-id
+       |  +--ro description?          string
        |  +--ro target
        |  |  +--ro datastore?                 identityref
        |  |  +--ro (filter)
@@ -1972,7 +1967,9 @@ Table of Contents
        |  |  |  +--ro anchor-time?   yang:date-and-time
        |  |  +--ro on-change! {on-change}?
        |  |     +--ro sync-on-start?   boolean
-       |  +--ro reason            subscription-change
+       |  +--ro message-publishers
+       |  |  +--ro publisher-id*   uint32
+       |  +--ro reason                subscription-change
 
          Figure 11: subscription-modified Notification Tree Diagram
 
@@ -2030,7 +2027,7 @@ Table of Contents
        |  |     |  +--ro replaced-by?   <anydata>
        |  |     +--:(deleted)
        |  |        +--ro deleted?       empty
-       |  +--ro complete?           empty
+       |  +--ro complete?           boolean
        +---n update-complete
           +--ro id?   subscription-id
 
@@ -2610,6 +2607,21 @@ Table of Contents
         |     |  +--:(node-selector)
         |     |     +--ro node-selector?
         |     |             nacm:node-instance-identifier
+        |     +--ro notc:subscription-capabilities
+        |     |  +--ro notc:max-nodes-per-update?               uint32
+        |     |  +--ro notc:periodic-notifications-supported?
+        |     |  |       notification-support
+        |     |  +--ro (notc:update-period)?
+        |     |  |  +--:(notc:minimum-update-period)
+        |     |  |  |  +--ro notc:minimum-update-period?        uint32
+        |     |  |  +--:(notc:supported-update-period)
+        |     |  |     +--ro notc:supported-update-period*      uint32
+        |     |  +--ro notc:on-change-supported?
+        |     |  |       notification-support {yp:on-change}?
+        |     |  +--ro notc:minimum-dampening-period?           uint32
+        |     |  |       {yp:on-change}?
+        |     |  +--ro notc:supported-excluded-change-type*     union
+        |     |          {yp:on-change}?
         |     +--ro yp2ca:datastore-telemetry
         |        +--ro yp2ca:periodic-notifications-supported?
         |        |       notification-support
@@ -2620,21 +2632,41 @@ Table of Contents
         |        |     +--ro yp2ca:supported-update-period*      uint32
         |        +--ro yp2ca:on-change-supported?
         |                notification-support
+        +--ro notc:subscription-capabilities
+        |  +--ro notc:max-nodes-per-update?               uint32
+        |  +--ro notc:periodic-notifications-supported?
+        |  |       notification-support
+        |  +--ro (notc:update-period)?
+        |  |  +--:(notc:minimum-update-period)
+        |  |  |  +--ro notc:minimum-update-period?        uint32
+        |  |  +--:(notc:supported-update-period)
+        |  |     +--ro notc:supported-update-period*      uint32
+        |  +--ro notc:on-change-supported?
+        |  |       notification-support {yp:on-change}?
+        |  +--ro notc:minimum-dampening-period?           uint32
+        |  |       {yp:on-change}?
+        |  +--ro notc:supported-excluded-change-type*     union
+        |  |       {yp:on-change}?
+        |  +--ro inotenv:notification-metadata
+        |     +--ro inotenv:notification-envelope?   boolean
+        |     +--ro inotenv:metadata
+        |        +--ro inotenv:hostname-sequence-number?   boolean
         +--ro yp2ca:datastore-telemetry
-           +--ro yp2ca:periodic-notifications-supported?
-           |       notification-support
-           +--ro (yp2ca:update-period)?
-           |  +--:(yp2ca:minimum-update-period)
-           |  |  +--ro yp2ca:minimum-update-period?        uint32
-           |  +--:(yp2ca:supported-update-period)
-           |     +--ro yp2ca:supported-update-period*      uint32
-           +--ro yp2ca:on-change-supported?
-           |       notification-support
-           +--ro yp2ca:transport
-              +--ro yp2ca:transport-capability* [transport-protocol]
-                 +--ro yp2ca:transport-protocol    identityref
-                 +--ro yp2ca:security-protocol?    identityref
-                 +--ro yp2ca:encoding-format*      identityref
+        |  +--ro yp2ca:periodic-notifications-supported?
+        |  |       notification-support
+        |  +--ro (yp2ca:update-period)?
+        |  |  +--:(yp2ca:minimum-update-period)
+        |  |  |  +--ro yp2ca:minimum-update-period?        uint32
+        |  |  +--:(yp2ca:supported-update-period)
+        |  |     +--ro yp2ca:supported-update-period*      uint32
+        |  +--ro yp2ca:on-change-supported?
+        |  |       notification-support
+        |  +--ro yp2ca:transport
+        |     +--ro yp2ca:transport-capability* [transport-protocol]
+        |        +--ro yp2ca:transport-protocol    identityref
+        |        +--ro yp2ca:security-protocol?    identityref
+        |        +--ro yp2ca:encoding-format*      identityref
+        +--ro yp2ca:distributed-notifications-supported?   boolean
 
       Figure 18: YANG tree for ietf-system-capabilities with ietf-yl-
                       lite-capabilities augmentations.
@@ -2680,22 +2712,78 @@ Table of Contents
    ideas to fingerprint the subscription schema in the subscription-
    started notification.*
 
-12.  Distributed Notifications
+12.  Distributed Notifications - Multiple Publishing Processes
 
-   This section describes the proposed approach to support distributed
-   notifications in YANG Push v2.  It is aligned with
-   [I-D.ietf-netconf-distributed-notif] in terms of goals and lifecycle,
-   but differs in how the publisher-id is conveyed.
+   Distributed notifications is the concept of allowing subscriptions to
+   be served from multiple different agent publisher processes on the
+   same device.  As a simple example, an implementation could choose to
+   have separate publishing processes for each linecard in a network
+   device, so that data that is local to that linecard can be published
+   directly from the linecard, perhaps directly from the linecard data
+   interfaces, without been sent to the RP process that could act a
+   bottleneck.
 
-   Distributed notifications are used when there are multiple
-   publishers, each with a separate transport connection to the same
-   receiver.  Subscription lifecycle management (establishment,
-   modification, and termination) remains per subscription as described
-   in [I-D.ietf-netconf-distributed-notif].
+   The YANG Push 2 specification supports distributed notifications as
+   described in [I-D.ietf-netconf-distributed-notif], and using the
+   terminology defined therewithin, but with some differences due to the
+   different YANG data models, which are described below.
 
-   Support for distributed notifications is [RFC2119] OPTIONAL to
-   implement.  If implemented, YANG data model additions are guarded by
-   a distributed-publishers YANG feature.
+   It is OPTIONAL for YANG Push 2 publishers to support multiple
+   publisher agents since they always have the option of handling all
+   subscriptions from a single publisher process on each server.
+   Receivers and consumers of YANG Push 2 subscription data MUST support
+   accommodate servers that publish their data from multiple publishing
+   processes, e.g., they may need to correlate the update-complete
+   notification across multiple publishing processes.
+
+   The differences for supporting [I-D.ietf-netconf-distributed-notif]
+   with YANG Push 2 are:
+
+   *  the publisher-id leaf, that identities the Message Publisher ID of
+      the publishing process, is augmented in the envelope notification
+      [I-D.draft-ietf-netconf-notif-envelope] rather than the _push-
+      update_ and _push-change-update_ messages.  This means that all
+      messages sent by any Message Publishers (e.g., including
+      Subscription Lifecyle Notifications) will indicate which Message
+      Publisher sent the message.
+
+   *  the publisher-id leaf has a default value of 0.  It is RECOMMENDED
+      that the server allocates a publisher-id of 0 to the default
+      Publisher Parent, since that allows for the publisher-id leaf to
+      be omitted from notification messages sent from the Publisher
+      Parent.
+
+   *  the _subscription-started_ and _subscription-modified_
+      notifications have a _message-publishers/publisher-id_ leaf-list
+      that identifies all Message Publishers that will send messages as
+      part of the subscription.  This leaf-list defaults to a single
+      entry of 0, so MAY be ommitted if there is only a single Message
+      Publisher and it has an publisher-id of 0.
+
+      -  As per [I-D.ietf-netconf-distributed-notif], the list of
+         Message Publishers serving an active subscription can change
+         during the lifetime of the subscription and the Publisher
+         Parent MUST send a _subscription-modified_ notification of any
+         change in publisher-ids.
+
+      -  Yang Push 2 does not return the list of publisher-ids as part
+         of the establish-subscription response output because the
+         dynamic subscription will receive a _subscription-started_
+         notification instead, which also provides a more robust
+         mechanism consistent with configured subscriptions.
+
+   *  the _subscriptions/subscription_ has a _message-publishers/
+      publisher-id_ leaf-list to report the current list of Message
+      Publishers associated with a subscription.
+
+   *  A capability flag is used to indicate whether the server might use
+      distributed notifications.
+
+   *  the _update-complete_ notifications, or the equivalent _complete_
+      leaf as part of an _update_ notification are generated per Message
+      Publisher, and scoped as such.  I.e., this may require clients to
+      count and correlate update complete indications across Message
+      Publishers for a given subscription.
 
    The key model and behavior changes are:
 
@@ -2823,29 +2911,8 @@ Table of Contents
 
      notifications:
        +---n subscription-started
-       |  +--ro id                subscription-id
-       |  +--ro description?      string
-       |  +--ro target
-       |  |  +--ro datastore?                 identityref
-       |  |  +--ro (filter)
-       |  |  |  +--:(path)
-       |  |  |  |  +--ro path                 ypath
-       |  |  |  +--:(subtree)
-       |  |  |  |  +--ro subtree              <anydata>
-       |  |  |  +--:(xpath)
-       |  |  |     +--ro xpath                yang:xpath1.0 {yp2:xpath}?
-       |  |  +--ro schema-id?                 string
-       |  |  +--ro yang-library-content-id?
-       |  |          -> /yanglib:yang-library/content-id
-       |  +--ro update-trigger
-       |     +--ro periodic!
-       |     |  +--ro period         centiseconds
-       |     |  +--ro anchor-time?   yang:date-and-time
-       |     +--ro on-change! {on-change}?
-       |        +--ro sync-on-start?   boolean
-       +---n subscription-modified
-       |  +--ro id                subscription-id
-       |  +--ro description?      string
+       |  +--ro id                    subscription-id
+       |  +--ro description?          string
        |  +--ro target
        |  |  +--ro datastore?                 identityref
        |  |  +--ro (filter)
@@ -2864,7 +2931,32 @@ Table of Contents
        |  |  |  +--ro anchor-time?   yang:date-and-time
        |  |  +--ro on-change! {on-change}?
        |  |     +--ro sync-on-start?   boolean
-       |  +--ro reason            subscription-change
+       |  +--ro message-publishers
+       |     +--ro publisher-id*   uint32
+       +---n subscription-modified
+       |  +--ro id                    subscription-id
+       |  +--ro description?          string
+       |  +--ro target
+       |  |  +--ro datastore?                 identityref
+       |  |  +--ro (filter)
+       |  |  |  +--:(path)
+       |  |  |  |  +--ro path                 ypath
+       |  |  |  +--:(subtree)
+       |  |  |  |  +--ro subtree              <anydata>
+       |  |  |  +--:(xpath)
+       |  |  |     +--ro xpath                yang:xpath1.0 {yp2:xpath}?
+       |  |  +--ro schema-id?                 string
+       |  |  +--ro yang-library-content-id?
+       |  |          -> /yanglib:yang-library/content-id
+       |  +--ro update-trigger
+       |  |  +--ro periodic!
+       |  |  |  +--ro period         centiseconds
+       |  |  |  +--ro anchor-time?   yang:date-and-time
+       |  |  +--ro on-change! {on-change}?
+       |  |     +--ro sync-on-start?   boolean
+       |  +--ro message-publishers
+       |  |  +--ro publisher-id*   uint32
+       |  +--ro reason                subscription-change
        +---n subscription-terminated
        |  +--ro id        subscription-id
        |  +--ro reason    identityref
@@ -2882,7 +2974,7 @@ Table of Contents
        |  |     |  +--ro replaced-by?   <anydata>
        |  |     +--:(deleted)
        |  |        +--ro deleted?       empty
-       |  +--ro complete?           empty
+       |  +--ro complete?           boolean
        +---n update-complete
           +--ro id?   subscription-id
 
@@ -2934,6 +3026,15 @@ Table of Contents
        prefix yanglib;
        reference
          "RFC 8525: YANG Library";
+     }
+     import ietf-yp-notification {
+       prefix iypn;
+       reference
+        "draft-ietf-netconf-notif-envelope: Extensible YANG Model for
+         YANG-Push Notifications
+
+         TODO: RFC Editor please replace with latest draft/RFC version
+        at publication time.";
      }
 
      organization
@@ -3357,6 +3458,22 @@ Table of Contents
        }
      }
 
+     grouping publishers {
+       description
+         "Grouping describes the list of publisher-ids";
+       leaf-list publisher-id {
+         type uint32;
+         default 0;
+         config false;
+         description
+           "Identifies the software process which publishes notification
+           messages (e.g., processor 1 on line card 1). This field
+           is used to notify the receiver which publisher processes
+           are going to publish. The identifiers are locally unique to
+           the Network Node.";
+       }
+     }
+
      grouping filter-choice {
        description
          "This grouping defines the types of selectors for objects
@@ -3527,23 +3644,23 @@ Table of Contents
          "This grouping describes schema information related to a
           subscription.";
 
-         leaf schema-id {
-           type string;
-           description
-             "Indicates the version of the YANG schema used for this
-             subscription.  The schema-id MUST change if the schema
-             associated with the subscription changes.  The schema-id
-             MAY change if the device schema changes, even if the
-             change does not affect the subscription.";
-         }
+       leaf schema-id {
+         type string;
+         description
+           "Indicates the version of the YANG schema used for this
+           subscription.  The schema-id MUST change if the schema
+           associated with the subscription changes.  The schema-id
+           MAY change if the device schema changes, even if the
+           change does not affect the subscription.";
+       }
 
-         leaf yang-library-content-id {
-           type leafref {
-             path "/yanglib:yang-library/yanglib:content-id";
-           }
-           description
-             "Contains the YANG library content identifier.";
+       leaf yang-library-content-id {
+         type leafref {
+           path "/yanglib:yang-library/yanglib:content-id";
          }
+         description
+           "Contains the YANG library content identifier.";
+       }
      }
 
      grouping subscription-common {
@@ -3769,10 +3886,11 @@ Table of Contents
       * NOTIFICATIONS
       */
 
-     notification subscription-started {
+     grouping subscription-update-common {
        description
-         "This notification indicates that a subscription has started
-          and notifications will now be sent.";
+         "Data nodes common to both subscription-started and
+          subscription-modified notifications.";
+
        uses subscription-id;
        uses subscription-common {
          augment "target" {
@@ -3781,20 +3899,26 @@ Table of Contents
            uses subscription-schema;
          }
        }
+       container message-publishers {
+         description
+           "Holds the publisher-ids for all processes currently
+            associated with the subscription";
+           uses yp2:publishers;
+       }
+     }
+
+     notification subscription-started {
+       description
+         "This notification indicates that a subscription has started
+          and notifications will now be sent.";
+          uses subscription-update-common;
      }
 
      notification subscription-modified {
        description
          "This notification indicates that subscription paramaters have
           changed.";
-       uses subscription-id;
-       uses subscription-common {
-         augment "target" {
-           description
-             "Adds a schema id.";
-           uses subscription-schema;
-         }
-       }
+       uses subscription-update-common;
 
        leaf reason {
          type subscription-change;
@@ -3953,7 +4077,8 @@ Table of Contents
        }
 
        leaf complete {
-         type empty;
+         type boolean;
+         default "false";
          description
            "This flag indicates that this is the last
             notification in a series of notifications that together
@@ -3966,8 +4091,6 @@ Table of Contents
        }
      }
 
-     // TODO - Need to think about list key entries that are no longer
-     //        present.
      notification update-complete {
        description
          "This notification indicates the end of a periodic collection
@@ -3985,6 +4108,19 @@ Table of Contents
          description
            "The name of the subscription that is the source of
              this notification.";
+       }
+     }
+
+     sx:augment-structure "/iypn:envelope" {
+       leaf publisher-id {
+         type uint32;
+         default 0;
+         description
+           "Identifies the software process which publishes notification
+            messages (e.g., processor 1 on line card 1). This field
+            is used to notify the receiver which publisher process
+            published which message. The identifier is locally unique to
+            the Network Node.";
        }
      }
    }
@@ -4037,6 +4173,8 @@ Table of Contents
               +--ro type?
               |       yp2:subscription-type
               +--ro encoding?                           yp2:encoding
+              +--ro message-publishers
+              |  +--ro publisher-id*   uint32
               +--ro last-sequence-number?
               |       yang:zero-based-counter64
               +--ro last-notification-time?
@@ -4060,9 +4198,6 @@ Table of Contents
               |          yang:zero-based-counter64
               +---x reset
 
-     augment /yp2:establish-subscription/yp2:input/yp2:target
-               /yp2:filter:
-       +--:(by-reference)
      augment /yp2:subscription-started/yp2:target:
        +-- filter-ref?   filter-ref
 
@@ -4123,6 +4258,8 @@ Table of Contents
         |     +--ro type?
         |     |       yp2:subscription-type
         |     +--ro encoding?                           yp2:encoding
+        |     +--ro message-publishers
+        |     |  +--ro publisher-id*   uint32
         |     +--ro last-sequence-number?
         |     |       yang:zero-based-counter64
         |     +--ro last-notification-time?
@@ -4160,10 +4297,6 @@ Table of Contents
               |     +--rw source-address?     inet:ip-address-no-zone
               +--rw (transport-type)
 
-     augment /yp2:establish-subscription/yp2:input/yp2:target
-               /yp2:filter:
-       +--:(by-reference)
-          +-- filter-ref?   filter-ref
      augment /yp2:subscription-started/yp2:target:
        +-- filter-ref?   filter-ref
 
@@ -4423,6 +4556,14 @@ Table of Contents
                "The type of encoding for notification messages.";
            }
 
+           container message-publishers {
+             config false;
+             description
+               "Holds the publisher-ids for all processes
+                currently associated with the subscription";
+               uses yp2:publishers;
+           }
+
            leaf last-sequence-number {
              type yang:zero-based-counter64;
              config false;
@@ -4664,25 +4805,6 @@ Table of Contents
        }
      }
 
-     augment "/yp2:establish-subscription/yp2:input/yp2:"
-           + "target/yp2:filter" {
-
-       description
-         "Augment the 'establish-subscription' RPC to allow
-          referencing a configured receiver.";
-
-       case by-reference {
-         description
-           "Incorporates a filter that has been configured
-            separately.";
-         uses filter-ref {
-           refine "filter-ref" {
-             mandatory false;
-           }
-         }
-       }
-     }
-
      augment "/yp2:subscription-started/yp2:target" {
 
        description
@@ -4726,18 +4848,19 @@ Table of Contents
 
      augment /sysc:system-capabilities:
        +--ro datastore-telemetry
-          +--ro periodic-notifications-supported?   notification-support
-          +--ro (update-period)?
-          |  +--:(minimum-update-period)
-          |  |  +--ro minimum-update-period?        uint32
-          |  +--:(supported-update-period)
-          |     +--ro supported-update-period*      uint32
-          +--ro on-change-supported?                notification-support
-          +--ro transport
-             +--ro transport-capability* [transport-protocol]
-                +--ro transport-protocol    identityref
-                +--ro security-protocol?    identityref
-                +--ro encoding-format*      identityref
+       |  +--ro periodic-notifications-supported?   notification-support
+       |  +--ro (update-period)?
+       |  |  +--:(minimum-update-period)
+       |  |  |  +--ro minimum-update-period?        uint32
+       |  |  +--:(supported-update-period)
+       |  |     +--ro supported-update-period*      uint32
+       |  +--ro on-change-supported?                notification-support
+       |  +--ro transport
+       |     +--ro transport-capability* [transport-protocol]
+       |        +--ro transport-protocol    identityref
+       |        +--ro security-protocol?    identityref
+       |        +--ro encoding-format*      identityref
+       +--ro distributed-notifications-supported?   boolean
      augment /sysc:system-capabilities/sysc:datastore-capabilities
                /sysc:per-node-capabilities:
        +--ro datastore-telemetry
@@ -4869,7 +4992,7 @@ Table of Contents
      }
 
 
-     grouping yp-lite-capabilities {
+     grouping yp2-capabilities {
        description
          "Capabilities related to YANG Push Lite subscriptions
           and notifications";
@@ -4955,7 +5078,7 @@ Table of Contents
        }
      }
 
-     grouping yp-lite-transport-capabilities {
+     grouping yp2-transport-capabilities {
        description
          "Capabilities related to transports supporting Yang Push Lite";
        container transport {
@@ -4995,20 +5118,28 @@ Table of Contents
      augment "/sysc:system-capabilities" {
        description
          "Adds system level capabilities for YANG Push Lite";
-       uses yp-lite-capabilities;
+       uses yp2-capabilities;
+
+       leaf distributed-notifications-supported {
+         type boolean;
+         description
+           "Indicates whether the server supports distributed
+             notifications and may source message from different
+             Message Publishers.";
+       }
      }
 
      augment "/sysc:system-capabilities/yp2ca:datastore-telemetry" {
        description
          "Adds system level Yang Push Lite transport capabilities";
-       uses yp-lite-transport-capabilities;
+       uses yp2-transport-capabilities;
      }
 
      augment "/sysc:system-capabilities/sysc:datastore-capabilities"
            + "/sysc:per-node-capabilities" {
        description
          "Add datastore and node-level capabilities";
-       uses yp-lite-capabilities;
+       uses yp2-capabilities;
      }
    }
    <CODE ENDS>
@@ -5230,6 +5361,11 @@ Acknowledgments
    Warnke, and Alex Huang Feng; but also wider conversations that
    include: Benoit Claise, Pierre Francois, Paolo Lucente, Jean
    Quilbeuf, among others.
+
+   In addition, as described in the introduction, the authors would like
+   to acknowledge that this work builds on work of others, such as,
+   Subscribed Notifications, YANG Push, and various extensions to that
+   work.
 
 Contributors
 
@@ -5823,7 +5959,7 @@ C.1.  Example of periodic update messages
            }
          }
        ],
-       "complete": [null]
+       "complete": false
      }
    }
 
@@ -5980,7 +6116,7 @@ C.3.1.  Update message with single deleted data node
        "updates": [
          {
            "target-path": "/ietf-interfaces:interfaces/interface[name='eth0']",
-           "deleted": []
+           "deleted": [null]
          }
        ]
      }
@@ -6143,7 +6279,12 @@ C.4.2.  Failed periodic subscription
 
        Figure 13: "establish-subscription" Error Response: Example 2
 
-C.4.3.  "delete-subscription" RPC
+C.5.  Distributed Notification subscription
+
+   TODO - Add an example of a distributed notification, and two update
+   messages sent from different publishers.
+
+C.5.1.  "delete-subscription" RPC
 
    To stop receiving updates from a subscription and effectively delete
    a subscription that had previously been established using an

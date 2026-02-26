@@ -1057,7 +1057,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Wilton, et al.</td>
-<td class="center">Expires 24 August 2026</td>
+<td class="center">Expires 30 August 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1070,12 +1070,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-wilton-netconf-yang-push-2-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-02-20" class="published">20 February 2026</time>
+<time datetime="2026-02-26" class="published">26 February 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-08-24">24 August 2026</time></dd>
+<dd class="expires"><time datetime="2026-08-30">30 August 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1146,7 +1146,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 24 August 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 30 August 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1406,7 +1406,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-distributed-notifications" class="internal xref">Distributed Notifications</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-distributed-notifications-m" class="internal xref">Distributed Notifications - Multiple Publishing Processes</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
             <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-core-yang-push-v2-yang-data" class="internal xref">Core YANG Push v2 YANG Data Model</a></p>
@@ -1537,8 +1537,13 @@ svg :is([fill="white"], [fill^="#fff"]) {
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.24.2.4.2.2">
                     <p id="section-toc.1-1.24.2.4.2.2.1"><a href="#appendix-C.4.2" class="auto internal xref">C.4.2</a>.  <a href="#name-failed-periodic-subscriptio" class="internal xref">Failed periodic subscription</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.24.2.4.2.3">
-                    <p id="section-toc.1-1.24.2.4.2.3.1"><a href="#appendix-C.4.3" class="auto internal xref">C.4.3</a>.  <a href="#name-delete-subscription-rpc" class="internal xref">"delete-subscription" RPC</a></p>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.24.2.5">
+                <p id="section-toc.1-1.24.2.5.1"><a href="#appendix-C.5" class="auto internal xref">C.5</a>.  <a href="#name-distributed-notification-su" class="internal xref">Distributed Notification subscription</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.24.2.5.2.1">
+                    <p id="section-toc.1-1.24.2.5.2.1.1"><a href="#appendix-C.5.1" class="auto internal xref">C.5.1</a>.  <a href="#name-delete-subscription-rpc" class="internal xref">"delete-subscription" RPC</a></p>
 </li>
                 </ul>
 </li>
@@ -1711,7 +1716,7 @@ defined in <span>[<a href="#RFC8340" class="cite xref">RFC8340</a>]</span>.<a hr
               <p id="section-3.3.1-3.2.1">For data that is generally polled on a periodic basis (e.g., once every 10 minutes) and put into a time series database, then it may be helpful for some data trees to also get more immediate notifications that the data has changed.  Hence, a combined periodic and on-change subscription, would facilitate more frequent notifications of changes of the state, to reduce the need of having to always wait for the next periodic event.<a href="#section-3.3.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
           </ol>
-<p id="section-3.3.1-4">Hence, this document introduces the fairly intuitive "periodic-and-on-change" update trigger that creates a combined periodic and on-change subscription, and allows the same parameters to be configured.  For some use cases, e.g., where a time-series database is being updated, the new encoding format proposed previously may be most useful.<a href="#section-3.3.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-4">Hence, this document allows a single subscription to be configured as both periodic and on-change.<a href="#section-3.3.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1766,7 +1771,7 @@ defined in <span>[<a href="#RFC8340" class="cite xref">RFC8340</a>]</span>.<a hr
           <h4>
 <a href="#section-3.4.5" class="section-number selfRef">3.4.5. </a><span><span class="cite xref">[I-D.draft-ietf-netconf-distributed-notif]</span></span>
           </h4>
-<p id="section-3.4.5-1"><strong>TODO.  It is likely that some of the base support for distributed notifications will be incorporated into this draft.  If so, add acknowledgements to the authors.</strong><a href="#section-3.4.5-1" class="pilcrow">¶</a></p>
+<p id="section-3.4.5-1">This document reuses the work from <span>[<a href="#I-D.draft-ietf-netconf-distributed-notif" class="cite xref">I-D.draft-ietf-netconf-distributed-notif</a>]</span>, but with some changes to work with the YANG Push v2 data models.  This is described in <a href="#distributed-notifications" class="auto internal xref">Section 12</a>.<a href="#section-3.4.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1917,6 +1922,7 @@ defined in <span>[<a href="#RFC8340" class="cite xref">RFC8340</a>]</span>.<a hr
           <p id="section-5-9.3.1"><em>YANG-Push-Lite</em>: The light weight subscription and push mechanism for datastore updates that is specified in this document. <strong>Add comment</strong><a href="#section-5-9.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
+<p id="section-5-10">This document also uses the terminology from <span>[<a href="#I-D.ietf-netconf-distributed-notif" class="cite xref">I-D.ietf-netconf-distributed-notif</a>]</span> in <a href="#distributed-notifications" class="auto internal xref">Section 12</a> and the related examples in <a href="#distrib-notif-example" class="auto internal xref">Appendix C.5</a>.<a href="#section-5-10" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="pathsAndFilters">
@@ -2016,9 +2022,6 @@ module: ietf-yang-push-2-config
               +--:(xpath)
                  +--rw xpath      yang:xpath1.0 {yp2:xpath}?
 
-  augment /yp2:establish-subscription/yp2:input/yp2:target
-            /yp2:filter:
-    +--:(by-reference)
   augment /yp2:subscription-started/yp2:target:
     +-- filter-ref?   filter-ref
 </pre>
@@ -2148,7 +2151,7 @@ module: ietf-yang-push-2-config
     |  |     |  +--ro replaced-by?   &lt;anydata&gt;
     |  |     +--:(deleted)
     |  |        +--ro deleted?       empty
-    |  +--ro complete?           empty
+    |  +--ro complete?           boolean
 </pre>
 </div>
 <figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
@@ -2202,9 +2205,6 @@ module: ietf-yang-push-2-config
               +--rw on-change! {on-change}?
                  +--rw sync-on-start?   boolean
 
-  augment /yp2:establish-subscription/yp2:input/yp2:target
-            /yp2:filter:
-    +--:(by-reference)
   augment /yp2:subscription-started/yp2:target:
     +-- filter-ref?   filter-ref
 </pre>
@@ -2414,9 +2414,6 @@ module: ietf-yang-push-2-config
            |     +--rw source-address?     inet:ip-address-no-zone
            +--rw (transport-type)
 
-  augment /yp2:establish-subscription/yp2:input/yp2:target
-            /yp2:filter:
-    +--:(by-reference)
   augment /yp2:subscription-started/yp2:target:
     +-- filter-ref?   filter-ref
 </pre>
@@ -2881,8 +2878,8 @@ behavior.<a href="#section-9.1.3.2-2.5.1" class="pilcrow">¶</a></p>
             <div class="lang-yangtree sourcecode" id="section-9.2.1-5.1">
 <pre>
     +---n subscription-started
-    |  +--ro id                subscription-id
-    |  +--ro description?      string
+    |  +--ro id                    subscription-id
+    |  +--ro description?          string
     |  +--ro target
     |  |  +--ro datastore?                 identityref
     |  |  +--ro (filter)
@@ -2896,11 +2893,13 @@ behavior.<a href="#section-9.1.3.2-2.5.1" class="pilcrow">¶</a></p>
     |  |  +--ro yang-library-content-id?
     |  |          -&gt; /yanglib:yang-library/content-id
     |  +--ro update-trigger
-    |     +--ro periodic!
-    |     |  +--ro period         centiseconds
-    |     |  +--ro anchor-time?   yang:date-and-time
-    |     +--ro on-change! {on-change}?
-    |        +--ro sync-on-start?   boolean
+    |  |  +--ro periodic!
+    |  |  |  +--ro period         centiseconds
+    |  |  |  +--ro anchor-time?   yang:date-and-time
+    |  |  +--ro on-change! {on-change}?
+    |  |     +--ro sync-on-start?   boolean
+    |  +--ro message-publishers
+    |     +--ro publisher-id*   uint32
 </pre>
 </div>
 <figcaption><a href="#figure-10" class="selfRef">Figure 10</a>:
@@ -2920,8 +2919,8 @@ behavior.<a href="#section-9.1.3.2-2.5.1" class="pilcrow">¶</a></p>
             <div class="lang-yangtree sourcecode" id="section-9.2.2-4.1">
 <pre>
     +---n subscription-modified
-    |  +--ro id                subscription-id
-    |  +--ro description?      string
+    |  +--ro id                    subscription-id
+    |  +--ro description?          string
     |  +--ro target
     |  |  +--ro datastore?                 identityref
     |  |  +--ro (filter)
@@ -2940,7 +2939,9 @@ behavior.<a href="#section-9.1.3.2-2.5.1" class="pilcrow">¶</a></p>
     |  |  |  +--ro anchor-time?   yang:date-and-time
     |  |  +--ro on-change! {on-change}?
     |  |     +--ro sync-on-start?   boolean
-    |  +--ro reason            subscription-change
+    |  +--ro message-publishers
+    |  |  +--ro publisher-id*   uint32
+    |  +--ro reason                subscription-change
 </pre>
 </div>
 <figcaption><a href="#figure-11" class="selfRef">Figure 11</a>:
@@ -2996,7 +2997,7 @@ behavior.<a href="#section-9.1.3.2-2.5.1" class="pilcrow">¶</a></p>
     |  |     |  +--ro replaced-by?   &lt;anydata&gt;
     |  |     +--:(deleted)
     |  |        +--ro deleted?       empty
-    |  +--ro complete?           empty
+    |  +--ro complete?           boolean
     +---n update-complete
        +--ro id?   subscription-id
 </pre>
@@ -3460,7 +3461,7 @@ transport-layer RPC structures.  These structures are:<a href="#section-9.4.5-6"
 <p id="section-11.1-2">The ietf-yang-push-2-capabilities module contains capabilities to indicate what types of subscriptions and transports may be configured, along with acceptable subscription parameter for given subtrees.<a href="#section-11.1-2" class="pilcrow">¶</a></p>
 <p id="section-11.1-3">The schema tree for the ietf-system-capabilities augmented by ietf-yang-push-2-capabilities is given below.<a href="#section-11.1-3" class="pilcrow">¶</a></p>
 <span id="name-yang-tree-for-ietf-system-c"></span><figure id="figure-18">
-          <div class="lang-yangtree sourcecode" id="section-11.1-4.1">
+          <div class="breakable lang-yangtree sourcecode" id="section-11.1-4.1">
 <pre>
 module: ietf-system-capabilities
   +--ro system-capabilities
@@ -3472,6 +3473,21 @@ module: ietf-system-capabilities
      |     |  +--:(node-selector)
      |     |     +--ro node-selector?
      |     |             nacm:node-instance-identifier
+     |     +--ro notc:subscription-capabilities
+     |     |  +--ro notc:max-nodes-per-update?               uint32
+     |     |  +--ro notc:periodic-notifications-supported?
+     |     |  |       notification-support
+     |     |  +--ro (notc:update-period)?
+     |     |  |  +--:(notc:minimum-update-period)
+     |     |  |  |  +--ro notc:minimum-update-period?        uint32
+     |     |  |  +--:(notc:supported-update-period)
+     |     |  |     +--ro notc:supported-update-period*      uint32
+     |     |  +--ro notc:on-change-supported?
+     |     |  |       notification-support {yp:on-change}?
+     |     |  +--ro notc:minimum-dampening-period?           uint32
+     |     |  |       {yp:on-change}?
+     |     |  +--ro notc:supported-excluded-change-type*     union
+     |     |          {yp:on-change}?
      |     +--ro yp2ca:datastore-telemetry
      |        +--ro yp2ca:periodic-notifications-supported?
      |        |       notification-support
@@ -3482,21 +3498,41 @@ module: ietf-system-capabilities
      |        |     +--ro yp2ca:supported-update-period*      uint32
      |        +--ro yp2ca:on-change-supported?
      |                notification-support
+     +--ro notc:subscription-capabilities
+     |  +--ro notc:max-nodes-per-update?               uint32
+     |  +--ro notc:periodic-notifications-supported?
+     |  |       notification-support
+     |  +--ro (notc:update-period)?
+     |  |  +--:(notc:minimum-update-period)
+     |  |  |  +--ro notc:minimum-update-period?        uint32
+     |  |  +--:(notc:supported-update-period)
+     |  |     +--ro notc:supported-update-period*      uint32
+     |  +--ro notc:on-change-supported?
+     |  |       notification-support {yp:on-change}?
+     |  +--ro notc:minimum-dampening-period?           uint32
+     |  |       {yp:on-change}?
+     |  +--ro notc:supported-excluded-change-type*     union
+     |  |       {yp:on-change}?
+     |  +--ro inotenv:notification-metadata
+     |     +--ro inotenv:notification-envelope?   boolean
+     |     +--ro inotenv:metadata
+     |        +--ro inotenv:hostname-sequence-number?   boolean
      +--ro yp2ca:datastore-telemetry
-        +--ro yp2ca:periodic-notifications-supported?
-        |       notification-support
-        +--ro (yp2ca:update-period)?
-        |  +--:(yp2ca:minimum-update-period)
-        |  |  +--ro yp2ca:minimum-update-period?        uint32
-        |  +--:(yp2ca:supported-update-period)
-        |     +--ro yp2ca:supported-update-period*      uint32
-        +--ro yp2ca:on-change-supported?
-        |       notification-support
-        +--ro yp2ca:transport
-           +--ro yp2ca:transport-capability* [transport-protocol]
-              +--ro yp2ca:transport-protocol    identityref
-              +--ro yp2ca:security-protocol?    identityref
-              +--ro yp2ca:encoding-format*      identityref
+     |  +--ro yp2ca:periodic-notifications-supported?
+     |  |       notification-support
+     |  +--ro (yp2ca:update-period)?
+     |  |  +--:(yp2ca:minimum-update-period)
+     |  |  |  +--ro yp2ca:minimum-update-period?        uint32
+     |  |  +--:(yp2ca:supported-update-period)
+     |  |     +--ro yp2ca:supported-update-period*      uint32
+     |  +--ro yp2ca:on-change-supported?
+     |  |       notification-support
+     |  +--ro yp2ca:transport
+     |     +--ro yp2ca:transport-capability* [transport-protocol]
+     |        +--ro yp2ca:transport-protocol    identityref
+     |        +--ro yp2ca:security-protocol?    identityref
+     |        +--ro yp2ca:encoding-format*      identityref
+     +--ro yp2ca:distributed-notifications-supported?   boolean
 </pre>
 </div>
 <figcaption><a href="#figure-18" class="selfRef">Figure 18</a>:
@@ -3526,59 +3562,88 @@ module: ietf-system-capabilities
 </div>
 </section>
 </div>
-<div id="distributed-notifications-summary">
+<div id="distributed-notifications">
 <section id="section-12">
-      <h2 id="name-distributed-notifications">
-<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-distributed-notifications" class="section-name selfRef">Distributed Notifications</a>
+      <h2 id="name-distributed-notifications-m">
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-distributed-notifications-m" class="section-name selfRef">Distributed Notifications - Multiple Publishing Processes</a>
       </h2>
-<p id="section-12-1">This section describes the proposed approach to support distributed notifications in YANG Push v2.  It is aligned with <span>[<a href="#I-D.ietf-netconf-distributed-notif" class="cite xref">I-D.ietf-netconf-distributed-notif</a>]</span> in terms of goals and lifecycle, but differs in how the <code>publisher-id</code> is conveyed.<a href="#section-12-1" class="pilcrow">¶</a></p>
-<p id="section-12-2">Distributed notifications are used when there are multiple publishers, each with a separate transport connection to the same receiver.  Subscription lifecycle management (establishment, modification, and termination) remains per subscription as described in <span>[<a href="#I-D.ietf-netconf-distributed-notif" class="cite xref">I-D.ietf-netconf-distributed-notif</a>]</span>.<a href="#section-12-2" class="pilcrow">¶</a></p>
-<p id="section-12-3">Support for distributed notifications is <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span class="bcp14">OPTIONAL</span> to implement.  If implemented, YANG data model additions are guarded by a <code>distributed-publishers</code> YANG feature.<a href="#section-12-3" class="pilcrow">¶</a></p>
-<p id="section-12-4">The key model and behavior changes are:<a href="#section-12-4" class="pilcrow">¶</a></p>
+<p id="section-12-1">Distributed notifications is the concept of allowing subscriptions to be served from multiple different agent publisher processes on the same device.  As a simple example, an implementation could choose to have separate publishing processes for each linecard in a network device, so that data that is local to that linecard can be published directly from the linecard, perhaps directly from the linecard data interfaces, without been sent to the RP process that could act a bottleneck.<a href="#section-12-1" class="pilcrow">¶</a></p>
+<p id="section-12-2">The YANG Push 2 specification supports distributed notifications as described in <span>[<a href="#I-D.ietf-netconf-distributed-notif" class="cite xref">I-D.ietf-netconf-distributed-notif</a>]</span>, and using the terminology defined therewithin, but with some differences due to the different YANG data models, which are described below.<a href="#section-12-2" class="pilcrow">¶</a></p>
+<p id="section-12-3">It is <span class="bcp14">OPTIONAL</span> for YANG Push 2 publishers to support multiple publisher agents since they always have the option of handling all subscriptions from a single publisher process on each server.  Receivers and consumers of YANG Push 2 subscription data <span class="bcp14">MUST</span> support accommodate servers that publish their data from multiple publishing processes, e.g., they may need to correlate the update-complete notification across multiple publishing processes.<a href="#section-12-3" class="pilcrow">¶</a></p>
+<p id="section-12-4">The differences for supporting <span>[<a href="#I-D.ietf-netconf-distributed-notif" class="cite xref">I-D.ietf-netconf-distributed-notif</a>]</span> with YANG Push 2 are:<a href="#section-12-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-12-5.1">
-          <p id="section-12-5.1.1">A per-subscription configuration parameter indicates whether multiple publishers are allowed, with three states:<a href="#section-12-5.1.1" class="pilcrow">¶</a></p>
+          <p id="section-12-5.1.1">the publisher-id leaf, that identities the Message Publisher ID of the publishing process, is augmented in the envelope notification <span>[<a href="#I-D.draft-ietf-netconf-notif-envelope" class="cite xref">I-D.draft-ietf-netconf-notif-envelope</a>]</span> rather than the <em>push-update</em> and <em>push-change-update</em> messages.  This means that all messages sent by any Message Publishers (e.g., including Subscription Lifecyle Notifications) will indicate which Message Publisher sent the message.<a href="#section-12-5.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-12-5.2">
+          <p id="section-12-5.2.1">the publisher-id leaf has a default value of 0.  It is <span class="bcp14">RECOMMENDED</span> that the server allocates a publisher-id of 0 to the default Publisher Parent, since that allows for the publisher-id leaf to be omitted from notification messages sent from the Publisher Parent.<a href="#section-12-5.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-12-5.3">
+          <p id="section-12-5.3.1">the <em>subscription-started</em> and <em>subscription-modified</em> notifications have a <em>message-publishers/publisher-id</em> leaf-list that identifies all Message Publishers that will send messages as part of the subscription.  This leaf-list defaults to a single entry of 0, so <span class="bcp14">MAY</span> be ommitted if there is only a single Message Publisher and it has an publisher-id of 0.<a href="#section-12-5.3.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12-5.1.2.1">
-              <p id="section-12-5.1.2.1.1"><code>non-distributed</code> (default, multiple publishers not allowed),<a href="#section-12-5.1.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-12-5.3.2.1">
+              <p id="section-12-5.3.2.1.1">As per <span>[<a href="#I-D.ietf-netconf-distributed-notif" class="cite xref">I-D.ietf-netconf-distributed-notif</a>]</span>, the list of Message Publishers serving an active subscription can change during the lifetime of the subscription and the Publisher Parent <span class="bcp14">MUST</span> send a <em>subscription-modified</em> notification of any change in publisher-ids.<a href="#section-12-5.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-12-5.1.2.2">
-              <p id="section-12-5.1.2.2.1"><code>distributed</code> (multiple publishers required; otherwise the subscription is rejected),<a href="#section-12-5.1.2.2.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="section-12-5.1.2.3">
-              <p id="section-12-5.1.2.3.1"><code>distributed-optional</code> (server decides whether to use distributed publishers).<a href="#section-12-5.1.2.3.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-12-5.3.2.2">
+              <p id="section-12-5.3.2.2.1">Yang Push 2 does not return the list of publisher-ids as part of the establish-subscription response output because the dynamic subscription will receive a <em>subscription-started</em> notification instead, which also provides a more robust mechanism consistent with configured subscriptions.<a href="#section-12-5.3.2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </li>
-        <li class="normal" id="section-12-5.2">
-          <p id="section-12-5.2.1">A <code>publisher-id</code> is added as an augmentation to the update envelope (not inside the update messages themselves).  This differs from <span>[<a href="#I-D.ietf-netconf-distributed-notif" class="cite xref">I-D.ietf-netconf-distributed-notif</a>]</span> and keeps the update contents unchanged while still identifying the source publisher for each update.<a href="#section-12-5.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-12-5.3">
-          <p id="section-12-5.3.1">Subscription lifecycle notifications include a leaf-list of <code>publisher-id</code> values.  If the list of publishers changes mid-subscription, a <code>subscription-modified</code> notification is generated.<a href="#section-12-5.3.1" class="pilcrow">¶</a></p>
-</li>
         <li class="normal" id="section-12-5.4">
-          <p id="section-12-5.4.1">The per-update <code>complete</code> flag (or equivalent <code>update-complete</code> notification) is scoped per publisher, i.e., per <code>publisher-id</code>.<a href="#section-12-5.4.1" class="pilcrow">¶</a></p>
+          <p id="section-12-5.4.1">the <em>subscriptions/subscription</em> has a <em>message-publishers/publisher-id</em> leaf-list to report the current list of Message Publishers associated with a subscription.<a href="#section-12-5.4.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-12-5.5">
-          <p id="section-12-5.5.1">The capabilities model is extended to indicate whether the device allows distributed publishers.<a href="#section-12-5.5.1" class="pilcrow">¶</a></p>
+          <p id="section-12-5.5.1">A capability flag is used to indicate whether the server might use distributed notifications.<a href="#section-12-5.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-12-5.6">
+          <p id="section-12-5.6.1">the <em>update-complete</em> notifications, or the equivalent <em>complete</em> leaf as part of an <em>update</em> notification are generated per Message Publisher, and scoped as such.  I.e., this may require clients to count and correlate update complete indications across Message Publishers for a given subscription.<a href="#section-12-5.6.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-12-6">Further clarifications intended by this approach are:<a href="#section-12-6" class="pilcrow">¶</a></p>
+<p id="section-12-6">The key model and behavior changes are:<a href="#section-12-6" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-12-7.1">
-          <p id="section-12-7.1.1">Publisher-id allocation is decided by the server.  Publisher-ids are global to the server (or publishing subsystem) and shared across subscriptions, i.e., they are not allocated per subscription but per publishing process.<a href="#section-12-7.1.1" class="pilcrow">¶</a></p>
+          <p id="section-12-7.1.1">A per-subscription configuration parameter indicates whether multiple publishers are allowed, with three states:<a href="#section-12-7.1.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-12-7.1.2.1">
+              <p id="section-12-7.1.2.1.1"><code>non-distributed</code> (default, multiple publishers not allowed),<a href="#section-12-7.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-12-7.1.2.2">
+              <p id="section-12-7.1.2.2.1"><code>distributed</code> (multiple publishers required; otherwise the subscription is rejected),<a href="#section-12-7.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-12-7.1.2.3">
+              <p id="section-12-7.1.2.3.1"><code>distributed-optional</code> (server decides whether to use distributed publishers).<a href="#section-12-7.1.2.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
 </li>
         <li class="normal" id="section-12-7.2">
-          <p id="section-12-7.2.1">Transport parameters are identical for each publisher transport session to the same receiver for a given subscription.<a href="#section-12-7.2.1" class="pilcrow">¶</a></p>
+          <p id="section-12-7.2.1">A <code>publisher-id</code> is added as an augmentation to the update envelope (not inside the update messages themselves).  This differs from <span>[<a href="#I-D.ietf-netconf-distributed-notif" class="cite xref">I-D.ietf-netconf-distributed-notif</a>]</span> and keeps the update contents unchanged while still identifying the source publisher for each update.<a href="#section-12-7.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-12-7.3">
-          <p id="section-12-7.3.1">Different publishers may publish entries for the same list, but any given list entry <span class="bcp14">MUST</span> be published by exactly one publisher at any point in time.  If the publishing responsibility for entries changes, this is reflected by an update to the publisher-id list and a <code>subscription-modified</code> notification.<a href="#section-12-7.3.1" class="pilcrow">¶</a></p>
+          <p id="section-12-7.3.1">Subscription lifecycle notifications include a leaf-list of <code>publisher-id</code> values.  If the list of publishers changes mid-subscription, a <code>subscription-modified</code> notification is generated.<a href="#section-12-7.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-12-7.4">
+          <p id="section-12-7.4.1">The per-update <code>complete</code> flag (or equivalent <code>update-complete</code> notification) is scoped per publisher, i.e., per <code>publisher-id</code>.<a href="#section-12-7.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-12-7.5">
+          <p id="section-12-7.5.1">The capabilities model is extended to indicate whether the device allows distributed publishers.<a href="#section-12-7.5.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-12-8">Open questions:<a href="#section-12-8" class="pilcrow">¶</a></p>
-<p id="section-12-9">(1) Do we want to add this capability into the base YANG Push v2 draft, or does it introduce too much complexity in the base draft?<a href="#section-12-9" class="pilcrow">¶</a></p>
-<p id="section-12-10">(2) Does it make sense for the configuration to be per subscription, or should this just be a global flag to indicate that subscriptions may be decomposed to multiple publisher processes?  Alternatively, should this always be allowed, and if so does that put more burden on the collector?<a href="#section-12-10" class="pilcrow">¶</a></p>
-<p id="section-12-11">(3) Is having the update-complete notification per publisher sufficient?<a href="#section-12-11" class="pilcrow">¶</a></p>
+<p id="section-12-8">Further clarifications intended by this approach are:<a href="#section-12-8" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-12-9.1">
+          <p id="section-12-9.1.1">Publisher-id allocation is decided by the server.  Publisher-ids are global to the server (or publishing subsystem) and shared across subscriptions, i.e., they are not allocated per subscription but per publishing process.<a href="#section-12-9.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-12-9.2">
+          <p id="section-12-9.2.1">Transport parameters are identical for each publisher transport session to the same receiver for a given subscription.<a href="#section-12-9.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-12-9.3">
+          <p id="section-12-9.3.1">Different publishers may publish entries for the same list, but any given list entry <span class="bcp14">MUST</span> be published by exactly one publisher at any point in time.  If the publishing responsibility for entries changes, this is reflected by an update to the publisher-id list and a <code>subscription-modified</code> notification.<a href="#section-12-9.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-12-10">Open questions:<a href="#section-12-10" class="pilcrow">¶</a></p>
+<p id="section-12-11">(1) Do we want to add this capability into the base YANG Push v2 draft, or does it introduce too much complexity in the base draft?<a href="#section-12-11" class="pilcrow">¶</a></p>
+<p id="section-12-12">(2) Does it make sense for the configuration to be per subscription, or should this just be a global flag to indicate that subscriptions may be decomposed to multiple publisher processes?  Alternatively, should this always be allowed, and if so does that put more burden on the collector?<a href="#section-12-12" class="pilcrow">¶</a></p>
+<p id="section-12-13">(3) Is having the update-complete notification per publisher sufficient?<a href="#section-12-13" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="ietf-yang-push-2-yang">
@@ -3651,29 +3716,8 @@ module: ietf-yang-push-2
 
   notifications:
     +---n subscription-started
-    |  +--ro id                subscription-id
-    |  +--ro description?      string
-    |  +--ro target
-    |  |  +--ro datastore?                 identityref
-    |  |  +--ro (filter)
-    |  |  |  +--:(path)
-    |  |  |  |  +--ro path                 ypath
-    |  |  |  +--:(subtree)
-    |  |  |  |  +--ro subtree              &lt;anydata&gt;
-    |  |  |  +--:(xpath)
-    |  |  |     +--ro xpath                yang:xpath1.0 {yp2:xpath}?
-    |  |  +--ro schema-id?                 string
-    |  |  +--ro yang-library-content-id?
-    |  |          -&gt; /yanglib:yang-library/content-id
-    |  +--ro update-trigger
-    |     +--ro periodic!
-    |     |  +--ro period         centiseconds
-    |     |  +--ro anchor-time?   yang:date-and-time
-    |     +--ro on-change! {on-change}?
-    |        +--ro sync-on-start?   boolean
-    +---n subscription-modified
-    |  +--ro id                subscription-id
-    |  +--ro description?      string
+    |  +--ro id                    subscription-id
+    |  +--ro description?          string
     |  +--ro target
     |  |  +--ro datastore?                 identityref
     |  |  +--ro (filter)
@@ -3692,7 +3736,32 @@ module: ietf-yang-push-2
     |  |  |  +--ro anchor-time?   yang:date-and-time
     |  |  +--ro on-change! {on-change}?
     |  |     +--ro sync-on-start?   boolean
-    |  +--ro reason            subscription-change
+    |  +--ro message-publishers
+    |     +--ro publisher-id*   uint32
+    +---n subscription-modified
+    |  +--ro id                    subscription-id
+    |  +--ro description?          string
+    |  +--ro target
+    |  |  +--ro datastore?                 identityref
+    |  |  +--ro (filter)
+    |  |  |  +--:(path)
+    |  |  |  |  +--ro path                 ypath
+    |  |  |  +--:(subtree)
+    |  |  |  |  +--ro subtree              &lt;anydata&gt;
+    |  |  |  +--:(xpath)
+    |  |  |     +--ro xpath                yang:xpath1.0 {yp2:xpath}?
+    |  |  +--ro schema-id?                 string
+    |  |  +--ro yang-library-content-id?
+    |  |          -&gt; /yanglib:yang-library/content-id
+    |  +--ro update-trigger
+    |  |  +--ro periodic!
+    |  |  |  +--ro period         centiseconds
+    |  |  |  +--ro anchor-time?   yang:date-and-time
+    |  |  +--ro on-change! {on-change}?
+    |  |     +--ro sync-on-start?   boolean
+    |  +--ro message-publishers
+    |  |  +--ro publisher-id*   uint32
+    |  +--ro reason                subscription-change
     +---n subscription-terminated
     |  +--ro id        subscription-id
     |  +--ro reason    identityref
@@ -3710,7 +3779,7 @@ module: ietf-yang-push-2
     |  |     |  +--ro replaced-by?   &lt;anydata&gt;
     |  |     +--:(deleted)
     |  |        +--ro deleted?       empty
-    |  +--ro complete?           empty
+    |  +--ro complete?           boolean
     +---n update-complete
        +--ro id?   subscription-id
 </pre>
@@ -3766,6 +3835,15 @@ module ietf-yang-push-2 {
     prefix yanglib;
     reference
       "RFC 8525: YANG Library";
+  }
+  import ietf-yp-notification {
+    prefix iypn;
+    reference
+     "draft-ietf-netconf-notif-envelope: Extensible YANG Model for
+      YANG-Push Notifications
+
+      TODO: RFC Editor please replace with latest draft/RFC version
+     at publication time.";
   }
 
   organization
@@ -4189,6 +4267,22 @@ module ietf-yang-push-2 {
     }
   }
 
+  grouping publishers {
+    description
+      "Grouping describes the list of publisher-ids";
+    leaf-list publisher-id {
+      type uint32;
+      default 0;
+      config false;
+      description
+        "Identifies the software process which publishes notification
+        messages (e.g., processor 1 on line card 1). This field
+        is used to notify the receiver which publisher processes
+        are going to publish. The identifiers are locally unique to
+        the Network Node.";
+    }
+  }
+
   grouping filter-choice {
     description
       "This grouping defines the types of selectors for objects
@@ -4359,23 +4453,23 @@ module ietf-yang-push-2 {
       "This grouping describes schema information related to a
        subscription.";
 
-      leaf schema-id {
-        type string;
-        description
-          "Indicates the version of the YANG schema used for this
-          subscription.  The schema-id MUST change if the schema
-          associated with the subscription changes.  The schema-id
-          MAY change if the device schema changes, even if the
-          change does not affect the subscription.";
-      }
+    leaf schema-id {
+      type string;
+      description
+        "Indicates the version of the YANG schema used for this
+        subscription.  The schema-id MUST change if the schema
+        associated with the subscription changes.  The schema-id
+        MAY change if the device schema changes, even if the
+        change does not affect the subscription.";
+    }
 
-      leaf yang-library-content-id {
-        type leafref {
-          path "/yanglib:yang-library/yanglib:content-id";
-        }
-        description
-          "Contains the YANG library content identifier.";
+    leaf yang-library-content-id {
+      type leafref {
+        path "/yanglib:yang-library/yanglib:content-id";
       }
+      description
+        "Contains the YANG library content identifier.";
+    }
   }
 
   grouping subscription-common {
@@ -4601,10 +4695,11 @@ module ietf-yang-push-2 {
    * NOTIFICATIONS
    */
 
-  notification subscription-started {
+  grouping subscription-update-common {
     description
-      "This notification indicates that a subscription has started
-       and notifications will now be sent.";
+      "Data nodes common to both subscription-started and
+       subscription-modified notifications.";
+
     uses subscription-id;
     uses subscription-common {
       augment "target" {
@@ -4613,20 +4708,26 @@ module ietf-yang-push-2 {
         uses subscription-schema;
       }
     }
+    container message-publishers {
+      description
+        "Holds the publisher-ids for all processes currently
+         associated with the subscription";
+        uses yp2:publishers;
+    }
+  }
+
+  notification subscription-started {
+    description
+      "This notification indicates that a subscription has started
+       and notifications will now be sent.";
+       uses subscription-update-common;
   }
 
   notification subscription-modified {
     description
       "This notification indicates that subscription paramaters have
        changed.";
-    uses subscription-id;
-    uses subscription-common {
-      augment "target" {
-        description
-          "Adds a schema id.";
-        uses subscription-schema;
-      }
-    }
+    uses subscription-update-common;
 
     leaf reason {
       type subscription-change;
@@ -4785,7 +4886,8 @@ module ietf-yang-push-2 {
     }
 
     leaf complete {
-      type empty;
+      type boolean;
+      default "false";
       description
         "This flag indicates that this is the last
          notification in a series of notifications that together
@@ -4798,8 +4900,6 @@ module ietf-yang-push-2 {
     }
   }
 
-  // TODO - Need to think about list key entries that are no longer
-  //        present.
   notification update-complete {
     description
       "This notification indicates the end of a periodic collection
@@ -4817,6 +4917,19 @@ module ietf-yang-push-2 {
       description
         "The name of the subscription that is the source of
           this notification.";
+    }
+  }
+
+  sx:augment-structure "/iypn:envelope" {
+    leaf publisher-id {
+      type uint32;
+      default 0;
+      description
+        "Identifies the software process which publishes notification
+         messages (e.g., processor 1 on line card 1). This field
+         is used to notify the receiver which publisher process
+         published which message. The identifier is locally unique to
+         the Network Node.";
     }
   }
 }
@@ -4872,6 +4985,8 @@ module: ietf-yang-push-2-config
            +--ro type?
            |       yp2:subscription-type
            +--ro encoding?                           yp2:encoding
+           +--ro message-publishers
+           |  +--ro publisher-id*   uint32
            +--ro last-sequence-number?
            |       yang:zero-based-counter64
            +--ro last-notification-time?
@@ -4895,9 +5010,6 @@ module: ietf-yang-push-2-config
            |          yang:zero-based-counter64
            +---x reset
 
-  augment /yp2:establish-subscription/yp2:input/yp2:target
-            /yp2:filter:
-    +--:(by-reference)
   augment /yp2:subscription-started/yp2:target:
     +-- filter-ref?   filter-ref
 </pre>
@@ -4958,6 +5070,8 @@ module: ietf-yang-push-2-config
      |     +--ro type?
      |     |       yp2:subscription-type
      |     +--ro encoding?                           yp2:encoding
+     |     +--ro message-publishers
+     |     |  +--ro publisher-id*   uint32
      |     +--ro last-sequence-number?
      |     |       yang:zero-based-counter64
      |     +--ro last-notification-time?
@@ -4995,10 +5109,6 @@ module: ietf-yang-push-2-config
            |     +--rw source-address?     inet:ip-address-no-zone
            +--rw (transport-type)
 
-  augment /yp2:establish-subscription/yp2:input/yp2:target
-            /yp2:filter:
-    +--:(by-reference)
-       +-- filter-ref?   filter-ref
   augment /yp2:subscription-started/yp2:target:
     +-- filter-ref?   filter-ref
 </pre>
@@ -5264,6 +5374,14 @@ module ietf-yang-push-2-config {
             "The type of encoding for notification messages.";
         }
 
+        container message-publishers {
+          config false;
+          description
+            "Holds the publisher-ids for all processes
+             currently associated with the subscription";
+            uses yp2:publishers;
+        }
+
         leaf last-sequence-number {
           type yang:zero-based-counter64;
           config false;
@@ -5505,25 +5623,6 @@ module ietf-yang-push-2-config {
     }
   }
 
-  augment "/yp2:establish-subscription/yp2:input/yp2:"
-        + "target/yp2:filter" {
-
-    description
-      "Augment the 'establish-subscription' RPC to allow
-       referencing a configured receiver.";
-
-    case by-reference {
-      description
-        "Incorporates a filter that has been configured
-         separately.";
-      uses filter-ref {
-        refine "filter-ref" {
-          mandatory false;
-        }
-      }
-    }
-  }
-
   augment "/yp2:subscription-started/yp2:target" {
 
     description
@@ -5579,18 +5678,19 @@ module: ietf-yang-push-2-capabilities
 
   augment /sysc:system-capabilities:
     +--ro datastore-telemetry
-       +--ro periodic-notifications-supported?   notification-support
-       +--ro (update-period)?
-       |  +--:(minimum-update-period)
-       |  |  +--ro minimum-update-period?        uint32
-       |  +--:(supported-update-period)
-       |     +--ro supported-update-period*      uint32
-       +--ro on-change-supported?                notification-support
-       +--ro transport
-          +--ro transport-capability* [transport-protocol]
-             +--ro transport-protocol    identityref
-             +--ro security-protocol?    identityref
-             +--ro encoding-format*      identityref
+    |  +--ro periodic-notifications-supported?   notification-support
+    |  +--ro (update-period)?
+    |  |  +--:(minimum-update-period)
+    |  |  |  +--ro minimum-update-period?        uint32
+    |  |  +--:(supported-update-period)
+    |  |     +--ro supported-update-period*      uint32
+    |  +--ro on-change-supported?                notification-support
+    |  +--ro transport
+    |     +--ro transport-capability* [transport-protocol]
+    |        +--ro transport-protocol    identityref
+    |        +--ro security-protocol?    identityref
+    |        +--ro encoding-format*      identityref
+    +--ro distributed-notifications-supported?   boolean
   augment /sysc:system-capabilities/sysc:datastore-capabilities
             /sysc:per-node-capabilities:
     +--ro datastore-telemetry
@@ -5729,7 +5829,7 @@ module ietf-yang-push-2-capabilities {
   }
 
 
-  grouping yp-lite-capabilities {
+  grouping yp2-capabilities {
     description
       "Capabilities related to YANG Push Lite subscriptions
        and notifications";
@@ -5815,7 +5915,7 @@ module ietf-yang-push-2-capabilities {
     }
   }
 
-  grouping yp-lite-transport-capabilities {
+  grouping yp2-transport-capabilities {
     description
       "Capabilities related to transports supporting Yang Push Lite";
     container transport {
@@ -5855,20 +5955,28 @@ module ietf-yang-push-2-capabilities {
   augment "/sysc:system-capabilities" {
     description
       "Adds system level capabilities for YANG Push Lite";
-    uses yp-lite-capabilities;
+    uses yp2-capabilities;
+
+    leaf distributed-notifications-supported {
+      type boolean;
+      description
+        "Indicates whether the server supports distributed
+          notifications and may source message from different
+          Message Publishers.";
+    }
   }
 
   augment "/sysc:system-capabilities/yp2ca:datastore-telemetry" {
     description
       "Adds system level Yang Push Lite transport capabilities";
-    uses yp-lite-transport-capabilities;
+    uses yp2-transport-capabilities;
   }
 
   augment "/sysc:system-capabilities/sysc:datastore-capabilities"
         + "/sysc:per-node-capabilities" {
     description
       "Add datastore and node-level capabilities";
-    uses yp-lite-capabilities;
+    uses yp2-capabilities;
   }
 }
 
@@ -6057,6 +6165,7 @@ continuous and total filtering of a subscription's content for every update reco
 <a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
 <p id="section-19-1">This initial draft is early work is based on discussions with various folk, particularly Thomas Graf, Holger Keller, Dan Voyer, Nils Warnke, and Alex Huang Feng; but also wider conversations that include: Benoit Claise, Pierre Francois, Paolo Lucente, Jean Quilbeuf, among others.<a href="#section-19-1" class="pilcrow">¶</a></p>
+<p id="section-19-2">In addition, as described in the introduction, the authors would like to acknowledge that this work builds on work of others, such as, Subscribed Notifications, YANG Push, and various extensions to that work.<a href="#section-19-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="contributors">
@@ -6635,7 +6744,7 @@ addition to those that were already defined in <span>[<a href="#RFC8639" class="
         }
       }
     ],
-    "complete": [null]
+    "complete": false
   }
 }
 </pre>
@@ -6804,7 +6913,7 @@ addition to those that were already defined in <span>[<a href="#RFC8639" class="
     "updates": [
       {
         "target-path": "/ietf-interfaces:interfaces/interface[name='eth0']",
-        "deleted": []
+        "deleted": [null]
       }
     ]
   }
@@ -6989,16 +7098,25 @@ periodic updates might return the following NETCONF response:<a href="#appendix-
 </div>
 </section>
 </div>
+</section>
+</div>
+<div id="distrib-notif-example">
+<section id="appendix-C.5">
+        <h3 id="name-distributed-notification-su">
+<a href="#appendix-C.5" class="section-number selfRef">C.5. </a><a href="#name-distributed-notification-su" class="section-name selfRef">Distributed Notification subscription</a>
+        </h3>
+<p id="appendix-C.5-1">TODO - Add an example of a distributed notification, and two update messages
+sent from different publishers.<a href="#appendix-C.5-1" class="pilcrow">¶</a></p>
 <div id="delete-subscription-rpc">
-<section id="appendix-C.4.3">
+<section id="appendix-C.5.1">
           <h4 id="name-delete-subscription-rpc">
-<a href="#appendix-C.4.3" class="section-number selfRef">C.4.3. </a><a href="#name-delete-subscription-rpc" class="section-name selfRef">"delete-subscription" RPC</a>
+<a href="#appendix-C.5.1" class="section-number selfRef">C.5.1. </a><a href="#name-delete-subscription-rpc" class="section-name selfRef">"delete-subscription" RPC</a>
           </h4>
-<p id="appendix-C.4.3-1">To stop receiving updates from a subscription and effectively delete
+<p id="appendix-C.5.1-1">To stop receiving updates from a subscription and effectively delete
 a subscription that had previously been established using an
 "establish-subscription" RPC, a subscriber can send a
 "delete-subscription" RPC, which takes as its only input the
-subscription's "id".  This RPC is unmodified from <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>.<a href="#appendix-C.4.3-1" class="pilcrow">¶</a></p>
+subscription's "id".  This RPC is unmodified from <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>.<a href="#appendix-C.5.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
