@@ -5,7 +5,7 @@
 Network Configuration                                     R. Wilton, Ed.
 Internet-Draft                                             Cisco Systems
 Intended status: Standards Track                               H. Keller
-Expires: 30 August 2026                                Deuetsche Telekom
+Expires: 31 August 2026                                Deuetsche Telekom
                                                                B. Claise
                                                           Everything OPS
                                                                 E. Aries
@@ -14,7 +14,7 @@ Expires: 30 August 2026                                Deuetsche Telekom
                                                                    Nokia
                                                                  T. Graf
                                                                 Swisscom
-                                                        26 February 2026
+                                                        27 February 2026
 
 
              YANG Datastore Telemetry (YANG Push version 2)
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 August 2026.
+   This Internet-Draft will expire on 31 August 2026.
 
 Copyright Notice
 
@@ -186,8 +186,8 @@ Table of Contents
      C.4.  NETCONF Dynamic Subscription RPC examples
        C.4.1.  Successful periodic subscription
        C.4.2.  Failed periodic subscription
-     C.5.  Distributed Notification subscription
-       C.5.1.  "delete-subscription" RPC
+       C.4.3.  "delete-subscription" RPC
+     C.5.  Distributed Notifications Subscription
    Appendix D.  Summary of Open Issues & Potential Enhancements
      D.1.  Issues related to general IETF process
      D.2.  Issue related to Terminology/Definitions
@@ -2013,23 +2013,6 @@ Table of Contents
        +---n subscription-terminated
        |  +--ro id        subscription-id
        |  +--ro reason    identityref
-       +---n update
-       |  +--ro id?                 subscription-id
-       |  +--ro path-prefix?        string
-       |  +--ro snapshot-type       enumeration
-       |  +--ro observation-time?   yang:date-and-time
-       |  +--ro updates* [target-path]
-       |  |  +--ro target-path          string
-       |  |  +--ro (data)?
-       |  |     +--:(merge)
-       |  |     |  +--ro merge?         <anydata>
-       |  |     +--:(replaced-by)
-       |  |     |  +--ro replaced-by?   <anydata>
-       |  |     +--:(deleted)
-       |  |        +--ro deleted?       empty
-       |  +--ro complete?           boolean
-       +---n update-complete
-          +--ro id?   subscription-id
 
         Figure 12: subscription-terminated Notification Tree Diagram
 
@@ -2720,8 +2703,8 @@ Table of Contents
    have separate publishing processes for each linecard in a network
    device, so that data that is local to that linecard can be published
    directly from the linecard, perhaps directly from the linecard data
-   interfaces, without been sent to the RP process that could act a
-   bottleneck.
+   interfaces, without been sent to a Management Processor card that
+   could act a bottleneck.
 
    The YANG Push 2 specification supports distributed notifications as
    described in [I-D.ietf-netconf-distributed-notif], and using the
@@ -2731,10 +2714,15 @@ Table of Contents
    It is OPTIONAL for YANG Push 2 publishers to support multiple
    publisher agents since they always have the option of handling all
    subscriptions from a single publisher process on each server.
-   Receivers and consumers of YANG Push 2 subscription data MUST support
-   accommodate servers that publish their data from multiple publishing
-   processes, e.g., they may need to correlate the update-complete
-   notification across multiple publishing processes.
+   Receivers and consumers of YANG Push 2 subscription data MUST
+   accommodate servers that publish their data from multiple Message
+   Publishing processes, e.g., they may need to correlate the update-
+   complete notification across multiple publishing processes.
+
+   Publishers serving a subscription MUST only send the data for a given
+   YANG data node from a single Message Publisher process.  Publishers
+   MAY change which Message Publisher process is sending the data for a
+   given YANG data node over time, e.g., to load-balance work.
 
    The differences for supporting [I-D.ietf-netconf-distributed-notif]
    with YANG Push 2 are:
@@ -2784,65 +2772,6 @@ Table of Contents
       Publisher, and scoped as such.  I.e., this may require clients to
       count and correlate update complete indications across Message
       Publishers for a given subscription.
-
-   The key model and behavior changes are:
-
-   *  A per-subscription configuration parameter indicates whether
-      multiple publishers are allowed, with three states:
-
-      -  non-distributed (default, multiple publishers not allowed),
-
-      -  distributed (multiple publishers required; otherwise the
-         subscription is rejected),
-
-      -  distributed-optional (server decides whether to use distributed
-         publishers).
-
-   *  A publisher-id is added as an augmentation to the update envelope
-      (not inside the update messages themselves).  This differs from
-      [I-D.ietf-netconf-distributed-notif] and keeps the update contents
-      unchanged while still identifying the source publisher for each
-      update.
-
-   *  Subscription lifecycle notifications include a leaf-list of
-      publisher-id values.  If the list of publishers changes mid-
-      subscription, a subscription-modified notification is generated.
-
-   *  The per-update complete flag (or equivalent update-complete
-      notification) is scoped per publisher, i.e., per publisher-id.
-
-   *  The capabilities model is extended to indicate whether the device
-      allows distributed publishers.
-
-   Further clarifications intended by this approach are:
-
-   *  Publisher-id allocation is decided by the server.  Publisher-ids
-      are global to the server (or publishing subsystem) and shared
-      across subscriptions, i.e., they are not allocated per
-      subscription but per publishing process.
-
-   *  Transport parameters are identical for each publisher transport
-      session to the same receiver for a given subscription.
-
-   *  Different publishers may publish entries for the same list, but
-      any given list entry MUST be published by exactly one publisher at
-      any point in time.  If the publishing responsibility for entries
-      changes, this is reflected by an update to the publisher-id list
-      and a subscription-modified notification.
-
-   Open questions:
-
-   (1) Do we want to add this capability into the base YANG Push v2
-   draft, or does it introduce too much complexity in the base draft?
-
-   (2) Does it make sense for the configuration to be per subscription,
-   or should this just be a global flag to indicate that subscriptions
-   may be decomposed to multiple publisher processes?  Alternatively,
-   should this always be allowed, and if so does that put more burden on
-   the collector?
-
-   (3) Is having the update-complete notification per publisher
-   sufficient?
 
 13.  Core YANG Push v2 YANG Data Model
 
@@ -5800,9 +5729,13 @@ A.3.  Added Functionality
          and encoded YANG data to be encoded relative to the common path
          prefix.
 
-   *  A _collection-complete_ notification, and associated
-      configuration, has been defined to inform collectors when a
-      subscription's periodic collection cycle is complete.
+   *  An _update-complete_ notification has been defined to inform
+      collectors when a subscription's periodic collection cycle is
+      complete.
+
+   *  Support for {I-D.ietf-netconf-distributed-notif}} has been added
+      to the base YANG Push v2 specification, as described in
+      Section 12.
 
    *  TODO - More operational data on the subscription load and
       performance.
@@ -6279,18 +6212,116 @@ C.4.2.  Failed periodic subscription
 
        Figure 13: "establish-subscription" Error Response: Example 2
 
-C.5.  Distributed Notification subscription
-
-   TODO - Add an example of a distributed notification, and two update
-   messages sent from different publishers.
-
-C.5.1.  "delete-subscription" RPC
+C.4.3.  "delete-subscription" RPC
 
    To stop receiving updates from a subscription and effectively delete
    a subscription that had previously been established using an
    "establish-subscription" RPC, a subscriber can send a "delete-
    subscription" RPC, which takes as its only input the subscription's
    "id".  This RPC is unmodified from [RFC8639].
+
+C.5.  Distributed Notifications Subscription
+
+   This simple example illustrates how messages may look like when using
+   distributed notifications, as described in Section 12.  This example
+   is for a very simple periodic subscription to the ietf-interfaces
+   YANG data model.
+
+   The first message is a subscription started message that indicates
+   that there are 2 additional _Publisher Agents_ with publisher-ids of
+   4 and 7, e.g., perhaps representing a device with two linecards
+   inserted into slots 4 and 7, each with their owner separate Message
+   Publisher process.  This message has a publisher-id of 0 because it
+   is sent by the Publisher Parent, which, because this field has the
+   default value, could have been elided from the message.
+
+   {
+     "ietf-yp-notification:envelope": {
+       "event-time": "2025-10-10T08:00:05.22Z",
+       "hostname": "example-router",
+       "sequence-number": 18,
+       "ietf-yang-push-2:publisher-id": 4
+       "contents": {
+         "ietf-yang-push-2:update": {
+           "id": 1011,
+           "snapshot-type": "periodic",
+           "observation-time": "2025-10-10T08:00:05.11Z",
+           "updates": [
+             {
+               "target-path": "ietf-interfaces:interfaces/interface",
+               "data": {
+                 "ietf-interfaces:interfaces": {
+                   "ietf-interfaces:interface": [
+                     {
+                       "name": "eth4/0",
+                       "type": "iana-if-type:ethernetCsmacd",
+                       "enabled": true,
+                       "ietf-interfaces:oper-status": "up",
+                       "ietf-interfaces:admin-status": "up"
+                     },
+                     {
+                       "name": "eth4/1",
+                       "type": "iana-if-type:ethernetCsmacd",
+                       "enabled": true,
+                       "ietf-interfaces:oper-status": "down",
+                       "ietf-interfaces:admin-status": "up"
+                     }
+                   ]
+                 }
+               }
+             }
+           ],
+           complete = true
+         }
+       }
+     }
+   }
+
+      Figure 34: Example distributed notification subscription started
+                                  message
+
+   The second message is an example of a periodic update message sent
+   from one of the Publisher Agents on the linecard.  In this case the
+   message is sent from the publisher agent on linecard 4, and it has
+   set the _complete_ leaf to indicate that the message represents all
+   data for that periodic collection from that publisher.
+
+   {
+     "ietf-yp-notification:envelope": {
+       "event-time": "2025-10-10T08:00:05.22Z",
+       "hostname": "example-router",
+       "sequence-number": 23,
+       "ietf-yang-push-2:publisher-id": 0
+       "contents": {
+         "ietf-yang-push-2:subscription-started": {
+           "id": "interfaces",
+           "target": {
+             "datastore": "ietf-datastores:operational",
+             "path": "/ietf-interfaces:interfaces"
+           },
+           "update-trigger": {
+             "periodic": {
+               "period": 3000,
+               "anchor-time": "2025-01-01T00:00:00.00Z"
+             }
+           },
+           "message-publishers": {
+             "publisher-id" = [0, 4, 7]
+           }
+         }
+       }
+     }
+   }
+
+         Figure 35: Example distributed notification update message
+
+   Not shown here, but because there were 3 publisher-ids listed in the
+   subscription-started message means that each Message Publisher must
+   send at least one message for each periodic subscription returning
+   any data associated with the subscription from that Message Publisher
+   and also indicating that the periodic collection is complete by
+   either setting complete = true or sending an _update-complete_
+   notification.
 
 Appendix D.  Summary of Open Issues & Potential Enhancements
 
