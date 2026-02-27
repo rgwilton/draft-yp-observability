@@ -1,20 +1,3 @@
     +---n subscription-terminated
     |  +--ro id        subscription-id
     |  +--ro reason    identityref
-    +---n update
-    |  +--ro id?                 subscription-id
-    |  +--ro path-prefix?        string
-    |  +--ro snapshot-type       enumeration
-    |  +--ro observation-time?   yang:date-and-time
-    |  +--ro updates* [target-path]
-    |  |  +--ro target-path          string
-    |  |  +--ro (data)?
-    |  |     +--:(merge)
-    |  |     |  +--ro merge?         <anydata>
-    |  |     +--:(replaced-by)
-    |  |     |  +--ro replaced-by?   <anydata>
-    |  |     +--:(deleted)
-    |  |        +--ro deleted?       empty
-    |  +--ro complete?           boolean
-    +---n update-complete
-       +--ro id?   subscription-id

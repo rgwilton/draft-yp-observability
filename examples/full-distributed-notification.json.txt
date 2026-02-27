@@ -1,0 +1,26 @@
+{
+  "ietf-yp-notification:envelope": {
+    "event-time": "2025-10-10T08:00:05.22Z",
+    "hostname": "example-router",
+    "sequence-number": 23,
+    "ietf-yang-push-2:publisher-id": 0
+    "contents": {
+      "ietf-yang-push-2:subscription-started": {
+        "id": "interfaces",
+        "target": {
+          "datastore": "ietf-datastores:operational",
+          "path": "/ietf-interfaces:interfaces"
+        },
+        "update-trigger": {
+          "periodic": {
+            "period": 3000,
+            "anchor-time": "2025-01-01T00:00:00.00Z"
+          }
+        },
+        "message-publishers": {
+          "publisher-id" = [0, 4, 7]
+        }
+      }
+    }
+  }
+}

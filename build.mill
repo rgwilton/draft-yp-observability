@@ -74,7 +74,7 @@ object `package` extends IETF:
     ("ietf-yang-push-2-tree.txt", "-x kill-subscription", "notifications", "kill-subscription.txt"),
     ("ietf-yang-push-2-tree.txt", "-n subscription-started", "subscription-modified", "subscription-started.txt"),
     ("ietf-yang-push-2-tree.txt", "-n subscription-modified", "subscription-terminated", "subscription-modified.txt"),
-    ("ietf-yang-push-2-tree.txt", "-n subscription-terminated", "receiver-disconnected", "subscription-terminated.txt"),
+    ("ietf-yang-push-2-tree.txt", "-n subscription-terminated", "updates", "subscription-terminated.txt"),
     ("ietf-yang-push-2-tree.txt", "-n update$", "-n update-complete", "update-notification.txt"),
     ("ietf-yang-push-2-tree.txt", "-n update-complete", "<end>", "update-complete.txt"),
   )

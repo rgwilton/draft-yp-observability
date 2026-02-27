@@ -1,0 +1,41 @@
+{
+  "ietf-yp-notification:envelope": {
+    "event-time": "2025-10-10T08:00:05.22Z",
+    "hostname": "example-router",
+    "sequence-number": 18,
+    "ietf-yang-push-2:publisher-id": 4
+    "contents": {
+      "ietf-yang-push-2:update": {
+        "id": 1011,
+        "snapshot-type": "periodic",
+        "observation-time": "2025-10-10T08:00:05.11Z",
+        "updates": [
+          {
+            "target-path": "ietf-interfaces:interfaces/interface",
+            "data": {
+              "ietf-interfaces:interfaces": {
+                "ietf-interfaces:interface": [
+                  {
+                    "name": "eth4/0",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "enabled": true,
+                    "ietf-interfaces:oper-status": "up",
+                    "ietf-interfaces:admin-status": "up"
+                  },
+                  {
+                    "name": "eth4/1",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "enabled": true,
+                    "ietf-interfaces:oper-status": "down",
+                    "ietf-interfaces:admin-status": "up"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        complete = true
+      }
+    }
+  }
+}

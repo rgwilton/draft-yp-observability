@@ -1353,11 +1353,14 @@ The set of modules, revisions, features, and deviations can change at runtime (i
 
 # Distributed Notifications - Multiple Publishing Processes {#distributed-notifications}
 
-Distributed notifications is the concept of allowing subscriptions to be served from multiple different agent publisher processes on the same device.  As a simple example, an implementation could choose to have separate publishing processes for each linecard in a network device, so that data that is local to that linecard can be published directly from the linecard, perhaps directly from the linecard data interfaces, without been sent to the RP process that could act a bottleneck.
+Distributed notifications is the concept of allowing subscriptions to be served from multiple different agent publisher processes on the same device.  As a simple example, an implementation could choose to have separate publishing processes for each linecard in a network device, so that data that is local to that linecard can be published directly from the linecard, perhaps directly from the linecard data interfaces, without been sent to a Management Processor card that could act a bottleneck.
 
 The YANG Push 2 specification supports distributed notifications as described in {{I-D.ietf-netconf-distributed-notif}}, and using the terminology defined therewithin, but with some differences due to the different YANG data models, which are described below.
 
-It is OPTIONAL for YANG Push 2 publishers to support multiple publisher agents since they always have the option of handling all subscriptions from a single publisher process on each server.  Receivers and consumers of YANG Push 2 subscription data MUST support accommodate servers that publish their data from multiple publishing processes, e.g., they may need to correlate the update-complete notification across multiple publishing processes.
+It is OPTIONAL for YANG Push 2 publishers to support multiple publisher agents since they always have the option of handling all subscriptions from a single publisher process on each server.  Receivers and consumers of YANG Push 2 subscription data MUST accommodate servers that publish their data from multiple Message Publishing processes, e.g., they may need to correlate the update-complete notification across multiple publishing processes.
+
+Publishers serving a subscription MUST only send the data for a given YANG data node from a single Message Publisher process.  Publishers MAY change which Message Publisher process is sending the data for a given YANG data node over time, e.g., to load-balance work.
+
 
 The differences for supporting {{I-D.ietf-netconf-distributed-notif}} with YANG Push 2 are:
 
@@ -1376,31 +1379,6 @@ The differences for supporting {{I-D.ietf-netconf-distributed-notif}} with YANG 
 - A capability flag is used to indicate whether the server might use distributed notifications.
 
 - the *update-complete* notifications, or the equivalent *complete* leaf as part of an *update* notification are generated per Message Publisher, and scoped as such.  I.e., this may require clients to count and correlate update complete indications across Message Publishers for a given subscription.
-
-The key model and behavior changes are:
-
-- A per-subscription configuration parameter indicates whether multiple publishers are allowed, with three states:
-  - `non-distributed` (default, multiple publishers not allowed),
-  - `distributed` (multiple publishers required; otherwise the subscription is rejected),
-  - `distributed-optional` (server decides whether to use distributed publishers).
-- A `publisher-id` is added as an augmentation to the update envelope (not inside the update messages themselves).  This differs from {{I-D.ietf-netconf-distributed-notif}} and keeps the update contents unchanged while still identifying the source publisher for each update.
-- Subscription lifecycle notifications include a leaf-list of `publisher-id` values.  If the list of publishers changes mid-subscription, a `subscription-modified` notification is generated.
-- The per-update `complete` flag (or equivalent `update-complete` notification) is scoped per publisher, i.e., per `publisher-id`.
-- The capabilities model is extended to indicate whether the device allows distributed publishers.
-
-Further clarifications intended by this approach are:
-
-- Publisher-id allocation is decided by the server.  Publisher-ids are global to the server (or publishing subsystem) and shared across subscriptions, i.e., they are not allocated per subscription but per publishing process.
-- Transport parameters are identical for each publisher transport session to the same receiver for a given subscription.
-- Different publishers may publish entries for the same list, but any given list entry MUST be published by exactly one publisher at any point in time.  If the publishing responsibility for entries changes, this is reflected by an update to the publisher-id list and a `subscription-modified` notification.
-
-Open questions:
-
-(1) Do we want to add this capability into the base YANG Push v2 draft, or does it introduce too much complexity in the base draft?
-
-(2) Does it make sense for the configuration to be per subscription, or should this just be a global flag to indicate that subscriptions may be decomposed to multiple publisher processes?  Alternatively, should this always be allowed, and if so does that put more burden on the collector?
-
-(3) Is having the update-complete notification per publisher sufficient?
 
 # Core YANG Push v2 YANG Data Model {#ietf-yang-push-2-yang}
 
@@ -1688,7 +1666,9 @@ This section documents behavior that exists in both YANG Push and YANG Push v2, 
 
   - Allows for a common path prefix to be specified, with any paths and encoded YANG data to be encoded relative to the common path prefix.
 
-- A *collection-complete* notification, and associated configuration, has been defined to inform collectors when a subscription's periodic collection cycle is complete.
+- An *update-complete* notification has been defined to inform collectors when a subscription's periodic collection cycle is complete.
+
+- Support for {I-D.ietf-netconf-distributed-notif}} has been added to the base YANG Push v2 specification, as described in {{distributed-notifications}}.
 
 - TODO - More operational data on the subscription load and performance.
 
@@ -1987,18 +1967,37 @@ periodic updates might return the following NETCONF response:
        Figure 13: "establish-subscription" Error Response: Example 2
 ~~~~
 
-## Distributed Notification subscription {#distrib-notif-example}
-
-TODO - Add an example of a distributed notification, and two update messages
-sent from different publishers.
-
-###  "delete-subscription" RPC
+### "delete-subscription" RPC
 
 To stop receiving updates from a subscription and effectively delete
 a subscription that had previously been established using an
 "establish-subscription" RPC, a subscriber can send a
 "delete-subscription" RPC, which takes as its only input the
 subscription's "id".  This RPC is unmodified from [RFC8639].
+
+## Distributed Notifications Subscription {#distrib-notif-example}
+
+This simple example illustrates how messages may look like when using
+distributed notifications, as described in {{distributed-notifications}}.  This example is for a very simple periodic subscription to the ietf-interfaces YANG data model.
+
+The first message is a subscription started message that indicates that there
+are 2 additional *Publisher Agents* with publisher-ids of 4 and 7, e.g., perhaps representing a device with two linecards inserted into slots 4 and 7, each with
+their owner separate Message Publisher process.  This message has a publisher-id of 0 because it is sent by the Publisher Parent, which, because this field has the default value, could have been elided from the message.
+
+~~~~ JSON
+{::include examples/full-distributed-subscription-started.json.txt}
+~~~~
+{: align="left" sourcecode-name="distributed-subscription-started.json" title="Example distributed notification subscription started message"}
+
+The second message is an example of a periodic update message sent from one of the Publisher Agents on the linecard.  In this case the message is sent from the publisher agent on linecard 4, and it has set the *complete* leaf to indicate that the message represents all data for that periodic collection from that publisher.
+
+~~~~ JSON
+{::include examples/full-distributed-notification.json.txt}
+~~~~
+{: align="left" sourcecode-name="full-distributed-notification.json" title="Example distributed notification update message"}
+
+Not shown here, but because there were 3 publisher-ids listed in the subscription-started message means that each Message Publisher must send at least one message for each periodic subscription returning any data associated with the subscription from that Message Publisher and also indicating that the periodic collection is complete by either setting ```complete = true``` or sending an *update-complete* notification.
+
 
 # Summary of Open Issues & Potential Enhancements {#OpenIssuesTracker}
 
