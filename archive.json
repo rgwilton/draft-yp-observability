@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-26T00:24:44.702112+00:00",
+  "timestamp": "2026-03-01T00:29:18.628076+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -62,6 +62,16 @@
       "name": "propose closing",
       "description": "",
       "color": "ae487f"
+    },
+    {
+      "name": "lower-priority",
+      "description": "A lower priority issue.",
+      "color": "90cad1"
+    },
+    {
+      "name": "higher-priority",
+      "description": "A higher priority issue that affects core functionality and should be agreed first.",
+      "color": "b00302"
     }
   ],
   "issues": [
@@ -285,16 +295,18 @@
     {
       "number": 16,
       "id": "I_kwDOM-PT7s7Rq2TD",
-      "title": "Advertising support for the subscription config data model",
+      "title": "Advertising support for configured/dynamic subscriptions?",
       "url": "https://github.com/rgwilton/draft-yp-observability/issues/16",
       "state": "OPEN",
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
-      "body": "Should this just use the standard mechanisms, i.e., whether the module is included in YANG library (RFC 8525), or should this also be listed in the Yang Push Capabilities Data Model?",
+      "labels": [
+        "for discussion"
+      ],
+      "body": "Support for dynamic subscriptions is controlled by a feature, and support for configured subscriptions using the IETF model is determined by whether that module is advertised.\n\nDo we also need a capability in the YANG Push v2 Capabilities Data Model to indicate whether configurable or periodic subscriptions are supported?",
       "createdAt": "2025-10-15T11:51:56Z",
-      "updatedAt": "2025-10-15T11:51:56Z",
+      "updatedAt": "2026-02-27T16:36:34Z",
       "closedAt": null,
       "comments": []
     },
@@ -411,7 +423,7 @@
       ],
       "body": "The current draft:\n\n- Basic dynamic subscriptions require the subscription filter to be specified inline.\n\n- The IETF config model:\n  - allows filters to be specified inline, but also allows a reference to a filter (i.e., same as RFC 8641). \n  - also augments the dynamic establish-subscription RPC to allow a dynamic subscription to reference a configured subscription.\n\nThe subscription-started notification always includes the filter inline (even if it was referenced).  If the subscription was created using a referenced filter, then the name of the referenced filter is also included in the subscription started.\n\nIf a subscription is allowed to contain multiple filter paths then there is a question to whether a subscription would be allowed to referenced multiple filters.",
       "createdAt": "2025-10-22T12:11:09Z",
-      "updatedAt": "2026-02-02T17:13:12Z",
+      "updatedAt": "2026-02-27T14:22:47Z",
       "closedAt": "2026-02-02T17:13:12Z",
       "comments": [
         {
@@ -427,6 +439,13 @@
           "body": "Ebben:\n- Discussed adding an if-feature statement for filter-ref into dynamic subscription, but probably not needed.\n- Propose closing this issue.",
           "createdAt": "2025-10-24T14:51:46Z",
           "updatedAt": "2025-10-24T14:51:46Z"
+        },
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Note I've tweaked the model for simplicity to disallow a dynamic subscription to reference a configured filter.  This can be added in future an adds the slight complexity of need to monitor if that configured filter changes.  The current draft requires that all filters are specified inline for dynamic subscriptions (which is also the case for gNMI).",
+          "createdAt": "2026-02-27T14:22:47Z",
+          "updatedAt": "2026-02-27T14:22:47Z"
         }
       ]
     },
@@ -831,10 +850,12 @@
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "lower-priority"
+      ],
       "body": "Should we mandate that empty containers are removed from the output or leave this as an implementation decision, on the assumption that mandating that they are included makes no sense.  Either way, I think that it would be good for the draft to be explicit on this point - i.e., a known unknown.",
       "createdAt": "2025-11-13T14:42:25Z",
-      "updatedAt": "2025-11-13T14:42:25Z",
+      "updatedAt": "2026-02-27T16:41:17Z",
       "closedAt": null,
       "comments": []
     },
@@ -850,9 +871,17 @@
       "labels": [],
       "body": "I don't understand this text: \"In particular, it augments into the ietf-system-capabilities YANG module, but defines an equivalent alternative capability structure for the ietf-notification-capabilities YANG module, which defines the capabilities for YANG Push [[RFC8641](https://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yang-push-2.html#RFC8641)].\"\n\nWhat does it mean, \"in particular\", and also \"an equivalent alternative capability...\"?\n\nFinally, why not a MUST in \"Publishers SHOULD implement the ietf-system-capabilities YANG module, defined in [[RFC9196](https://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yang-push-2.html#RFC9196)],\"",
       "createdAt": "2026-01-21T12:56:14Z",
-      "updatedAt": "2026-01-21T12:56:42Z",
+      "updatedAt": "2026-02-27T13:55:50Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Hi Benoit, we should discuss but briefly:\n- YP v2 is a separate protocol from YP v1, and hence it defines a separate set of capabilities.\n- We should check with James re: SHOULD or MUST.  I think that there was some reticence to require implementing IETF YANG models beyond the base notification structure, transport and RPCs.  E.g., to allow for flexibility of vendor models.  I don't know if that also applies to config false YANG models.",
+          "createdAt": "2026-02-27T13:55:50Z",
+          "updatedAt": "2026-02-27T13:55:50Z"
+        }
+      ]
     },
     {
       "number": 38,
@@ -884,9 +913,17 @@
       ],
       "body": "https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-17 is the IESG editor queue, and I'm pretty sure that there is an implementation that Thomas is testing with.\n\nDo we want to add similar support into YP v2?  If we did then I think that this should be optional to implement.\n\nI've added a proposed section that discusses the issue some more.\n\n```\n# Distributed Notifications {#distributed-notifications-summary}\n\nThis section describes the proposed approach to support distributed notifications in YANG Push v2.  It is aligned with {{I-D.ietf-netconf-distributed-notif}} in terms of goals and lifecycle, but differs in how the `publisher-id` is conveyed.\n\nDistributed notifications are used when there are multiple publishers, each with a separate transport connection to the same receiver.  Subscription lifecycle management (establishment, modification, and termination) remains per subscription as described in {{I-D.ietf-netconf-distributed-notif}}.\n\nSupport for distributed notifications is {{RFC2119}} OPTIONAL to implement.  If implemented, YANG data model additions are guarded by a `distributed-publishers` YANG feature.\n\nThe key model and behavior changes are:\n\n- A per-subscription configuration parameter indicates whether multiple publishers are allowed, with three states:\n  - `non-distributed` (default, multiple publishers not allowed),\n  - `distributed` (multiple publishers required; otherwise the subscription is rejected),\n  - `distributed-optional` (server decides whether to use distributed publishers).\n- A `publisher-id` is added as an augmentation to the update envelope (not inside the update messages themselves).  This differs from {{I-D.ietf-netconf-distributed-notif}} and keeps the update contents unchanged while still identifying the source publisher for each update.\n- Subscription lifecycle notifications include a leaf-list of `publisher-id` values.  If the list of publishers changes mid-subscription, a `subscription-modified` notification is generated.\n- The per-update `complete` flag (or equivalent `update-complete` notification) is scoped per publisher, i.e., per `publisher-id`.\n- The capabilities model is extended to indicate whether the device allows distributed publishers.\n\nFurther clarifications intended by this approach are:\n\n- Publisher-id allocation is decided by the server.  Publisher-ids are global to the server (or publishing subsystem) and shared across subscriptions, i.e., they are not allocated per subscription but per publishing process.\n- Transport parameters are identical for each publisher transport session to the same receiver for a given subscription.\n- Different publishers may publish entries for the same list, but any given list entry MUST be published by exactly one publisher at any point in time.  If the publishing responsibility for entries changes, this is reflected by an update to the publisher-id list and a `subscription-modified` notification.\n\nOpen questions:\n\n(1) Do we want to add this capability into the base YANG Push v2 draft, or does it introduce too much complexity in the base draft?\n\n(2) Does it make sense for the configuration to be per subscription, or should this just be a global flag to indicate that subscriptions may be decomposed to multiple publisher processes?  Alternatively, should this always be allowed, and if so does that put more burden on the collector?\n\n(3) Is having the update-complete notification per publisher sufficient?\n```\n\n",
       "createdAt": "2026-02-20T16:03:54Z",
-      "updatedAt": "2026-02-20T16:04:03Z",
+      "updatedAt": "2026-02-27T10:32:25Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "The section on distributed notifications and the examples should be complete and ready for review.  Currently, sections 12 and appendix C.5.",
+          "createdAt": "2026-02-27T10:32:25Z",
+          "updatedAt": "2026-02-27T10:32:25Z"
+        }
+      ]
     },
     {
       "number": 40,
@@ -897,10 +934,13 @@
       "author": "rgwilton",
       "authorAssociation": "OWNER",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "for discussion",
+        "higher-priority"
+      ],
       "body": "Hi,\n\nWe are planning on using the ietf-yp-notification for Yang Push 2, but I noticed when trying to compile against this module that it has some unexpected and undesirable dependencies.\n\nIn ietf-yp-notification, here are two augments that are specific to Yang Push and not Yang Push 2: \n\n     // Subscription container\n     augment \"/sn:subscriptions\" {\n       description\n         \"This augmentation adds the configuration switches for\n          enabling the notification envelope and metadata.\";\n       leaf enable-notification-envelope {\n\nIs specific to YANG Push/Subscribed notifications and isn't needed for YP2.  Unfortunately, it then pulls in a dependency on ietf-subscribed-notifications, which in turn has a dependency on RESTCONF.  Neither of these dependencies are desirable in YP2.\n\nIn addition, this second augment is also really YP specific and won't apply to YP 2 since all YP notifications are required to use the new envelope header.\n\n     // YANG-Push Capabilities extension\n     augment \"/sysc:system-capabilities\"\n           + \"/notc:subscription-capabilities\" {\n\nWould it be possible to split out these two augmentations into a separate YANG module to keep ietf-yp-notification clean and easily reusable?\n\nKind regards,\nRob\n",
       "createdAt": "2026-02-25T13:23:29Z",
-      "updatedAt": "2026-02-25T13:28:04Z",
+      "updatedAt": "2026-02-27T16:39:06Z",
       "closedAt": null,
       "comments": [
         {
@@ -911,6 +951,22 @@
           "updatedAt": "2026-02-25T13:28:04Z"
         }
       ]
+    },
+    {
+      "number": 41,
+      "id": "I_kwDOM-PT7s7ufPMO",
+      "title": "If a publisher cannot honour a periodic subscription then can it reduce the rate?",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/41",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "This relates to the Publisher Capability section (10.3):\n\nDo we allow servers to reduce the period of the subscription to allow it to be kept active if the device is overloaded?  E.g., with a subscription modification notification to notify of the new periodic rate.",
+      "createdAt": "2026-02-27T13:57:51Z",
+      "updatedAt": "2026-02-27T13:57:51Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
