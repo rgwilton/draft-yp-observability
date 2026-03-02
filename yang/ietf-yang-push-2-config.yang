@@ -505,6 +505,18 @@ module ietf-yang-push-2-config {
     }
   }
 
+  augment "/yp2:subscription-modified/yp2:target" {
+
+    description
+      "Allow a subscription-modified notification to include a
+       referenced named filter";
+    uses filter-ref {
+      refine "filter-ref" {
+        mandatory false;
+      }
+    }
+  }
+
   augment "/datastore-telemetry/subscriptions/subscription/"
         + "target/filter" {
 

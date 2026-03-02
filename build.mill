@@ -79,8 +79,6 @@ object `package` extends IETF:
     ("ietf-yang-push-2-tree.txt", "-n update-complete", "<end>", "update-complete.txt"),
   )
 
-
-
   def all = Task:
     checkDraftLatest()
     make()

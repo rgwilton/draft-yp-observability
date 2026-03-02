@@ -1,3 +1,8 @@
     +---n subscription-terminated
     |  +--ro id        subscription-id
     |  +--ro reason    identityref
+    +---n update
+    |  +--ro id?                 subscription-id
+    |  +--ro path-prefix?        string
+    |  +--ro snapshot-type       enumeration
+    |  +--ro observation-time?   yang:date-and-time

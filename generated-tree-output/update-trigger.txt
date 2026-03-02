@@ -11,3 +11,5 @@ module: ietf-yang-push-2-config
 
   augment /yp2:subscription-started/yp2:target:
     +-- filter-ref?   filter-ref
+  augment /yp2:subscription-modified/yp2:target:
+    +-- filter-ref?   filter-ref

@@ -332,18 +332,6 @@ module ietf-yang-push-2 {
       "A used friendly string identifier for a subscription.";
   }
 
-  typedef restricted-subscription-id {
-    type subscription-id {
-      pattern "dyn-.*" {
-        modifier "invert-match";
-      }
-    }
-    description
-      "A subscription identifier that cannot start with 'dyn-',
-       which is reserved for dynamically subscriptions created by
-       the publisher.";
-  }
-
   typedef transport {
     type identityref {
       base transport;
@@ -636,12 +624,17 @@ module ietf-yang-push-2 {
        created subscriptions.";
 
     leaf id {
-      type restricted-subscription-id;
+      type subscription-id {
+        pattern "dyn-.*" {
+          modifier "invert-match";
+        }
+      }
       description
         "A identifier for the subscription, that MUST be unique
         across all configured and dynamic subscriptions.
 
-        MUST NOT start with 'dyn-'.";
+        MUST NOT start with 'dyn-' which is reserved for
+        dynamic subscriptions created by the publisher.";
     }
   }
 

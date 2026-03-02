@@ -8,7 +8,7 @@
       {
         "target-path": "",
         "merge": {
-          "ietf-interfaces:interface": [
+          "interface": [
             {
               "name": "eth0",
               "type": "iana-if-type:ethernetCsmacd",
