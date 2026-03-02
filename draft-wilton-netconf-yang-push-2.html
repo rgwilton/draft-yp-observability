@@ -1053,11 +1053,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">YANG-Push v2</td>
-<td class="right">February 2026</td>
+<td class="right">March 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Wilton, et al.</td>
-<td class="center">Expires 31 August 2026</td>
+<td class="center">Expires 3 September 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1070,12 +1070,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-wilton-netconf-yang-push-2-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-02-27" class="published">27 February 2026</time>
+<time datetime="2026-03-02" class="published">2 March 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-08-31">31 August 2026</time></dd>
+<dd class="expires"><time datetime="2026-09-03">3 September 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1146,7 +1146,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 31 August 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 3 September 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1928,7 +1928,7 @@ defined in <span>[<a href="#RFC8340" class="cite xref">RFC8340</a>]</span>.<a hr
       <h2 id="name-subscription-paths-and-sele">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-subscription-paths-and-sele" class="section-name selfRef">Subscription paths and selection filters</a>
       </h2>
-<p id="section-6-1">A key part of a subscription is to select which data nodes should be monitored, and so a subscription must specify both the selection filters and the datastore against which these selection filters will be applied.  This information is used to choose, and subsequently push, <em>update</em> notifications from the publisher's datastore(s) to the subscription's receiver(s).<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-1">A key part of a subscription is to select which data nodes should be monitored, and so a subscription must specify both the selection filters and the datastore against which these selection filters will be applied.  This information is used to choose, and subsequently push, <em>update</em> notifications from the publisher's datastore(s) to the subscription's receiver.<a href="#section-6-1" class="pilcrow">¶</a></p>
 <p id="section-6-2">Filters can either be defined inline within a configured subscription (<a href="#SubscriptionYangTree" class="auto internal xref">Figure 21</a>), a dynamic subscription's <em>establish-subscription</em> RPC (<a href="#EstablishSubscriptionYangTree" class="auto internal xref">Figure 14</a>), or as part of the <em>datastore-telemetry/filters</em> container (<a href="#FilterContainerYangTree" class="auto internal xref">Figure 1</a>) which can then be referenced from a configured or dynamic subscription.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <p id="section-6-3">The following selection filter types are included in the YANG Push v2 data model and may be applied against a datastore:<a href="#section-6-3" class="pilcrow">¶</a></p>
 <ul class="normal">
@@ -2022,6 +2022,8 @@ module: ietf-yang-push-2-config
 
   augment /yp2:subscription-started/yp2:target:
     +-- filter-ref?   filter-ref
+  augment /yp2:subscription-modified/yp2:target:
+    +-- filter-ref?   filter-ref
 </pre>
 </div>
 <figcaption><a href="#figure-1" class="selfRef">Figure 1</a></figcaption></figure>
@@ -2064,7 +2066,7 @@ module: ietf-yang-push-2-config
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-datastore-event-streams" class="section-name selfRef">Datastore Event Streams</a>
       </h2>
 <p id="section-7-1">In YANG Push v2, a subscription, based on the selected filters, will generate a ordered stream of datastore <em>update</em> records that is referred to as an event stream.  Each subscription logically has a different event stream of update records, even if multiple subscriptions use the same filters to select datastore nodes.<a href="#section-7-1" class="pilcrow">¶</a></p>
-<p id="section-7-2">As YANG-defined event records are created by a system, they may be assigned to one or more streams.  The event record is distributed to a subscription's receiver(s) where (1) a subscription includes the identified stream and (2) subscription filtering does not exclude the event record from that receiver.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<p id="section-7-2">As YANG-defined event records are created by a system, they may be assigned to one or more streams.  The event record is distributed to a subscription's receiver where (1) a subscription includes the identified stream and (2) subscription filtering does not exclude the event record from that receiver.<a href="#section-7-2" class="pilcrow">¶</a></p>
 <p id="section-7-3">Access control permissions may be used to silently exclude event records from an event stream for which the receiver has no read access.  See <span>[<a href="#RFC8341" class="cite xref">RFC8341</a>]</span>, Section 3.4.6 for an example of how this might be accomplished.  Note that per Section 2.7 of this document, subscription state change notifications are never filtered out. <strong>TODO, filtering and NACM filtering should be dependent on whether it is a configured or dynamic subscription.</strong><a href="#section-7-3" class="pilcrow">¶</a></p>
 <p id="section-7-4">If subscriber permissions change during the lifecycle of a subscription and event stream access is no longer permitted, then the subscription <span class="bcp14">MUST</span> be terminated. <strong>TODO, check this</strong><a href="#section-7-4" class="pilcrow">¶</a></p>
 <p id="section-7-5">Event records <span class="bcp14">SHALL</span> be sent to a receiver in the order in which they were generated.  I.e., the publisher <span class="bcp14">MUST</span> not reorder the events when enqueuing notifications on the transport session, but there is no guarantee of delivery order.<a href="#section-7-5" class="pilcrow">¶</a></p>
@@ -2074,10 +2076,11 @@ module: ietf-yang-push-2-config
         <h3 id="name-notification-envelope">
 <a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-notification-envelope" class="section-name selfRef">Notification Envelope</a>
         </h3>
-<p id="section-7.1-1">All notifications in the event stream <span class="bcp14">MUST</span> be encoded using <span>[<a href="#I-D.draft-ietf-netconf-notif-envelope" class="cite xref">I-D.draft-ietf-netconf-notif-envelope</a>]</span> to wrap the notification message, and <span class="bcp14">MUST</span> include the <em>event-time</em>, <em>hostname</em>, and <em>sequence-number</em> leafs in all messages.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-1">All notifications in the event stream <span class="bcp14">MUST</span> be encoded using <span>[<a href="#I-D.draft-ietf-netconf-notif-envelope" class="cite xref">I-D.draft-ietf-netconf-notif-envelope</a>]</span> to wrap the notification message, and <span class="bcp14">MUST</span> include the <em>event-time</em>, <em>hostname</em>, and <em>sequence-number</em> leafs in all messages.  The <em>publisher-id</em> <span class="bcp14">MAY</span> be excluded in it matches the default value (0), otherwise it <span class="bcp14">MUST</span> be included.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
 <p id="section-7.1-2">The following example illustrates a fully encoded <em>update</em> notification that includes the notification envelope and additional meta-data fields.  The <em>update</em> notification, i.e., as defined via the <em>notification</em> statement in the yang-push-lite YANG module, is carried in the <em>contents</em> anydata data node.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1-3">The <em>event-time</em> field is used to correlate separate <em>update</em> messages that collectively represent individual parts of the same update (e.g., where the source data is being obtained from multiple producers).<a href="#section-7.1-3" class="pilcrow">¶</a></p>
 <span id="name-example-of-update-notificat"></span><figure id="figure-2">
-          <div class="lang-json sourcecode" id="section-7.1-3.1">
+          <div class="lang-json sourcecode" id="section-7.1-4.1">
 <pre>
 {
   "ietf-yp-notification:envelope": {
@@ -2087,30 +2090,29 @@ module: ietf-yang-push-2-config
     "contents": {
       "ietf-yang-push-2:update": {
         "id": 1011,
+        "path-prefix": "/ietf-interfaces:interfaces",
         "snapshot-type": "periodic",
         "observation-time": "2024-10-10T08:00:05.11Z",
         "updates": [
           {
-            "target-path": "ietf-interfaces:interfaces/interface",
-            "data": {
-              "ietf-interfaces:interfaces": {
-                "ietf-interfaces:interface": [
-                  {
-                    "name": "eth0",
-                    "type": "iana-if-type:ethernetCsmacd",
-                    "enabled": true,
-                    "ietf-interfaces:oper-status": "up",
-                    "ietf-interfaces:admin-status": "up"
-                  },
-                  {
-                    "name": "eth1",
-                    "type": "iana-if-type:ethernetCsmacd",
-                    "enabled": true,
-                    "ietf-interfaces:oper-status": "up",
-                    "ietf-interfaces:admin-status": "up"
-                  }
-                ]
-              }
+            "target-path": "interface",
+            "replace-by": {
+              "interface": [
+                {
+                  "name": "eth0",
+                  "type": "iana-if-type:ethernetCsmacd",
+                  "enabled": true,
+                  "oper-status": "up",
+                  "admin-status": "up"
+                },
+                {
+                  "name": "eth1",
+                  "type": "iana-if-type:ethernetCsmacd",
+                  "enabled": true,
+                  "oper-status": "up",
+                  "admin-status": "up"
+                }
+              ]
             }
           }
         ]
@@ -2170,13 +2172,24 @@ module: ietf-yang-push-2-config
             <p id="section-7.2-5.4.1"><em>observation-time</em> - the time that the data was sampled, or when the on-change event occurred that caused the message to be published.<a href="#section-7.2-5.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-7.2-5.5">
-            <p id="section-7.2-5.5.1"><em>target-path</em> - identifies the data node that is being acted on, either providing the replacement data for, or that data node that is being deleted.<a href="#section-7.2-5.5.1" class="pilcrow">¶</a></p>
+            <p id="section-7.2-5.5.1"><em>target-path</em> - identifies the data node that is being acted on by the <em>merge</em>, <em>replace-by</em>, or <em>deleted</em> data.<a href="#section-7.2-5.5.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-7.2-5.6">
-            <p id="section-7.2-5.6.1"><em>data</em> - the full replacement data subtree for the content at the target-path, encoded from the path-prefix.<a href="#section-7.2-5.6.1" class="pilcrow">¶</a></p>
+            <p id="section-7.2-5.6.1"><em>data</em> - A choice representing the action taken and the updated data, which is one of the following:<a href="#section-7.2-5.6.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.2-5.6.2.1">
+                <p id="section-7.2-5.6.2.1.1"><em>merge</em> - identifies the data node that the receiver should merge with their current view of that data node.  I.e., all descendant data nodes reporting values should replace those held by the receiver, but the absence of a decendent data node does not imply that it no longer exists and hence should be deleted.<a href="#section-7.2-5.6.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.2-5.6.2.2">
+                <p id="section-7.2-5.6.2.2.1"><em>replaced-by</em> - identifies the data node that replaces the copy of that data node in the receiver's state.  Any descendent data nodes not present in the update no longer exist and hence should be implicitly deleted in the receiver's current state.<a href="#section-7.2-5.6.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.2-5.6.2.3">
+                <p id="section-7.2-5.6.2.3.1"><em>deleted</em> - indicates that the data node no longer exists and should be deleted in the receivers state.  This field <em><span class="bcp14">MUST NOT</span></em> be sent in an <em>on-change</em> update message.<a href="#section-7.2-5.6.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
           <li class="normal" id="section-7.2-5.7">
-            <p id="section-7.2-5.7.1"><em>complete</em> - if present, this flag indicates that a periodic collection (<strong>TODO, what about on-change</strong>) is complete. Setting this flag is semantically equivalent to the server sending a separate update-complete notification.<a href="#section-7.2-5.7.1" class="pilcrow">¶</a></p>
+            <p id="section-7.2-5.7.1"><em>complete</em> - if present, this flag indicates whether the notification is complete or whether more messages as part of the same update will follow.  The default value for the flag depends on the <em>snapshot-type</em>.  For <em>on-change</em> events, the messages are assumed to be completed until the <em>complete</em> leaf is set to <code>false</code>.  For other type of events (e.g., periodic), the messages are assumed to be incomplete unless the <em>complete</em> leaf is set to <code>true</code>.  Setting this flag to <code>true</code> is semantically equivalent to the server sending a separate <em>update-complete</em> notification.<a href="#section-7.2-5.7.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-7.2-6">As per the structure of the <em>update</em> notification, a single notification <span class="bcp14">MAY</span> provide updates for multiple target-paths.<a href="#section-7.2-6" class="pilcrow">¶</a></p>
@@ -2205,6 +2218,8 @@ module: ietf-yang-push-2-config
 
   augment /yp2:subscription-started/yp2:target:
     +-- filter-ref?   filter-ref
+  augment /yp2:subscription-modified/yp2:target:
+    +-- filter-ref?   filter-ref
 </pre>
 </div>
 <figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
@@ -2219,17 +2234,18 @@ module: ietf-yang-push-2-config
 <a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-periodic-events" class="section-name selfRef">Periodic events</a>
         </h3>
 <p id="section-7.4-1">In a periodic subscription, the data included as part of an update record corresponds to data that could have been read using a retrieval operation.  Only the state that exists in the system at the time that it is being read is reported, periodic updates never explicitly indicate whether any data-nodes or list entries have been deleted.  Instead, receivers must infer deletions by the absence of data during a particular collection event.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
-<p id="section-7.4-2">For periodic subscriptions, triggered updates will occur at the boundaries of a specified time interval.  These boundaries can be calculated from the periodic parameters:<a href="#section-7.4-2" class="pilcrow">¶</a></p>
+<p id="section-7.4-2">Where possible, publishers <span class="bcp14">SHOULD</span> use the <em>replaced-by</em> data node to represent the new data since it provides clients with simple explicit semantics.  Publishers <span class="bcp14">MAY</span> use the <em>merge</em> data node when they cannot determine whether the data being published in the update is complete.<a href="#section-7.4-2" class="pilcrow">¶</a></p>
+<p id="section-7.4-3">For periodic subscriptions, triggered updates will occur at the boundaries of a specified time interval.  These boundaries can be calculated from the periodic parameters:<a href="#section-7.4-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-7.4-3.1">
-            <p id="section-7.4-3.1.1">a <em>period</em> that defines the duration between push updates.<a href="#section-7.4-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7.4-4.1">
+            <p id="section-7.4-4.1.1">a <em>period</em> that defines the duration between push updates.<a href="#section-7.4-4.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-7.4-3.2">
-            <p id="section-7.4-3.2.1">an <em>anchor-time</em>; update intervals fall on the points in time that are a multiple of a <em>period</em> from an <em>anchor-time</em>.  If an <em>anchor-time</em> is not provided, then the publisher chooses a suitable anchor-time, e.g., perhaps the time that the subscription was first instantiated by the publisher.<a href="#section-7.4-3.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.4-4.2">
+            <p id="section-7.4-4.2.1">an <em>anchor-time</em>; update intervals fall on the points in time that are a multiple of a <em>period</em> from an <em>anchor-time</em>.  If an <em>anchor-time</em> is not provided, then the publisher chooses a suitable anchor-time, e.g., perhaps the time that the subscription was first instantiated by the publisher.<a href="#section-7.4-4.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-7.4-4">The anchor time and period are particularly useful, in fact required, for when the collected telemetry data is being stored in a time-series database and the subscription is setup to ensure that each collection is placed in a separate time-interval bucket.<a href="#section-7.4-4" class="pilcrow">¶</a></p>
-<p id="section-7.4-5">Periodic update notifications are expected, but not required, to use a single <em>target-path</em> per <em>update</em> notification.<a href="#section-7.4-5" class="pilcrow">¶</a></p>
+<p id="section-7.4-5">The anchor time and period are particularly useful, in fact required, for when the collected telemetry data is being stored in a time-series database and the subscription is setup to ensure that each collection is placed in a separate time-interval bucket.<a href="#section-7.4-5" class="pilcrow">¶</a></p>
+<p id="section-7.4-6">Periodic update notifications are expected, but not required, to use a single <em>target-path</em> per <em>update</em> notification.<a href="#section-7.4-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="on-change-events">
@@ -2237,7 +2253,7 @@ module: ietf-yang-push-2-config
         <h3 id="name-on-change-events">
 <a href="#section-7.5" class="section-number selfRef">7.5. </a><a href="#name-on-change-events" class="section-name selfRef">On-Change events</a>
         </h3>
-<p id="section-7.5-1">In an on-change subscription, <em>update</em> records indicate updated values or when a monitored data node or list node has been deleted.  An <em>update</em> record is sent whenever a change in the subscribed information is detected. <em>update</em> records <span class="bcp14">SHOULD</span> be generated at the same subtree as equivalent periodic subscription rather than only the specific data node that is on-change notifiable.  The goal is to ensure that the <em>update</em> message contains a consistent set of data on the subscription path.<a href="#section-7.5-1" class="pilcrow">¶</a></p>
+<p id="section-7.5-1">In an on-change subscription, <em>update</em> records indicate updated values or when a monitored data node or list node has been deleted.  An <em>update</em> record is sent whenever a change in the subscribed information is detected. In the case that data nodes have been changed then the <em>update</em> record <span class="bcp14">SHOULD</span> only report the state that has changed (included any required list keys), but <span class="bcp14">MAY</span> include additional unchanged data nodes if the publisher is unable to optimize the on-change update message.<a href="#section-7.5-1" class="pilcrow">¶</a></p>
 <p id="section-7.5-2">Each entry in the <em>updates</em> list identifies a data node (i.e., list entry, container, leaf or leaf-list), via the <em>target-path</em> that either has changes is state or has been deleted.<a href="#section-7.5-2" class="pilcrow">¶</a></p>
 <p id="section-7.5-3">A delete of a specific individual data node or subtree may be notified in two different ways:<a href="#section-7.5-3" class="pilcrow">¶</a></p>
 <ul class="normal">
@@ -2271,7 +2287,7 @@ module: ietf-yang-push-2-config
               <p id="section-7.5.1-2.3.1">or no implementation is available to generate a notification when the source variable for a particular data node has changed.<a href="#section-7.5.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-7.5.1-3">In addition, publishers are not required to notify every change or value for an on-change monitored data node.  Instead, publishers <span class="bcp14">MAY</span> limit the rate at which changes are reported for a given data node, i.e., effectively deciding the interval at which an underlying value is sampled.  If a data node changes value and then reverts back to the original value within a sample interval then the publisher <span class="bcp14">MAY</span> not detect the change and it would go unreported.  However, if the data node changes to a new value after it has been sampled, then the change and latest state are reported to the receiver.  In addition, if a client was to query the value (e.g., through a NETCONF get-data RPC) then they <span class="bcp14">MUST</span> see the same observed value as would be notified.<a href="#section-7.5.1-3" class="pilcrow">¶</a></p>
+<p id="section-7.5.1-3">In addition, publishers are not required to notify every change or value for an on-change monitored data node.  Instead, publishers <span class="bcp14">MAY</span> limit the rate at which changes are reported for a given data node, i.e., effectively deciding the interval at which an underlying value is sampled.  If a data node changes value and then reverts back to the original value within a sample interval then the publisher <span class="bcp14">MAY</span> not detect the change and it would go unreported.  However, if the data node changes to a new value after it has been sampled, then the change and latest state <span class="bcp14">MUST</span> be reported to the receiver.  In addition, if a client was to query the value (e.g., through a NETCONF get-data RPC) then they <span class="bcp14">MUST</span> see the same observed value as would be notified.<a href="#section-7.5.1-3" class="pilcrow">¶</a></p>
 <p id="section-7.5.1-4">To give an example, if the interface link state reported by hardware is changing state hundreds of times per second, then it would be entirely reasonable to limit those interface state changes to a much lower cadence, e.g., perhaps every 100 milliseconds.  In the particular case of interfaces, there may also be data model specific forms of more advanced dampening that are more appropriate, e.g., that notify interface down events immediately, but rate limit how quickly the interface is allowed to transition to up state, which overall acts as a limit on the rate at which the interface state may change, and hence also act as a limit on the rate at which on-change notifications could be generated.<a href="#section-7.5.1-4" class="pilcrow">¶</a></p>
 <p id="section-7.5.1-5">The information about what nodes support on-change notifications is reported using capabilities operational data model.  This is further described in <a href="#ConformanceAndCapabilities" class="auto internal xref">Section 11</a>.<a href="#section-7.5.1-5" class="pilcrow">¶</a></p>
 </section>
@@ -2284,7 +2300,7 @@ module: ietf-yang-push-2-config
 <p id="section-7.5.2-1">On-change subscriptions allow receivers to receive updates whenever changes to targeted objects occur.  As such, on-change subscriptions are particularly effective for data that changes infrequently but for which applications need to be quickly notified, with minimal delay, whenever a change does occur.<a href="#section-7.5.2-1" class="pilcrow">¶</a></p>
 <p id="section-7.5.2-2">On-change subscriptions tend to be more difficult to implement than periodic subscriptions.  Accordingly, on-change subscriptions may not be supported by all implementations or for every object.<a href="#section-7.5.2-2" class="pilcrow">¶</a></p>
 <p id="section-7.5.2-3">Whether or not to accept or reject on-change subscription requests when the scope of the subscription contains objects for which on-change is not supported is up to the publisher implementation.  A publisher <span class="bcp14">MAY</span> accept an on-change subscription even when the scope of the subscription contains objects for which on-change is not supported.  In that case, updates are sent only for those objects within the scope of the subscription that do support on-change updates, whereas other objects are excluded from update records, even if their values change.  In order for a subscriber to determine whether objects support on-change subscriptions, objects are marked accordingly on a publisher.  Accordingly, when subscribing, it is the responsibility of the subscriber to ensure that it is aware of which objects support on-change and which do not.  For more on how objects are so marked, see Section 3.10. <strong>TODO Is this paragraph and the one below still the right choice for YANG Push v2?</strong><a href="#section-7.5.2-3" class="pilcrow">¶</a></p>
-<p id="section-7.5.2-4">Alternatively, a publisher <span class="bcp14">MAY</span> decide to simply reject an on-change subscription if the scope of the subscription contains objects for which on-change is not supported.  In the case of a configured subscription, the publisher <span class="bcp14">MAY</span> suspend the subscription.<a href="#section-7.5.2-4" class="pilcrow">¶</a></p>
+<p id="section-7.5.2-4">Alternatively, a publisher <span class="bcp14">MAY</span> decide to simply reject an on-change subscription if the scope of the subscription contains objects for which on-change is not supported.  In the case of a configured subscription, the publisher <span class="bcp14">MAY</span> keep the subscription in <em>inactive</em> state.<a href="#section-7.5.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2302,70 +2318,89 @@ module: ietf-yang-push-2-config
         <h3 id="name-streaming-update-examples">
 <a href="#section-7.7" class="section-number selfRef">7.7. </a><a href="#name-streaming-update-examples" class="section-name selfRef">Streaming Update Examples</a>
         </h3>
-<p id="section-7.7-1"><strong>TODO, Generate new JSON based example of a periodic, and delete messages.  Current placeholders are the existing YANG Push Notifications.</strong><a href="#section-7.7-1" class="pilcrow">¶</a></p>
-<p id="section-7.7-2">Figure XXX provides an example of a notification message for a subscription tracking the operational status of a single Ethernet interface (per <span>[<a href="#RFC8343" class="cite xref">RFC8343</a>]</span>).  This notification message is encoded XML <em>W3C.REC-xml-20081126</em> over the Network Configuration Protocol
-(NETCONF) as per <span>[<a href="#RFC8640" class="cite xref">RFC8640</a>]</span>.<a href="#section-7.7-2" class="pilcrow">¶</a></p>
-<span id="name-example-update-periodic-not"></span><figure id="figure-5">
-          <div class="lang-xml sourcecode" id="section-7.7-3.1">
+<p id="section-7.7-1"><a href="#PeriodicExample" class="auto internal xref">Figure 5</a> provides an example of a notification message for a subscription tracking the operational status of interface (per <span>[<a href="#RFC8343" class="cite xref">RFC8343</a>]</span>).  This notification message is encoded using JSON <span>[<a href="#RFC7951" class="cite xref">RFC7951</a>]</span>.<a href="#section-7.7-1" class="pilcrow">¶</a></p>
+<span id="name-example-periodic-update-mes"></span><div id="PeriodicExample">
+<figure id="figure-5">
+          <div class="lang-JSON sourcecode" id="section-7.7-2.1">
 <pre>
-&lt;notification
-  xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0"&gt;
-&lt;eventTime&gt;2017-10-25T08:00:11.22Z&lt;/eventTime&gt;
-&lt;push-update xmlns="urn:ietf:params:xml:ns:yang:ietf-yang-push"&gt;
-  &lt;id&gt;1011&lt;/id&gt;
-  &lt;datastore-contents&gt;
-    &lt;interfaces
-     xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces"&gt;
-      &lt;interface&gt;
-        &lt;name&gt;eth0&lt;/name&gt;
-        &lt;oper-status&gt;up&lt;/oper-status&gt;
-      &lt;/interface&gt;
-    &lt;/interfaces&gt;
-  &lt;/datastore-contents&gt;
-&lt;/push-update&gt;
-&lt;/notification&gt;
+{
+  "ietf-yang-push-2:update": {
+    "id": "interfaces",
+    "path-prefix": "/ietf-interfaces:interfaces/interface",
+    "snapshot-type": "periodic",
+    "observation-time": "2024-10-10T08:00:05.11Z",
+    "updates": [
+      {
+        "target-path": "",
+        "merge": {
+          "interface": [
+            {
+              "name": "eth0",
+              "type": "iana-if-type:ethernetCsmacd",
+              "enabled": true,
+              "ietf-interfaces:oper-status": "up",
+              "ietf-interfaces:admin-status": "up"
+            },
+            {
+              "name": "eth1",
+              "type": "iana-if-type:ethernetCsmacd",
+              "enabled": true,
+              "ietf-interfaces:oper-status": "up",
+              "ietf-interfaces:admin-status": "up"
+            }
+          ]
+        }
+      }
+    ],
+    "complete": false
+  }
+}
 </pre>
 </div>
 <figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
-<a href="#name-example-update-periodic-not" class="selfRef">Example 'update' periodic notification</a>
+<a href="#name-example-periodic-update-mes" class="selfRef">Example periodic update message</a>
           </figcaption></figure>
-<p id="section-7.7-4">Figure XXX provides an example of an on-change notification message for
-the same subscription.<a href="#section-7.7-4" class="pilcrow">¶</a></p>
-<span id="name-example-update-on-change-no"></span><figure id="figure-6">
-          <div class="lang-xml sourcecode" id="section-7.7-5.1">
+</div>
+<p id="section-7.7-3"><a href="#OnChangeExample" class="auto internal xref">Figure 6</a> provides an example of an on-change notification message for
+the same subscription.<a href="#section-7.7-3" class="pilcrow">¶</a></p>
+<span id="name-example-on-change-update-me"></span><div id="OnChangeExample">
+<figure id="figure-6">
+          <div class="lang-JSON sourcecode" id="section-7.7-4.1">
 <pre>
-&lt;notification
-  xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0"&gt;
-&lt;eventTime&gt;2017-10-25T08:22:33.44Z&lt;/eventTime&gt;
-&lt;push-change-update
-    xmlns="urn:ietf:params:xml:ns:yang:ietf-yang-push"&gt;
-  &lt;id&gt;89&lt;/id&gt;
-  &lt;datastore-changes&gt;
-    &lt;yang-patch&gt;
-      &lt;patch-id&gt;0&lt;/patch-id&gt;
-      &lt;edit&gt;
-        &lt;edit-id&gt;edit1&lt;/edit-id&gt;
-        &lt;operation&gt;replace&lt;/operation&gt;
-        &lt;target&gt;/ietf-interfaces:interfaces&lt;/target&gt;
-        &lt;value&gt;
-          &lt;interfaces
-              xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces"&gt;
-            &lt;interface&gt;
-              &lt;name&gt;eth0&lt;/name&gt;
-              &lt;oper-status&gt;down&lt;/oper-status&gt;
-            &lt;/interface&gt;
-          &lt;/interfaces&gt;
-        &lt;/value&gt;
-      &lt;/edit&gt;
-    &lt;/yang-patch&gt;
-  &lt;/datastore-changes&gt;
-&lt;/push-change-update&gt;
-&lt;/notification&gt;
+{
+  "ietf-yang-push-2:update": {
+    "id": "interfaces",
+    "path-prefix": "/ietf-interfaces:interfaces",
+    "snapshot-type": "on-change-update",
+    "observation-time": "2025-10-10T08:16:06.11Z",
+    "updates": [
+      {
+        "target-path": "interface[name='eth0']",
+        "replaced-by": {
+          "name": "eth0",
+          "type": "iana-if-type:ethernetCsmacd",
+          "enabled": false,
+          "ietf-interfaces:oper-status": "down"
+        }
+      },
+      {
+        "target-path": "interface[name='eth1']",
+        "replaced-by": {
+          "name": "eth1",
+          "type": "iana-if-type:ethernetCsmacd",
+          "enabled": false,
+          "ietf-interfaces:oper-status": "down"
+        }
+      }
+    ]
+  }
+}
 </pre>
 </div>
 <figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
-<a href="#name-example-update-on-change-no" class="selfRef">Example 'update' on-change notification</a>
+<a href="#name-example-on-change-update-me" class="selfRef">Example on-change update message</a>
           </figcaption></figure>
+</div>
 </section>
 </div>
 </section>
@@ -2413,6 +2448,8 @@ module: ietf-yang-push-2-config
            +--rw (transport-type)
 
   augment /yp2:subscription-started/yp2:target:
+    +-- filter-ref?   filter-ref
+  augment /yp2:subscription-modified/yp2:target:
     +-- filter-ref?   filter-ref
 </pre>
 </div>
@@ -2667,7 +2704,7 @@ If none of the above parameters are set, the publisher <span class="bcp14">MAY</
               <p id="section-9.1.1-2.1.1"><strong>Invalid</strong>: a subscription that is invalid for any reason.  E.g., the subscription references an invalid filter expression for the current device schema.  Normally, invalid configurations should be rejected by the system, whether due to subscription configuration or <em>establish-subscription</em> RPC, and hence this state should rarely be seen.<a href="#section-9.1.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-9.1.1-2.2">
-              <p id="section-9.1.1-2.2.1"><strong>Inactive</strong>: a valid subscription, but one that is not active because it has no associated receivers.  This state is unlikely to be seen for dynamic subscriptions.<a href="#section-9.1.1-2.2.1" class="pilcrow">¶</a></p>
+              <p id="section-9.1.1-2.2.1"><strong>Inactive</strong>: a valid subscription, but one that is not active because it has no associated receiver.  This state is unlikely to be seen for dynamic subscriptions.<a href="#section-9.1.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-9.1.1-2.3">
               <p id="section-9.1.1-2.3.1"><strong>Connecting</strong>: a subscription that is valid, and has appropriate receiver configuration, but the publisher has not managed to successfully connect to the receiver yet, and hence has not sent a <em>subscription-started</em> notification.  Transport security failures would be in this state.<a href="#section-9.1.1-2.3.1" class="pilcrow">¶</a></p>
@@ -2754,7 +2791,7 @@ If none of the above parameters are set, the publisher <span class="bcp14">MAY</
                 <p id="section-9.1.3.1-2.4.1">the update-trigger to enable <em>sync-on-start</em>.<a href="#section-9.1.3.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
               <li id="section-9.1.3.1-2.5">
-                <p id="section-9.1.3.1-2.5.1">if the <em>sync-in-start option</em> is enabled, then any changes to the subscription-filter (inline or referenced) or YANG schema (<em>schema-id</em>) associated with the subscription.<a href="#section-9.1.3.1-2.5.1" class="pilcrow">¶</a></p>
+                <p id="section-9.1.3.1-2.5.1">if the <em>sync-in-start option</em> is enabled, then any changes to the subscription-filter (inline or referenced) or YANG schema (<em>schema-id</em>) associated with the subscription. <em>TODO, Why?  Should a subscription-modifies message resend the sync-on-start data anyway?</em><a href="#section-9.1.3.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
             </ol>
 <p id="section-9.1.3.1-3">The <em>subscription-terminated</em> notification <span class="bcp14">MUST</span> be sent using the old <em>encoding</em> and <em>receiver</em> settings before the subscription parameters were changed.  The <em>subscription-started</em> notification <span class="bcp14">MUST</span> be sent using the updated subscription parameters.<a href="#section-9.1.3.1-3" class="pilcrow">¶</a></p>
@@ -2824,7 +2861,7 @@ behavior.<a href="#section-9.1.3.2-2.5.1" class="pilcrow">¶</a></p>
               <p id="section-9.1.4-2.3.1">A dynamic subscription has been terminated via a <em>delete-subscription</em> or <em>kill-subscription</em> YANG RPC.<a href="#section-9.1.4-2.3.1" class="pilcrow">¶</a></p>
 </li>
             <li id="section-9.1.4-2.4">
-              <p id="section-9.1.4-2.4.1">Transport connectivity to the receivers have been lost, either due to network issues, or a failure in the security session state.<a href="#section-9.1.4-2.4.1" class="pilcrow">¶</a></p>
+              <p id="section-9.1.4-2.4.1">Transport connectivity to the receiver has been lost, either due to network issues, or a failure in the security session state.<a href="#section-9.1.4-2.4.1" class="pilcrow">¶</a></p>
 </li>
             <li id="section-9.1.4-2.5">
               <p id="section-9.1.4-2.5.1">The publisher does not have sufficient resources to honor the terms of the subscription, i.e., it is generating too many <em>update</em> notifications, or attempting to send too much data.<a href="#section-9.1.4-2.5.1" class="pilcrow">¶</a></p>
@@ -2837,7 +2874,7 @@ behavior.<a href="#section-9.1.3.2-2.5.1" class="pilcrow">¶</a></p>
 </li>
           </ol>
 <p id="section-9.1.4-3">In addition, from a receiver's perspective, if transport connectivity is lost, then that is equivalent to terminating the subscription via a <em>subscription-terminated</em> notification.<a href="#section-9.1.4-3" class="pilcrow">¶</a></p>
-<p id="section-9.1.4-4">If possible, the publisher <span class="bcp14">MUST</span> try and close the subscription gracefully by generating a <em>subscription-terminated</em> notification to all receivers before closing any sessions to any receivers that have no remaining subscriptions.  Publishers <span class="bcp14">MAY</span> complete their current collection if one is in progress before generating the <em>subscription-terminated</em> notification.  Obviously, if transport connectivity to a receiver has been lost then neither of these two actions will be possible.<a href="#section-9.1.4-4" class="pilcrow">¶</a></p>
+<p id="section-9.1.4-4">If possible, the publisher <span class="bcp14">MUST</span> try and close the subscription gracefully by generating a <em>subscription-terminated</em> notification to the receiver before closing any sessions to any receivers that have no remaining subscriptions.  Publishers <span class="bcp14">MAY</span> complete their current collection if one is in progress before generating the <em>subscription-terminated</em> notification.  Obviously, if transport connectivity to a receiver has been lost then neither of these two actions is possible.<a href="#section-9.1.4-4" class="pilcrow">¶</a></p>
 <p id="section-9.1.4-5">The publisher <span class="bcp14">MUST NOT</span> generate any further events, e.g., <em>update</em> notifications, related to the subscription after the <em>subscription-terminated</em> notification has been generated.  In addition, receivers <span class="bcp14">SHOULD</span> ignore any messages received outside of an active subscription, i.e., either before a <em>subscription-started</em> notification or after a <em>subscription-terminated</em> notification.<a href="#section-9.1.4-5" class="pilcrow">¶</a></p>
 <p id="section-9.1.4-6">If the publisher accepts the request, which it <span class="bcp14">MUST</span>, if the subscription-id matches a dynamic subscription established in the same transport session, then it should stop the subscription and send a <em>subscription-terminated</em> notification.<a href="#section-9.1.4-6" class="pilcrow">¶</a></p>
 </section>
@@ -2865,7 +2902,7 @@ behavior.<a href="#section-9.1.3.2-2.5.1" class="pilcrow">¶</a></p>
               <p id="section-9.2.1-3.1.1">A new subscription (configured or dynamic) has been started.<a href="#section-9.2.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
             <li id="section-9.2.1-3.2">
-              <p id="section-9.2.1-3.2.1">The properties of a subscription has been changed, i.e., as specified in <a href="#ChangesNeedingTermination" class="auto internal xref">Section 9.1.3.1</a>, that requires a <em>subscription-terminated</em> notification to be sent followed by a <em>subscription-started</em> notification, presuming that the new subscription parameters are valid.<a href="#section-9.2.1-3.2.1" class="pilcrow">¶</a></p>
+              <p id="section-9.2.1-3.2.1">The properties of a configured subscription has been changed, i.e., as specified in <a href="#ChangesNeedingTermination" class="auto internal xref">Section 9.1.3.1</a>, that requires a <em>subscription-terminated</em> notification to be sent followed by a <em>subscription-started</em> notification, presuming that the new subscription parameters are valid.<a href="#section-9.2.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
             <li id="section-9.2.1-3.3">
               <p id="section-9.2.1-3.3.1">A configured subscription previously failed, and was terminated.  After the publisher has successfully re-established a connection to the receiver and is ready to send datastore event records again.<a href="#section-9.2.1-3.3.1" class="pilcrow">¶</a></p>
@@ -2911,7 +2948,7 @@ behavior.<a href="#section-9.1.3.2-2.5.1" class="pilcrow">¶</a></p>
 <a href="#section-9.2.2" class="section-number selfRef">9.2.2. </a><a href="#name-subscription-modified" class="section-name selfRef">"subscription-modified"</a>
           </h4>
 <p id="section-9.2.2-1">The <em>subscription-modified</em> notification is sent to a receiver to indicate that some parameters associated with an active subscription have changed, as per <a href="#ChangesNeedingModifiedNotif" class="auto internal xref">Section 9.1.3.2</a>.<a href="#section-9.2.2-1" class="pilcrow">¶</a></p>
-<p id="section-9.2.2-2">Below is the tree diagram for the <em>subscription-modified</em> notification.  Other than the notification name, the parameters for a <em>subscription-modified</em> notification are the same as for the <em>subscription-started</em> notification. <strong>TODO should reason also be in subscription-started?</strong>.  Robust receivers are expected to handle <em>subscription-started</em> and <em>subscription-modified</em> notifications equivalently.<a href="#section-9.2.2-2" class="pilcrow">¶</a></p>
+<p id="section-9.2.2-2">Below is the tree diagram for the <em>subscription-modified</em> notification.  Other than the notification name and the <em>reason</em> leaf, the parameters for a <em>subscription-modified</em> notification are the same as for the <em>subscription-started</em> notification.  Robust receivers are expected to handle <em>subscription-started</em> and <em>subscription-modified</em> notifications equivalently.<a href="#section-9.2.2-2" class="pilcrow">¶</a></p>
 <p id="section-9.2.2-3">All data nodes contained in this tree diagram are described in the YANG module in <a href="#yang-push-2-yang-module" class="auto internal xref">Section 13.2</a>.<a href="#section-9.2.2-3" class="pilcrow">¶</a></p>
 <span id="name-subscription-modified-notif"></span><figure id="figure-11">
             <div class="lang-yangtree sourcecode" id="section-9.2.2-4.1">
@@ -2981,6 +3018,11 @@ behavior.<a href="#section-9.1.3.2-2.5.1" class="pilcrow">¶</a></p>
     +---n subscription-terminated
     |  +--ro id        subscription-id
     |  +--ro reason    identityref
+    +---n update
+    |  +--ro id?                 subscription-id
+    |  +--ro path-prefix?        string
+    |  +--ro snapshot-type       enumeration
+    |  +--ro observation-time?   yang:date-and-time
 </pre>
 </div>
 <figcaption><a href="#figure-12" class="selfRef">Figure 12</a>:
@@ -3031,32 +3073,35 @@ behavior.<a href="#section-9.1.3.2-2.5.1" class="pilcrow">¶</a></p>
             <p id="section-9.3-6.1.1">configured subscriptions are created, modified or deleted, by any configuration client with write permission on the subscription configuration.<a href="#section-9.3-6.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-9.3-6.2">
-            <p id="section-9.3-6.2.1">The lifetime of a configured subscription is tied to the configuration.  I.e., if a valid and complete configuration exists for a subscription, then the publisher <span class="bcp14">MUST</span> attempt to connect to the receiver and honor the requirements of the subscription.  In particular:<a href="#section-9.3-6.2.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-9.3-6.2.2.1">
-                <p id="section-9.3-6.2.2.1.1">If the configuration is altered or removed then the subscription will similarly be altered or removed.<a href="#section-9.3-6.2.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-9.3-6.2.2.2">
-                <p id="section-9.3-6.2.2.2.1">If the device reboots, then the configured subscription will obviously end, but once the subscription configuration has been processed after boot up, then the subscription will be recreated again, assuming the subscription configuration is still valid.<a href="#section-9.3-6.2.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-9.3-6.2.2.3">
-                <p id="section-9.3-6.2.2.3.1">If the publisher detects that transport connectivity to the receiver is broken, then any subscriptions using that transport are terminated, but the publisher <span class="bcp14">MUST</span> periodically attempt to re-establish connection to the receiver and re-activate any configured subscriptions to that receiver.<a href="#section-9.3-6.2.2.3.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
+            <p id="section-9.3-6.2.1">configured subscription may reference a filter rather than define it inline as part of the subscription.  Even for a referenced filter, the <em>subscription-started</em> and <em>subscription-modified</em> notifications always include the filter specification inline in the notification.<a href="#section-9.3-6.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-9.3-6.3">
-            <p id="section-9.3-6.3.1">The lifetime of any transport session(s) to receiver(s) are also tied to the subscription configuration, but in a way that depends on the behavior of the Yang Push 2 transport specificiation, i.e.,<a href="#section-9.3-6.3.1" class="pilcrow">¶</a></p>
+            <p id="section-9.3-6.3.1">The lifetime of a configured subscription is tied to the configuration.  I.e., if a valid and complete configuration exists for a subscription, then the publisher <span class="bcp14">MUST</span> attempt to connect to the receiver and honor the requirements of the subscription.  In particular:<a href="#section-9.3-6.3.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-9.3-6.3.2.1">
-                <p id="section-9.3-6.3.2.1.1">For YANG Push transports that specify a separate transport session for each subscription to the same receiver then a new transport session is established whenever a valid subscription is configured and the transport session <span class="bcp14">MUST</span> be closed if the subscription configuration is removed or changed such that the subscription is no longer valid.<a href="#section-9.3-6.3.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-9.3-6.3.2.1.1">If the configuration is altered or removed then the subscription will similarly be altered or removed.<a href="#section-9.3-6.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-9.3-6.3.2.2">
-                <p id="section-9.3-6.3.2.2.1">For YANG Push transports that specify a shared transport session for all subscriptions to the same receiver then a new transport session is established for the first valid configured subscription.  Note, if there are no active subscriptions for a given receiver then any transport session(s) associated with that receiver <span class="bcp14">MUST</span> be closed, but that <span class="bcp14">MAY</span> be after a short delay.<a href="#section-9.3-6.3.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-9.3-6.3.2.2.1">If the device reboots, then the configured subscription will obviously end, but once the subscription configuration has been processed after boot up, then the subscription will be recreated again, assuming the subscription configuration is still valid.<a href="#section-9.3-6.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-9.3-6.3.2.3">
+                <p id="section-9.3-6.3.2.3.1">If the publisher detects that transport connectivity to the receiver is broken, then any subscriptions using that transport are terminated, but the publisher <span class="bcp14">MUST</span> periodically attempt to re-establish connection to the receiver and re-activate any configured subscriptions to that receiver.<a href="#section-9.3-6.3.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
           <li class="normal" id="section-9.3-6.4">
-            <p id="section-9.3-6.4.1">Other than the <em>reset</em> YANG Action, described in <a href="#reset" class="auto internal xref">Section 9.3.4</a>, there are no YANG RPCs to dynamically create, modify, or delete a configured subscription, any alterations <span class="bcp14">MUST</span> be done via changes to the configuration.<a href="#section-9.3-6.4.1" class="pilcrow">¶</a></p>
+            <p id="section-9.3-6.4.1">The lifetime of any transport session(s) to receiver(s) are also tied to the subscription configuration, but in a way that depends on the behavior of the Yang Push 2 transport specificiation, i.e.,<a href="#section-9.3-6.4.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-9.3-6.4.2.1">
+                <p id="section-9.3-6.4.2.1.1">For YANG Push transports that specify a separate transport session for each subscription to the same receiver then a new transport session is established whenever a valid subscription is configured and the transport session <span class="bcp14">MUST</span> be closed if the subscription configuration is removed or changed such that the subscription is no longer valid.<a href="#section-9.3-6.4.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-9.3-6.4.2.2">
+                <p id="section-9.3-6.4.2.2.1">For YANG Push transports that specify a shared transport session for all subscriptions to the same receiver then a new transport session is established for the first valid configured subscription.  Note, if there are no active subscriptions for a given receiver then any transport session(s) associated with that receiver <span class="bcp14">MUST</span> be closed, but that <span class="bcp14">MAY</span> be after a short delay.<a href="#section-9.3-6.4.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="normal" id="section-9.3-6.5">
+            <p id="section-9.3-6.5.1">Other than the <em>reset</em> YANG Action, described in <a href="#reset" class="auto internal xref">Section 9.3.4</a>, there are no YANG RPCs to dynamically create, modify, or delete a configured subscription, any alterations <span class="bcp14">MUST</span> be done via changes to the configuration.<a href="#section-9.3-6.5.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <div id="creating-a-configured-subscription">
@@ -3143,9 +3188,6 @@ behavior.<a href="#section-9.1.3.2-2.5.1" class="pilcrow">¶</a></p>
             <li class="normal" id="section-9.4.1-3.2">
               <p id="section-9.4.1-3.2.1">optionally includes DSCP settings to use for the transport.<a href="#section-9.4.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-9.4.1-3.3">
-              <p id="section-9.4.1-3.3.1">a dynamic subscription may reference a configured target <em>filter</em>.  If the configuration for the referenced filter changes then the subscription <span class="bcp14">MUST</span> be terminated <a href="#TerminatingSubscriptions" class="auto internal xref">Section 9.1.4</a>.<a href="#section-9.4.1-3.3.1" class="pilcrow">¶</a></p>
-</li>
           </ul>
 <p id="section-9.4.1-4">The DSCP code point settings for all subscription using the same transport session <span class="bcp14">MUST</span> be the same.  Attempts to invoke <em>establish-subscription</em> with a different DSCP code point <span class="bcp14">MUST</span> be rejected.<a href="#section-9.4.1-4" class="pilcrow">¶</a></p>
 <p id="section-9.4.1-5">If the publisher can satisfy the <em>establish-subscription</em> request, it replies with a numeric identifier for the subscription and then immediately starts streaming notification messages.<a href="#section-9.4.1-5" class="pilcrow">¶</a></p>
@@ -3157,7 +3199,7 @@ behavior.<a href="#section-9.1.3.2-2.5.1" class="pilcrow">¶</a></p>
 <pre>
     +---x establish-subscription {dynamic}?
     |  +---w input
-    |  |  +---w id?               restricted-subscription-id
+    |  |  +---w id?               subscription-id
     |  |  +---w description?      string
     |  |  +---w target
     |  |  |  +---w datastore?       identityref
@@ -3366,18 +3408,10 @@ transport-layer RPC structures.  These structures are:<a href="#section-9.4.5-6"
 <p id="section-10.1-1">It is important for clients to have confidence that the telemetry data that they receive is correct and complete.  The design of YANG Push v2 achieves this in several ways:<a href="#section-10.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-10.1-2.1">
-            <p id="section-10.1-2.1.1">the <em>complete</em> flag in <em>update</em> notification, or the equivalent <em>update-complete</em> notification, are used to signal when all data for a periodic collection event has been enqueued.  This allows clients to delete stale information and monitor the performance and behavior of the publisher.<a href="#section-10.1-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-10.1-2.1.1">the <em>complete</em> flag in the <em>update</em> notification, or the equivalent <em>update-complete</em> notification, are used to signal when all data for a periodic collection event has been enqueued by the publisher.  This allows clients to delete stale information and monitor the performance and behavior of the publisher.<a href="#section-10.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-10.1-2.2">
-            <p id="section-10.1-2.2.1">publishers use buffers when enqueuing traffic on to a transport to a receiver, but if that buffer becomes full then either the subscription is terminated, or in the case of a configured subscription with multiple receivers the slow receiver is disconnected from the subscription.  In the case of dynamic subscriptions, the client may attempt to re-created the subscription.  For configured subscriptions, the publisher should attempt to periodically recreate the subscription or reconnect the receiver.<a href="#section-10.1-2.2.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-10.1-2.2.2.1">
-                <p id="section-10.1-2.2.2.1.1"><strong>TODO, do we want to allow for a more lossy mode where the publisher just tail drops if the buffer is full?  If we do, then this looks like it should be a configurable option.</strong><a href="#section-10.1-2.2.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-10.1-2.2.2.2">
-                <p id="section-10.1-2.2.2.2.1"><strong>TODO, ensure that we document how to reconnect to an new receiver</strong><a href="#section-10.1-2.2.2.2.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
+            <p id="section-10.1-2.2.1">publishers use buffers when enqueuing traffic on to a transport to a receiver, but if that buffer becomes full then the transport specification indicates whether update messages should be dropped, or the subscription should be terminated.  In that case that a dynamic subscription is terminated, the client may attempt to re-created the subscription.  For configured subscriptions that have been terminated, the publisher should attempt to periodically recreate the subscription or reconnect the receiver.<a href="#section-10.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-10.1-2.3">
             <p id="section-10.1-2.3.1">the <em>notification envelope</em> structure, <a href="#FullNotificationExample" class="auto internal xref">Section 7.1</a>, used for all YANG Push notifications contains a monotonically increasing <em>sequence-number</em> field that allows for lost messages in an end-to-end data pipeline spanning multiple transport hops to be detected, allowing appropriate mitigation steps to be taken.  For example, see figure 1 in <span>[<a href="#I-D.ietf-nmop-network-anomaly-architecture" class="cite xref">I-D.ietf-nmop-network-anomaly-architecture</a>]</span>.<a href="#section-10.1-2.3.1" class="pilcrow">¶</a></p>
@@ -3398,19 +3432,18 @@ transport-layer RPC structures.  These structures are:<a href="#section-9.4.5-6"
         </h3>
 <p id="section-10.2-1">In the operational state datastore, the <em>datastore-telemetry</em> container maintains operational state for all configured and dynamic subscriptions.<a href="#section-10.2-1" class="pilcrow">¶</a></p>
 <p id="section-10.2-2">Both configured and dynamic subscriptions are represented in the list <em>ietf-yang-push-2-config:datastore-telemetry/subscriptions/subscription</em>.  Dynamic subscriptions are only present in the list when they are active, and are removed as soon as they are terminated.  Whereas, configured subscriptions are always present in the list when they are configured, regardless of whether they are active.<a href="#section-10.2-2" class="pilcrow">¶</a></p>
-<p id="section-10.2-3"><strong>TODO, should dynamic receivers be listed?  Do we need to report per-receiver stats for dynamic subscriptions?</strong><a href="#section-10.2-3" class="pilcrow">¶</a></p>
-<p id="section-10.2-4">The operational state is important for monitoring the health of subscriptions, receivers, and the overall telemetry subsystem.<a href="#section-10.2-4" class="pilcrow">¶</a></p>
-<p id="section-10.2-5">This includes:<a href="#section-10.2-5" class="pilcrow">¶</a></p>
-<p id="section-10.2-6"><strong>TODO, update the YANG model with more useful operational data, and mostly this section should briefly summarize and refer to the YANG model.  We should also consider what indications to include from filters that cause a larger amount of internal work but don't generate a large number of transmitted notifications.</strong><a href="#section-10.2-6" class="pilcrow">¶</a></p>
+<p id="section-10.2-3">The operational state is important for monitoring the health of subscriptions, receivers, and the overall telemetry subsystem.<a href="#section-10.2-3" class="pilcrow">¶</a></p>
+<p id="section-10.2-4">This includes:<a href="#section-10.2-4" class="pilcrow">¶</a></p>
+<p id="section-10.2-5"><strong>TODO, update the YANG model with more useful operational data, and mostly this section should briefly summarize and refer to the YANG model.  We should also consider what indications to include from filters that cause a larger amount of internal work but don't generate a large number of transmitted notifications.</strong><a href="#section-10.2-5" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-10.2-7.1">
-            <p id="section-10.2-7.1.1">per subscription status and counters<a href="#section-10.2-7.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-10.2-6.1">
+            <p id="section-10.2-6.1.1">per subscription status and counters<a href="#section-10.2-6.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-10.2-7.2">
-            <p id="section-10.2-7.2.1">per receiver status and counters<a href="#section-10.2-7.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-10.2-6.2">
+            <p id="section-10.2-6.2.1">per receiver status and counters<a href="#section-10.2-6.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-10.2-7.3">
-            <p id="section-10.2-7.3.1">maybe some indication of the overall load on the telemetry subsystem, but we need to consider how useful that actually is, and whether just monitoring the device CPU load and general performance would be a better indication.<a href="#section-10.2-7.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-10.2-6.3">
+            <p id="section-10.2-6.3.1">maybe some indication of the overall load on the telemetry subsystem, but we need to consider how useful that actually is, and whether just monitoring the device CPU load and general performance would be a better indication.<a href="#section-10.2-6.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -3420,8 +3453,10 @@ transport-layer RPC structures.  These structures are:<a href="#section-9.4.5-6"
         <h3 id="name-publisher-capacity">
 <a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-publisher-capacity" class="section-name selfRef">Publisher Capacity</a>
         </h3>
-<p id="section-10.3-1">It is far preferable to decline a subscription request than to accept such a request when it cannot be met.<a href="#section-10.3-1" class="pilcrow">¶</a></p>
+<p id="section-10.3-1">A publisher <span class="bcp14">SHOULD</span> reject a request for a subscription if it is unlikely that the publisher will be able to fulfill the terms of that subscription request.<a href="#section-10.3-1" class="pilcrow">¶</a></p>
 <p id="section-10.3-2">Whether or not a subscription can be supported will be determined by a combination of several factors, such as the subscription update trigger (on-change or periodic), the period in which to report changes (one-second periods will consume more resources than one-hour periods), the amount of data in the datastore subtree that is being subscribed to, the number and combination of other subscriptions that are concurrently being serviced, and the overall load from other services running on the publisher.<a href="#section-10.3-2" class="pilcrow">¶</a></p>
+<p id="section-10.3-3">It is entirely possible that a subscription may be reasonable at the time that it is created, but other changes to configuration or operational data or load in the system means that the subscription can no longer be honored.<a href="#section-10.3-3" class="pilcrow">¶</a></p>
+<p id="section-10.3-4">TODO - Do we allow servers to reduce the period of the subscription to allow it to be kept active?  E.g., with a subscription modification notification?  E.g., see <a href="https://github.com/rgwilton/draft-yp-observability/issues/41">issue 41</a><a href="#section-10.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -3558,7 +3593,7 @@ module: ietf-system-capabilities
           <p id="section-12-6.1.1">the publisher-id leaf, that identities the Message Publisher ID of the publishing process, is augmented in the envelope notification <span>[<a href="#I-D.draft-ietf-netconf-notif-envelope" class="cite xref">I-D.draft-ietf-netconf-notif-envelope</a>]</span> rather than the <em>push-update</em> and <em>push-change-update</em> messages.  This means that all messages sent by any Message Publishers (e.g., including Subscription Lifecyle Notifications) will indicate which Message Publisher sent the message.<a href="#section-12-6.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-12-6.2">
-          <p id="section-12-6.2.1">the publisher-id leaf has a default value of 0.  It is <span class="bcp14">RECOMMENDED</span> that the server allocates a publisher-id of 0 to the default Publisher Parent, since that allows for the publisher-id leaf to be omitted from notification messages sent from the Publisher Parent.<a href="#section-12-6.2.1" class="pilcrow">¶</a></p>
+          <p id="section-12-6.2.1">the publisher-id leaf has a default value of 0.  The publisher-id of 0 is reserved for the Publisher Parent process and <span class="bcp14">MUST NOT</span> be allocated to any Publisher Agent processes, since that allows for the publisher-id leaf to be omitted from notification messages sent from the Publisher Parent.<a href="#section-12-6.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-12-6.3">
           <p id="section-12-6.3.1">the <em>subscription-started</em> and <em>subscription-modified</em> notifications have a <em>message-publishers/publisher-id</em> leaf-list that identifies all Message Publishers that will send messages as part of the subscription.  This leaf-list defaults to a single entry of 0, so <span class="bcp14">MAY</span> be ommitted if there is only a single Message Publisher and it has an publisher-id of 0.<a href="#section-12-6.3.1" class="pilcrow">¶</a></p>
@@ -3578,7 +3613,7 @@ module: ietf-system-capabilities
           <p id="section-12-6.5.1">A capability flag is used to indicate whether the server might use distributed notifications.<a href="#section-12-6.5.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-12-6.6">
-          <p id="section-12-6.6.1">the <em>update-complete</em> notifications, or the equivalent <em>complete</em> leaf as part of an <em>update</em> notification are generated per Message Publisher, and scoped as such.  I.e., this may require clients to count and correlate update complete indications across Message Publishers for a given subscription.<a href="#section-12-6.6.1" class="pilcrow">¶</a></p>
+          <p id="section-12-6.6.1">the <em>update-complete</em> notifications, or the equivalent <em>complete</em> leaf as part of an <em>update</em> notification are generated per Message Publisher process, and are scoped as such.  I.e., this may require clients to count and correlate update complete indications across Message Publishers for a given subscription.<a href="#section-12-6.6.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -3603,7 +3638,7 @@ module: ietf-yang-push-2
   rpcs:
     +---x establish-subscription {dynamic}?
     |  +---w input
-    |  |  +---w id?               restricted-subscription-id
+    |  |  +---w id?               subscription-id
     |  |  +---w description?      string
     |  |  +---w target
     |  |  |  +---w datastore?       identityref
@@ -4072,18 +4107,6 @@ module ietf-yang-push-2 {
       "A used friendly string identifier for a subscription.";
   }
 
-  typedef restricted-subscription-id {
-    type subscription-id {
-      pattern "dyn-.*" {
-        modifier "invert-match";
-      }
-    }
-    description
-      "A subscription identifier that cannot start with 'dyn-',
-       which is reserved for dynamically subscriptions created by
-       the publisher.";
-  }
-
   typedef transport {
     type identityref {
       base transport;
@@ -4376,12 +4399,17 @@ module ietf-yang-push-2 {
        created subscriptions.";
 
     leaf id {
-      type restricted-subscription-id;
+      type subscription-id {
+        pattern "dyn-.*" {
+          modifier "invert-match";
+        }
+      }
       description
         "A identifier for the subscription, that MUST be unique
         across all configured and dynamic subscriptions.
 
-        MUST NOT start with 'dyn-'.";
+        MUST NOT start with 'dyn-' which is reserved for
+        dynamic subscriptions created by the publisher.";
     }
   }
 
@@ -4895,8 +4923,7 @@ module: ietf-yang-push-2-config
   +--rw datastore-telemetry!
      +--rw subscriptions
         +--rw subscription* [id]
-           +--rw id
-           |       restricted-subscription-id
+           +--rw id                                  subscription-id
            +--rw description?                        string
            +--rw target
            |  +--rw datastore?          identityref
@@ -4949,6 +4976,8 @@ module: ietf-yang-push-2-config
 
   augment /yp2:subscription-started/yp2:target:
     +-- filter-ref?   filter-ref
+  augment /yp2:subscription-modified/yp2:target:
+    +-- filter-ref?   filter-ref
 </pre>
 </div>
 <figcaption><a href="#figure-21" class="selfRef">Figure 21</a>:
@@ -4980,8 +5009,7 @@ module: ietf-yang-push-2-config
      |           +--rw xpath      yang:xpath1.0 {yp2:xpath}?
      +--rw subscriptions
      |  +--rw subscription* [id]
-     |     +--rw id
-     |     |       restricted-subscription-id
+     |     +--rw id                                  subscription-id
      |     +--rw description?                        string
      |     +--rw target
      |     |  +--rw datastore?          identityref
@@ -5047,6 +5075,8 @@ module: ietf-yang-push-2-config
            +--rw (transport-type)
 
   augment /yp2:subscription-started/yp2:target:
+    +-- filter-ref?   filter-ref
+  augment /yp2:subscription-modified/yp2:target:
     +-- filter-ref?   filter-ref
 </pre>
 </div>
@@ -5564,6 +5594,18 @@ module ietf-yang-push-2-config {
 
     description
       "Allow a subscription-started notification to include a
+       referenced named filter";
+    uses filter-ref {
+      refine "filter-ref" {
+        mandatory false;
+      }
+    }
+  }
+
+  augment "/yp2:subscription-modified/yp2:target" {
+
+    description
+      "Allow a subscription-modified notification to include a
        referenced named filter";
     uses filter-ref {
       refine "filter-ref" {
@@ -6232,7 +6274,7 @@ continuous and total filtering of a subscription's content for every update reco
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-netconf-distributed-notif">[I-D.draft-ietf-netconf-distributed-notif]</dt>
         <dd>
-<span class="refAuthor">Zhou, T.</span>, <span class="refAuthor">Zheng, G.</span>, <span class="refAuthor">Voit, E.</span>, <span class="refAuthor">Graf, T.</span>, and <span class="refAuthor">P. Francois</span>, <span class="refTitle">"Subscription to Notifications in a Distributed Architecture"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-netconf-distributed-notif-17</span>, <time datetime="2026-02-04" class="refDate">4 February 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-17">https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-17</a>&gt;</span>. </dd>
+<span class="refAuthor">Zhou, T.</span>, <span class="refAuthor">Zheng, G.</span>, <span class="refAuthor">Voit, E.</span>, <span class="refAuthor">Graf, T.</span>, and <span class="refAuthor">P. Francois</span>, <span class="refTitle">"Subscription to Notifications in a Distributed Architecture"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-netconf-distributed-notif-18</span>, <time datetime="2026-02-28" class="refDate">28 February 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-18">https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-18</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-netconf-https-notif">[I-D.draft-ietf-netconf-https-notif]</dt>
         <dd>
@@ -6252,7 +6294,7 @@ continuous and total filtering of a subscription's content for every update reco
 <dd class="break"></dd>
 <dt id="I-D.ietf-netconf-distributed-notif">[I-D.ietf-netconf-distributed-notif]</dt>
         <dd>
-<span class="refAuthor">Zhou, T.</span>, <span class="refAuthor">Zheng, G.</span>, <span class="refAuthor">Voit, E.</span>, <span class="refAuthor">Graf, T.</span>, and <span class="refAuthor">P. Francois</span>, <span class="refTitle">"Subscription to Notifications in a Distributed Architecture"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-netconf-distributed-notif-17</span>, <time datetime="2026-02-04" class="refDate">4 February 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-17">https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-17</a>&gt;</span>. </dd>
+<span class="refAuthor">Zhou, T.</span>, <span class="refAuthor">Zheng, G.</span>, <span class="refAuthor">Voit, E.</span>, <span class="refAuthor">Graf, T.</span>, and <span class="refAuthor">P. Francois</span>, <span class="refTitle">"Subscription to Notifications in a Distributed Architecture"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-netconf-distributed-notif-18</span>, <time datetime="2026-02-28" class="refDate">28 February 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-18">https://datatracker.ietf.org/doc/html/draft-ietf-netconf-distributed-notif-18</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-nmop-network-anomaly-architecture">[I-D.ietf-nmop-network-anomaly-architecture]</dt>
         <dd>
@@ -6260,7 +6302,7 @@ continuous and total filtering of a subscription's content for every update reco
 <dd class="break"></dd>
 <dt id="I-D.ietf-nmop-yang-message-broker-integration">[I-D.ietf-nmop-yang-message-broker-integration]</dt>
         <dd>
-<span class="refAuthor">Graf, T.</span> and <span class="refAuthor">A. Elhassany</span>, <span class="refTitle">"An Architecture for YANG-Push to Message Broker Integration"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-nmop-yang-message-broker-integration-10</span>, <time datetime="2026-01-18" class="refDate">18 January 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-nmop-yang-message-broker-integration-10">https://datatracker.ietf.org/doc/html/draft-ietf-nmop-yang-message-broker-integration-10</a>&gt;</span>. </dd>
+<span class="refAuthor">Graf, T.</span> and <span class="refAuthor">A. Elhassany</span>, <span class="refTitle">"An Architecture for YANG-Push to Message Broker Integration"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-nmop-yang-message-broker-integration-11</span>, <time datetime="2026-02-28" class="refDate">28 February 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-nmop-yang-message-broker-integration-11">https://datatracker.ietf.org/doc/html/draft-ietf-nmop-yang-message-broker-integration-11</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.tgraf-netconf-notif-sequencing">[I-D.tgraf-netconf-notif-sequencing]</dt>
         <dd>
@@ -6422,6 +6464,9 @@ continuous and total filtering of a subscription's content for every update reco
               <li class="normal" id="appendix-A.2-2.3.2.4">
                 <p id="appendix-A.2-2.3.2.4.1">Invoking the <em>reset</em> RPC operation on a receiver requires and forces a reset of any transport sessions associated with that receiver.  Previously, the sessions would not be reset if they were used by other subscriptions.<a href="#appendix-A.2-2.3.2.4.1" class="pilcrow">¶</a></p>
 </li>
+              <li class="normal" id="appendix-A.2-2.3.2.5">
+                <p id="appendix-A.2-2.3.2.5.1">YANG Push v2 only supports a single receiver per subscription.<a href="#appendix-A.2-2.3.2.5.1" class="pilcrow">¶</a></p>
+</li>
             </ul>
 </li>
           <li class="normal" id="appendix-A.2-2.4">
@@ -6456,7 +6501,7 @@ continuous and total filtering of a subscription's content for every update reco
             <p id="appendix-A.2-2.8.1">The solution focuses solely on datastore subscriptions that each have their own event stream.  Filters cannot be applied to the event stream, only to the set of datastore data nodes that are monitored by the subscription.<a href="#appendix-A.2-2.8.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-A.2-2.9">
-            <p id="appendix-A.2-2.9.1">The lifecycle events of when a subscription-started or subscription-terminated may be sent differs from RFC 8639/RFC 8649:<a href="#appendix-A.2-2.9.1" class="pilcrow">¶</a></p>
+            <p id="appendix-A.2-2.9.1">The lifecycle events of when a subscription-started or subscription-terminated may be sent differs from <span>[<a href="#RFC8639" class="cite xref">RFC8639</a>]</span>/<span>[<a href="#RFC8641" class="cite xref">RFC8641</a>]</span>:<a href="#appendix-A.2-2.9.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-A.2-2.9.2.1">
                 <p id="appendix-A.2-2.9.2.1.1">Subscription-started notifications are also sent for dynamic subscriptions.<a href="#appendix-A.2-2.9.2.1.1" class="pilcrow">¶</a></p>
@@ -6665,7 +6710,7 @@ addition to those that were already defined in <span>[<a href="#RFC8639" class="
       {
         "target-path": "",
         "merge": {
-          "ietf-interfaces:interface": [
+          "interface": [
             {
               "name": "eth0",
               "type": "iana-if-type:ethernetCsmacd",
@@ -7069,6 +7114,41 @@ their owner separate Message Publisher process.  This message has a publisher-id
   "ietf-yp-notification:envelope": {
     "event-time": "2025-10-10T08:00:05.22Z",
     "hostname": "example-router",
+    "sequence-number": 23,
+    "ietf-yang-push-2:publisher-id": 0
+    "contents": {
+      "ietf-yang-push-2:subscription-started": {
+        "id": "interfaces",
+        "target": {
+          "datastore": "ietf-datastores:operational",
+          "path": "/ietf-interfaces:interfaces"
+        },
+        "update-trigger": {
+          "periodic": {
+            "period": 3000,
+            "anchor-time": "2025-01-01T00:00:00.00Z"
+          }
+        },
+        "message-publishers": {
+          "publisher-id" = [0, 4, 7]
+        }
+      }
+    }
+  }
+}
+</pre>
+</div>
+<figcaption><a href="#figure-34" class="selfRef">Figure 34</a>:
+<a href="#name-example-distributed-notific" class="selfRef">Example distributed notification subscription started message</a>
+          </figcaption></figure>
+<p id="appendix-C.5-4">The second message is an example of a periodic update message sent from one of the Publisher Agents on the linecard.  In this case the message is sent from the publisher agent on linecard 4, and it has set the <em>complete</em> leaf to indicate that the message represents all data for that periodic collection from that publisher.<a href="#appendix-C.5-4" class="pilcrow">¶</a></p>
+<span id="name-example-distributed-notifica"></span><figure id="figure-35">
+          <div class="lang-JSON sourcecode" id="appendix-C.5-5.1">
+<pre>
+{
+  "ietf-yp-notification:envelope": {
+    "event-time": "2025-10-10T08:00:05.22Z",
+    "hostname": "example-router",
     "sequence-number": 18,
     "ietf-yang-push-2:publisher-id": 4
     "contents": {
@@ -7079,7 +7159,7 @@ their owner separate Message Publisher process.  This message has a publisher-id
         "updates": [
           {
             "target-path": "ietf-interfaces:interfaces/interface",
-            "data": {
+            "merge": {
               "ietf-interfaces:interfaces": {
                 "ietf-interfaces:interface": [
                   {
@@ -7102,41 +7182,6 @@ their owner separate Message Publisher process.  This message has a publisher-id
           }
         ],
         complete = true
-      }
-    }
-  }
-}
-</pre>
-</div>
-<figcaption><a href="#figure-34" class="selfRef">Figure 34</a>:
-<a href="#name-example-distributed-notific" class="selfRef">Example distributed notification subscription started message</a>
-          </figcaption></figure>
-<p id="appendix-C.5-4">The second message is an example of a periodic update message sent from one of the Publisher Agents on the linecard.  In this case the message is sent from the publisher agent on linecard 4, and it has set the <em>complete</em> leaf to indicate that the message represents all data for that periodic collection from that publisher.<a href="#appendix-C.5-4" class="pilcrow">¶</a></p>
-<span id="name-example-distributed-notifica"></span><figure id="figure-35">
-          <div class="lang-JSON sourcecode" id="appendix-C.5-5.1">
-<pre>
-{
-  "ietf-yp-notification:envelope": {
-    "event-time": "2025-10-10T08:00:05.22Z",
-    "hostname": "example-router",
-    "sequence-number": 23,
-    "ietf-yang-push-2:publisher-id": 0
-    "contents": {
-      "ietf-yang-push-2:subscription-started": {
-        "id": "interfaces",
-        "target": {
-          "datastore": "ietf-datastores:operational",
-          "path": "/ietf-interfaces:interfaces"
-        },
-        "update-trigger": {
-          "periodic": {
-            "period": 3000,
-            "anchor-time": "2025-01-01T00:00:00.00Z"
-          }
-        },
-        "message-publishers": {
-          "publisher-id" = [0, 4, 7]
-        }
       }
     }
   }
@@ -7232,23 +7277,15 @@ their owner separate Message Publisher process.  This message has a publisher-id
           </h4>
 <ol start="1" type="1" class="normal type-1" id="appendix-D.6.1-1">
 <li id="appendix-D.6.1-1.1">
-              <p id="appendix-D.6.1-1.1.1"><a href="#transports" class="auto internal xref">Section 8.2</a> lists quite a lot of rules on what are valid transports and what negotiation/etc is required.  I think we need to check whether we can weaken some of these (although it is possible that these were imposed during a transport directorate review).<a href="#appendix-D.6.1-1.1.1" class="pilcrow">¶</a></p>
+              <p id="appendix-D.6.1-1.1.1">James: We also need to add some text into security section.<a href="#appendix-D.6.1-1.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-D.6.1-1.1.2.1">
-                  <p id="appendix-D.6.1-1.1.2.1.1"><strong>Rob: Authors, I've updated the transport section, <a href="#transports" class="auto internal xref">Section 8.2</a>, please can you re-review.</strong>. Tracked as part of <a href="https://github.com/rgwilton/draft-yp-observability/issues/17">Issue 17</a><a href="#appendix-D.6.1-1.1.2.1.1" class="pilcrow">¶</a></p>
+                  <p id="appendix-D.6.1-1.1.2.1.1">Rob: Is this transport specific, or related to application layer authorization?<a href="#appendix-D.6.1-1.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
               </ul>
 </li>
             <li id="appendix-D.6.1-1.2">
-              <p id="appendix-D.6.1-1.2.1">James: We also need to add some text into security section.<a href="#appendix-D.6.1-1.2.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="appendix-D.6.1-1.2.2.1">
-                  <p id="appendix-D.6.1-1.2.2.1.1">Rob: Is this transport specific, or related to application layer authorization?<a href="#appendix-D.6.1-1.2.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              </ul>
-</li>
-            <li id="appendix-D.6.1-1.3">
-              <p id="appendix-D.6.1-1.3.1">What is the rules/restrictions for subscription receiver instances vs transport sessions?  E.g., is this entirely down to the transport to define.<a href="#appendix-D.6.1-1.3.1" class="pilcrow">¶</a></p>
+              <p id="appendix-D.6.1-1.2.1">What is the rules/restrictions for subscription receiver instances vs transport sessions?  E.g., is this entirely down to the transport to define.<a href="#appendix-D.6.1-1.2.1" class="pilcrow">¶</a></p>
 </li>
           </ol>
 </section>
@@ -7293,25 +7330,19 @@ their owner separate Message Publisher process.  This message has a publisher-id
         </h3>
 <ol start="1" type="1" class="normal type-1" id="appendix-D.8-1">
 <li id="appendix-D.8-1.1">
-            <p id="appendix-D.8-1.1.1">Use subscription name as the unique identifier for the subscription configuration.  Subscription id identifies a subscription session.  I.e., if a configured subscription is terminated and re-established then a new subscription id is allocated. <a href="https://github.com/rgwilton/draft-yp-observability/issues/19">Issue 19</a><a href="#appendix-D.8-1.1.1" class="pilcrow">¶</a></p>
+            <p id="appendix-D.8-1.1.1">Should subscription-started notification include a fingerprint of the schema that is covered by the subscription that would guaranteed to change if the subscription changes? <a href="https://github.com/rgwilton/draft-yp-observability/issues/11">Issue 11</a><a href="#appendix-D.8-1.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="appendix-D.8-1.2">
-            <p id="appendix-D.8-1.2.1">Should subscription-started notification include a fingerprint of the schema that is covered by the subscription that would guaranteed to change if the subscription changes? <a href="https://github.com/rgwilton/draft-yp-observability/issues/11">Issue 11</a><a href="#appendix-D.8-1.2.1" class="pilcrow">¶</a></p>
+            <p id="appendix-D.8-1.2.1">If a subscription references a filter, then should that be included inline in the subscription started notification (as per the RFC 8641 text), or should it indicate that it is a referenced filter? <a href="https://github.com/rgwilton/draft-yp-observability/issues/20">Issue 20</a><a href="#appendix-D.8-1.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="appendix-D.8-1.3">
-            <p id="appendix-D.8-1.3.1">If a subscription references a filter, then should that be included inline in the subscription started notification (as per the RFC 8641 text), or should it indicate that it is a referenced filter? <a href="https://github.com/rgwilton/draft-yp-observability/issues/20">Issue 20</a><a href="#appendix-D.8-1.3.1" class="pilcrow">¶</a></p>
+            <p id="appendix-D.8-1.3.1">Is a publisher allowed to arbitrarily send a sync-on-start resync, e.g., if it detects data loss, or should it always just terminate and reinitialize the subscription? <a href="https://github.com/rgwilton/draft-yp-observability/issues/22">Issue 22</a><a href="#appendix-D.8-1.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="appendix-D.8-1.4">
-            <p id="appendix-D.8-1.4.1">When a subscription is terminated, should it be <span class="bcp14">MUST NOT</span> send any more notifications after the terminated message, or <span class="bcp14">SHOULD NOT</span>?  For a dynamic subscription, should the RPC be synchronous and not reply until it knows that all queues have been drained? <a href="https://github.com/rgwilton/draft-yp-observability/issues/13">Issue 13</a><a href="#appendix-D.8-1.4.1" class="pilcrow">¶</a></p>
+            <p id="appendix-D.8-1.4.1">Should we have a YANG Action to reset a receiver or a subscription?  E.g., discussed in <a href="#reset" class="auto internal xref">Section 9.3.4</a>. <a href="https://github.com/rgwilton/draft-yp-observability/issues/24">Issue 24</a><a href="#appendix-D.8-1.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="appendix-D.8-1.5">
-            <p id="appendix-D.8-1.5.1">Is a publisher allowed to arbitrarily send a sync-on-start resync, e.g., if it detects data loss, or should it always just terminate and reinitialize the subscription? <a href="https://github.com/rgwilton/draft-yp-observability/issues/22">Issue 22</a><a href="#appendix-D.8-1.5.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="appendix-D.8-1.6">
-            <p id="appendix-D.8-1.6.1">Should we have a YANG Action to reset a receiver or a subscription?  E.g., discussed in <a href="#reset" class="auto internal xref">Section 9.3.4</a>. <a href="https://github.com/rgwilton/draft-yp-observability/issues/24">Issue 24</a><a href="#appendix-D.8-1.6.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="appendix-D.8-1.7">
-            <p id="appendix-D.8-1.7.1">Should we support configurable subscription-level keepalives? <a href="https://github.com/rgwilton/draft-yp-observability/issues/14">Issue 14</a><a href="#appendix-D.8-1.7.1" class="pilcrow">¶</a></p>
+            <p id="appendix-D.8-1.5.1">Should we support configurable subscription-level keepalives? <a href="https://github.com/rgwilton/draft-yp-observability/issues/14">Issue 14</a><a href="#appendix-D.8-1.5.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
@@ -7467,6 +7498,15 @@ their owner separate Message Publisher process.  This message has a publisher-id
 </li>
           <li id="appendix-D.15-2.13">
             <p id="appendix-D.15-2.13.1">Draft renamed from Yang Push Lite to Yang Push 2. (Dec 8th)<a href="#appendix-D.15-2.13.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="appendix-D.15-2.14">
+            <p id="appendix-D.15-2.14.1">ietf-yp2-config no longer augments dynamic subscriptions with a reference to a configured filter <a href="https://github.com/rgwilton/draft-yp-observability/issues/19">issue 19</a><a href="#appendix-D.15-2.14.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="appendix-D.15-2.15">
+            <p id="appendix-D.15-2.15.1">Publisher <span class="bcp14">MUST NOT</span> send more notifications after a subscription terminated message <a href="https://github.com/rgwilton/draft-yp-observability/issues/13">Issue 13</a>.<a href="#appendix-D.15-2.15.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="appendix-D.15-2.16">
+            <p id="appendix-D.15-2.16.1">on-change notifications <span class="bcp14">SHOULD</span> send a minimal update but <span class="bcp14">MAY</span> send additional unchanged fields.<a href="#appendix-D.15-2.16.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
