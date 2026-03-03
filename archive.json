@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-01T00:29:18.628076+00:00",
+  "timestamp": "2026-03-03T00:26:53.253936+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -215,9 +215,17 @@
       ],
       "body": "This replaces the replay-complete notification and may be used on any notification:\n\n- Does this need a flag to indicate that the update-complete notification is due to an initial-sync?  I'm not convinced, but we could potentially just include the *snapshot-type* from the notification message.\n- Check that there is agreement that a single notification is better than too separate notifications (less code paths).\n\n- Should clients have to configure on each subscription that they want to receive update-complete notifications on each subscription (we could also implement a hierarchical default)?  Or is this just default behaviour and these notifications should always be generated?\n\n- Note, that I also have a working assumption that even if a subscription is effectively decomposed internally (e.g., perhaps due to multiple subscription paths) then we would only have a single update-complete notification when all internal subscriptions have completed.",
       "createdAt": "2025-10-09T14:23:12Z",
-      "updatedAt": "2026-02-16T16:50:08Z",
+      "updatedAt": "2026-03-02T11:16:06Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "Consider *update-complete notification with this text:\n\n```\n- *sync-on-start* defines whether or not a complete snapshot of all subscribed data is sent at the start of a subscription.  Such early synchronization establishes the frame of reference for subsequent updates.  For each data node covered by an on-change with sync-on-start subscription, then an *sync-on-start* *update* notification containing the current state MUST be sent before any on-change *update* notifications for those same data nodes.  However, *sync-on-start* and *on-change* *update* notifications may be interleaved for different data-nodes under the subscription.  Unsolicited *sync-on-start update* notifications MUST NOT be sent, they MUST only be sent after a subscription has started.\n```\n\nThis may imply that the the client needs to know what type of operation the update-complete notification is for.  I.e., is it for periodic, or-change, or sync-on-start.",
+          "createdAt": "2026-03-02T11:16:05Z",
+          "updatedAt": "2026-03-02T11:16:05Z"
+        }
+      ]
     },
     {
       "number": 13,
@@ -763,9 +771,17 @@
       "labels": [],
       "body": "Note some of these apply or impact dynamic subscriptions as well.\n\n1. YP Lite is somewhat different (separate namespace, separate receivers, no event filters, some config has moved to a separate receivers list.)  See the data model and {{DifferencesFromYangPush}}.\n\n1. We should allow devices to limit which datastores subscriptions can be made against (e.g., not candidate or factory-default as some obvious examples).  Should these be advertised in the capabilities?\n\n1. (James) Should we even document the configuration data model in this document at all, or should it be in a separate document?\n\n1. Some other changes/proposed changes:\n   - I've removed some of the YANG features for 'small' one/two changes in configuration.  I propose that we don't need features for these at all (e.g., DSCP settings), or in other cases we can use operational capabilities, or rely on deviations.\n      - I've renamed the encodings (e.g., from \"encode-json\" to just \"json\")\n\n      - Maybe further simplification of the receivers list under the subscription.  E.g., do we need stats per subscription per receiver, or just per subscription?  Do want stats across all subscriptions to a given receiver?\n        - Holger: Stats per subscription should be sufficient.  No need for per subscription/pre-receiver stats (which would allow the data model to be simplified a little bit).\n\n      - Subscription-ids are currently numeric values with the space split between configured and dynamic subscriptions, but I think that the config model would be cleaner if we used names for the configured subscriptions (and we could reserve a prefix \"dyn-\" for dynamic subscriptions).\n        - Holger, Rob: Strong preference to names.\n        - Thomas, keep ids, but rename 'purpose' to name.  Also give receivers an ids and be keyed this.\n        - See #19 for more details.",
       "createdAt": "2025-10-22T18:09:11Z",
-      "updatedAt": "2025-10-22T18:11:34Z",
+      "updatedAt": "2026-03-02T11:57:46Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rgwilton",
+          "authorAssociation": "OWNER",
+          "body": "I think that the main open question here is regarding capabilities, so we advertise which datastore subscriptions are supported against?",
+          "createdAt": "2026-03-02T11:57:46Z",
+          "updatedAt": "2026-03-02T11:57:46Z"
+        }
+      ]
     },
     {
       "number": 31,
