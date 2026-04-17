@@ -529,6 +529,14 @@ In an on-change subscription, *update* records indicate updated values or when a
 
 Each entry in the *updates* list identifies a data node (i.e., list entry, container, leaf or leaf-list), via the *target-path* that either has changes is state or has been deleted.
 
+Leaf-lists are reported as a single data node, not per-element.  When any
+element of a subscribed leaf-list changes (added, removed, or modified), the
+publisher MUST send an update whose *target-path* identifies the leaf-list (or
+an ancestor node), and the data MUST carry the complete current contents of the
+leaf-list using *replaced-by* semantics.  On-change notifications targeting an
+individual leaf-list entry, and per-entry deletion of a leaf-list element, are
+not supported.
+
 A delete of a specific individual data node or subtree may be notified in two different ways:
 
 - if the data that is being deleted is below the *target-path* then the delete is implicit by the publisher returning the current data node subtree with the delete data nodes missing.  I.e., the receiver must implicitly infer deletion.
