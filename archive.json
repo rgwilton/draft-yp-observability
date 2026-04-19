@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-03T00:26:53.253936+00:00",
+  "timestamp": "2026-04-19T00:35:07.722461+00:00",
   "repo": "rgwilton/draft-yp-observability",
   "labels": [
     {
@@ -983,6 +983,30 @@
       "updatedAt": "2026-02-27T13:57:51Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 42,
+      "id": "I_kwDOM-PT7s7-8ALI",
+      "title": "Can YPv2 support on-change notifications to leaf-list elements?",
+      "url": "https://github.com/rgwilton/draft-yp-observability/issues/42",
+      "state": "OPEN",
+      "author": "rgwilton",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Or does YPv2 already notify the full leaf-list contents if any value changes?",
+      "createdAt": "2026-04-16T16:35:45Z",
+      "updatedAt": "2026-04-17T19:32:36Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "earies",
+          "authorAssociation": "NONE",
+          "body": "Took a stab at adding wording to cover this via: https://github.com/rgwilton/draft-yp-observability/pull/43\n\n* RFC 7951 JSON instance encoding has no syntax to address an individual leaf-list entry, and YANG Patch (which did, via XPath predicates) was removed from on-change in YPv2\n* gNMI uses the same whole-leaf-list model \u2014 a leaf-list is a single `TypedValue` on a single path, and `ON_CHANGE` subscriptions emit the full contents on any element change. Aligning here keeps behavior consistent across the two ecosystems and matches what implementations already do.\n",
+          "createdAt": "2026-04-17T19:32:36Z",
+          "updatedAt": "2026-04-17T19:32:36Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -1243,6 +1267,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 43,
+      "id": "PR_kwDOM-PT7s7TbWwY",
+      "title": "Add section to clarify leaf-list notification behavior",
+      "url": "https://github.com/rgwilton/draft-yp-observability/pull/43",
+      "state": "OPEN",
+      "author": "earies",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Addresses https://github.com/rgwilton/draft-yp-observability/issues/42\n\n",
+      "createdAt": "2026-04-17T19:30:31Z",
+      "updatedAt": "2026-04-17T19:30:31Z",
+      "baseRepository": "rgwilton/draft-yp-observability",
+      "baseRefName": "main",
+      "baseRefOid": "24ae2e9731d92acbc4e0f52ae0b9ec0d195d90ab",
+      "headRepository": "earies/draft-yp-observability",
+      "headRefName": "leaf-list-notif",
+      "headRefOid": "faafcef094427126ad5ca14e3c2ccf4cfe3cd8b3",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
