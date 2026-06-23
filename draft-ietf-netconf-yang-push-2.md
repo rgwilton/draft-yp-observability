@@ -3,7 +3,7 @@ title: "YANG Datastore Telemetry (YANG Push version 2)"
 abbrev: "YANG-Push v2"
 category: std
 
-docname: draft-wilton-netconf-yang-push-2-latest
+docname: draft-ietf-netconf-yang-push-2-latest
 submissiontype: IETF
 number:
 date:
