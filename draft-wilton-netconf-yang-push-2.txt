@@ -5,16 +5,16 @@
 Network Configuration                                     R. Wilton, Ed.
 Internet-Draft                                             Cisco Systems
 Intended status: Standards Track                               H. Keller
-Expires: 3 September 2026                              Deuetsche Telekom
+Expires: 16 April 2027                                  Deutsche Telekom
                                                                B. Claise
                                                           Everything OPS
                                                                 E. Aries
-                                                                 Juniper
+                                                                     HPE
                                                               J. Cumming
                                                                    Nokia
                                                                  T. Graf
                                                                 Swisscom
-                                                            2 March 2026
+                                                         13 October 2026
 
 
              YANG Datastore Telemetry (YANG Push version 2)
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 September 2026.
+   This Internet-Draft will expire on 16 April 2027.
 
 Copyright Notice
 
@@ -5379,9 +5379,9 @@ Normative References
               Feng, A. H., Francois, P., Graf, T., and B. Claise,
               "Extensible YANG Model for YANG-Push Notifications", Work
               in Progress, Internet-Draft, draft-ietf-netconf-notif-
-              envelope-04, 6 February 2026,
+              envelope-06, 14 September 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              notif-envelope-04>.
+              notif-envelope-06>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -5488,24 +5488,24 @@ Informative References
               Zhou, T., Zheng, G., Voit, E., Graf, T., and P. Francois,
               "Subscription to Notifications in a Distributed
               Architecture", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-distributed-notif-18, 28 February 2026,
+              ietf-netconf-distributed-notif-23, 4 October 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              distributed-notif-18>.
+              distributed-notif-23>.
 
    [I-D.draft-ietf-netconf-https-notif]
               Jethanandani, M. and K. Watsen, "An HTTPS-based Transport
               for YANG Notifications", Work in Progress, Internet-Draft,
-              draft-ietf-netconf-https-notif-15, 1 February 2024,
+              draft-ietf-netconf-https-notif-16, 30 June 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              https-notif-15>.
+              https-notif-16>.
 
    [I-D.draft-ietf-netconf-udp-notif]
               Feng, A. H., Francois, P., Zhou, T., Graf, T., and P.
               Lucente, "UDP-based Transport for Configured
               Subscriptions", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-udp-notif-25, 28 January 2026,
+              ietf-netconf-udp-notif-26, 29 July 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              udp-notif-25>.
+              udp-notif-26>.
 
    [I-D.draft-ietf-netmod-rfc8407bis]
               Bierman, A., Boucadair, M., and Q. Wu, "Guidelines for
@@ -5527,25 +5527,25 @@ Informative References
               Zhou, T., Zheng, G., Voit, E., Graf, T., and P. Francois,
               "Subscription to Notifications in a Distributed
               Architecture", Work in Progress, Internet-Draft, draft-
-              ietf-netconf-distributed-notif-18, 28 February 2026,
+              ietf-netconf-distributed-notif-23, 4 October 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
-              distributed-notif-18>.
+              distributed-notif-23>.
 
    [I-D.ietf-nmop-network-anomaly-architecture]
               Graf, T., Du, W., Francois, P., and A. H. Feng, "A
               Framework for a Network Anomaly Detection Architecture",
               Work in Progress, Internet-Draft, draft-ietf-nmop-network-
-              anomaly-architecture-07, 18 January 2026,
+              anomaly-architecture-08, 6 July 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-nmop-
-              network-anomaly-architecture-07>.
+              network-anomaly-architecture-08>.
 
    [I-D.ietf-nmop-yang-message-broker-integration]
               Graf, T. and A. Elhassany, "An Architecture for YANG-Push
               to Message Broker Integration", Work in Progress,
               Internet-Draft, draft-ietf-nmop-yang-message-broker-
-              integration-11, 28 February 2026,
+              integration-13, 2 July 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-nmop-
-              yang-message-broker-integration-11>.
+              yang-message-broker-integration-13>.
 
    [I-D.tgraf-netconf-notif-sequencing]
               Graf, T., Quilbeuf, J., and A. H. Feng, "Support of
@@ -6638,7 +6638,7 @@ Authors' Addresses
 
 
    Holger Keller
-   Deuetsche Telekom
+   Deutsche Telekom
    Email: Holger.Keller@telekom.de
 
 
@@ -6648,8 +6648,8 @@ Authors' Addresses
 
 
    Ebben Aries
-   Juniper
-   Email: exa@juniper.net
+   HPE
+   Email: exa@hpe.com
 
 
    James Cumming
