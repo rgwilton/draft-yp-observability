@@ -84,9 +84,9 @@ object IetfIp:
   ) extends ModuleNamed:
     def moduleName: String = MODULE_NAME
 
-// ietf-yp-lite module data structures (simplified)
-object IetfYpLite:
-  val MODULE_NAME = "ietf-yp-lite"
+// ietf-yang-push-2 notification data structures (simplified)
+object IetfYangPush2:
+  val MODULE_NAME = "ietf-yang-push-2"
 
   case class UpdateEntry(
       targetPath: String,
@@ -100,27 +100,25 @@ object IetfYpLite:
     def moduleName: String = "ietf-interfaces"
 
   case class Update(
-      id: Int,
+      id: String,
       snapshotType: String,
       observationTime: String,
-      updates: Seq[UpdateEntry]
+      updates: Seq[UpdateEntry],
+      complete: Boolean
   ) extends ModuleNamed:
     def moduleName: String = MODULE_NAME
 
-// ietf-yp-notification envelope structure
-object IetfYpNotification:
-  val MODULE_NAME = "ietf-yp-notification"
-
   case class Contents(
-      update: IetfYpLite.Update
+      update: IetfYangPush2.Update
   ) extends ModuleNamed:
-    def moduleName: String = "ietf-yp-lite"
+    def moduleName: String = MODULE_NAME
 
   case class Envelope(
       eventTime: String,
       hostname: String,
       sequenceNumber: Long,
-      contents: Contents
+      contents: Contents,
+      publisherId: Long = 0L
   ) extends ModuleNamed:
     def moduleName: String = MODULE_NAME
 
@@ -179,6 +177,134 @@ object ModulePrefixedWriter:
 
 object Main:
   @main
+  def netconfReply(
+      @arg(short = 'm', doc = "NETCONF message ID")
+      messageId: String = "101",
+      @arg(short = 'i', doc = "Subscription ID")
+      subscriptionId: String = "dyn-52",
+      @arg(
+        short = 'o',
+        doc = "Output file path (prints to stdout if not specified)"
+      )
+      output: String = "",
+      @arg(
+        short = 'l',
+        doc = "Maximum line length for formatting (default: 80)"
+      )
+      maxLineLength: Int = 80,
+      @arg(doc = "Compact output (no pretty printing)")
+      compact: Flag = Flag()
+  ): Unit =
+    val xml = NetconfReq.establishSubscriptionReply(
+      messageId = messageId,
+      subscriptionId = subscriptionId
+    )
+
+    // Validate the XML
+    try
+      NetconfReq.validateReply(xml)
+
+      // Write to file or stdout
+      if output.nonEmpty then
+        NetconfReq.writeToFile(
+          xml,
+          output,
+          pretty = !compact.value,
+          maxLineLength = maxLineLength
+        )
+        println(s"Successfully wrote NETCONF RPC reply to: $output")
+      else
+        val formattedOutput = NetconfReq.format(
+          xml,
+          pretty = !compact.value,
+          maxLineLength = maxLineLength
+        )
+        println(formattedOutput)
+    catch
+      case e: IllegalArgumentException =>
+        System.err.println(s"Validation failed: ${e.getMessage}")
+        System.exit(1)
+      case e: RuntimeException =>
+        System.err.println(s"Error: ${e.getMessage}")
+        System.exit(1)
+
+  @main
+  def netconfExample(
+      @arg(short = 'm', doc = "NETCONF message ID")
+      messageId: String = "101",
+      @arg(short = 'n', doc = "Subscription name")
+      name: String = "interfaces-subscription",
+      @arg(short = 'd', doc = "Subscription description")
+      description: String = "Periodic subscription to interface data",
+      @arg(short = 's', doc = "Datastore to subscribe to")
+      datastore: String = "operational",
+      @arg(short = 'f', doc = "YPath filter expression")
+      path: String = "/ietf-interfaces:interfaces",
+      @arg(
+        short = 'p',
+        doc = "Update period in centiseconds (default: 3000 = 30 seconds)"
+      )
+      period: Int = 3000,
+      @arg(short = 'e', doc = "Encoding format")
+      encoding: String = "xml",
+      @arg(short = 't', doc = "Anchor time (ISO 8601 format)")
+      anchorTime: String = "",
+      @arg(
+        short = 'o',
+        doc = "Output file path (prints to stdout if not specified)"
+      )
+      output: String = "",
+      @arg(
+        short = 'l',
+        doc = "Maximum line length for formatting (default: 80)"
+      )
+      maxLineLength: Int = 80,
+      @arg(doc = "Compact output (no pretty printing)")
+      compact: Flag = Flag()
+  ): Unit =
+    val anchorTimeOpt = if anchorTime.isEmpty then None else Some(anchorTime)
+    val descriptionOpt = if description.isEmpty then None else Some(description)
+
+    val xml = NetconfReq.establishSubscription(
+      messageId = messageId,
+      subscriptionName = name,
+      description = descriptionOpt,
+      datastore = datastore,
+      path = path,
+      periodCentiseconds = period,
+      encoding = encoding,
+      anchorTime = anchorTimeOpt
+    )
+
+    // Validate the XML
+    try
+      NetconfReq.validate(xml)
+
+      // Write to file or stdout
+      if output.nonEmpty then
+        NetconfReq.writeToFile(
+          xml,
+          output,
+          pretty = !compact.value,
+          maxLineLength = maxLineLength
+        )
+        println(s"Successfully wrote NETCONF subscription to: $output")
+      else
+        val formattedOutput = NetconfReq.format(
+          xml,
+          pretty = !compact.value,
+          maxLineLength = maxLineLength
+        )
+        println(formattedOutput)
+    catch
+      case e: IllegalArgumentException =>
+        System.err.println(s"Validation failed: ${e.getMessage}")
+        System.exit(1)
+      case e: RuntimeException =>
+        System.err.println(s"Error: ${e.getMessage}")
+        System.exit(1)
+
+  @main
   def generate(
       @arg(short = 'i', doc = "Number of interfaces to generate")
       interfaces: Int = 4,
@@ -188,59 +314,87 @@ object Main:
         short = 'n',
         doc = "Disable RFC 7951 namespace filtering (keep all module prefixes)"
       )
-      noFilter: Flag = Flag()
+      noFilter: Flag = Flag(),
+      @arg(short = 'e', doc = "Exclude envelope header (return contents only)")
+      noEnvelope: Flag = Flag(),
+      @arg(short = 's', doc = "Split interface list across N messages")
+      splits: Int = 1,
+      @arg(doc = "Split by data provider (statistics, ip, interface)")
+      splitProvider: Flag = Flag(),
+      @arg(doc = "Publisher process ID (0 is the parent)")
+      publisherId: Long = 0L,
+      @arg(short = 'o', doc = "Write sample JSON to this file")
+      output: String = ""
   ): Unit =
-    // Generate sample data
-    val data = SampleDataGenerator.generateNotification(interfaces)
-    val jsonObj = toJsonObject(data)
-
-    // Apply RFC 7951 filtering by default (unless disabled with -n flag)
-    val filteredJson =
+    require(interfaces > 0, "The interface count must be positive")
+    require(splits > 0, "The split count must be positive")
+    require(publisherId >= 0 && publisherId <= 4294967295L,
+      "The publisher ID must fit uint32")
+    val notifications = SampleDataGenerator.generateNotifications(
+      numInterfaces = interfaces,
+      listSplits = splits,
+      providerSplit = splitProvider.value,
+      publisherId = publisherId
+    )
+    val messages = notifications.map { data =>
+      val jsonObj =
+        if noEnvelope.value then contentsToJson(data.envelope.contents)
+        else toJsonObject(data)
       if noFilter.value then jsonObj
       else Rfc7951Filter.filterNamespaces(jsonObj)
-
-    val json =
-      if pretty.value then ujson.write(filteredJson, indent = 2)
-      else ujson.write(filteredJson)
-    println(json)
+    }
+    // Arrays collect multiple sample messages; each element is a notification.
+    val sample: ujson.Value =
+      if messages.size == 1 then messages.head else ujson.Arr(messages*)
+    val json = ujson.write(sample, indent = if pretty.value then 2 else -1)
+    if output.nonEmpty then
+      java.nio.file.Files.writeString(java.nio.file.Paths.get(output), json + "\n")
+    else println(json)
 
   // Convert to ujson object structure
-  def toJsonObject(root: IetfYpNotification.Root): ujson.Obj =
+  def toJsonObject(root: IetfYangPush2.Root): ujson.Obj =
     ujson.Obj(
-      s"${IetfYpNotification.MODULE_NAME}:envelope" -> envelopeToJson(
+      s"${IetfYangPush2.MODULE_NAME}:envelope" -> envelopeToJson(
         root.envelope
       )
     )
 
-  def envelopeToJson(env: IetfYpNotification.Envelope): ujson.Obj =
-    ujson.Obj(
+  def envelopeToJson(env: IetfYangPush2.Envelope): ujson.Obj =
+    val envelope = ujson.Obj(
       "event-time" -> env.eventTime,
-      "hostname" -> env.hostname,
-      "sequence-number" -> env.sequenceNumber,
-      "contents" -> contentsToJson(env.contents)
+      "hostname" -> env.hostname
     )
+    if env.publisherId != 0 then
+      envelope("publisher-id") = ujson.Num(env.publisherId.toDouble)
+    envelope("sequence-number") = ujson.Num(env.sequenceNumber.toDouble)
+    envelope("contents") = contentsToJson(env.contents)
+    envelope
 
-  def contentsToJson(contents: IetfYpNotification.Contents): ujson.Obj =
+  def contentsToJson(contents: IetfYangPush2.Contents): ujson.Obj =
     ujson.Obj(
-      s"${IetfYpLite.MODULE_NAME}:update" -> updateToJson(contents.update)
+      s"${IetfYangPush2.MODULE_NAME}:update" -> updateToJson(contents.update)
     )
 
-  def updateToJson(update: IetfYpLite.Update): ujson.Obj =
+  def updateToJson(update: IetfYangPush2.Update): ujson.Obj =
     ujson.Obj(
       "id" -> update.id,
       "snapshot-type" -> update.snapshotType,
       "observation-time" -> update.observationTime,
-      "updates" -> ujson.Arr(update.updates.map(updateEntryToJson)*)
+      "updates" -> ujson.Arr(update.updates.map(updateEntryToJson)*),
+      "complete" -> update.complete
     )
 
-  def updateEntryToJson(entry: IetfYpLite.UpdateEntry): ujson.Obj =
+  def updateEntryToJson(entry: IetfYangPush2.UpdateEntry): ujson.Obj =
+    val interfaces = entry.data.interfaces
+    val payload =
+      if entry.targetPath.endsWith("/statistics") then
+        statisticsToJson(interfaces.interface.head.statistics)
+      else if entry.targetPath.contains("[name=") then
+        interfaceToJson(interfaces.interface.head)
+      else interfacesToJson(interfaces)
     ujson.Obj(
       "target-path" -> entry.targetPath,
-      "data" -> ujson.Obj(
-        s"${IetfInterfaces.MODULE_NAME}:interfaces" -> interfacesToJson(
-          entry.data.interfaces
-        )
-      )
+      "update" -> payload
     )
 
   def interfacesToJson(interfaces: IetfInterfaces.Interfaces): ujson.Obj =
@@ -251,21 +405,49 @@ object Main:
     )
 
   def interfaceToJson(iface: IetfInterfaces.Interface): ujson.Obj =
-    val baseFields = ujson.Obj(
-      "name" -> iface.name,
-      "description" -> iface.description,
-      "type" -> iface.`type`,
-      "enabled" -> iface.enabled,
-      s"${IetfInterfaces.MODULE_NAME}:admin-status" -> iface.adminStatus,
-      s"${IetfInterfaces.MODULE_NAME}:oper-status" -> iface.operStatus,
-      s"${IetfInterfaces.MODULE_NAME}:last-change" -> iface.lastChange,
-      s"${IetfInterfaces.MODULE_NAME}:if-index" -> iface.ifIndex,
-      s"${IetfInterfaces.MODULE_NAME}:phys-address" -> iface.physAddress,
-      s"${IetfInterfaces.MODULE_NAME}:speed" -> iface.speed,
-      s"${IetfInterfaces.MODULE_NAME}:statistics" -> statisticsToJson(
-        iface.statistics
-      )
-    )
+    val baseFields = ujson.Obj("name" -> iface.name)
+
+    // Check if this is a partial interface (for provider split)
+    // If only name + one section (statistics or IP), only include name and that section
+    val hasOnlyStatistics = iface.statistics != null &&
+      iface.description == null &&
+      iface.`type` == null &&
+      iface.ipv4 == null &&
+      iface.ipv6 == null
+
+    val hasOnlyIP = (iface.ipv4 != null || iface.ipv6 != null) &&
+      iface.description == null &&
+      iface.`type` == null &&
+      iface.statistics == null
+
+    // Add non-null fields only if this is not a partial interface
+    if iface.description != null then
+      baseFields("description") = iface.description
+    if iface.`type` != null then baseFields("type") = iface.`type`
+
+    // Only add enabled if we have other interface data (not just statistics or IP)
+    if !hasOnlyStatistics && !hasOnlyIP then
+      baseFields("enabled") = iface.enabled
+
+    if iface.adminStatus != null then
+      baseFields(s"${IetfInterfaces.MODULE_NAME}:admin-status") =
+        iface.adminStatus
+    if iface.operStatus != null then
+      baseFields(s"${IetfInterfaces.MODULE_NAME}:oper-status") =
+        iface.operStatus
+    if iface.lastChange != null then
+      baseFields(s"${IetfInterfaces.MODULE_NAME}:last-change") =
+        iface.lastChange
+    if iface.ifIndex != 0 then
+      baseFields(s"${IetfInterfaces.MODULE_NAME}:if-index") = iface.ifIndex
+    if iface.physAddress != null then
+      baseFields(s"${IetfInterfaces.MODULE_NAME}:phys-address") =
+        iface.physAddress
+    if iface.speed != 0 then
+      baseFields(s"${IetfInterfaces.MODULE_NAME}:speed") = iface.speed
+    if iface.statistics != null then
+      baseFields(s"${IetfInterfaces.MODULE_NAME}:statistics") =
+        statisticsToJson(iface.statistics)
 
     // Add IPv4 if present
     if iface.ipv4 != null then
@@ -284,24 +466,26 @@ object Main:
       "in-unicast-pkts" -> stats.inUnicastPkts,
       "in-broadcast-pkts" -> stats.inBroadcastPkts,
       "in-multicast-pkts" -> stats.inMulticastPkts,
-      "in-discards" -> stats.inDiscards,
-      "in-errors" -> stats.inErrors,
-      "in-unknown-protos" -> stats.inUnknownProtos,
+      "in-discards" -> ujson.Num(stats.inDiscards.toDouble),
+      "in-errors" -> ujson.Num(stats.inErrors.toDouble),
+      "in-unknown-protos" -> ujson.Num(stats.inUnknownProtos.toDouble),
       "out-octets" -> stats.outOctets,
       "out-unicast-pkts" -> stats.outUnicastPkts,
       "out-broadcast-pkts" -> stats.outBroadcastPkts,
       "out-multicast-pkts" -> stats.outMulticastPkts,
-      "out-discards" -> stats.outDiscards,
-      "out-errors" -> stats.outErrors
+      "out-discards" -> ujson.Num(stats.outDiscards.toDouble),
+      "out-errors" -> ujson.Num(stats.outErrors.toDouble)
     )
 
   def ipv4ToJson(ipv4: IetfIp.IPv4): ujson.Obj =
-    ujson.Obj(
+    val data = ujson.Obj(
       "enabled" -> ipv4.enabled,
       "forwarding" -> ipv4.forwarding,
-      "mtu" -> ipv4.mtu,
-      "address" -> ujson.Arr(ipv4.address.map(ipv4AddressToJson)*)
+      "mtu" -> ipv4.mtu
     )
+    if ipv4.address.nonEmpty then
+      data("address") = ujson.Arr(ipv4.address.map(ipv4AddressToJson)*)
+    data
 
   def ipv4AddressToJson(addr: IetfIp.IPv4Address): ujson.Obj =
     ujson.Obj(
@@ -310,12 +494,14 @@ object Main:
     )
 
   def ipv6ToJson(ipv6: IetfIp.IPv6): ujson.Obj =
-    ujson.Obj(
+    val data = ujson.Obj(
       "enabled" -> ipv6.enabled,
       "forwarding" -> ipv6.forwarding,
-      "mtu" -> ipv6.mtu,
-      "address" -> ujson.Arr(ipv6.address.map(ipv6AddressToJson)*)
+      "mtu" -> ipv6.mtu
     )
+    if ipv6.address.nonEmpty then
+      data("address") = ujson.Arr(ipv6.address.map(ipv6AddressToJson)*)
+    data
 
   def ipv6AddressToJson(addr: IetfIp.IPv6Address): ujson.Obj =
     ujson.Obj(
@@ -331,34 +517,149 @@ object SampleDataGenerator:
   import java.time.Instant
   import java.time.format.DateTimeFormatter
 
-  def generateNotification(numInterfaces: Int): IetfYpNotification.Root =
+  def generateNotifications(
+      numInterfaces: Int,
+      listSplits: Int = 1,
+      providerSplit: Boolean = false,
+      publisherId: Long = 0L
+  ): Seq[IetfYangPush2.Root] =
     val now = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
     val interfaces = generateInterfaces(numInterfaces)
 
-    IetfYpNotification.Root(
-      envelope = IetfYpNotification.Envelope(
-        eventTime = now,
-        hostname = "example-router",
-        sequenceNumber = 3219L,
-        contents = IetfYpNotification.Contents(
-          update = IetfYpLite.Update(
-            id = 1011,
-            snapshotType = "periodic",
-            observationTime = now,
-            updates = Seq(
-              IetfYpLite.UpdateEntry(
-                targetPath = "ietf-interfaces:interfaces/interface",
-                data = IetfYpLite.InterfacesData(
-                  interfaces = IetfInterfaces.Interfaces(
-                    interface = interfaces
-                  )
+    val updateEntries =
+      if providerSplit then
+        // Split by data provider (statistics, IP, other interface data)
+        generateProviderSplitEntries(interfaces)
+      else if listSplits > 1 then
+        // Split interface list across multiple messages
+        generateListSplitEntries(interfaces, listSplits)
+      else
+        // Single message with all interfaces
+        Seq(
+          IetfYangPush2.UpdateEntry(
+            targetPath = "/ietf-interfaces:interfaces/interface",
+            data = IetfYangPush2.InterfacesData(
+              interfaces = IetfInterfaces.Interfaces(interface = interfaces)
+            )
+          )
+        )
+
+    updateEntries.zipWithIndex.map { (entry, index) =>
+      IetfYangPush2.Root(
+        envelope = IetfYangPush2.Envelope(
+          eventTime = now,
+          hostname = "example-router",
+          sequenceNumber = 3219L + index,
+          publisherId = publisherId,
+          contents = IetfYangPush2.Contents(
+            update = IetfYangPush2.Update(
+              id = "interfaces",
+              snapshotType = "periodic",
+              observationTime = now,
+              updates = Seq(entry),
+              complete = index == updateEntries.size - 1
+            )
+          )
+        )
+      )
+    }
+
+  // Split interface list across N messages
+  def generateListSplitEntries(
+      interfaces: Seq[IetfInterfaces.Interface],
+      splits: Int
+  ): Seq[IetfYangPush2.UpdateEntry] =
+    val interfacesPerSplit =
+      Math.ceil(interfaces.length.toDouble / splits).toInt
+    interfaces
+      .grouped(interfacesPerSplit)
+      .map { group =>
+        IetfYangPush2.UpdateEntry(
+          targetPath = "/ietf-interfaces:interfaces/interface",
+          data = IetfYangPush2.InterfacesData(
+            interfaces = IetfInterfaces.Interfaces(interface = group.toSeq)
+          )
+        )
+      }
+      .toSeq
+
+  // Split by data provider (statistics, IP info, other interface data)
+  def generateProviderSplitEntries(
+      interfaces: Seq[IetfInterfaces.Interface]
+  ): Seq[IetfYangPush2.UpdateEntry] =
+    // For each interface, create 3 separate update entries
+    interfaces.flatMap { iface =>
+      Seq(
+        // 1. Interface data without statistics or IP
+        IetfYangPush2.UpdateEntry(
+          targetPath =
+            s"/ietf-interfaces:interfaces/interface[name='${iface.name}']",
+          data = IetfYangPush2.InterfacesData(
+            interfaces = IetfInterfaces.Interfaces(
+              interface = Seq(
+                iface.copy(
+                  statistics = null,
+                  ipv4 = null,
+                  ipv6 = null
+                )
+              )
+            )
+          )
+        ),
+        // 2. Statistics data
+        IetfYangPush2.UpdateEntry(
+          targetPath =
+            s"/ietf-interfaces:interfaces/interface[name='${iface.name}']/statistics",
+          data = IetfYangPush2.InterfacesData(
+            interfaces = IetfInterfaces.Interfaces(
+              interface = Seq(
+                IetfInterfaces.Interface(
+                  name = iface.name,
+                  description = null,
+                  `type` = null,
+                  enabled = false,
+                  adminStatus = null,
+                  operStatus = null,
+                  lastChange = null,
+                  ifIndex = 0,
+                  physAddress = null,
+                  speed = 0,
+                  statistics = iface.statistics,
+                  ipv4 = null,
+                  ipv6 = null
+                )
+              )
+            )
+          )
+        ),
+        // 3. IP data
+        IetfYangPush2.UpdateEntry(
+          targetPath =
+            s"/ietf-interfaces:interfaces/interface[name='${iface.name}']",
+          data = IetfYangPush2.InterfacesData(
+            interfaces = IetfInterfaces.Interfaces(
+              interface = Seq(
+                IetfInterfaces.Interface(
+                  name = iface.name,
+                  description = null,
+                  `type` = null,
+                  enabled = false,
+                  adminStatus = null,
+                  operStatus = null,
+                  lastChange = null,
+                  ifIndex = 0,
+                  physAddress = null,
+                  speed = 0,
+                  statistics = null,
+                  ipv4 = iface.ipv4,
+                  ipv6 = iface.ipv6
                 )
               )
             )
           )
         )
       )
-    )
+    }
 
   def generateInterfaces(count: Int): Seq[IetfInterfaces.Interface] =
     (0 until count).map: i =>

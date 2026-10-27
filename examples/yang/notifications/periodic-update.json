@@ -7,7 +7,7 @@
     "updates": [
       {
         "target-path": "",
-        "merge": {
+        "update": {
           "interface": [
             {
               "name": "eth0",

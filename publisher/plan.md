@@ -1,10 +1,10 @@
 # AIMS
 
-The purpose of this tool is to be able to generate sample JSON output that conforms to the YANG Push Lite specification.
+The purpose of this tool is to be able to generate sample JSON output that conforms to the YANG Push v2 specification.
 
-In particular it should conform the JSON encoding for YANG , RFC 7951, and make use of the new envelope header defined in https://datatracker.ietf.org/doc/html/draft-ietf-netconf-notif-envelope-03.
+In particular it should conform the JSON encoding for YANG , RFC 7951, and make use of the envelope defined in `yang/ietf-yang-push-2.yang`.
 
-For sample schema for the data that is returned we make use of the YANG data models for ietf-interfaces.yang and ietf-ip.yang that are defined in RFC 8343, and RFC 8342.
+For sample schema for the data that is returned we make use of the YANG data models for ietf-interfaces.yang and ietf-ip.yang that are defined in RFC 8343, and RFC 8344.
 
 # Design Considerations (phase 1)
 
@@ -51,5 +51,5 @@ For larger messages, it is more efficient to split the message up in various way
   - a publisher responsible for returning the interface statistics
   - a publisher responsible for returning the IP information
   - a publisher responsible for returning the rest of the interface information.
-In all cases, the data must be encoded from the root of the tree, and also include any list keys, otherwise the data is just returned from the given publisher.
+Payloads use the v2 updates/update operation at the specified target path and include required list keys. Split output consists of separate enveloped notifications with a shared collection event time and increasing sequence numbers.
 

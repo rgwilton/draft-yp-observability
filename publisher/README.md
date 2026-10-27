@@ -1,137 +1,102 @@
-# YANG Push Lite Publisher
+# YANG Push v2 Publisher
 
-A Scala-based tool to generate sample JSON output conforming to the YANG Push Lite specification.
-
-## Features
-
-- Generates JSON compliant with RFC 7951 (JSON encoding for YANG)
-- Uses the notification envelope from draft-ietf-netconf-notif-envelope-03
-- Models data based on ietf-interfaces (RFC 8343) and ietf-ip (RFC 8342)
-- Implements RFC 7951 namespace filtering by default (redundant module prefixes are removed)
-- Configurable number of sample Ethernet interfaces
-- Pretty-print option for human-readable output
+A Scala tool that generates sample YANG Push v2 JSON notifications using the
+`envelope` structure defined in `yang/ietf-yang-push-2.yang`.
 
 ## Usage
 
-### Build and Run
-
-Using Mill build tool:
+Run from the repository root:
 
 ```bash
-# Compile
-./mill publisher.compile
-
-# Run with default settings (4 interfaces, RFC 7951 filtering applied)
-./mill publisher.run
-
-# Run with options
-./mill publisher.run -i 2 -p
+./mill --no-server publisher.compile
+./mill --no-server publisher.run generate -i 2 -p
 ```
 
-### Command Line Options
+The default output is one notification with an `ietf-yang-push-2:envelope`
+wrapper, `event-time`, `hostname`, `sequence-number`, and `contents`.
+Subscription IDs are strings. The payload uses the v2 `updates/update`
+field and reports collection completion with `complete`.
 
-- `-i, --interfaces <int>` - Number of interfaces to generate (default: 4)
-- `-p, --pretty` - Pretty print output with indentation
-- `-n, --no-filter` - Disable RFC 7951 namespace filtering (keep all module prefixes)
+## Options
 
-### Examples
+- `-i, --interfaces <int>`: number of interfaces (default: 4).
+- `-p, --pretty`: indent the sample JSON.
+- `-n, --no-filter`: retain redundant module prefixes for debugging.
+- `-e, --no-envelope`: output notification payloads for inspection or validation.
+  These are fragments, not complete notifications for transmission.
+- `-s, --splits <int>`: split the interface list across separate notifications.
+- `--split-provider`: split interface, statistics, and IP data into separate
+  notifications.
+- `--publisher-id <uint32>`: publisher process ID (default: 0). The header omits
+  the default ID and includes nonzero IDs.
+- `-o, --output <path>`: write JSON directly to a file, without build output.
 
-Generate 4 interfaces with RFC 7951 filtering (default):
+Splitting produces a JSON array of sample notifications. The array is a file
+format for collecting examples, not an additional protocol wrapper. Each
+array element has its own envelope and increasing sequence number. Messages
+from the same collection share an event time; only the last sets `complete`
+to true. Each message has one update entry, avoiding duplicate target paths
+within a notification.
+
 ```bash
-./mill publisher.run -p
+./mill --no-server publisher.run generate -i 4 -s 2 -p
+./mill --no-server publisher.run generate -i 2 --split-provider --publisher-id 4 -p
+./mill --no-server publisher.run generate -i 2 -e -p
+./mill --no-server publisher.run generate -i 4 -p -o publisher/sample-output.json
 ```
 
-Generate 2 interfaces without filtering (shows all module prefixes):
-```bash
-./mill publisher.run -i 2 -p -n
-```
+## Envelope and namespaces
 
-Generate output for piping to a file:
-```bash
-./mill publisher.run -i 4 > output.json
-```
+RFC 7951 namespace filtering is applied by default. The top-level name is
+`ietf-yang-push-2:envelope`. Because the envelope and notification are now in
+the same module, the nested notification name is `update`. When `-e` omits
+the envelope, the top-level notification name is `ietf-yang-push-2:update`.
+Nodes from other modules retain their module names where required.
 
-## Sample Data
+For example, a complete notification can contain:
 
-The tool generates:
-- **4 Ethernet interfaces** (Eth0-Eth3) by default
-- **3 interfaces "up"** with traffic flowing (non-zero counters)
-- **1 interface "admin-down"** with zero counters (Eth3)
-- **IPv4 addresses** from RFC 5737 TEST-NET-1 range (192.0.2.0/24)
-- **IPv6 addresses** from RFC 3849 documentation range (2001:db8::/32)
-
-## RFC 7951 Namespace Filtering
-
-By default, the tool applies RFC 7951 rules for namespace filtering:
-
-- Top-level elements always include module prefix (e.g., `ietf-yp-notification:envelope`)
-- Child elements omit the prefix if they belong to the same module as parent
-- Child elements include the prefix if they belong to a different module (e.g., `ietf-ip:ipv4` under an `ietf-interfaces:interface`)
-
-### Example with filtering (default):
 ```json
 {
-  "ietf-yp-notification:envelope": {
+  "ietf-yang-push-2:envelope": {
     "event-time": "2025-10-21T10:00:00Z",
+    "hostname": "example-router",
+    "sequence-number": 3219,
     "contents": {
-      "ietf-yp-lite:update": {
+      "update": {
+        "id": "interfaces",
+        "snapshot-type": "periodic",
+        "observation-time": "2025-10-21T10:00:00Z",
         "updates": [{
-          "data": {
-            "ietf-interfaces:interfaces": {
-              "interface": [{
-                "name": "Eth0",
-                "admin-status": "up",
-                "ietf-ip:ipv4": {
-                  "enabled": true
-                }
-              }]
-            }
-          }
-        }]
+          "target-path": "/ietf-interfaces:interfaces/interface[name='Eth0']",
+          "update": {"name": "Eth0", "enabled": true}
+        }],
+        "complete": true
       }
     }
   }
 }
 ```
 
-### Example without filtering (`-n` flag):
-```json
-{
-  "ietf-yp-notification:envelope": {
-    "event-time": "2025-10-21T10:00:00Z",
-    "contents": {
-      "ietf-yp-lite:update": {
-        "updates": [{
-          "data": {
-            "ietf-interfaces:interfaces": {
-              "ietf-interfaces:interface": [{
-                "name": "Eth0",
-                "ietf-interfaces:admin-status": "up",
-                "ietf-ip:ipv4": {
-                  "enabled": true
-                }
-              }]
-            }
-          }
-        }]
-      }
-    }
-  }
-}
+## NETCONF examples
+
+The RPC helpers use the `ietf-yang-push-2` namespace and string subscription
+IDs. NETCONF examples request XML encoding.
+
+```bash
+./mill --no-server publisher.run netconfExample -o /tmp/establish-subscription.xml
+./mill --no-server publisher.run netconfReply -i dyn-52 -o /tmp/subscription-reply.xml
 ```
 
-## Implementation Details
+## Models and sample data
 
-- Written in Scala 3 with indentation-based syntax
-- Uses uPickle for JSON serialization
-- Case classes model YANG containers and lists
-- Augmentations from ietf-ip are included as fields in interface case classes
-- Custom JSON building to support module-prefixed keys
+The canonical notification model is `yang/ietf-yang-push-2.yang`; the publisher
+does not bundle a separate envelope module. Supporting interface and IP
+models are in `publisher/resources/`:
 
-## YANG Modules
+- `ietf-interfaces@2018-02-20.yang` (RFC 8343).
+- `ietf-ip@2018-02-22.yang` (RFC 8344).
+- `ietf-inet-types` and `ietf-yang-types`.
 
-The tool models the following YANG modules (located in `publisher/resources/`):
-- `ietf-interfaces@2018-02-20.yang` (RFC 8343)
-- `ietf-ip@2018-02-22.yang` (RFC 8342)
-- `ietf-yp-notification@2025-01-27.yang`
-- Supporting modules: ietf-inet-types, ietf-yang-types
+Sample interfaces are named Eth0 through Eth3 by default and use documentation
+IPv4 and IPv6 addresses. Partial interface, statistics, and IP records can be
+produced with `--split-provider`.

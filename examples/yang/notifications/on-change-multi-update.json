@@ -7,7 +7,7 @@
     "updates": [
       {
         "target-path": "interface[name='eth0']",
-        "replaced-by": {
+        "update": {
           "name": "eth0",
           "type": "iana-if-type:ethernetCsmacd",
           "enabled": false,
@@ -16,7 +16,7 @@
       },
       {
         "target-path": "interface[name='eth1']",
-        "replaced-by": {
+        "update": {
           "name": "eth1",
           "type": "iana-if-type:ethernetCsmacd",
           "enabled": false,

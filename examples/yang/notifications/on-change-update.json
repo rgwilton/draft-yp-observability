@@ -6,7 +6,7 @@
     "updates": [
       {
         "target-path": "ietf-interfaces:interfaces/interface[name='eth0']",
-        "merge": {
+        "update": {
           "name": "eth0",
           "type": "iana-if-type:ethernetCsmacd",
           "enabled": false,

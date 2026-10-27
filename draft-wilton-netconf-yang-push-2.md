@@ -52,7 +52,6 @@ author:
     email: Thomas.Graf@swisscom.com
 
 normative:
-  I-D.draft-ietf-netconf-notif-envelope:
   RFC2474:
   RFC6241:
   RFC6991:
@@ -72,6 +71,7 @@ normative:
   BCP14: RFC2119 RFC8174
 
 informative:
+  I-D.draft-ietf-netconf-notif-envelope:
   RFC3411:
   RFC3688:
   RFC4252:
@@ -95,6 +95,7 @@ informative:
   I-D.draft-netana-netconf-yp-transport-capabilities:
   I-D.draft-ietf-netconf-https-notif:
   I-D.draft-ietf-netconf-distributed-notif:
+  I-D.draft-yn-netmod-yang-xml-03:
   Kafka:
     target: https://kafka.apache.org/
     title: Apache Kafka
@@ -116,6 +117,12 @@ informative:
   XPATH:
     target: https://www.w3.org/TR/1999/REC-xpath-19991116/
     title: XML Path Language (XPath) Version 1.0
+    author:
+      - name: W3C
+    date: false
+  W3C.REC-xml-20001006:
+    target: https://www.w3.org/TR/2000/REC-xml-20001006
+    title: Extensible Markup Language (XML) 1.0 (Second Edition)
     author:
       - name: W3C
     date: false
@@ -225,7 +232,7 @@ A more complete description of the main differences in YANG Push v2 compares to 
 
 ### {{I-D.draft-ietf-netconf-notif-envelope}} and RFC 5277
 
-All of the notifications defined in this specification, i.e., both the datastore update message and subscription lifecycle update notifications ({{LifecycleNotifications}}) depend upon and use the notification envelope format defined in {{I-D.draft-ietf-netconf-notif-envelope}}.
+All of the notifications defined in this specification, i.e., both the datastore update message and subscription lifecycle update notifications ({{LifecycleNotifications}}), use the notification envelope defined in {{NotificationEnvelope}} and the `ietf-yang-push-2` YANG module ({{yang-push-2-yang-module}}).  This envelope is derived from the work in {{I-D.draft-ietf-netconf-notif-envelope}}, but is defined independently in this document.
 
 As such, this specification does not make any use of the notification format defined in {{RFC5277}}, but this does not prevent implementations using {{RFC5277}} format notifications for other YANG notifications, e.g., for the "NETCONF" event stream defined in {{RFC5277}}.
 
@@ -261,7 +268,7 @@ A YANG Push v2 subscription comprises:
 
 - a choice of how update event notifications for the datastore's data nodes are triggered.  I.e., either periodic sampling of the current state, on-change event-driven, or both.  These are described in {{UpdateTriggers}}.
 
-- a choice of encoding of the messages, e.g., JSON, or CBOR.
+- a choice of encoding for notification messages, including both the envelope and its contents, e.g., JSON or CBOR ({{Encodings}}).
 
 - a receiver to which datastore updates and subscription notifications are sent, as described in {{receivers}};
   - for configured subscriptions, the receivers parameters are configured, and specify transport, receiver, and encoding parameters.
@@ -428,9 +435,7 @@ In particular:
 
 To ensure that clients can reasonably process data returned via decomposed filters then:
 
-1. *update* notifications MUST indicate the precise subtree of data that the update message is updating or replacing, i.e., so a receiver can infer that data nodes no longer being notified by the publisher have been deleted:
-
-   - if we support splitting list entries in multiple updates, then something like a *more_data* flag is needed to indicate that the given update message is not complete.
+1. *update* notifications MUST identify the target paths of the supplied data.  When a periodic or resync collection is split across messages, receivers MUST wait for *complete* or *update-complete* before inferring deletions from the absence of subscribed data in that collection.
 
 # Datastore Event Streams {#events}
 
@@ -446,22 +451,48 @@ Event records SHALL be sent to a receiver in the order in which they were genera
 
 Event records MUST NOT be sent before a *subscription-started* notification ({{SubscriptionStartedNotification}}) or after a *subscription-terminated* notification ({{SubscriptionTerminatedNotification}}).
 
-## Notification Envelope {#FullNotificationExample}
+## Notification Envelope {#NotificationEnvelope}
 
-All notifications in the event stream MUST be encoded using {{I-D.draft-ietf-netconf-notif-envelope}} to wrap the notification message, and MUST include the *event-time*, *hostname*, and *sequence-number* leafs in all messages.  The *publisher-id* MAY be excluded in it matches the default value (0), otherwise it MUST be included.
+All YANG Push v2 notification messages MUST use the *envelope* structure defined in the `ietf-yang-push-2` YANG module ({{yang-push-2-yang-module}}).  This applies to *update*, *update-complete*, and all subscription lifecycle notifications ({{LifecycleNotifications}}).  All messages MUST include the *event-time*, *hostname*, *sequence-number*, and *contents* nodes.  The *publisher-id* MAY be excluded if it matches the default value (0), otherwise it MUST be included.
 
-The following example illustrates a fully encoded *update* notification that includes the notification envelope and additional meta-data fields.  The *update* notification, i.e., as defined via the *notification* statement in the yang-push-lite YANG module, is carried in the *contents* anydata data node.
+~~~~ yangtree
+{::include generated-tree-output/envelope.txt}
+~~~~
+{: align="left" title="YANG Push v2 notification envelope"}
 
-The *event-time* field is used to correlate separate *update* messages that collectively represent individual parts of the same update (e.g., where the source data is being obtained from multiple producers).
+Publishers SHOULD encode the envelope fields in the order in which they are defined in the `ietf-yang-push-2` YANG module, placing all envelope header fields, including the *extensions* container and its fields, before *contents*.  However, some encodings, such as JSON {{RFC7951}}, do not guarantee field ordering.  For example, reprocessing JSON within a telemetry data pipeline may reorder the fields.  Receivers SHOULD NOT rely on the order of envelope fields unless they can be confident that the ordering has not changed since publication.
+
+The normative field definitions are given in the YANG module.  The fields can be summarized as:
+
+- *event-time* - the time the telemetry infrastructure began processing the collection, on-change event, or subscription lifecycle event.
+- *hostname* - the hostname identifying the network node that published the notification.
+- *publisher-id* - identifies the publishing process within the network node.  The default is 0, which identifies the Publisher Parent ({{distributed-notifications}}).
+- *sequence-number* - a counter maintained independently for each *publisher-id* within a subscription for its lifetime.  It starts at 1, increments by 1 for each notification from that publisher for that subscription, and wraps from 4294967295 to 0 and continues.
+- *extensions* - a container reserved for future envelope metadata extensions.
+- *contents* - the notification carried by the envelope.
+
+The *contents* anydata node MUST contain exactly one notification, identified by the name of its YANG *notification* statement and the namespace of the module defining that statement.  The notification's data node values are carried unchanged.
+
+Sequence numbers are tracked separately for each combination of *hostname*, subscription *id*, and *publisher-id* (including the default publisher ID of 0).  The counter covers all notification types sent by that publisher for that subscription, including lifecycle and *update-complete* notifications.  It continues across collections and subscription modifications without resetting.  A publisher that first joins an existing subscription starts its own counter at 1; counters previously used for a *publisher-id* are retained for the subscription's lifetime.  Terminating and recreating a subscription starts a new lifetime and new counters, even if the subscription ID is reused.
+
+For periodic and resynchronization collections, *event-time* records when the telemetry infrastructure starts processing the collection.  For an on-change event, it records when the telemetry infrastructure starts processing the notification of that change.  All notification messages belonging to the same collection or on-change event MUST carry the same *event-time*, including messages from different publishing processes and any associated *update-complete* notification.  For a subscription lifecycle notification, *event-time* records when processing of that lifecycle event began.
+
+The common *event-time* correlates messages from one collection or on-change event.  It does not imply that the reported data was read or changed at that instant.  A completed periodic or resynchronization collection comprises data collected for that operation, potentially at different observation times.
+
+The following example illustrates a fully encoded *update* notification defined in the `ietf-yang-push-2` YANG module and carried in the *contents* node.
 
 ~~~~ json
 {::include examples/full-notification.json.txt}
 ~~~~
-{: align="left" title="Example of update notification including notification envelope"}
+{: align="left" title="Example of update notification including notification envelope" #FullNotificationExample}
+
+Encoding rules for the envelope and its contents are specified in {{Encodings}}.
 
 ## Event Records {#EventRecords}
 
 A single *update* record is used for all datastore notifications.  It is used to report the current state of a set of data nodes at a given target path for either periodic, on-change, or resync notifications, and also for on-change notifications to indicate that the data node at the given target path has been deleted.
+
+All notification types use the same *updates* list.  For periodic and resync snapshots, each entry in the *updates* list MUST contain an *update* element and MUST NOT contain a *delete* element.  The *delete* operation MUST only be used for on-change notifications.  This restriction also applies to resync snapshots for on-change subscriptions.
 
 The schema for this notifications is given in the following tree diagram:
 
@@ -478,21 +509,23 @@ The normative definitions for the notifications fields are given in the YANG mod
 
 - *snapshot-type* - this indicates what type of event causes the update message to be sent.  I.e., a periodic collection, an on-change event, or a resync collection.
 
-- *observation-time* - the time that the data was sampled, or when the on-change event occurred that caused the message to be published.
+- *observation-time* - the time that the data was sampled for a periodic or resynchronization update, or when the on-change event occurred that caused the message to be published.
 
-- *target-path* - identifies the data node that is being acted on by the *merge*, *replace-by*, or *deleted* data.
+- *target-path* - identifies the data node that is being acted on by the *update* or *delete* operation.
 
-- *data* - A choice representing the action taken and the updated data, which is one of the following:
+- *data* - A mandatory choice of exactly one operation, with *delete* available only for on-change notifications:
 
-  - *merge* - identifies the data node that the receiver should merge with their current view of that data node.  I.e., all descendant data nodes reporting values should replace those held by the receiver, but the absence of a decendent data node does not imply that it no longer exists and hence should be deleted.
+  - *update* - supplies current values to create or update in the receiver's view.  Existing leaf and leaf-list values supplied in the payload are replaced; containers and list entries are updated recursively, with list entries identified by their keys.  Required list keys are included.  For on-change notifications, omitted descendants remain unchanged and absence of a data node does not implicitly imply deletion of that data node.
 
-  - *replaced-by* - identifies the data node that replaces the copy of that data node in the receiver's state.  Any descendent data nodes not present in the update no longer exist and hence should be implicitly deleted in the receiver's current state.
-
-  - *deleted* - indicates that the data node no longer exists and should be deleted in the receivers state.  This field *MUST NOT* be sent in an *on-change* update message.
+  - *delete* - indicates that the data node at *target-path* and all its descendants no longer exist and should be removed from the receiver's view.  Deleting data that is already absent has no effect.  This operation is used for on-change deletion events.
 
 - *complete* - if present, this flag indicates whether the notification is complete or whether more messages as part of the same update will follow.  The default value for the flag depends on the *snapshot-type*.  For *on-change* events, the messages are assumed to be completed until the *complete* leaf is set to ```false```.  For other type of events (e.g., periodic), the messages are assumed to be incomplete unless the *complete* leaf is set to ```true```.  Setting this flag to ```true``` is semantically equivalent to the server sending a separate *update-complete* notification.
 
-As per the structure of the *update* notification, a single notification MAY provide updates for multiple target-paths.
+The *observation-time* describes the source data, with the greatest accuracy available from the source.  For periodic and resynchronization updates, it records the time the data was sampled.  If the data was previously sampled by a producer and cached, the timestamp SHOULD represent that original sampling.  For on-change updates, it records when the underlying event (creation, modification, or deletion) first occurred, rather than when the telemetry infrastructure received or processed the change notification.
+
+Separate messages from one collection or on-change event may have different *observation-time* values while sharing the same *event-time*.  There is no required ordering between these two timestamps: previously sampled data or an earlier change may have an observation time before processing starts, while data sampled during a collection may have an observation time after processing starts.
+
+As per the structure of the *update* notification, a single notification MAY provide updates for multiple target-paths.  The *updates* list MUST NOT contain duplicate *target-path* values within a single notification.  The *target-path* leaf is the list key, so duplicate values are invalid YANG, including when one entry specifies *update* and another specifies *delete* for the same *target-path*.
 
 ## Types of subscription event monitoring {#UpdateTriggers}
 
@@ -509,9 +542,9 @@ The normative definitions for the update-trigger fields are given in the *ietf-y
 
 ## Periodic events
 
-In a periodic subscription, the data included as part of an update record corresponds to data that could have been read using a retrieval operation.  Only the state that exists in the system at the time that it is being read is reported, periodic updates never explicitly indicate whether any data-nodes or list entries have been deleted.  Instead, receivers must infer deletions by the absence of data during a particular collection event.
+In a periodic subscription, the data included as part of an update record corresponds to data that could have been read using a retrieval operation.  Only the state that exists in the system at the time that it is being read is reported, periodic updates never explicitly indicate whether any data-nodes or list entries have been deleted.  Instead, receivers must infer deletions from data nodes missing from the complete snapshot provided for a particular collection event.
 
-Where possible, publishers SHOULD use the *replaced-by* data node to represent the new data since it provides clients with simple explicit semantics.  Publishers MAY use the *merge* data node when they cannot determine whether the data being published in the update is complete.
+Periodic and resync notifications carry snapshot data using only *update* elements in the *updates* list.  Publishers MUST NOT send *delete* elements in these notifications.  Receivers should ignore any *delete* elements received in periodic or resync notifications.  An individual notification may contain only part of the subscribed data.  Receivers MUST NOT infer deletion from an omitted data node until the complete snapshot for the collection has been received, as indicated by *complete* or *update-complete*.  Deletion inference applies only to the subscribed data covered by that collection.
 
 For periodic subscriptions, triggered updates will occur at the boundaries of a specified time interval.  These boundaries can be calculated from the periodic parameters:
 
@@ -525,15 +558,17 @@ Periodic update notifications are expected, but not required, to use a single *t
 
 ## On-Change events
 
-In an on-change subscription, *update* records indicate updated values or when a monitored data node or list node has been deleted.  An *update* record is sent whenever a change in the subscribed information is detected. In the case that data nodes have been changed then the *update* record SHOULD only report the state that has changed (included any required list keys), but MAY include additional unchanged data nodes if the publisher is unable to optimize the on-change update message.
+An on-change subscription monitors the subscribed data for any changes.  An *update* notification is sent whenever any change in the monitored data is detected, with *updates/update* used to indicate new or changed values and *updates/delete* used to indicate data nodes that have been deleted.
 
-Each entry in the *updates* list identifies a data node (i.e., list entry, container, leaf or leaf-list), via the *target-path* that either has changes is state or has been deleted.
+Each entry in the *updates* list identifies a data node (i.e., list entry, container, leaf or leaf-list), via the *target-path*, that either has come into existence, has changes to its state, or has been deleted.
 
-A delete of a specific individual data node or subtree may be notified in two different ways:
+New or changed values are reported using the *update* element of an *updates* entry.  The payload SHOULD only report the state that has changed (including any required list keys). Omitting a descendant data node from an *update* payload does not delete it.  The payload MAY include additional unchanged data nodes if the publisher is unable to optimize the on-change update message, but this may incur higher processing overheads for the receiver.
 
-- if the data that is being deleted is below the *target-path* then the delete is implicit by the publisher returning the current data node subtree with the delete data nodes missing.  I.e., the receiver must implicitly infer deletion.
+An on-change deletion MUST be reported using a *delete* entry whose *target-path* identifies the deleted data node or subtree.  If a descendant of an updated subtree is deleted, it requires a separate *delete* entry at that descendant's path.  This entry MAY be included in the same notification as other *updates* entries.
 
-- if the data node is being deleted at the target path.  E.g., if an interface is deleted then an entire list entry related to that interface may be removed.  In this case, the *target path* identifies the list entry that is being deleted, but the data returned is just an empty object ```{}```, which replaces all the existing data for that object in the receiver. **TODO, is this better as a delete flag, or separate delete list?**
+Within a subscription, individual publishers (as identified by publisher-id) MUST preserve the causal order of changes affecting the same data node in the *sequence-number* ordering of the corresponding on-change *update* notifications.  Receivers MUST process these notifications in sequence-number order, accounting for sequence-number wraparound.  Successive notifications affecting the same data node normally have increasing *observation-time* values, but may have the same *observation-time* if the timestamp resolution is insufficient to assign distinct times to the changes.  These values are therefore non-decreasing.  These ordering requirements apply across new data nodes, changed values, and deletions.
+
+Within an *update* notification, receivers MAY process the entries in the *updates* list in any order.  Consequently, within a single notification, the *updates* list MUST NOT contain duplicate *target-path* values, including when one entry specifies *update* and another specifies *delete* for the same path.  The list MUST NOT contain both a *delete* entry for a data node and an *update* entry whose *target-path* identifies a descendant of that deleted node.
 
 On-change subscriptions also support the following additional parameters:
 
@@ -621,7 +656,7 @@ Each configured receiver has the following associated properties:
 
   - any transport-specific related parameters, some of which may be mandatory, others optional to specify, e.g., DSCP.  There are likely to be various data nodes related to establishing appropriate security and encryption.
 
-- an *encoding* to encode all YANG notification messages to the receiver, i.e., see {{Encodings}}.
+- an *encoding* used for both the envelope and contents of all notification messages sent to the receiver ({{Encodings}}).
 
 - optional parameters to identify where traffic should egress the publisher:
 
@@ -639,11 +674,11 @@ A publisher supporting configured subscriptions clearly must support at least on
 
 ### Receivers for Dynamic Subscriptions {#DynamicSubscriptionReceivers}
 
-For dynamic subscriptions, each subscription has a single receiver that is implicit from the host that initiated the *establish-subscription* RPC, reusing the same transport session for all the subscription notifications.
+For dynamic subscriptions, each subscription has a single receiver that is implicit from the host that initiated the *establish-subscription* RPC, reusing the same transport session for all subscription notifications.
 
 Hence most receiver parameters for a dynamic subscription, e.g., related to the transport, are implicitly determined and cannot be explicitly controlled.
 
-Dynamic subscriptions MUST specify an encoding (see {{Encodings}}) and MAY specify DSCP Marking (see {{DSCP}}) for the telemetry notifications in the *establish-subscription* RPC (see {{EstablishSubscriptionYangTree}}).
+Dynamic subscriptions MAY specify DSCP Marking (see {{DSCP}}) for the telemetry notifications in the *establish-subscription* RPC (see {{EstablishSubscriptionYangTree}}).
 
 ### Receiver Session States and State Machine {#ReceiverStates}
 
@@ -730,17 +765,22 @@ The transport specification MUST specify if there are any particular quality-of-
 
 ## Encodings {#Encodings}
 
-The *update* notification ({{EventRecords}}) and subscription lifecycle notifications ({{LifecycleNotifications}}) can be encoded in any format that has a definition for encoding YANG data.  For a given subscription, all notification messages are encoded using the same encoding.
+The *update* notification ({{EventRecords}}), *update-complete* notification, and subscription lifecycle notifications ({{LifecycleNotifications}}) can be encoded in any format that has a definition for encoding YANG data.  For a given subscription, all notification messages, including both the envelope and its contents, are encoded using the same encoding.
 
-Some IETF standards for YANG encodings known at the time of publication are:
+To maximize interoperability, implementations SHOULD support both JSON and CBOR with text identifiers.  Constrained platforms may not be able to support JSON and hence may choose to only support CBOR encoding.  Support for XML and CBOR with YANG SIDs is OPTIONAL unless required by the selected protocol binding.
 
-- JSON, defined in {{RFC7951}}
-- CBOR, defined in {{RFC9254}}, and {{RFC9595}} for using compressed schema identifiers (YANG SIDs)
-- XML, defined in {{RFC7950}}
+Encoding identities derive from the *encoding* base identity in `ietf-yang-push-2`.  Supported encodings are advertised through the transport capabilities ({{yang-push-2-yang-capabilities-module}}).
 
-To maximize interoperability, all implementations are RECOMMENDED to support both JSON and CBOR encodings (using regular YANG identifiers).  Constrained platforms may not be able to support JSON and hence may choose to only support CBOR encoding.  JSON encoding may not be supported in the scenario that another encoding becomes the defacto standard (e.g., as JSON has largely replaced XML as the defacto choice for text based encoding).  Support for the XML encoding and/or CBOR encoding using YANG SIDs is OPTIONAL.
+### Encoding the Envelope and Notification Contents
 
-Encodings are defined in the *ietf-yang-push-2.yang* as YANG identities that derive from the *encoding* base identity.  Additional encodings can be defined by defining and implementing new identities that derive from the *encoding* base identity, and also advertising those identities as part of the ietf-yang-push-2-capabilities YANG module's transport capabilities {{yang-push-2-yang-capabilities-module}}.
+The envelope and its contents MUST follow the corresponding YANG encoding rules:
+
+- JSON (*json*), {{RFC7951}}: the root is an object with the member `ietf-yang-push-2:envelope`, whose value is an object containing the envelope nodes.
+- XML (*xml*), {{RFC7950}}: the root is an `<envelope>` element in the namespace `urn:ietf:params:xml:ns:yang:ietf-yang-push-2`, containing the envelope's child elements.
+- CBOR with text identifiers (*cbor*), {{RFC9254}}: the root is a map with the text key `ietf-yang-push-2:envelope`, whose value is a map containing the envelope nodes, using text identifiers as keys.
+- CBOR with YANG SIDs (*cbor-sids*), {{RFC9254}}: the root is a map keyed by the envelope structure's SID, whose value is a map containing the envelope nodes.  SIDs MUST be allocated according to {{RFC9595}}; SID deltas and absolute SIDs follow {{RFC9254}}.
+
+The *contents* node directly contains the notification, identified by the name and namespace of its YANG *notification* statement, or its allocated SID.  The notification's data nodes use the same YANG encoding as the envelope.  For CBOR with SIDs, the notification's SID is encoded relative to the *contents* node as specified for *anydata* in Section 4.5 of {{RFC9254}}.
 
 # Setting up and Managing Subscriptions {#ConfiguredAndDynamic}
 
@@ -764,7 +804,7 @@ All subscriptions require the following state to be instantiated:
 - the *update-trigger* to indicate when *update* notifications are generated:
   - *periodic*, for the publisher to send updated copies of the state on a periodic basis
   - *on-change*, for the publisher to send state updates when the internal state changes, i.e., event driven.
-- receiver, transport, and encoding parameters, as per {{receivers}}.  How these are provided differs for configured vs dynamic subscriptions and is further explained in the sections below.
+- receiver, transport, and notification encoding parameters, as per {{receivers}} and {{Encodings}}.  The encoding applies to both the envelope and its contents.  How these parameters are provided differs for configured and dynamic subscriptions, as further explained below.
 
 Subscription ids MUST be unique across all configured and dynamic subscriptions.  Configured subscription take precedence over dynamic subscription, so:
 
@@ -842,7 +882,7 @@ Changes to any of following parameters MUST terminate the subscription, as per {
 1. the *encoding*
 1. any *receiver* settings that change the encoding, transport, transport security, or receiver destination address/port
 1. the update-trigger to enable *sync-on-start*.
-1. if the *sync-in-start option* is enabled, then any changes to the subscription-filter (inline or referenced) or YANG schema (*schema-id*) associated with the subscription. *TODO, Why?  Should a subscription-modifies message resend the sync-on-start data anyway?*
+1. if the *sync-on-start option* is enabled, then any changes to the subscription-filter (inline or referenced) or YANG schema (*schema-id*) associated with the subscription. *TODO, Why?  Should a subscription-modifies message resend the sync-on-start data anyway?*
 
 The *subscription-terminated* notification MUST be sent using the old *encoding* and *receiver* settings before the subscription parameters were changed.  The *subscription-started* notification MUST be sent using the updated subscription parameters.
 
@@ -851,11 +891,11 @@ The *subscription-terminated* notification MUST be sent using the old *encoding*
 If changes to a subscription only include changes to the following parameters then they SHOULD be handled via a *subscription-modified* notification, but MAY be handled as described above. This applies for changes to:
 
 1. the subscription target *filter* (inline, referring to a different named filter, or changing the referenced filter).
-1. the YANG schema (*schema-id*) associated with subscription target filter,
-1. the *update-trigger*, unless *sync-on-start* is enabled.
-1. the *description* field,
-1. any other fields that are included in a *subscription-started* notification message, unless the definition of those fields explicitly specifies different
-behavior.
+1. the YANG schema (*schema-id*) associated with subscription target filter
+1. the *update-trigger*, unless *sync-on-start* is enabled
+1. the *description* field
+1. the *message-publishers/publisher-id* leaf-list
+1. any other fields that are included in a *subscription-modified* notification message, unless the definition of those fields explicitly specifies different behavior.
 
 #### Modifications requiring no lifecycle notification
 
@@ -1034,7 +1074,7 @@ The reset action on a receiver is handled equivalently to removing and re-adding
 
 ## Dynamic Subscriptions {#DynamicSubscriptions}
 
-Dynamic subscriptions are where a subscriber initiates a subscription negotiation with a publisher via a YANG RPC {{RFC7950}}.
+Dynamic subscriptions are created by a subscriber invoking the *establish-subscription* YANG RPC {{RFC7950}}, as described in {{EstablishDynamic}}.
 
 Support for dynamic subscriptions is OPTIONAL, with its availability advertised via the *dynamic* YANG feature in the ietf-yang-push-2 YANG module {{yang-push-2-yang-module}}, and also via the capabilities module {{yang-push-2-yang-capabilities-module}}.
 
@@ -1061,9 +1101,11 @@ The *establish-subscription* RPC allows a subscriber to request the creation of 
 
 In addition to the common subscription parameters described in {{CommonSubscriptionParameters}}, the *establish-subscription* YANG RPC:
 
-- includes the *encoding* to be used for all YANG Push v2 notifications
+- includes the mandatory *encoding* to be used for all YANG Push v2 notifications for the subscription ({{Encodings}}).
 
 - optionally includes DSCP settings to use for the transport.
+
+The selected encoding MUST match the encoding of the incoming *establish-subscription* RPC and be supported by the protocol binding.  The publisher MUST reject an unsupported encoding with *encoding-unsupported*.  For example, NETCONF {{RFC6241}} uses XML, so dynamic subscriptions established over NETCONF use XML for both the envelope and its contents.  JSON or CBOR dynamic subscriptions require a protocol binding that supports that encoding for both RPCs and notifications.
 
 The DSCP code point settings for all subscription using the same transport session MUST be the same.  Attempts to invoke *establish-subscription* with a different DSCP code point MUST be rejected.
 
@@ -1217,7 +1259,7 @@ It is important for clients to have confidence that the telemetry data that they
 
 - publishers use buffers when enqueuing traffic on to a transport to a receiver, but if that buffer becomes full then the transport specification indicates whether update messages should be dropped, or the subscription should be terminated.  In that case that a dynamic subscription is terminated, the client may attempt to re-created the subscription.  For configured subscriptions that have been terminated, the publisher should attempt to periodically recreate the subscription or reconnect the receiver.
 
-- the *notification envelope* structure, {{FullNotificationExample}}, used for all YANG Push notifications contains a monotonically increasing *sequence-number* field that allows for lost messages in an end-to-end data pipeline spanning multiple transport hops to be detected, allowing appropriate mitigation steps to be taken.  For example, see figure 1 in {{I-D.ietf-nmop-network-anomaly-architecture}}.
+- the *notification envelope* structure, {{NotificationEnvelope}}, used for all YANG Push notifications contains a *sequence-number* counter scoped to each subscription and *publisher-id*.  Gaps in that notification stream, accounting for wraparound and reordering, allow lost messages in an end-to-end data pipeline spanning multiple transport hops to be detected and appropriate mitigation steps to be taken.  For example, see figure 1 in {{I-D.ietf-nmop-network-anomaly-architecture}}.
 
 - the protocol relies on transport protocols that are either reliable, e.g., TCP or HTTP, or unreliable transports that employ mechanisms for clients to detect when losses at the transport layer have occurred, e.g., the *message id* in {{I-D.draft-ietf-netconf-udp-notif}} (**TODO fix reference to bis version, once that becomes available**).
 
@@ -1316,9 +1358,11 @@ Publishers serving a subscription MUST only send the data for a given YANG data 
 
 The differences for supporting {{I-D.ietf-netconf-distributed-notif}} with YANG Push 2 are:
 
-- the publisher-id leaf, that identities the Message Publisher ID of the publishing process, is augmented in the envelope notification {{I-D.draft-ietf-netconf-notif-envelope}} rather than the *push-update* and *push-change-update* messages.  This means that all messages sent by any Message Publishers (e.g., including Subscription Lifecyle Notifications) will indicate which Message Publisher sent the message.
+- the publisher-id leaf, which identifies the Message Publisher ID of the publishing process, is defined directly in the YANG Push v2 notification envelope ({{NotificationEnvelope}}).  This means that all messages sent by any Message Publishers (e.g., including Subscription Lifecycle Notifications) will indicate which Message Publisher sent the message.
 
 - the publisher-id leaf has a default value of 0.  The publisher-id of 0 is reserved for the Publisher Parent process and MUST NOT be allocated to any Publisher Agent processes, since that allows for the publisher-id leaf to be omitted from notification messages sent from the Publisher Parent.
+
+- each Message Publisher maintains an independent sequence-number counter for each subscription, for the lifetime of that subscription ({{NotificationEnvelope}}).  Sequence numbers from different Message Publishers do not establish an ordering between their notifications.
 
 - the *subscription-started* and *subscription-modified* notifications have a *message-publishers/publisher-id* leaf-list that identifies all Message Publishers that will send messages as part of the subscription.  This leaf-list defaults to a single entry of 0, so MAY be ommitted if there is only a single Message Publisher and it has an publisher-id of 0.
 
@@ -1564,7 +1608,7 @@ This section lists functionality specified in {{RFC8639}} and YANG Push which is
 
 This section documents behavior that exists in both YANG Push and YANG Push v2, but the behavior differs between the two:
 
-- All YANG Push v2 notifications messages use {{I-D.draft-ietf-netconf-notif-envelope}} rather than {{RFC5277}} used by YANG Push {{RFC8641}}.
+- All YANG Push v2 notification messages use the notification envelope defined in this document ({{NotificationEnvelope}}).  YANG Push {{RFC8641}} uses the notification format defined in {{RFC5277}}, or the notification envelope defined in {{I-D.draft-ietf-netconf-notif-envelope}} if supported and enabled.
 
 - There is a lot more alignment in data model, behavior, and state machined in YANG Push v2, aiming to minimize differences.
 
@@ -1708,13 +1752,13 @@ addition to those that were already defined in [RFC8639]:
 
 Notes on examples:
 
-- To allow for programmatic validation, most notification examples in this section exclude the mandatory notification envelope and associated metadata defined in {{I-D.draft-ietf-netconf-notif-envelope}}.  Only the full notification example in {{FullNotificationExample}} includes the notification header.
+- To allow for programmatic validation, most notification examples in this section exclude the mandatory notification envelope and associated metadata defined in {{NotificationEnvelope}}.  Full notification examples, including {{FullNotificationExample}}, include the notification header.
 
 - These notification message examples are given using a JSON encoding, but could be encoded using XML or CBOR.
 
-- Some additional meta data fields, e.g., like those defined in {{?I-D.tgraf-netconf-notif-sequencing}} would also likely be included, but have also been excluded to allow for slightly more concise examples.
+- Full notification examples use the envelope defined in {{NotificationEnvelope}}.  Payload-only examples omit that wrapper for brevity and validation.
 
-- The examples include the {{?I-D.tgraf-netconf-yang-push-observation-time}} field for the existing YANG-Push Notification format, and the proposed equivalent "observation-time" leaf for the new update notification format.
+- The *observation-time* field records when the data was sampled or the change was observed.
 
 - All these examples are created by hand, may contain errors, and may not parse correctly.
 
@@ -1758,42 +1802,12 @@ If the subscription is for on-change notifications, or periodic-and-on-change-no
 
 - The schema of the change message is exactly the same as for the equivalent periodic message.  It doesn't use the YANG Patch format {{RFC8072}} for on-change messages.
 
-- The "observation time" leaf represents when the system first observed the on-change event occurring.
+- The *observation-time* leaf represents when the system first observed the on-change event occurring.  The envelope's *event-time* represents when the telemetry infrastructure began processing the change notification.
 
 - The on-change event doesn't differentiate the type of change to operational state.  The on-change-update snapshot type is used to indicate the creation of a new entry or some update to some existing state.  Basically, the message can be thought of as the state existing with some current value.
 
 ~~~~ JSON
-{
-  "ietf-yp-notification:envelope": {
-    "event-time": "2024-09-27T14:16:30.973Z",
-    "hostname": "example-router",
-    "sequence-number": 454,
-    "contents": {
-      "ietf-yp-ext:update": {
-        "id": 1,
-        "subscription-path":
-          "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces",
-        "target-path":
-          "Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interfaces/
-          interface[interface=GigabitEthernet0/0/0/0]",
-        "snapshot-type": "on-change-update"
-        "observation-time": "2024-09-27T14:16:30.973Z",
-        "datastore-snapshot": {
-          "interfaces": {
-            "interface": [
-              {
-                "interface-name": "GigabitEthernet0/0/0/0",
-                "interface": "GigabitEthernet0/0/0/0",
-                "state": "im-state-up",
-                "line-state": "im-state-up"
-              }
-            ]
-          }
-        }
-      }
-    }
-  }
-}
+{::include examples/full-on-change-notification.json.txt}
 ~~~~
 {: align="left" sourcecode-markers="true" sourcecode-name="on-change-msg.json" title="Example YANG Push v2 on-change update message"}
 
@@ -1806,7 +1820,7 @@ If the interface was deleted, and if the system was capable of reporting on-chan
 
 Of note:
 
-- The ietf-yp-notification:envelope has been elided
+- The ietf-yang-push-2:envelope has been elided
 - The deleted data is identified by the target node in the *updates/target-path* element.
 - The observation time represents the time at which the delete event occurred, e.g., perhaps when the system processed a configuration change.
 
@@ -1822,7 +1836,7 @@ This follow example illustrates how a single update notification message can con
 
 Of note:
 
-- The ietf-yp-notification:envelope has been elided
+- The ietf-yang-push-2:envelope has been elided
 - *prefix-path* is used to shorten the target-paths, the full paths can be constructed concatenating the *prefix-path* with each *target-path* in the *updates* list.
 - all delete events share a common observation-time of when the delete events occurred.  If it is necessary to identify separate observation times then the publisher would send separate messages.
 - data node subtrees that are deleted (list entries in this case) are identified by separate entries in the *updates* list.

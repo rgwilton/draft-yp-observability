@@ -1,0 +1,13 @@
+module: ietf-yang-push-2
+
+  structure establish-subscription-stream-error-info:
+    +-- establish-subscription-stream-error-info
+  structure delete-subscription-error-info:
+    +-- delete-subscription-error-info
+  structure envelope:
+    +-- event-time         yang:date-and-time
+    +-- hostname           inet:host-name
+    +-- publisher-id?      uint32
+    +-- sequence-number    yang:counter32
+    +-- extensions
+    +-- contents           <anydata>

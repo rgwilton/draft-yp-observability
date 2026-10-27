@@ -6,10 +6,12 @@
     "observation-time": "2025-10-10T08:16:16.11Z",
     "updates": [
       {
-        "target-path": "interface[name='eth0']"
+        "target-path": "interface[name='eth0']",
+        "delete": [null]
       },
       {
-        "target-path": "interface[name='eth1']"
+        "target-path": "interface[name='eth1']",
+        "delete": [null]
       }
     ]
   }

@@ -1,18 +1,18 @@
 {
-  "ietf-yp-notification:envelope": {
+  "ietf-yang-push-2:envelope": {
     "event-time": "2024-10-10T08:00:05.22Z",
     "hostname": "example-router",
     "sequence-number": 3219,
     "contents": {
-      "ietf-yang-push-2:update": {
-        "id": 1011,
+      "update": {
+        "id": "interfaces",
         "path-prefix": "/ietf-interfaces:interfaces",
         "snapshot-type": "periodic",
         "observation-time": "2024-10-10T08:00:05.11Z",
         "updates": [
           {
             "target-path": "interface",
-            "replace-by": {
+            "update": {
               "interface": [
                 {
                   "name": "eth0",
@@ -31,7 +31,8 @@
               ]
             }
           }
-        ]
+        ],
+        "complete": true
       }
     }
   }

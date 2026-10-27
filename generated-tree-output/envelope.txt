@@ -1,0 +1,7 @@
+  structure envelope:
+    +-- event-time         yang:date-and-time
+    +-- hostname           inet:host-name
+    +-- publisher-id?      uint32
+    +-- sequence-number    yang:counter32
+    +-- extensions
+    +-- contents           <anydata>

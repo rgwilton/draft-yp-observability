@@ -2,15 +2,15 @@ module: ietf-yang-push-2-config
   +--rw datastore-telemetry!
      +--rw subscriptions
         +--rw subscription* [id]
-           +--rw id                                  subscription-id
-           +--rw description?                        string
+           +--rw id                    subscription-id
+           +--rw description?          string
            +--rw target
            |  +--rw datastore?          identityref
            |  +--rw (filter)
            |     +--:(path)
            |     |  +--rw path          ypath
            |     +--:(subtree)
-           |     |  +--rw subtree       <anydata>
+           |     |  +--rw subtree       <anydata> {yp2:subtree}?
            |     +--:(xpath)
            |     |  +--rw xpath         yang:xpath1.0 {yp2:xpath}?
            |     +--:(by-reference)
@@ -23,34 +23,35 @@ module: ietf-yang-push-2-config
            |     +--rw sync-on-start?   boolean
            +--rw receiver
            |       -> /datastore-telemetry/receivers/receiver/name
-           +--ro status?
-           |       yp2:subscription-status
-           +--ro type?
-           |       yp2:subscription-type
-           +--ro encoding?                           yp2:encoding
-           +--ro message-publishers
-           |  +--ro publisher-id*   uint32
-           +--ro last-sequence-number?
-           |       yang:zero-based-counter64
-           +--ro last-notification-time?
-           |       yang:date-and-time
-           +--ro last-periodic-collection-time?
-           |       yang:date-and-time
-           +--ro last-on-change-notification-time?
-           |       yang:date-and-time
-           +--ro statistics
-           |  +--ro started-notifications?
-           |  |       yang:zero-based-counter64
-           |  +--ro terminated-notifications?
-           |  |       yang:zero-based-counter64
-           |  +--ro update-notifications?
-           |  |       yang:zero-based-counter64
-           |  +--ro periodic-collections?
-           |  |       yang:zero-based-counter64
-           |  +--ro excluded-events?
-           |  |       yang:zero-based-counter64
-           |  +--ro receiver-disconnects?
-           |          yang:zero-based-counter64
+           +--ro status?               yp2:subscription-status
+           +--ro type?                 yp2:subscription-type
+           +--ro encoding?             yp2:encoding
+           +--ro message-publishers* [publisher-id]
+           |  +--ro publisher-id    uint32
+           |  +--ro events
+           |  |  +--ro last-status-change-time?
+           |  |  |       yang:zero-based-counter64
+           |  |  +--ro last-sequence-number?
+           |  |  |       yang:zero-based-counter64
+           |  |  +--ro last-update-notification-time?
+           |  |  |       yang:date-and-time
+           |  |  +--ro last-on-change-update-notification-time?
+           |  |  |       yang:date-and-time
+           |  |  +--ro last-error-time?
+           |  |          yang:date-and-time
+           |  +--ro statistics
+           |     +--ro update-notifications?
+           |     |       yang:zero-based-counter64
+           |     +--ro on-change-update-notifications?
+           |     |       yang:zero-based-counter64
+           |     +--ro packets-sent?
+           |     |       yang:zero-based-counter64
+           |     +--ro bytes-sent?
+           |     |       yang:zero-based-counter64
+           |     +--ro receiver-disconnects?
+           |     |       yang:zero-based-counter64
+           |     +--ro errors?
+           |             yang:zero-based-counter64
            +---x reset
 
   augment /yp2:subscription-started/yp2:target:

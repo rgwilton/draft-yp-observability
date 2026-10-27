@@ -22,17 +22,16 @@ object `package` extends IETF:
 
   // All drafts that we need to extract YANG from.
   def draftDeps = Seq(
-    "draft-ietf-netconf-https-notif-15",
-    "draft-ietf-netconf-udp-notif-25",
+    "draft-ietf-netconf-https-notif-16",
+    "draft-ietf-netconf-udp-notif-26",
     "draft-ietf-netconf-udp-client-server-10",
-    "draft-ietf-netconf-distributed-notif-17",
+    "draft-ietf-netconf-distributed-notif-23",
     "draft-ietf-netconf-http-client-server-33",
-    "draft-ietf-netconf-yang-notifications-versioning-11",
-    "draft-ietf-netconf-yang-library-augmentedby-15",
-    "draft-ietf-netmod-yang-module-versioning-15",
-    "draft-ietf-netmod-yang-semver-24",
+    "draft-ietf-netconf-yang-notifications-versioning-17",
+    "draft-ietf-netconf-yang-library-augmentedby-18",
+    "draft-ietf-netmod-yang-module-versioning-17",
+    "draft-ietf-netmod-yang-semver-29",
     "draft-netana-netconf-yp-transport-capabilities-01",
-    "draft-netana-netconf-notif-envelope-02"
   )
 
   // IANA YANG dependencies.
@@ -58,6 +57,7 @@ object `package` extends IETF:
 
   def yangTrees = Seq(
     (Seq("ietf-yang-push-2.yang"), "ietf-yang-push-2-tree.txt", None),
+    (Seq("ietf-yang-push-2.yang"), "ietf-yang-push-2-envelope-tree.txt", Some("envelope")),
     (Seq("ietf-yang-push-2-config.yang"), "filters.txt", Some("datastore-telemetry/filters")),
     (Seq("ietf-yang-push-2-config.yang"), "subscriptions.txt", Some("datastore-telemetry/subscriptions")),
     (Seq("ietf-yang-push-2-config.yang"), "update-trigger.txt", Some("datastore-telemetry/subscriptions/subscription/update-trigger")),
@@ -67,14 +67,38 @@ object `package` extends IETF:
     (Seq("ietf-yang-push-2-capabilities.yang", "ietf-system-capabilities@2022-02-17.yang"), "ietf-system-capabilities-tree.txt", None)
   )
 
+  // The plugin does not expose pyang's option to print sx:structure trees.
+  override def buildYangTree(
+      pyang: os.Path,
+      yangDeps: Seq[os.Path],
+      yangFiles: Seq[os.Path],
+      target: os.Path,
+      treePath: Option[String]
+  ): Option[String] =
+    if target.last == "ietf-yang-push-2-envelope-tree.txt" then
+      val result = os.proc(
+        pyang,
+        "-f", "tree",
+        "--tree-print-structures",
+        "--tree-path", treePath.get,
+        "--tree-line-length=69",
+        "-p", yangDeps.mkString(":"),
+        "-o", target,
+        yangFiles
+      ).call(mergeErrIntoOut = true, check = false)
+      if result.exitCode == 0 then None else Some(result.out.text())
+    else
+      super.buildYangTree(pyang, yangDeps, yangFiles, target, treePath)
+
   def yangTreeSnippets = Seq(
+    ("ietf-yang-push-2-envelope-tree.txt", "structure envelope:", "<end>", "envelope.txt"),
     ("ietf-yang-push-2-tree.txt", "-x establish-subscription", "-x modify-subscription", "establish-subscription.txt"),
     ("ietf-yang-push-2-tree.txt", "-x modify-subscription", "-x delete-subscription", "modify-subscription.txt"),
     ("ietf-yang-push-2-tree.txt", "-x delete-subscription", "-x kill-subscription", "delete-subscription.txt"),
     ("ietf-yang-push-2-tree.txt", "-x kill-subscription", "notifications", "kill-subscription.txt"),
     ("ietf-yang-push-2-tree.txt", "-n subscription-started", "subscription-modified", "subscription-started.txt"),
     ("ietf-yang-push-2-tree.txt", "-n subscription-modified", "subscription-terminated", "subscription-modified.txt"),
-    ("ietf-yang-push-2-tree.txt", "-n subscription-terminated", "updates", "subscription-terminated.txt"),
+    ("ietf-yang-push-2-tree.txt", "-n subscription-terminated", "update", "subscription-terminated.txt"),
     ("ietf-yang-push-2-tree.txt", "-n update$", "-n update-complete", "update-notification.txt"),
     ("ietf-yang-push-2-tree.txt", "-n update-complete", "<end>", "update-complete.txt"),
   )

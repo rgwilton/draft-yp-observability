@@ -8,7 +8,7 @@
     |  |  |     +--:(path)
     |  |  |     |  +---w path       ypath
     |  |  |     +--:(subtree)
-    |  |  |     |  +---w subtree    <anydata>
+    |  |  |     |  +---w subtree    <anydata> {yp2:subtree}?
     |  |  |     +--:(xpath)
     |  |  |        +---w xpath      yang:xpath1.0 {yp2:xpath}?
     |  |  +---w update-trigger

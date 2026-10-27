@@ -1,11 +1,10 @@
 {
-  "ietf-yp-notification:envelope": {
+  "ietf-yang-push-2:envelope": {
     "event-time": "2025-10-10T08:00:05.22Z",
     "hostname": "example-router",
-    "sequence-number": 23,
-    "ietf-yang-push-2:publisher-id": 0
+    "sequence-number": 1,
     "contents": {
-      "ietf-yang-push-2:subscription-started": {
+      "subscription-started": {
         "id": "interfaces",
         "target": {
           "datastore": "ietf-datastores:operational",
@@ -18,7 +17,7 @@
           }
         },
         "message-publishers": {
-          "publisher-id" = [0, 4, 7]
+          "publisher-id": [0, 4, 7]
         }
       }
     }

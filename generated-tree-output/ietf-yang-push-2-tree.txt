@@ -11,7 +11,7 @@ module: ietf-yang-push-2
     |  |  |     +--:(path)
     |  |  |     |  +---w path       ypath
     |  |  |     +--:(subtree)
-    |  |  |     |  +---w subtree    <anydata>
+    |  |  |     |  +---w subtree    <anydata> {yp2:subtree}?
     |  |  |     +--:(xpath)
     |  |  |        +---w xpath      yang:xpath1.0 {yp2:xpath}?
     |  |  +---w update-trigger
@@ -34,7 +34,7 @@ module: ietf-yang-push-2
     |     |     +--:(path)
     |     |     |  +---w path       ypath
     |     |     +--:(subtree)
-    |     |     |  +---w subtree    <anydata>
+    |     |     |  +---w subtree    <anydata> {yp2:subtree}?
     |     |     +--:(xpath)
     |     |        +---w xpath      yang:xpath1.0 {yp2:xpath}?
     |     +---w update-trigger
@@ -61,7 +61,7 @@ module: ietf-yang-push-2
     |  |  |  +--:(path)
     |  |  |  |  +--ro path                 ypath
     |  |  |  +--:(subtree)
-    |  |  |  |  +--ro subtree              <anydata>
+    |  |  |  |  +--ro subtree              <anydata> {yp2:subtree}?
     |  |  |  +--:(xpath)
     |  |  |     +--ro xpath                yang:xpath1.0 {yp2:xpath}?
     |  |  +--ro schema-id?                 string
@@ -84,7 +84,7 @@ module: ietf-yang-push-2
     |  |  |  +--:(path)
     |  |  |  |  +--ro path                 ypath
     |  |  |  +--:(subtree)
-    |  |  |  |  +--ro subtree              <anydata>
+    |  |  |  |  +--ro subtree              <anydata> {yp2:subtree}?
     |  |  |  +--:(xpath)
     |  |  |     +--ro xpath                yang:xpath1.0 {yp2:xpath}?
     |  |  +--ro schema-id?                 string
@@ -108,14 +108,12 @@ module: ietf-yang-push-2
     |  +--ro snapshot-type       enumeration
     |  +--ro observation-time?   yang:date-and-time
     |  +--ro updates* [target-path]
-    |  |  +--ro target-path          string
-    |  |  +--ro (data)?
-    |  |     +--:(merge)
-    |  |     |  +--ro merge?         <anydata>
-    |  |     +--:(replaced-by)
-    |  |     |  +--ro replaced-by?   <anydata>
-    |  |     +--:(deleted)
-    |  |        +--ro deleted?       empty
+    |  |  +--ro target-path     string
+    |  |  +--ro (data)
+    |  |     +--:(update)
+    |  |     |  +--ro update?   <anydata>
+    |  |     +--:(delete)
+    |  |        +--ro delete?   empty
     |  +--ro complete?           boolean
     +---n update-complete
        +--ro id?   subscription-id

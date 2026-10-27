@@ -7,7 +7,7 @@ module: ietf-yang-push-2-config
               +--:(path)
               |  +--rw path       ypath
               +--:(subtree)
-              |  +--rw subtree    <anydata>
+              |  +--rw subtree    <anydata> {yp2:subtree}?
               +--:(xpath)
                  +--rw xpath      yang:xpath1.0 {yp2:xpath}?
 

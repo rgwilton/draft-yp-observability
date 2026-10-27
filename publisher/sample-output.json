@@ -1,226 +1,212 @@
-
-
-
-
-
-
-
-
-
-[72/72] publisher.run
-[72] {
-[72]   "ietf-yp-notification:envelope": {
-[72]     "event-time": "2025-10-21T10:31:05.033869Z",
-[72]     "hostname": "example-router",
-[72]     "sequence-number": "3219",
-[72]     "contents": {
-[72]       "ietf-yp-lite:update": {
-[72]         "id": 1011,
-[72]         "snapshot-type": "periodic",
-[72]         "observation-time": "2025-10-21T10:31:05.033869Z",
-[72]         "updates": [
-[72]           {
-[72]             "target-path": "ietf-interfaces:interfaces/interface",
-[72]             "data": {
-[72]               "ietf-interfaces:interfaces": {
-[72]                 "interface": [
-[72]                   {
-[72]                     "name": "Eth0",
-[72]                     "description": "Ethernet interface 0",
-[72]                     "type": "iana-if-type:ethernetCsmacd",
-[72]                     "enabled": true,
-[72]                     "admin-status": "up",
-[72]                     "oper-status": "up",
-[72]                     "last-change": "2024-10-10T08:00:00.00Z",
-[72]                     "if-index": 1,
-[72]                     "phys-address": "00:11:22:33:44:00",
-[72]                     "speed": "1000000000",
-[72]                     "statistics": {
-[72]                       "discontinuity-time": "2024-10-10T08:00:00.00Z",
-[72]                       "in-octets": "1234567890",
-[72]                       "in-unicast-pkts": "9876543",
-[72]                       "in-broadcast-pkts": "12345",
-[72]                       "in-multicast-pkts": "54321",
-[72]                       "in-discards": "10",
-[72]                       "in-errors": "5",
-[72]                       "in-unknown-protos": "0",
-[72]                       "out-octets": "9876543210",
-[72]                       "out-unicast-pkts": "8765432",
-[72]                       "out-broadcast-pkts": "23456",
-[72]                       "out-multicast-pkts": "65432",
-[72]                       "out-discards": "8",
-[72]                       "out-errors": "3"
-[72]                     },
-[72]                     "ietf-ip:ipv4": {
-[72]                       "enabled": true,
-[72]                       "forwarding": false,
-[72]                       "mtu": 1500,
-[72]                       "address": [
-[72]                         {
-[72]                           "ip": "192.0.2.1",
-[72]                           "prefix-length": 24
-[72]                         }
-[72]                       ]
-[72]                     },
-[72]                     "ietf-ip:ipv6": {
-[72]                       "enabled": true,
-[72]                       "forwarding": false,
-[72]                       "mtu": 1500,
-[72]                       "address": [
-[72]                         {
-[72]                           "ip": "2001:db8::1",
-[72]                           "prefix-length": 64
-[72]                         }
-[72]                       ]
-[72]                     }
-[72]                   },
-[72]                   {
-[72]                     "name": "Eth1",
-[72]                     "description": "Ethernet interface 1",
-[72]                     "type": "iana-if-type:ethernetCsmacd",
-[72]                     "enabled": true,
-[72]                     "admin-status": "up",
-[72]                     "oper-status": "up",
-[72]                     "last-change": "2024-10-10T08:00:00.00Z",
-[72]                     "if-index": 2,
-[72]                     "phys-address": "00:11:22:33:44:01",
-[72]                     "speed": "1000000000",
-[72]                     "statistics": {
-[72]                       "discontinuity-time": "2024-10-10T08:00:00.00Z",
-[72]                       "in-octets": "1234567890",
-[72]                       "in-unicast-pkts": "9876543",
-[72]                       "in-broadcast-pkts": "12345",
-[72]                       "in-multicast-pkts": "54321",
-[72]                       "in-discards": "10",
-[72]                       "in-errors": "5",
-[72]                       "in-unknown-protos": "0",
-[72]                       "out-octets": "9876543210",
-[72]                       "out-unicast-pkts": "8765432",
-[72]                       "out-broadcast-pkts": "23456",
-[72]                       "out-multicast-pkts": "65432",
-[72]                       "out-discards": "8",
-[72]                       "out-errors": "3"
-[72]                     },
-[72]                     "ietf-ip:ipv4": {
-[72]                       "enabled": true,
-[72]                       "forwarding": false,
-[72]                       "mtu": 1500,
-[72]                       "address": [
-[72]                         {
-[72]                           "ip": "192.0.2.2",
-[72]                           "prefix-length": 24
-[72]                         }
-[72]                       ]
-[72]                     },
-[72]                     "ietf-ip:ipv6": {
-[72]                       "enabled": true,
-[72]                       "forwarding": false,
-[72]                       "mtu": 1500,
-[72]                       "address": [
-[72]                         {
-[72]                           "ip": "2001:db8::2",
-[72]                           "prefix-length": 64
-[72]                         }
-[72]                       ]
-[72]                     }
-[72]                   },
-[72]                   {
-[72]                     "name": "Eth2",
-[72]                     "description": "Ethernet interface 2",
-[72]                     "type": "iana-if-type:ethernetCsmacd",
-[72]                     "enabled": true,
-[72]                     "admin-status": "up",
-[72]                     "oper-status": "up",
-[72]                     "last-change": "2024-10-10T08:00:00.00Z",
-[72]                     "if-index": 3,
-[72]                     "phys-address": "00:11:22:33:44:02",
-[72]                     "speed": "1000000000",
-[72]                     "statistics": {
-[72]                       "discontinuity-time": "2024-10-10T08:00:00.00Z",
-[72]                       "in-octets": "1234567890",
-[72]                       "in-unicast-pkts": "9876543",
-[72]                       "in-broadcast-pkts": "12345",
-[72]                       "in-multicast-pkts": "54321",
-[72]                       "in-discards": "10",
-[72]                       "in-errors": "5",
-[72]                       "in-unknown-protos": "0",
-[72]                       "out-octets": "9876543210",
-[72]                       "out-unicast-pkts": "8765432",
-[72]                       "out-broadcast-pkts": "23456",
-[72]                       "out-multicast-pkts": "65432",
-[72]                       "out-discards": "8",
-[72]                       "out-errors": "3"
-[72]                     },
-[72]                     "ietf-ip:ipv4": {
-[72]                       "enabled": true,
-[72]                       "forwarding": false,
-[72]                       "mtu": 1500,
-[72]                       "address": [
-[72]                         {
-[72]                           "ip": "192.0.2.3",
-[72]                           "prefix-length": 24
-[72]                         }
-[72]                       ]
-[72]                     },
-[72]                     "ietf-ip:ipv6": {
-[72]                       "enabled": true,
-[72]                       "forwarding": false,
-[72]                       "mtu": 1500,
-[72]                       "address": [
-[72]                         {
-[72]                           "ip": "2001:db8::3",
-[72]                           "prefix-length": 64
-[72]                         }
-[72]                       ]
-[72]                     }
-[72]                   },
-[72]                   {
-[72]                     "name": "Eth3",
-[72]                     "description": "Ethernet interface 3",
-[72]                     "type": "iana-if-type:ethernetCsmacd",
-[72]                     "enabled": false,
-[72]                     "admin-status": "down",
-[72]                     "oper-status": "down",
-[72]                     "last-change": "2024-10-10T08:00:00.00Z",
-[72]                     "if-index": 4,
-[72]                     "phys-address": "00:11:22:33:44:03",
-[72]                     "speed": "1000000000",
-[72]                     "statistics": {
-[72]                       "discontinuity-time": "2024-10-10T08:00:00.00Z",
-[72]                       "in-octets": "0",
-[72]                       "in-unicast-pkts": "0",
-[72]                       "in-broadcast-pkts": "0",
-[72]                       "in-multicast-pkts": "0",
-[72]                       "in-discards": "0",
-[72]                       "in-errors": "0",
-[72]                       "in-unknown-protos": "0",
-[72]                       "out-octets": "0",
-[72]                       "out-unicast-pkts": "0",
-[72]                       "out-broadcast-pkts": "0",
-[72]                       "out-multicast-pkts": "0",
-[72]                       "out-discards": "0",
-[72]                       "out-errors": "0"
-[72]                     },
-[72]                     "ietf-ip:ipv4": {
-[72]                       "enabled": false,
-[72]                       "forwarding": false,
-[72]                       "mtu": 1500,
-[72]                       "address": []
-[72]                     },
-[72]                     "ietf-ip:ipv6": {
-[72]                       "enabled": false,
-[72]                       "forwarding": false,
-[72]                       "mtu": 1500,
-[72]                       "address": []
-[72]                     }
-[72]                   }
-[72]                 ]
-[72]               }
-[72]             }
-[72]           }
-[72]         ]
-[72]       }
-[72]     }
-[72]   }
-[72] }
-[72/72] ============================== publisher.run -p ==============================
+{
+  "ietf-yang-push-2:envelope": {
+    "event-time": "2026-10-27T11:07:35.820861Z",
+    "hostname": "example-router",
+    "sequence-number": 3219,
+    "contents": {
+      "update": {
+        "id": "interfaces",
+        "snapshot-type": "periodic",
+        "observation-time": "2026-10-27T11:07:35.820861Z",
+        "updates": [
+          {
+            "target-path": "/ietf-interfaces:interfaces/interface",
+            "update": {
+              "ietf-interfaces:interface": [
+                {
+                  "name": "Eth0",
+                  "description": "Ethernet interface 0",
+                  "type": "iana-if-type:ethernetCsmacd",
+                  "enabled": true,
+                  "admin-status": "up",
+                  "oper-status": "up",
+                  "last-change": "2024-10-10T08:00:00.00Z",
+                  "if-index": 1,
+                  "phys-address": "00:11:22:33:44:00",
+                  "speed": "1000000000",
+                  "statistics": {
+                    "discontinuity-time": "2024-10-10T08:00:00.00Z",
+                    "in-octets": "1234567890",
+                    "in-unicast-pkts": "9876543",
+                    "in-broadcast-pkts": "12345",
+                    "in-multicast-pkts": "54321",
+                    "in-discards": 10,
+                    "in-errors": 5,
+                    "in-unknown-protos": 0,
+                    "out-octets": "9876543210",
+                    "out-unicast-pkts": "8765432",
+                    "out-broadcast-pkts": "23456",
+                    "out-multicast-pkts": "65432",
+                    "out-discards": 8,
+                    "out-errors": 3
+                  },
+                  "ietf-ip:ipv4": {
+                    "enabled": true,
+                    "forwarding": false,
+                    "mtu": 1500,
+                    "address": [
+                      {
+                        "ip": "192.0.2.1",
+                        "prefix-length": 24
+                      }
+                    ]
+                  },
+                  "ietf-ip:ipv6": {
+                    "enabled": true,
+                    "forwarding": false,
+                    "mtu": 1500,
+                    "address": [
+                      {
+                        "ip": "2001:db8::1",
+                        "prefix-length": 64
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "Eth1",
+                  "description": "Ethernet interface 1",
+                  "type": "iana-if-type:ethernetCsmacd",
+                  "enabled": true,
+                  "admin-status": "up",
+                  "oper-status": "up",
+                  "last-change": "2024-10-10T08:00:00.00Z",
+                  "if-index": 2,
+                  "phys-address": "00:11:22:33:44:01",
+                  "speed": "1000000000",
+                  "statistics": {
+                    "discontinuity-time": "2024-10-10T08:00:00.00Z",
+                    "in-octets": "1234567890",
+                    "in-unicast-pkts": "9876543",
+                    "in-broadcast-pkts": "12345",
+                    "in-multicast-pkts": "54321",
+                    "in-discards": 10,
+                    "in-errors": 5,
+                    "in-unknown-protos": 0,
+                    "out-octets": "9876543210",
+                    "out-unicast-pkts": "8765432",
+                    "out-broadcast-pkts": "23456",
+                    "out-multicast-pkts": "65432",
+                    "out-discards": 8,
+                    "out-errors": 3
+                  },
+                  "ietf-ip:ipv4": {
+                    "enabled": true,
+                    "forwarding": false,
+                    "mtu": 1500,
+                    "address": [
+                      {
+                        "ip": "192.0.2.2",
+                        "prefix-length": 24
+                      }
+                    ]
+                  },
+                  "ietf-ip:ipv6": {
+                    "enabled": true,
+                    "forwarding": false,
+                    "mtu": 1500,
+                    "address": [
+                      {
+                        "ip": "2001:db8::2",
+                        "prefix-length": 64
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "Eth2",
+                  "description": "Ethernet interface 2",
+                  "type": "iana-if-type:ethernetCsmacd",
+                  "enabled": true,
+                  "admin-status": "up",
+                  "oper-status": "up",
+                  "last-change": "2024-10-10T08:00:00.00Z",
+                  "if-index": 3,
+                  "phys-address": "00:11:22:33:44:02",
+                  "speed": "1000000000",
+                  "statistics": {
+                    "discontinuity-time": "2024-10-10T08:00:00.00Z",
+                    "in-octets": "1234567890",
+                    "in-unicast-pkts": "9876543",
+                    "in-broadcast-pkts": "12345",
+                    "in-multicast-pkts": "54321",
+                    "in-discards": 10,
+                    "in-errors": 5,
+                    "in-unknown-protos": 0,
+                    "out-octets": "9876543210",
+                    "out-unicast-pkts": "8765432",
+                    "out-broadcast-pkts": "23456",
+                    "out-multicast-pkts": "65432",
+                    "out-discards": 8,
+                    "out-errors": 3
+                  },
+                  "ietf-ip:ipv4": {
+                    "enabled": true,
+                    "forwarding": false,
+                    "mtu": 1500,
+                    "address": [
+                      {
+                        "ip": "192.0.2.3",
+                        "prefix-length": 24
+                      }
+                    ]
+                  },
+                  "ietf-ip:ipv6": {
+                    "enabled": true,
+                    "forwarding": false,
+                    "mtu": 1500,
+                    "address": [
+                      {
+                        "ip": "2001:db8::3",
+                        "prefix-length": 64
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "Eth3",
+                  "description": "Ethernet interface 3",
+                  "type": "iana-if-type:ethernetCsmacd",
+                  "enabled": false,
+                  "admin-status": "down",
+                  "oper-status": "down",
+                  "last-change": "2024-10-10T08:00:00.00Z",
+                  "if-index": 4,
+                  "phys-address": "00:11:22:33:44:03",
+                  "speed": "1000000000",
+                  "statistics": {
+                    "discontinuity-time": "2024-10-10T08:00:00.00Z",
+                    "in-octets": "0",
+                    "in-unicast-pkts": "0",
+                    "in-broadcast-pkts": "0",
+                    "in-multicast-pkts": "0",
+                    "in-discards": 0,
+                    "in-errors": 0,
+                    "in-unknown-protos": 0,
+                    "out-octets": "0",
+                    "out-unicast-pkts": "0",
+                    "out-broadcast-pkts": "0",
+                    "out-multicast-pkts": "0",
+                    "out-discards": 0,
+                    "out-errors": 0
+                  },
+                  "ietf-ip:ipv4": {
+                    "enabled": false,
+                    "forwarding": false,
+                    "mtu": 1500
+                  },
+                  "ietf-ip:ipv6": {
+                    "enabled": false,
+                    "forwarding": false,
+                    "mtu": 1500
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "complete": true
+      }
+    }
+  }
+}

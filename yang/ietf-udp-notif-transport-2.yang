@@ -85,7 +85,6 @@ module ietf-udp-notif-transport-2 {
   */
   identity udp-notif {
     base yp2:transport;
-    base yp2:configurable-encoding;
     description
       "UDP-Notif is used as transport for notification messages
         and state change notifications.";

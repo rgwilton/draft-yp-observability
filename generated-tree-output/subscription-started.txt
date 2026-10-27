@@ -7,7 +7,7 @@
     |  |  |  +--:(path)
     |  |  |  |  +--ro path                 ypath
     |  |  |  +--:(subtree)
-    |  |  |  |  +--ro subtree              <anydata>
+    |  |  |  |  +--ro subtree              <anydata> {yp2:subtree}?
     |  |  |  +--:(xpath)
     |  |  |     +--ro xpath                yang:xpath1.0 {yp2:xpath}?
     |  |  +--ro schema-id?                 string
