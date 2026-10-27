@@ -1565,6 +1565,8 @@ This initial draft is early work is based on discussions with various folk, part
 
 In addition, as described in the introduction, the authors would like to acknowledge that this work builds on work of others, such as, Subscribed Notifications, YANG Push, and various extensions to that work.
 
+Markup and prose have been produced using ChatGPT Codex and reviewed by the authors. The final content remains the responsibility of the authors.
+
 # Contributors
 {:numbered="false"}
 
