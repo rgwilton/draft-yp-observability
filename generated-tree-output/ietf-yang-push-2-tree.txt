@@ -113,7 +113,7 @@ module: ietf-yang-push-2
     |  |     +--:(update)
     |  |     |  +--ro update?   <anydata>
     |  |     +--:(delete)
-    |  |        +--ro delete?   empty
+    |  |        +--ro delete?   boolean
     |  +--ro complete?           boolean
     +---n update-complete
        +--ro id?   subscription-id

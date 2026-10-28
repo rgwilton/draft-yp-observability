@@ -9,5 +9,5 @@
     |  |     +--:(update)
     |  |     |  +--ro update?   <anydata>
     |  |     +--:(delete)
-    |  |        +--ro delete?   empty
+    |  |        +--ro delete?   boolean
     |  +--ro complete?           boolean

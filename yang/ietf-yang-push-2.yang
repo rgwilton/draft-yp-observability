@@ -435,7 +435,10 @@ module ietf-yang-push-2 {
         messages (e.g., processor 1 on line card 1). This field
         is used to notify the receiver which publisher processes
         are going to publish. The identifiers are locally unique to
-        the Network Node.";
+        the Network Node. A publisher removed from and re-added to a
+        subscription MUST be allocated a new identifier. Removed
+        identifiers MUST NOT be reused within that subscription's
+        lifetime.";
     }
   }
 
@@ -620,7 +623,7 @@ module ietf-yang-push-2 {
         "Indicates the version of the YANG schema used for this
         subscription.  The schema-id MUST change if the schema
         associated with the subscription changes.  The schema-id
-        MAY change if the device schema changes, even if the 
+        MAY change if the device schema changes, even if the
         change does not affect the subscription.";
     }
 
@@ -950,16 +953,10 @@ module ietf-yang-push-2 {
           description
             "The update message is due to a periodic update.";
         }
-        enum "on-change-update" {
+        enum "on-change" {
           description
-            "The update message is due to an on-change update.  This
-             means that one or more fields have changed under the
-             target path.";
-        }
-        enum "on-change-delete" {
-          description
-            "The update message is due to an on-change event where
-             the data node at the target path has been deleted.";
+            "The update message is due to an on-change event and
+             may contain both update and delete operations.";
         }
         enum "resync" {
           description
@@ -973,11 +970,7 @@ module ietf-yang-push-2 {
 
              These messages can be used to ensure that all state
              has been sent to the client, and can be used to purge
-             stale data.
-
-             TODO - In the distributed notification case, need a
-             notification to indicate that all child subscriptions
-             have been sent.";
+             stale data.";
         }
       }
       mandatory true;
@@ -1046,20 +1039,21 @@ module ietf-yang-push-2 {
              defined by path-prefix and target-path.";
         }
         leaf delete {
-          when "../../snapshot-type = 'on-change-update' or "
-             + "../../snapshot-type = 'on-change-delete'" {
+          when "../../snapshot-type = 'on-change'" {
             description
               "Deletion is only permitted in on-change
                notifications, never in periodic or resync
                snapshots.";
           }
-          type empty;
+          type boolean;
+          default "false";
           description
-            "The data node at the target path and all its
+            "When true, the data node at the target path and all its
              descendants have been deleted.  This operation also
              removes the corresponding data from the receiver's
              view.  If the data is already absent, no action is
-             required.  This operation MUST only be used for
+             required. When false, no deletion is indicated.
+             This operation MUST only be used for
              on-change deletion events and MUST NOT be used in
              periodic or resync snapshots.";
         }
@@ -1067,13 +1061,20 @@ module ietf-yang-push-2 {
     }
 
     leaf complete {
+      when "../snapshot-type = 'periodic' or "
+         + "../snapshot-type = 'resync'";
       type boolean;
       default "false";
       description
-        "This flag indicates that this is the last
-         notification in a series of notifications that together
-         constitute a complete snapshot of the subscribed data for
-         the collection identified by the envelope's event-time.
+        "This flag applies only to periodic and resynchronization
+         collections. When true, it indicates the end of this
+         publisher's contribution to the collection identified by the
+         subscription id and the envelope's event-time. The
+         publisher is identified by the envelope's publisher-id.
+         Receivers MUST track completion per publisher and MUST NOT
+         consider the full collection complete until all publishers
+         serving the subscription for that collection have indicated
+         completion.
          The data need not have been sampled at a single instant.
 
          The 'update-complete' notification MAY be used as an
@@ -1084,11 +1085,17 @@ module ietf-yang-push-2 {
 
   notification update-complete {
     description
-      "This notification indicates the end of a periodic collection
-       or resynchronization collection identified by the envelope's
-       event-time. The receiver has a complete snapshot of the
-       subscribed data collected for that operation and MAY purge
-       stale state within that snapshot's scope.
+      "This notification indicates the end of this publisher's
+       contribution to a periodic or resynchronization collection,
+       identified by the subscription id and the envelope's
+       event-time.
+
+       The publisher is identified by the envelope's publisher-id.
+       Receivers MUST track completion per publisher and MUST NOT
+       consider the full collection complete until all publishers
+       serving the subscription for that collection have indicated
+       completion. The receiver MAY then purge stale state within
+       the complete snapshot's scope.
 
        Alternatively, the 'complete' flag in the update
        notification MAY be used instead of sending this notification
@@ -1132,19 +1139,23 @@ module ietf-yang-push-2 {
          messages (e.g., processor 1 on line card 1). This field
          is used to notify the receiver which publisher process
          published which message. The identifier is locally unique to
-         the Network Node.";
+         the Network Node. A publisher removed from and re-added to a
+         subscription MUST be allocated a new identifier. Removed
+         identifiers MUST NOT be reused within that subscription's
+         lifetime.";
     }
     leaf sequence-number {
       type yang:counter32;
       mandatory true;
       description
         "Sequence number maintained independently for each
-         publisher-id within a subscription for its lifetime.
-         The first notification from each publisher-id uses 1.
+         publisher-id within a subscription. The first notification
+         from each newly created or re-added publisher uses 1
+         under its new publisher-id.
          Each subsequent notification from that publisher-id for
          that subscription increments the value by 1, wrapping from
-         4294967295 to 0 and continuing. The counter MUST NOT be
-         reset during the lifetime of the subscription.";
+         4294967295 to 0 and continuing. The counter
+         MUST NOT be reset during the lifetime of the subscription.";
     }
     container extensions {
       description

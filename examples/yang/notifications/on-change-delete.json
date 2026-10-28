@@ -1,12 +1,12 @@
 {
   "ietf-yang-push-2:update": {
     "id": "interfaces",
-    "snapshot-type": "on-change-delete",
+    "snapshot-type": "on-change",
     "observation-time": "2025-10-10T08:16:15.11Z",
     "updates": [
       {
         "target-path": "/ietf-interfaces:interfaces/interface[name='eth0']",
-        "delete": [null]
+        "delete": true
       }
     ]
   }

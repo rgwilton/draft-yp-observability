@@ -2,7 +2,7 @@
   "ietf-yang-push-2:update": {
     "id": "interfaces",
     "path-prefix": "/ietf-interfaces:interfaces",
-    "snapshot-type": "on-change-update",
+    "snapshot-type": "on-change",
     "observation-time": "2025-10-10T08:16:06.11Z",
     "updates": [
       {

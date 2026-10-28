@@ -71,7 +71,7 @@ normative:
   BCP14: RFC2119 RFC8174
 
 informative:
-  I-D.draft-ietf-netconf-notif-envelope:
+  I-D.ietf-netconf-notif-envelope:
   RFC3411:
   RFC3688:
   RFC4252:
@@ -88,14 +88,14 @@ informative:
   RFC8640:
   RFC8641:
   RFC9000:
-  I-D.draft-ietf-netmod-rfc8407bis:
+  I-D.ietf-netmod-rfc8407bis:
   I-D.ietf-nmop-network-anomaly-architecture:
   I-D.ietf-nmop-yang-message-broker-integration:
-  I-D.draft-ietf-netconf-udp-notif:
-  I-D.draft-netana-netconf-yp-transport-capabilities:
-  I-D.draft-ietf-netconf-https-notif:
-  I-D.draft-ietf-netconf-distributed-notif:
-  I-D.draft-yn-netmod-yang-xml-03:
+  I-D.ietf-netconf-udp-notif:
+  I-D.netana-netconf-yp-transport-capabilities:
+  I-D.ietf-netconf-https-notif:
+  I-D.ietf-netconf-distributed-notif:
+  I-D.yn-netmod-yang-xml-03:
   Kafka:
     target: https://kafka.apache.org/
     title: Apache Kafka
@@ -201,7 +201,7 @@ For the consumer of the telemetry data, there is a requirement to associate a sc
 
 This document proposes a new opt-in YANG-Push encoding format to use instead of the "push-update" and "push-change-update" notifications defined in {{RFC8641}}.
 
-1. To allow the device to split a subscription into smaller child subscriptions for more efficient independent and concurrent processing.  I.e., reusing the ideas from {{?I-D.ietf-netconf-distributed-notif}}.  However, all child subscriptions are still encoded from the same subscription point.
+1. To allow the device to split a subscription into smaller child subscriptions for more efficient independent and concurrent processing.  I.e., reusing the ideas from {{I-D.ietf-netconf-distributed-notif}}.  However, all child subscriptions are still encoded from the same subscription point.
 
 ### Combined periodic and on-change subscription
 
@@ -230,29 +230,29 @@ YANG Push v2 is defined using a separate module namespace, and hence can be impl
 
 A more complete description of the main differences in YANG Push v2 compares to {{RFC8639}} and {{RFC8641}} is given in {{DifferencesFromYangPush}}.
 
-### {{I-D.draft-ietf-netconf-notif-envelope}} and RFC 5277
+### {{I-D.ietf-netconf-notif-envelope}} and RFC 5277
 
-All of the notifications defined in this specification, i.e., both the datastore update message and subscription lifecycle update notifications ({{LifecycleNotifications}}), use the notification envelope defined in {{NotificationEnvelope}} and the `ietf-yang-push-2` YANG module ({{yang-push-2-yang-module}}).  This envelope is derived from the work in {{I-D.draft-ietf-netconf-notif-envelope}}, but is defined independently in this document.
+All of the notifications defined in this specification, i.e., both the datastore update message and subscription lifecycle update notifications ({{LifecycleNotifications}}), use the notification envelope defined in {{NotificationEnvelope}} and the `ietf-yang-push-2` YANG module ({{yang-push-2-yang-module}}).  This envelope is derived from the work in {{I-D.ietf-netconf-notif-envelope}}, but is defined independently in this document.
 
 As such, this specification does not make any use of the notification format defined in {{RFC5277}}, but this does not prevent implementations using {{RFC5277}} format notifications for other YANG notifications, e.g., for the "NETCONF" event stream defined in {{RFC5277}}.
 
-### RFC 9196 and {{I-D.draft-netana-netconf-yp-transport-capabilities}}
+### RFC 9196 and {{I-D.netana-netconf-yp-transport-capabilities}}
 
 This document uses the capabilities concepts defined in {{RFC9196}}.
 
 In particular, it augments into the ietf-system-capabilities YANG module, but defines an equivalent alternative capability structure for the ietf-notification-capabilities YANG module, which defines the capabilities for YANG Push {{RFC8641}}.
 
-The generic transport capabilities defined in {{I-D.draft-netana-netconf-yp-transport-capabilities}} have been incorporated into the ietf-yang-push-2 YANG module, to augment YANG Push v2 transport capabilities and to use the different identities.
+The generic transport capabilities defined in {{I-D.netana-netconf-yp-transport-capabilities}} have been incorporated into the ietf-yang-push-2 YANG module, to augment YANG Push v2 transport capabilities and to use the different identities.
 
-### {{I-D.draft-ietf-netconf-https-notif}} and {{I-D.draft-ietf-netconf-udp-notif}}
+### {{I-D.ietf-netconf-https-notif}} and {{I-D.ietf-netconf-udp-notif}}
 
-The ietf-yang-push-2 YANG module has subsumed and extended the *receivers* data model defined in the ietf-subscribed-notif-receivers YANG module defined in {{I-D.draft-ietf-netconf-https-notif}}.
+The ietf-yang-push-2 YANG module has subsumed and extended the *receivers* data model defined in the ietf-subscribed-notif-receivers YANG module defined in {{I-D.ietf-netconf-https-notif}}.
 
 The overall YANG Push v2 solution anticipates and requires new bis versions of both of these transports documents that augment into the *receivers/receiver/transport-type* choice statement, and also augment the transport identity defined in the ietf-yang-push-2 data model.
 
-### {{I-D.draft-ietf-netconf-distributed-notif}}
+### {{I-D.ietf-netconf-distributed-notif}}
 
-This document reuses the work from {{I-D.draft-ietf-netconf-distributed-notif}}, but with some changes to work with the YANG Push v2 data models.  This is described in {{distributed-notifications}}.
+This document builds on the architecture of {{I-D.ietf-netconf-distributed-notif}}.  The YANG Push v2 distributed-notification behavior is fully defined in {{distributed-notifications}}, with changes to the message structure and tighter restrictions on publisher ID allocation.
 
 # YANG Push v2 Overview {#overview}
 
@@ -282,7 +282,7 @@ Changes to the state of subscription are notified to receivers as subscription l
 
 Security access control mechanisms, e.g., NACM {RFC8341}} can be used to ensure the receivers only get access to the information for which they are allowed.  This is further described in {{security}}.
 
-While the functionality defined in this document is transport agnostic, transports like the Network Configuration Protocol (NETCONF) {{RFC6241}} or RESTCONF {{RFC8040}} can be used to configure or dynamically signal subscriptions.  In the case of configured subscription, the transport used for carrying the subscription notifications is entirely independent from the protocol used to configure the subscription, and other transports, e.g., {{I-D.draft-ietf-netconf-udp-notif}} defines a simple UDP based transport for Push notifications. Transport considerations are described in {{transports}}. **TODO the reference to draft-ietf-netconf-udp-notif isn't right, it wouldn't be that draft, but a -bis version of it.  James is querying whether we need this at all**
+While the functionality defined in this document is transport agnostic, transports like the Network Configuration Protocol (NETCONF) {{RFC6241}} or RESTCONF {{RFC8040}} can be used to configure or dynamically signal subscriptions.  In the case of configured subscription, the transport used for carrying the subscription notifications is entirely independent from the protocol used to configure the subscription, and other transports, e.g., {{I-D.ietf-netconf-udp-notif}} defines a simple UDP based transport for Push notifications. Transport considerations are described in {{transports}}. **TODO the reference to draft-ietf-netconf-udp-notif isn't right, it wouldn't be that draft, but a -bis version of it.  James is querying whether we need this at all**
 
 **TODO Introduce capabilities and operational monitoring**
 
@@ -356,7 +356,17 @@ This document introduces the following terms:
 
 - *YANG-Push-Lite*: The light weight subscription and push mechanism for datastore updates that is specified in this document. **Add comment**
 
-This document also uses the terminology from {{I-D.ietf-netconf-distributed-notif}} in {{distributed-notifications}} and the related examples in {{distrib-notif-example}}.
+The following terms from {{I-D.ietf-netconf-distributed-notif}} are reused here; their definitions are given below for completeness:
+
+- *Network Node*: The device containing the publishing processes.
+
+- *Publisher Parent* (also referred to as the Publisher Parent Process): The component that manages the overall subscription and coordinates its decomposition among Publisher Agents.
+
+- *Publisher Agent*: The component that handles an assigned part of the subscription and sends its data to the receiver.
+
+- *Message Publisher*: A publisher that sends notification messages to the receiver.
+
+- *Message Publisher ID*: A 32-bit identifier of a publishing process that is locally unique within the Network Node.
 
 # Subscription paths and selection filters {#pathsAndFilters}
 
@@ -467,15 +477,15 @@ The normative field definitions are given in the YANG module.  The fields can be
 - *event-time* - the time the telemetry infrastructure began processing the collection, on-change event, or subscription lifecycle event.
 - *hostname* - the hostname identifying the network node that published the notification.
 - *publisher-id* - identifies the publishing process within the network node.  The default is 0, which identifies the Publisher Parent ({{distributed-notifications}}).
-- *sequence-number* - a counter maintained independently for each *publisher-id* within a subscription for its lifetime.  It starts at 1, increments by 1 for each notification from that publisher for that subscription, and wraps from 4294967295 to 0 and continues.
+- *sequence-number* - a counter maintained independently for each publisher within a subscription.  It starts at 1, increments by 1 for each notification from that publisher for that subscription, and wraps from 4294967295 to 0 and continues.
 - *extensions* - a container reserved for future envelope metadata extensions.
 - *contents* - the notification carried by the envelope.
 
 The *contents* anydata node MUST contain exactly one notification, identified by the name of its YANG *notification* statement and the namespace of the module defining that statement.  The notification's data node values are carried unchanged.
 
-Sequence numbers are tracked separately for each combination of *hostname*, subscription *id*, and *publisher-id* (including the default publisher ID of 0).  The counter covers all notification types sent by that publisher for that subscription, including lifecycle and *update-complete* notifications.  It continues across collections and subscription modifications without resetting.  A publisher that first joins an existing subscription starts its own counter at 1; counters previously used for a *publisher-id* are retained for the subscription's lifetime.  Terminating and recreating a subscription starts a new lifetime and new counters, even if the subscription ID is reused.
+Sequence numbers are tracked separately for each combination of *hostname*, subscription *id*, and *publisher-id* (including the default publisher ID of 0).  The counter covers all notification types sent by that publisher for that subscription, including lifecycle and *update-complete* notifications.  It continues across collections and subscription modifications without resetting while that publisher remains part of the subscription.  A newly created publisher starts its own counter at 1.  A publisher removed from and subsequently re-added to a subscription MUST be allocated a new *publisher-id*.  A removed *publisher-id* MUST NOT be reused within that subscription's lifetime.  Terminating and recreating a subscription starts a new lifetime and new counters, even if the subscription ID is reused.
 
-For periodic and resynchronization collections, *event-time* records when the telemetry infrastructure starts processing the collection.  For an on-change event, it records when the telemetry infrastructure starts processing the notification of that change.  All notification messages belonging to the same collection or on-change event MUST carry the same *event-time*, including messages from different publishing processes and any associated *update-complete* notification.  For a subscription lifecycle notification, *event-time* records when processing of that lifecycle event began.
+For periodic and resynchronization collections, *event-time* records when the telemetry infrastructure starts processing the collection.  For an on-change event, it records when the telemetry infrastructure starts processing the notification of that change.  All notification messages belonging to the same collection or on-change event MUST carry the same *event-time*, including messages from different publishing processes.  Any *update-complete* notification for a periodic or resynchronization collection MUST carry that collection's *event-time*.  For a subscription lifecycle notification, *event-time* records when processing of that lifecycle event began.
 
 The common *event-time* correlates messages from one collection or on-change event.  It does not imply that the reported data was read or changed at that instant.  A completed periodic or resynchronization collection comprises data collected for that operation, potentially at different observation times.
 
@@ -517,9 +527,9 @@ The normative definitions for the notifications fields are given in the YANG mod
 
   - *update* - supplies current values to create or update in the receiver's view.  Existing leaf and leaf-list values supplied in the payload are replaced; containers and list entries are updated recursively, with list entries identified by their keys.  Required list keys are included.  For on-change notifications, omitted descendants remain unchanged and absence of a data node does not implicitly imply deletion of that data node.
 
-  - *delete* - indicates that the data node at *target-path* and all its descendants no longer exist and should be removed from the receiver's view.  Deleting data that is already absent has no effect.  This operation is used for on-change deletion events.
+  - *delete* - a boolean with a default value of ```false```.  When ```true```, it indicates that the data node at *target-path* and all its descendants no longer exist and should be removed from the receiver's view.  When ```false```, no deletion is indicated.  Deleting data that is already absent has no effect.  This operation is used for on-change deletion events.
 
-- *complete* - if present, this flag indicates whether the notification is complete or whether more messages as part of the same update will follow.  The default value for the flag depends on the *snapshot-type*.  For *on-change* events, the messages are assumed to be completed until the *complete* leaf is set to ```false```.  For other type of events (e.g., periodic), the messages are assumed to be incomplete unless the *complete* leaf is set to ```true```.  Setting this flag to ```true``` is semantically equivalent to the server sending a separate *update-complete* notification.
+- *complete* - applies only to *periodic* and *resync* updates and defaults to ```false```.  When ```true```, it indicates that this message completes the publisher's contribution to the collection, and is semantically equivalent to sending a separate *update-complete* notification.  Publishers MUST NOT include this flag in *on-change* updates.
 
 The *observation-time* describes the source data, with the greatest accuracy available from the source.  For periodic and resynchronization updates, it records the time the data was sampled.  If the data was previously sampled by a producer and cached, the timestamp SHOULD represent that original sampling.  For on-change updates, it records when the underlying event (creation, modification, or deletion) first occurred, rather than when the telemetry infrastructure received or processed the change notification.
 
@@ -670,7 +680,7 @@ Each configured receiver has the following associated properties:
 
 This specification is transport independent, e.g., see {{transports}}, and thus the YANG module defined in {{yang-push-2-yang-module}} cannot directly define and expose these transport parameters.  Instead, receiver-specific transport connectivity parameters MUST be configured via transport-specific augmentations to the YANG choice node */datastore-telemetry/receivers/receiver/transport-type*.
 
-A publisher supporting configured subscriptions clearly must support at least one YANG data model that augments transport connectivity parameters onto */datastore-telemetry/receivers/receiver/transport-type*.  For an example of a similar such augmentation (but for YANG Push), see {{I-D.draft-ietf-netconf-udp-notif}}. **TODO, this reference and text will need to be updated to a UDP-notif bis document, that augments the new YANG Push v2 receiver path.**
+A publisher supporting configured subscriptions clearly must support at least one YANG data model that augments transport connectivity parameters onto */datastore-telemetry/receivers/receiver/transport-type*.  For an example of a similar such augmentation (but for YANG Push), see {{I-D.ietf-netconf-udp-notif}}. **TODO, this reference and text will need to be updated to a UDP-notif bis document, that augments the new YANG Push v2 receiver path.**
 
 ### Receivers for Dynamic Subscriptions {#DynamicSubscriptionReceivers}
 
@@ -747,7 +757,7 @@ The transport selected by the subscriber to reach the publisher SHOULD be able t
 
 The transport specification MUST specifying how multiple subscriptions referencing the same receiver are to be handled at the transport layer.  The transport specification MAY require separate transport sessions per subscription to a given receiver, or it MAY allow multiple subscriptions to the same receiver to be multiplexed over a shared transport session.
 
-A specification for a transport built upon this document can choose whether to use the same logical channel for the RPCs and the event records.  However, the *update* records and the subscription state change notifications MUST be sent on the same transport session.
+A specification for a transport built upon this document can choose whether to use the same logical channel for the RPCs and the event records.  For a given subscription and Message Publisher process, the *update* records and subscription state change notifications sent by that process MUST be sent on the same transport session.  Transport session considerations for distributed publishers are described in {{distributed-notifications}}.
 
 The transport specification MAY specify a keepalive mechanism to keep the transport session alive.  There is no YANG Push v2 protocol or application level keepalive mechanism.
 
@@ -1255,13 +1265,13 @@ transport-layer RPC structures.  These structures are:
 
 It is important for clients to have confidence that the telemetry data that they receive is correct and complete.  The design of YANG Push v2 achieves this in several ways:
 
-- the *complete* flag in the *update* notification, or the equivalent *update-complete* notification, are used to signal when all data for a periodic collection event has been enqueued by the publisher.  This allows clients to delete stale information and monitor the performance and behavior of the publisher.
+- the *complete* flag in the *update* notification, or the equivalent *update-complete* notification, are used to signal when all data for a periodic or resynchronization collection has been enqueued by the publisher.  This allows clients to delete stale information and monitor the performance and behavior of the publisher.
 
 - publishers use buffers when enqueuing traffic on to a transport to a receiver, but if that buffer becomes full then the transport specification indicates whether update messages should be dropped, or the subscription should be terminated.  In that case that a dynamic subscription is terminated, the client may attempt to re-created the subscription.  For configured subscriptions that have been terminated, the publisher should attempt to periodically recreate the subscription or reconnect the receiver.
 
 - the *notification envelope* structure, {{NotificationEnvelope}}, used for all YANG Push notifications contains a *sequence-number* counter scoped to each subscription and *publisher-id*.  Gaps in that notification stream, accounting for wraparound and reordering, allow lost messages in an end-to-end data pipeline spanning multiple transport hops to be detected and appropriate mitigation steps to be taken.  For example, see figure 1 in {{I-D.ietf-nmop-network-anomaly-architecture}}.
 
-- the protocol relies on transport protocols that are either reliable, e.g., TCP or HTTP, or unreliable transports that employ mechanisms for clients to detect when losses at the transport layer have occurred, e.g., the *message id* in {{I-D.draft-ietf-netconf-udp-notif}} (**TODO fix reference to bis version, once that becomes available**).
+- the protocol relies on transport protocols that are either reliable, e.g., TCP or HTTP, or unreliable transports that employ mechanisms for clients to detect when losses at the transport layer have occurred, e.g., the *message id* in {{I-D.ietf-netconf-udp-notif}} (**TODO fix reference to bis version, once that becomes available**).
 
 - finally, if a publisher is not able to honor the expectation for a subscription for any reason, then the publisher always has the option to terminate the subscription.  It can then subsequently refuse to handle new subscriptions if it does not have sufficient resources to handle the subscription.
 
@@ -1347,34 +1357,41 @@ The set of modules, revisions, features, and deviations can change at runtime (i
 
 # Distributed Notifications - Multiple Publishing Processes {#distributed-notifications}
 
-Distributed notifications is the concept of allowing subscriptions to be served from multiple different agent publisher processes on the same device.  As a simple example, an implementation could choose to have separate publishing processes for each linecard in a network device, so that data that is local to that linecard can be published directly from the linecard, perhaps directly from the linecard data interfaces, without been sent to a Management Processor card that could act a bottleneck.
+Distributed notifications allow a subscription to be served by multiple publishing processes on the same device.  For example, separate processes on linecards can publish local data directly to the receiver, avoiding a bottleneck at the management processor.
 
-The YANG Push 2 specification supports distributed notifications as described in {{I-D.ietf-netconf-distributed-notif}}, and using the terminology defined therewithin, but with some differences due to the different YANG data models, which are described below.
+The YANG Push 2 specification supports distributed notifications based on {{I-D.ietf-netconf-distributed-notif}}, but the solution is fully defined in this document.  It makes small changes to accommodate the YANG Push 2 message structure and imposes tighter restrictions on publisher ID allocation: ID 0 is reserved for the Publisher Parent Process, and if a Publisher Agent is removed and re-added to an ongoing subscription then it is allocated a new Publisher ID.
 
-It is OPTIONAL for YANG Push 2 publishers to support multiple publisher agents since they always have the option of handling all subscriptions from a single publisher process on each server.  Receivers and consumers of YANG Push 2 subscription data MUST accommodate servers that publish their data from multiple Message Publishing processes, e.g., they may need to correlate the update-complete notification across multiple publishing processes.
+It is OPTIONAL for YANG Push 2 publishers to support multiple publisher agents since they always have the option of handling all subscriptions from a single publisher process on each server.  Receivers and consumers of YANG Push 2 subscription data MUST accommodate servers that publish their data from multiple Message Publishing processes, including correlating collection completion across those processes.
 
-Publishers serving a subscription MUST only send the data for a given YANG data node from a single Message Publisher process.  Publishers MAY change which Message Publisher process is sending the data for a given YANG data node over time, e.g., to load-balance work.
+The following rules describe how distributed notifications are supported in YANG Push 2:
 
+- The publisher-id leaf, which identifies the Message Publisher ID of the publishing process, is defined directly in the YANG Push v2 notification envelope ({{NotificationEnvelope}}).  This means that all messages sent by any Message Publishers (e.g., including Subscription Lifecycle Notifications) will indicate which Message Publisher sent the message.
 
-The differences for supporting {{I-D.ietf-netconf-distributed-notif}} with YANG Push 2 are:
+- The publisher-id leaf has a default value of 0.  The publisher-id of 0 is reserved for the Publisher Parent process and MUST NOT be allocated to any Publisher Agent processes, since that allows for the publisher-id leaf to be omitted from notification messages sent from the Publisher Parent.
 
-- the publisher-id leaf, which identifies the Message Publisher ID of the publishing process, is defined directly in the YANG Push v2 notification envelope ({{NotificationEnvelope}}).  This means that all messages sent by any Message Publishers (e.g., including Subscription Lifecycle Notifications) will indicate which Message Publisher sent the message.
+- Publishers serving a subscription MUST only send the data for a given YANG data node from a single Message Publisher process.  Publisher membership and data ownership changes MUST take effect only between collections and never during a collection.  Publishers MAY reassign data to another Message Publisher process at these boundaries, e.g., to load-balance work.
 
-- the publisher-id leaf has a default value of 0.  The publisher-id of 0 is reserved for the Publisher Parent process and MUST NOT be allocated to any Publisher Agent processes, since that allows for the publisher-id leaf to be omitted from notification messages sent from the Publisher Parent.
+- Each Message Publisher maintains an independent sequence-number counter for each subscription while it participates in that subscription ({{NotificationEnvelope}}).  A newly created or re-added Message Publisher starts its counter at 1 under a new *publisher-id*.  Sequence numbers from different Message Publishers do not establish an ordering between their notifications.
 
-- each Message Publisher maintains an independent sequence-number counter for each subscription, for the lifetime of that subscription ({{NotificationEnvelope}}).  Sequence numbers from different Message Publishers do not establish an ordering between their notifications.
+- The Publisher Parent Process manages the subscription as a whole.  All Message Publishers serving the subscription MUST use its subscription ID and comply with its parameters and lifecycle, including subsequent modifications and termination.  The Publisher Parent Process is responsible for reporting failures that affect the subscription using the lifecycle notifications defined in this document.  Internal coordination between publishing processes is implementation-specific.
 
-- the *subscription-started* and *subscription-modified* notifications have a *message-publishers/publisher-id* leaf-list that identifies all Message Publishers that will send messages as part of the subscription.  This leaf-list defaults to a single entry of 0, so MAY be ommitted if there is only a single Message Publisher and it has an publisher-id of 0.
+- All subscription lifecycle notifications ({{LifecycleNotifications}}) MUST be sent by the Publisher Parent Process.
 
-  - As per {{I-D.ietf-netconf-distributed-notif}}, the list of Message Publishers serving an active subscription can change during the lifetime of the subscription and the Publisher Parent MUST send a *subscription-modified* notification of any change in publisher-ids.
+- Publisher Agents MUST NOT send *update* notifications for a newly started subscription or reflecting a lifecycle change until the Publisher Parent Process has sent the corresponding lifecycle notification.  There is no guarantee of message ordering between different Message Publishers; i.e., it is possible that an agent's *update* notification arrives at the receiver before the Parent's lifecycle notification even though it was sent afterwards.
 
-  - Yang Push 2 does not return the list of publisher-ids as part of the establish-subscription response output because the dynamic subscription will receive a *subscription-started* notification instead, which also provides a more robust mechanism consistent with configured subscriptions.
+- For configured subscriptions, separate Message Publisher processes MAY establish separate transport sessions to the configured receiver, where supported by the transport binding.  The transport specification defines whether sessions are shared or separate, including security associations and any requirements for source and destination ports.
 
-- the *subscriptions/subscription* has a *message-publishers/publisher-id* leaf-list to report the current list of Message Publishers associated with a subscription.
+- The *subscription-started* and *subscription-modified* notifications have a *message-publishers/publisher-id* leaf-list that identifies all Message Publishers that will send messages as part of the subscription.  This leaf-list defaults to a single entry of 0, so MAY be omitted if there is only a single Message Publisher and it has a publisher-id of 0.
 
-- A capability flag is used to indicate whether the server might use distributed notifications.
+  - The list of Message Publishers serving an active subscription can change during the lifetime of the subscription and the Publisher Parent MUST send a *subscription-modified* notification of any change in publisher-ids.
 
-- the *update-complete* notifications, or the equivalent *complete* leaf as part of an *update* notification are generated per Message Publisher process, and are scoped as such.  I.e., this may require clients to count and correlate update complete indications across Message Publishers for a given subscription.
+  - For dynamic subscriptions, publisher IDs are reported in *subscription-started*, rather than in the *establish-subscription* RPC response, consistently with configured subscriptions.
+
+- The *subscriptions/subscription/message-publishers* list reports the current Message Publishers associated with a subscription and their per-publisher counters.
+
+- A capability flag is used to indicate whether the server might use distributed notifications.  Advertised subscription capabilities describe the capabilities of the device as a whole.
+
+- For periodic and resynchronization collections, completion is indicated per Message Publisher process by an *update-complete* notification or by setting *complete* to ```true``` in an *update* notification.  Each indication applies only to that publisher's contribution to the collection.  Receivers MUST track completion separately for each *publisher-id* and MUST NOT consider the full collection complete until completion has been received from all Message Publishers serving the subscription for that collection.  Completion indications are correlated using the subscription *id* and the envelope's *event-time*.
 
 # Core YANG Push v2 YANG Data Model {#ietf-yang-push-2-yang}
 
@@ -1511,7 +1528,7 @@ If read access into previously accessible nodes has been lost due to a receiver 
 
 ## YANG Module Security Considerations
 
-This section is modeled after the template described in Section 3.7.1 of {{I-D.draft-ietf-netmod-rfc8407bis}}.
+This section is modeled after the template described in Section 3.7.1 of {{I-D.ietf-netmod-rfc8407bis}}.
 
 The "ietf-yang-push-2" YANG module defines a data model that is designed to be accessed via YANG-based management protocols, such as NETCONF {{RFC6241}} and RESTCONF {{RFC8040}}. These protocols have to use a secure transport layer (e.g., SSH {{RFC4252}}, TLS {{RFC8446}}, and QUIC {{RFC9000}}) and have to use mutual authentication.
 
@@ -1610,7 +1627,7 @@ This section lists functionality specified in {{RFC8639}} and YANG Push which is
 
 This section documents behavior that exists in both YANG Push and YANG Push v2, but the behavior differs between the two:
 
-- All YANG Push v2 notification messages use the notification envelope defined in this document ({{NotificationEnvelope}}).  YANG Push {{RFC8641}} uses the notification format defined in {{RFC5277}}, or the notification envelope defined in {{I-D.draft-ietf-netconf-notif-envelope}} if supported and enabled.
+- All YANG Push v2 notification messages use the notification envelope defined in this document ({{NotificationEnvelope}}).  YANG Push {{RFC8641}} uses the notification format defined in {{RFC5277}}, or the notification envelope defined in {{I-D.ietf-netconf-notif-envelope}} if supported and enabled.
 
 - There is a lot more alignment in data model, behavior, and state machined in YANG Push v2, aiming to minimize differences.
 
@@ -1668,7 +1685,7 @@ This section documents behavior that exists in both YANG Push and YANG Push v2, 
 
 - An *update-complete* notification has been defined to inform collectors when a subscription's periodic collection cycle is complete.
 
-- Support for {I-D.ietf-netconf-distributed-notif}} has been added to the base YANG Push v2 specification, as described in {{distributed-notifications}}.
+- Support for distributed notifications has been added to the base YANG Push v2 specification, as described in {{distributed-notifications}}.
 
 - TODO - More operational data on the subscription load and performance.
 
@@ -1792,7 +1809,7 @@ For the second notification related to the same subscription:
 {: align="left" sourcecode-name="periodic-update-stats.json" title="Example periodic update for interface statistics"}
 
 
-## Example of an on-change-update notification using the new style update message
+## Example of an on-change notification containing updated data
 
 If the subscription is for on-change notifications, or periodic-and-on-change-notifications, then, if the interface state changed (specifically if the 'state' leaf of the interface changed state), and if the device was capable of generating on-change notifications, then you may see the following message.  A few points of notes here:
 
@@ -1806,14 +1823,14 @@ If the subscription is for on-change notifications, or periodic-and-on-change-no
 
 - The *observation-time* leaf represents when the system first observed the on-change event occurring.  The envelope's *event-time* represents when the telemetry infrastructure began processing the change notification.
 
-- The on-change event doesn't differentiate the type of change to operational state.  The on-change-update snapshot type is used to indicate the creation of a new entry or some update to some existing state.  Basically, the message can be thought of as the state existing with some current value.
+- The *on-change* snapshot type identifies messages triggered by changes to the subscribed data.  Each entry in the *updates* list specifies an *update* or *delete* operation, and a single message may contain both operations.  An *update* operation does not distinguish between creation and modification.
 
 ~~~~ JSON
 {::include examples/full-on-change-notification.json.txt}
 ~~~~
 {: align="left" sourcecode-markers="true" sourcecode-name="on-change-msg.json" title="Example YANG Push v2 on-change update message"}
 
-## Example of an on-change-delete notification using the new style update message
+## Example of an on-change notification containing deleted data
 
 
 ### Update message with single deleted data node

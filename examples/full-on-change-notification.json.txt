@@ -6,7 +6,7 @@
     "contents": {
       "update": {
         "id": "interfaces",
-        "snapshot-type": "on-change-update",
+        "snapshot-type": "on-change",
         "observation-time": "2025-10-10T08:16:05.11Z",
         "updates": [
           {
