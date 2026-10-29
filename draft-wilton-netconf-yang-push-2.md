@@ -525,7 +525,7 @@ The normative definitions for the notifications fields are given in the YANG mod
 
 - *data* - A mandatory choice of exactly one operation, with *delete* available only for on-change notifications:
 
-  - *update* - supplies current values to create or update in the receiver's view.  Existing leaf and leaf-list values supplied in the payload are replaced; containers and list entries are updated recursively, with list entries identified by their keys.  Required list keys are included.  For on-change notifications, omitted descendants remain unchanged and absence of a data node does not implicitly imply deletion of that data node.
+  - *update* - supplies current values to create or update in the receiver's view.  Existing leaf and leaf-list values supplied in the payload are replaced; containers and list entries are updated recursively, with keyed list entries identified by their keys.  Required list keys are included.  For on-change notifications, omitted descendants remain unchanged and absence of a data node does not implicitly imply deletion of that data node.
 
   - *delete* - a boolean with a default value of ```false```.  When ```true```, it indicates that the data node at *target-path* and all its descendants no longer exist and should be removed from the receiver's view.  When ```false```, no deletion is indicated.  Deleting data that is already absent has no effect.  This operation is used for on-change deletion events.
 
@@ -536,6 +536,16 @@ The *observation-time* describes the source data, with the greatest accuracy ava
 Separate messages from one collection or on-change event may have different *observation-time* values while sharing the same *event-time*.  There is no required ordering between these two timestamps: previously sampled data or an earlier change may have an observation time before processing starts, while data sampled during a collection may have an observation time after processing starts.
 
 As per the structure of the *update* notification, a single notification MAY provide updates for multiple target-paths.  The *updates* list MUST NOT contain duplicate *target-path* values within a single notification.  The *target-path* leaf is the list key, so duplicate values are invalid YANG, including when one entry specifies *update* and another specifies *delete* for the same *target-path*.
+
+### Handling Particular YANG Data Nodes
+
+Empty non-presence containers SHOULD be omitted to minimize message size and receiver processing.  Presence containers MUST be included when they exist within the reported data, even if empty, and MUST be omitted when they do not exist.  For on-change notifications, deletion of a presence container MUST be reported by an explicit *delete* of that container or an ancestor.
+
+Leaf-lists are reported as a single data node.  For on-change notifications, when entries of a subscribed leaf-list are added, removed, modified, or reordered and the leaf-list remains non-empty, the publisher MUST send an *update* whose *target-path* identifies the leaf-list or an ancestor, and whose payload includes the complete current sequence of entries, preserving YANG ordering.  The supplied sequence replaces the receiver's previous sequence for that leaf-list.  Updates or deletions targeting individual leaf-list entries MUST NOT be sent.
+
+When the final entry is removed, the publisher MUST report an explicit *delete* of the leaf-list or an ancestor.  The leaf-list then has no entries and does not exist in the receiver's view.  An *update* of an enclosing subtree recursively updates the supplied data; omitted descendants remain unchanged.  Consequently, omission of a presence container or leaf-list from such an *update* does not report its deletion.
+
+For a list that has no keys, the position (index) of each list entry is used to identify that entry.  TODO: Extend the YPath representation defined in {{YPaths}} to identify entries of a non-keyed list and specify the index base and index encoding.
 
 ## Types of subscription event monitoring {#UpdateTriggers}
 
