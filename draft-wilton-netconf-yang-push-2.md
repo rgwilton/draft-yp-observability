@@ -32,7 +32,7 @@ author:
     role: editor
  -
     fullname: Holger Keller
-    organization: Deuetsche Telekom
+    organization: Deutsche Telekom
     email: Holger.Keller@telekom.de
  -
     fullname: Benoit Claise
@@ -40,8 +40,8 @@ author:
     email: benoit@everything-ops.net
  -
     fullname: Ebben Aries
-    organization: Juniper
-    email: exa@juniper.net
+    organization: HPE
+    email: exa@hpe.com
  -
     fullname: James Cumming
     organization: Nokia
