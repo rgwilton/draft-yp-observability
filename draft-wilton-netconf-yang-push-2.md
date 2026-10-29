@@ -95,6 +95,7 @@ informative:
   I-D.netana-netconf-yp-transport-capabilities:
   I-D.ietf-netconf-https-notif:
   I-D.ietf-netconf-distributed-notif:
+  I-D.jgc-netmod-yang-path:
   I-D.yn-netmod-yang-xml-03:
   Kafka:
     target: https://kafka.apache.org/
@@ -238,9 +239,7 @@ As such, this specification does not make any use of the notification format def
 
 ### RFC 9196 and {{I-D.netana-netconf-yp-transport-capabilities}}
 
-This document uses the capabilities concepts defined in {{RFC9196}}.
-
-In particular, it augments into the ietf-system-capabilities YANG module, but defines an equivalent alternative capability structure for the ietf-notification-capabilities YANG module, which defines the capabilities for YANG Push {{RFC8641}}.
+{{RFC9196}} defines the `ietf-system-capabilities` module as a common structure that other modules can augment with capability data.  It also defines the `ietf-notification-capabilities` module, which describes capabilities for YANG Push as specified in {{RFC8641}}, but those capabilities do not apply to YANG Push v2.  Instead, this document defines YANG Push v2 capabilities in the `ietf-yang-push-2-capabilities` module, which augments `ietf-system-capabilities` directly (see {{Capabilities}}).
 
 The generic transport capabilities defined in {{I-D.netana-netconf-yp-transport-capabilities}} have been incorporated into the ietf-yang-push-2 YANG module, to augment YANG Push v2 transport capabilities and to use the different identities.
 
@@ -389,6 +388,8 @@ For both YPath and XPath based filters, each filter may define a list of path ex
 ## *YPath* definition {#YPaths}
 
 A *YPath* represents a simple path into a YANG schema tree, where some of the list key values may be constrained.
+
+A general YPath format is proposed in {{I-D.jgc-netmod-yang-path}}.  The syntax defined below remains the current syntax used by this document, but the intention is to align it with the general YPath format.  Alignment requires resolving differences in string quoting, multi-key predicate syntax, relative paths, and regular-expression semantics.
 
 It is encoded in the similar format to the YANG JSON encoding for instance-identifier, section 6.11 of {{RFC7951}}, except with more flexibility on the keys, in that keys may be left-out or be bound to a regular expression filter.
 
@@ -609,7 +610,7 @@ In addition, publishers are not required to notify every change or value for an 
 
 To give an example, if the interface link state reported by hardware is changing state hundreds of times per second, then it would be entirely reasonable to limit those interface state changes to a much lower cadence, e.g., perhaps every 100 milliseconds.  In the particular case of interfaces, there may also be data model specific forms of more advanced dampening that are more appropriate, e.g., that notify interface down events immediately, but rate limit how quickly the interface is allowed to transition to up state, which overall acts as a limit on the rate at which the interface state may change, and hence also act as a limit on the rate at which on-change notifications could be generated.
 
-The information about what nodes support on-change notifications is reported using capabilities operational data model.  This is further described in {{ConformanceAndCapabilities}}.
+The information about what nodes support on-change notifications is reported using the capabilities operational data model.  This is further described in {{Capabilities}}.
 
 ### On-Change Considerations
 
@@ -1269,6 +1270,22 @@ transport-layer RPC structures.  These structures are:
     "delete-subscription" or "kill-subscription" RPC response.
 
 
+# Capabilities {#Capabilities}
+
+This document defines the `ietf-yang-push-2-capabilities` YANG module, which augments the `ietf-system-capabilities` module defined in {{RFC9196}}.  These modules provide a standard, machine-readable representation of YANG Push v2 capabilities, including supported subscription types, transports, and parameters.
+
+The ietf-yang-push-2-capabilities module contains capabilities to indicate what types of subscriptions and transports may be configured, along with acceptable subscription parameter for given subtrees.
+
+The schema tree for the ietf-system-capabilities augmented by ietf-yang-push-2-capabilities is given below.
+
+~~~~ yangtree
+{::include generated-tree-output/ietf-system-capabilities-tree.txt}
+~~~~
+{: align="left" title="YANG tree for ietf-system-capabilities with ietf-yl-lite-capabilities augmentations."}
+
+**TODO, do we need additional capabilities, as per [Issue 18](https://github.com/rgwilton/draft-yp-observability/issues/18)**
+
+
 # Robustness, Reliability, and Subscription Monitoring
 
 ## Robustness and Reliability
@@ -1324,26 +1341,13 @@ It is entirely possible that a subscription may be reasonable at the time that i
 TODO - Do we allow servers to reduce the period of the subscription to allow it to be kept active?  E.g., with a subscription modification notification?  E.g., see [issue 41](https://github.com/rgwilton/draft-yp-observability/issues/41)
 
 
-# Conformance and Capabilities {#ConformanceAndCapabilities}
+# Conformance {#Conformance}
 
-The normative text in this document already indicates which parts of the specification must or should be implemented for a compliant YANG Push v2 implementation via the use of {{RFC2119}} language.  It also sets out some additional related requirements, e.g., on transports {{transports}}, that add in additional functionality.
+The normative requirements for a conformant YANG Push v2 implementation are stated throughout this document using {{RFC2119}} language.  This section summarizes the implementation choices; the normative requirements remain in the sections referenced below.
 
-Some parts of this specification are optional to implement.  Some of these optional parts can be identified through the use of YANG Library {{RFC8525}} specifying the list of implemented YANG modules and YANG features.  But, the broader approach adopted by this specification is via extending the ietf-system-capabilities YANG module specified in {{RFC9196}} to make capability information available as standard YANG described operational data.
+An implementation supports configured subscriptions, dynamic subscriptions, or both.  The requirement to support at least one of these mechanisms is specified in {{ConfiguredAndDynamic}}.  Requirements for the behavior of each mechanism are specified in {{configured-subscriptions}} and {{DynamicSubscriptions}}.
 
-## Capabilities
-
-Publishers SHOULD implement the ietf-system-capabilities YANG module, defined in {{RFC9196}}, and the ietf-yang-push-2-capabilities YANG module, defined in {{yang-push-2-yang-capabilities-module}}) that augments ietf-system-capabilities.
-
-The ietf-yang-push-2-capabilities module contains capabilities to indicate what types of subscriptions and transports may be configured, along with acceptable subscription parameter for given subtrees.
-
-The schema tree for the ietf-system-capabilities augmented by ietf-yang-push-2-capabilities is given below.
-
-~~~~ yangtree
-{::include generated-tree-output/ietf-system-capabilities-tree.txt}
-~~~~
-{: align="left" title="YANG tree for ietf-system-capabilities with ietf-yl-lite-capabilities augmentations."}
-
-**TODO, do we need additional capabilities, as per [Issue 18](https://github.com/rgwilton/draft-yp-observability/issues/18)**
+The `ietf-yang-push-2-config` YANG module contains both the configuration and operational-state models.  Support for this module is optional, as specified in {{configured-subscriptions}}.  Implementations that use alternative mechanisms to configure and manage subscriptions may omit this module.
 
 ## Subscription Content Versioning
 
@@ -2019,7 +2023,7 @@ None currently.
 
 ## Issues related to Subscription Paths and Selection Filters
 
-1. This draft introduces a new simple yang path (ypath) format that is like a JSON instance data path, that all implementations MUST support.  [Issue 29](https://github.com/rgwilton/draft-yp-observability/issues/29)
+1. Align the YPath filter syntax in {{YPaths}} with {{I-D.jgc-netmod-yang-path}}, including string quoting, multi-key predicates, relative paths, and regular-expression semantics.  [Issue 29](https://github.com/rgwilton/draft-yp-observability/issues/29)
 
 1. Advertising subscription schema: [Issue 11](https://github.com/rgwilton/draft-yp-observability/issues/11)
 
