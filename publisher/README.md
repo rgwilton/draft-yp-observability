@@ -67,7 +67,7 @@ For example, a complete notification can contain:
         "snapshot-type": "periodic",
         "observation-time": "2025-10-21T10:00:00Z",
         "updates": [{
-          "target-path": "/ietf-interfaces:interfaces/interface[name='Eth0']",
+          "target": "/ietf-interfaces:interfaces/interface[name='Eth0']",
           "update": {"name": "Eth0", "enabled": true}
         }],
         "complete": true

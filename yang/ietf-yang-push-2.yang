@@ -939,10 +939,20 @@ module ietf-yang-push-2 {
     }
 
     leaf path-prefix {
-      type string;
+      type string {
+        length '2..max';
+        pattern '/[^/].*' {
+          error-message
+            "path-prefix must start with '/' and contain at least "
+          + "one path segment.";
+        }
+      }
       description
-        "Specifies the common prefix that all other paths and data
-         are encoded relative to.
+        "If present, this MUST be an absolute path from the
+         schema root, starting with '/' and containing at least
+         one path segment.  Neither an empty string nor '/'
+         is permitted.  It specifies the common prefix for all
+         target values in this notification.
 
          TODO - This should be a JSONified instance data path.";
     }
@@ -989,26 +999,53 @@ module ietf-yang-push-2 {
     }
 
     list updates {
-      key "target-path";
+      key "target";
       description
         "Each entry reports updated values or the deletion of the
-         data node identified by target-path.  A notification may
+         data node identified by target.  A notification may
          contain a partial snapshot of the subscribed data.
 
          Receivers MAY process the updates list entries in any
          order.  Consequently, the list MUST NOT contain duplicate
-         target-path values within a single notification.  The
-         target-path is the list key, so duplicate values are
+         target values within a single notification.  The
+         target is the list key, so duplicate values are
          invalid YANG.  The list MUST NOT contain both a delete
          entry for a data node and an update entry whose
-         target-path identifies a descendant of that deleted
+         target identifies a descendant of that deleted
          node.";
 
-      leaf target-path {
-        type string;
+      leaf target {
+        type string {
+          length "1..max";
+        }
+        must "../../path-prefix or "
+           + "starts-with(., '/')" {
+          error-message
+            "Without a path-prefix, target must be an "
+          + "absolute path starting with '/'.";
+        }
+        must "not(../../path-prefix) or "
+           + "not(starts-with(., '/'))" {
+          error-message
+            "With a path-prefix, target must be relative "
+          + "and must not start with '/'.";
+        }
         description
-          "The target path of the data that is being updated or
-           deleted.  The path is given relative to path-prefix.";
+          "Identifies the data being updated or deleted.  As the
+           updates list key, target MUST be present in every entry
+           and MUST NOT be empty.  When path-prefix is absent,
+           target MUST be an
+           absolute path from the schema root, starting with '/'.
+           When path-prefix is present, target MUST be relative
+           and MUST NOT start with '/'.
+
+           With a path-prefix, the full target path is
+           formed by appending the target path segments to the
+           prefix, using a single '/' between path segments.
+           Otherwise, target itself is the full target path.
+           A full target path of '/' identifies the entire
+           datastore and MUST be represented by omitting
+           path-prefix and setting target to '/'.";
       }
 
       choice data {
@@ -1035,8 +1072,8 @@ module ietf-yang-push-2 {
              the subscribed data has been received, as indicated
              by complete or update-complete.
 
-             The data is encoded relative to the combined path
-             defined by path-prefix and target-path.";
+             The data is encoded relative to the full target path,
+             formed by combining path-prefix and target.";
         }
         leaf delete {
           when "../../snapshot-type = 'on-change'" {

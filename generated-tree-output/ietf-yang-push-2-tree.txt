@@ -107,8 +107,8 @@ module: ietf-yang-push-2
     |  +--ro path-prefix?        string
     |  +--ro snapshot-type       enumeration
     |  +--ro observation-time?   yang:date-and-time
-    |  +--ro updates* [target-path]
-    |  |  +--ro target-path     string
+    |  +--ro updates* [target]
+    |  |  +--ro target          string
     |  |  +--ro (data)
     |  |     +--:(update)
     |  |     |  +--ro update?   <anydata>

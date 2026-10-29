@@ -1,12 +1,12 @@
 {
   "ietf-yang-push-2:update": {
     "id": "interfaces",
-    "path-prefix": "/ietf-interfaces:interfaces/interface",
+    "path-prefix": "/ietf-interfaces:interfaces",
     "snapshot-type": "periodic",
     "observation-time": "2024-10-10T08:00:05.21Z",
     "updates": [
       {
-        "target-path": "",
+        "target": "interface",
         "update": {
           "ietf-interfaces:interface": [
             {

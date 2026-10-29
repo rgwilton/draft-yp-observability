@@ -12,7 +12,7 @@
           "observation-time": "2026-10-27T11:07:37.705886Z",
           "updates": [
             {
-              "target-path": "/ietf-interfaces:interfaces/interface[name='Eth0']",
+              "target": "/ietf-interfaces:interfaces/interface[name='Eth0']",
               "update": {
                 "name": "Eth0",
                 "description": "Ethernet interface 0",
@@ -45,7 +45,7 @@
           "observation-time": "2026-10-27T11:07:37.705886Z",
           "updates": [
             {
-              "target-path": "/ietf-interfaces:interfaces/interface[name='Eth0']/statistics",
+              "target": "/ietf-interfaces:interfaces/interface[name='Eth0']/statistics",
               "update": {
                 "discontinuity-time": "2024-10-10T08:00:00.00Z",
                 "in-octets": "1234567890",
@@ -82,7 +82,7 @@
           "observation-time": "2026-10-27T11:07:37.705886Z",
           "updates": [
             {
-              "target-path": "/ietf-interfaces:interfaces/interface[name='Eth0']",
+              "target": "/ietf-interfaces:interfaces/interface[name='Eth0']",
               "update": {
                 "name": "Eth0",
                 "ietf-ip:ipv4": {
@@ -128,7 +128,7 @@
           "observation-time": "2026-10-27T11:07:37.705886Z",
           "updates": [
             {
-              "target-path": "/ietf-interfaces:interfaces/interface[name='Eth1']",
+              "target": "/ietf-interfaces:interfaces/interface[name='Eth1']",
               "update": {
                 "name": "Eth1",
                 "description": "Ethernet interface 1",
@@ -161,7 +161,7 @@
           "observation-time": "2026-10-27T11:07:37.705886Z",
           "updates": [
             {
-              "target-path": "/ietf-interfaces:interfaces/interface[name='Eth1']/statistics",
+              "target": "/ietf-interfaces:interfaces/interface[name='Eth1']/statistics",
               "update": {
                 "discontinuity-time": "2024-10-10T08:00:00.00Z",
                 "in-octets": "1234567890",
@@ -198,7 +198,7 @@
           "observation-time": "2026-10-27T11:07:37.705886Z",
           "updates": [
             {
-              "target-path": "/ietf-interfaces:interfaces/interface[name='Eth1']",
+              "target": "/ietf-interfaces:interfaces/interface[name='Eth1']",
               "update": {
                 "name": "Eth1",
                 "ietf-ip:ipv4": {

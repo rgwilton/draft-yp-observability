@@ -10,7 +10,7 @@
         "observation-time": "2026-10-27T11:07:35.820861Z",
         "updates": [
           {
-            "target-path": "/ietf-interfaces:interfaces/interface",
+            "target": "/ietf-interfaces:interfaces/interface",
             "update": {
               "ietf-interfaces:interface": [
                 {

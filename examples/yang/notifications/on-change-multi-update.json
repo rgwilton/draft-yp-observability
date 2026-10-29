@@ -6,22 +6,15 @@
     "observation-time": "2025-10-10T08:16:06.11Z",
     "updates": [
       {
-        "target-path": "interface[name='eth0']",
+        "target": "interface[name='eth0']",
         "update": {
-          "name": "eth0",
-          "type": "iana-if-type:ethernetCsmacd",
           "enabled": false,
-          "ietf-interfaces:oper-status": "down"
+          "oper-status": "down"
         }
       },
       {
-        "target-path": "interface[name='eth1']",
-        "update": {
-          "name": "eth1",
-          "type": "iana-if-type:ethernetCsmacd",
-          "enabled": false,
-          "ietf-interfaces:oper-status": "down"
-        }
+        "target": "interface[name='eth1']",
+        "delete": true
       }
     ]
   }

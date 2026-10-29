@@ -10,12 +10,10 @@
         "observation-time": "2025-10-10T08:16:05.11Z",
         "updates": [
           {
-            "target-path": "ietf-interfaces:interfaces/interface[name='eth0']",
+            "target": "/ietf-interfaces:interfaces/interface[name='eth0']",
             "update": {
-              "name": "eth0",
-              "type": "iana-if-type:ethernetCsmacd",
               "enabled": false,
-              "ietf-interfaces:oper-status": "down"
+              "oper-status": "down"
             }
           }
         ]

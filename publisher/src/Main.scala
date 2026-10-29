@@ -393,7 +393,7 @@ object Main:
         interfaceToJson(interfaces.interface.head)
       else interfacesToJson(interfaces)
     ujson.Obj(
-      "target-path" -> entry.targetPath,
+      "target" -> entry.targetPath,
       "update" -> payload
     )
 

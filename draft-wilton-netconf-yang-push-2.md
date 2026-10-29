@@ -516,33 +516,39 @@ The normative definitions for the notifications fields are given in the YANG mod
 
 - *id* - identifies the subscription the notification relates to.
 
-- *path-prefix* - identifies the absolute instance-data path to which all target-paths are data are encoded relative to.
+- *path-prefix* - provides the common prefix for all *target* values in the notification.  If present, it MUST be an absolute path from the schema root, MUST start with '/', and MUST contain at least one path segment.  Neither an empty string nor '/' is a valid *path-prefix*.
 
 - *snapshot-type* - this indicates what type of event causes the update message to be sent.  I.e., a periodic collection, an on-change event, or a resync collection.
 
 - *observation-time* - the time that the data was sampled for a periodic or resynchronization update, or when the on-change event occurred that caused the message to be published.
 
-- *target-path* - identifies the data node that is being acted on by the *update* or *delete* operation.
+- *target* - identifies the data being updated or deleted.  It MUST be present in every *updates* entry and MUST NOT be empty.  If *path-prefix* is absent, *target* MUST be an absolute path from the schema root, starting with '/'.  Otherwise, *target* MUST be a relative path and MUST NOT start with '/'.  To act on the entire datastore, *path-prefix* is omitted and *target* is '/'.
 
 - *data* - A mandatory choice of exactly one operation, with *delete* available only for on-change notifications:
 
   - *update* - supplies current values to create or update in the receiver's view.  Existing leaf and leaf-list values supplied in the payload are replaced; containers and list entries are updated recursively, with keyed list entries identified by their keys.  Required list keys are included.  For on-change notifications, omitted descendants remain unchanged and absence of a data node does not implicitly imply deletion of that data node.
 
-  - *delete* - a boolean with a default value of ```false```.  When ```true```, it indicates that the data node at *target-path* and all its descendants no longer exist and should be removed from the receiver's view.  When ```false```, no deletion is indicated.  Deleting data that is already absent has no effect.  This operation is used for on-change deletion events.
+  - *delete* - a boolean with a default value of ```false```.  When ```true```, it indicates that the data node at *target* and all its descendants no longer exist and should be removed from the receiver's view.  When ```false```, no deletion is indicated.  Deleting data that is already absent has no effect.  This operation is used for on-change deletion events.
 
 - *complete* - applies only to *periodic* and *resync* updates and defaults to ```false```.  When ```true```, it indicates that this message completes the publisher's contribution to the collection, and is semantically equivalent to sending a separate *update-complete* notification.  Publishers MUST NOT include this flag in *on-change* updates.
 
+The full absolute *target-path* is constructed by prepending *path-prefix*, if present, to *target*, using a single '/' between path segments.  Without a *path-prefix*, *target* itself is the full *target-path*.  An operation acts on the entire datastore when its full *target-path* is '/'.  This is represented by omitting *path-prefix* and setting *target* to '/'.  Examples of valid and invalid *path-prefix* and *target* combinations are given in {{PathPrefixExamples}}.
+
 The *observation-time* describes the source data, with the greatest accuracy available from the source.  For periodic and resynchronization updates, it records the time the data was sampled.  If the data was previously sampled by a producer and cached, the timestamp SHOULD represent that original sampling.  For on-change updates, it records when the underlying event (creation, modification, or deletion) first occurred, rather than when the telemetry infrastructure received or processed the change notification.
 
-Separate messages from one collection or on-change event may have different *observation-time* values while sharing the same *event-time*.  There is no required ordering between these two timestamps: previously sampled data or an earlier change may have an observation time before processing starts, while data sampled during a collection may have an observation time after processing starts.
+Separate messages from one collection or on-change event may have different *observation-time* values while sharing the same *event-time*.
 
-As per the structure of the *update* notification, a single notification MAY provide updates for multiple target-paths.  The *updates* list MUST NOT contain duplicate *target-path* values within a single notification.  The *target-path* leaf is the list key, so duplicate values are invalid YANG, including when one entry specifies *update* and another specifies *delete* for the same *target-path*.
+For periodic and resynchronization events, the *observation-time* for data sampled in response to the collection should be the same as or later than the *event-time*, because collection processing triggers the sampling.  If a collection instead reports previously sampled, cached data, its original *observation-time* may precede the *event-time*, as described above.
+
+For on-change events, the *event-time* should be the same as or later than the *observation-time*, because the underlying change occurs before the telemetry infrastructure processes that change.
+
+As per the structure of the *update* notification, a single notification MAY provide updates for multiple targets.  The *updates* list MUST NOT contain duplicate *target* values within a single notification.  The *target* leaf is the list key, so duplicate values are invalid YANG, including when one entry specifies *update* and another specifies *delete* for the same *target*.
 
 ### Handling Particular YANG Data Nodes
 
 Empty non-presence containers SHOULD be omitted to minimize message size and receiver processing.  Presence containers MUST be included when they exist within the reported data, even if empty, and MUST be omitted when they do not exist.  For on-change notifications, deletion of a presence container MUST be reported by an explicit *delete* of that container or an ancestor.
 
-Leaf-lists are reported as a single data node.  For on-change notifications, when entries of a subscribed leaf-list are added, removed, modified, or reordered and the leaf-list remains non-empty, the publisher MUST send an *update* whose *target-path* identifies the leaf-list or an ancestor, and whose payload includes the complete current sequence of entries, preserving YANG ordering.  The supplied sequence replaces the receiver's previous sequence for that leaf-list.  Updates or deletions targeting individual leaf-list entries MUST NOT be sent.
+Leaf-lists are reported as a single data node.  For on-change notifications, when entries of a subscribed leaf-list are added, removed, modified, or reordered and the leaf-list remains non-empty, the publisher MUST send an *update* whose *target* identifies the leaf-list or an ancestor, and whose payload includes the complete current sequence of entries, preserving YANG ordering.  The supplied sequence replaces the receiver's previous sequence for that leaf-list.  Updates or deletions targeting individual leaf-list entries MUST NOT be sent.
 
 When the final entry is removed, the publisher MUST report an explicit *delete* of the leaf-list or an ancestor.  The leaf-list then has no entries and does not exist in the receiver's view.  An *update* of an enclosing subtree recursively updates the supplied data; omitted descendants remain unchanged.  Consequently, omission of a presence container or leaf-list from such an *update* does not report its deletion.
 
@@ -575,21 +581,21 @@ For periodic subscriptions, triggered updates will occur at the boundaries of a 
 
 The anchor time and period are particularly useful, in fact required, for when the collected telemetry data is being stored in a time-series database and the subscription is setup to ensure that each collection is placed in a separate time-interval bucket.
 
-Periodic update notifications are expected, but not required, to use a single *target-path* per *update* notification.
+Periodic update notifications are expected, but not required, to use a single *target* per *update* notification.
 
 ## On-Change events
 
 An on-change subscription monitors the subscribed data for any changes.  An *update* notification is sent whenever any change in the monitored data is detected, with *updates/update* used to indicate new or changed values and *updates/delete* used to indicate data nodes that have been deleted.
 
-Each entry in the *updates* list identifies a data node (i.e., list entry, container, leaf or leaf-list), via the *target-path*, that either has come into existence, has changes to its state, or has been deleted.
+Each entry in the *updates* list identifies a data node (i.e., list entry, container, leaf or leaf-list), via the *target*, that either has come into existence, has changes to its state, or has been deleted.
 
 New or changed values are reported using the *update* element of an *updates* entry.  The payload SHOULD only report the state that has changed (including any required list keys). Omitting a descendant data node from an *update* payload does not delete it.  The payload MAY include additional unchanged data nodes if the publisher is unable to optimize the on-change update message, but this may incur higher processing overheads for the receiver.
 
-An on-change deletion MUST be reported using a *delete* entry whose *target-path* identifies the deleted data node or subtree.  If a descendant of an updated subtree is deleted, it requires a separate *delete* entry at that descendant's path.  This entry MAY be included in the same notification as other *updates* entries.
+An on-change deletion MUST be reported using a *delete* entry whose *target* identifies the deleted data node or subtree.  If a descendant of an updated subtree is deleted, it requires a separate *delete* entry at that descendant's path.  This entry MAY be included in the same notification as other *updates* entries.
 
 Within a subscription, individual publishers (as identified by publisher-id) MUST preserve the causal order of changes affecting the same data node in the *sequence-number* ordering of the corresponding on-change *update* notifications.  Receivers MUST process these notifications in sequence-number order, accounting for sequence-number wraparound.  Successive notifications affecting the same data node normally have increasing *observation-time* values, but may have the same *observation-time* if the timestamp resolution is insufficient to assign distinct times to the changes.  These values are therefore non-decreasing.  These ordering requirements apply across new data nodes, changed values, and deletions.
 
-Within an *update* notification, receivers MAY process the entries in the *updates* list in any order.  Consequently, within a single notification, the *updates* list MUST NOT contain duplicate *target-path* values, including when one entry specifies *update* and another specifies *delete* for the same path.  The list MUST NOT contain both a *delete* entry for a data node and an *update* entry whose *target-path* identifies a descendant of that deleted node.
+Within an *update* notification, receivers MAY process the entries in the *updates* list in any order.  Consequently, within a single notification, the *updates* list MUST NOT contain duplicate *target* values, including when one entry specifies *update* and another specifies *delete* for the same path.  The list MUST NOT contain both a *delete* entry for a data node and an *update* entry whose *target* identifies a descendant of that deleted node.
 
 On-change subscriptions also support the following additional parameters:
 
@@ -637,12 +643,13 @@ A single subscription may created to generate notifications both when changes oc
 
 
 {{OnChangeExample}} provides an example of an on-change notification message for
-the same subscription.
+the same subscription.  The `eth0` update includes only the fields that
+changed: `enabled` and `oper-status`.  The `eth1` interface has been deleted.
 
 ~~~~ JSON
 {::include examples/yang/notifications/on-change-multi-update.json}
 ~~~~
-{: align="left" sourcecode-name="on-change-multi-update.json" title="Example on-change update message" #OnChangeExample}
+{: align="left" sourcecode-name="on-change-multi-update.json" title="Example on-change update and delete message" #OnChangeExample}
 
 
 # Receivers, Transports, and Encodings {#ReceiversEtAl}
@@ -1781,6 +1788,25 @@ addition to those that were already defined in [RFC8639]:
                                   synchronization-size
 ~~~~
 
+# Path Prefix and Target Examples {#PathPrefixExamples}
+
+The following examples illustrate the path rules for update notifications.  They assume an illustrative YANG module named `example` with a top-level `system` container containing a `name` leaf.  "Absent" means that the field is omitted; `""` means a present field containing an empty string.  An invalid combination has no valid full target path.  For valid combinations, an *update* supplies data at the identified target, and a *delete* removes the identified data and its descendants from the receiver's view.
+
+| path-prefix | target | Full target path | Validity and expected behavior |
+|-------------|--------|------------------|--------------------------------|
+| Absent | `/example:system` | `/example:system` | Valid: acts on the system container. |
+| `/example:system` | `name` | `/example:system/name` | Valid: acts on the name leaf. |
+| `/example:system` | `""` | None | Invalid: the target must not be empty. |
+| Absent | `/` | `/` | Valid: acts on the entire datastore. |
+| `""` | `/example:system` | None | Invalid: a present prefix cannot be empty. |
+| `/` | `example:system` | None | Invalid: the prefix contains no path segment. |
+| `example:system` | `name` | None | Invalid: the prefix is not absolute. |
+| Absent | `example:system` | None | Invalid: without a prefix, the target is not absolute. |
+| `/example:system` | `/name` | None | Invalid: with a prefix, the target starts with '/'. |
+| Absent | `""` | None | Invalid: without a prefix, an empty target is not absolute. |
+| `/example:system` | Absent | None | Invalid: the target is the required key of each updates entry. |
+{: title="Examples of target path construction"}
+
 # Examples {#Examples}
 
 Notes on examples:
@@ -1802,8 +1828,8 @@ In this example, a subscription is for */ietf-interfaces:interfaces/interface*. 
 Of note:
 
 - The first periodic message is published for the entries in the */ietf-interfaces:interface/interfaces* list, but doesn't contain the data in the *statistics* child container.
-- the *path-prefix* is to the subscription subtree, since the device will never return data outside of the subscription subtree.
-- the *target-path* is elided because the data is returned at the subscription point. **TODO, or should it actually be to the element above? **
+- the *path-prefix* identifies the parent of the subscribed interface list.
+- the *target* is `interface`, identifying the subscribed list relative to *path-prefix*.
 
 ~~~~ JSON
 {::include examples/yang/notifications/periodic-update.json}
@@ -1813,7 +1839,7 @@ Of note:
 For the second notification related to the same subscription:
 
 - the second periodic message is published for only the statistics associated with the interfaces.
-- as above, the *path-prefix* is still to the subscription subtree.
+- as above, *path-prefix* identifies the parent of the subscribed interface list, and *target* is `interface`.
 - the second notification uses a separate observation-time, but would use the same event-time in the notification header so that the two messages can be correlated to the same periodic collection event.
 - the second periodic message has set the *complete* flag to indicate that it is the last notification as part of the periodic collection.  A separate *update-complete* notification could have been sent instead.
 
@@ -1825,13 +1851,11 @@ For the second notification related to the same subscription:
 
 ## Example of an on-change notification containing updated data
 
-If the subscription is for on-change notifications, or periodic-and-on-change-notifications, then, if the interface state changed (specifically if the 'state' leaf of the interface changed state), and if the device was capable of generating on-change notifications, then you may see the following message.  A few points of notes here:
+If the subscription is for on-change notifications, or periodic-and-on-change notifications, then, if the interface state changed (specifically if the `enabled` and `oper-status` leaves changed), and if the device was capable of generating on-change notifications, then you may see the following message.  A few points of notes here:
 
-- The on-change notification contains **all** of the state at the "target-path"
+- The on-change notification includes only the data nodes that changed within the *target*.  It does not repeat unchanged sibling data.
 
-  - Not present in the below example, but if the notification excluded some state under an interfaces list entry (e.g., the line-state leaf) then this would logically represent the implicit deletion of that field under the given list entry.
-
-  - In this example it is restricted to a single interface. It could also publish an on-change notification for all interfaces, by indicating a target-path without any keys specified.  TODO - Can it represent notifications for a subset of interfaces?
+- A single on-change notification could also publish updates for multiple interfaces in the same message.
 
 - The schema of the change message is exactly the same as for the equivalent periodic message.  It doesn't use the YANG Patch format {{RFC8072}} for on-change messages.
 
@@ -1854,7 +1878,7 @@ If the interface was deleted, and if the system was capable of reporting on-chan
 Of note:
 
 - The ietf-yang-push-2:envelope has been elided
-- The deleted data is identified by the target node in the *updates/target-path* element.
+- The deleted data is identified by the target node in the *updates/target* element.
 - The observation time represents the time at which the delete event occurred, e.g., perhaps when the system processed a configuration change.
 
 ~~~~ JSON
@@ -1870,7 +1894,7 @@ This follow example illustrates how a single update notification message can con
 Of note:
 
 - The ietf-yang-push-2:envelope has been elided
-- *prefix-path* is used to shorten the target-paths, the full paths can be constructed concatenating the *prefix-path* with each *target-path* in the *updates* list.
+- *path-prefix* is used to shorten the *target* values.  Each full *target-path* is formed by appending the corresponding *target* path segments to *path-prefix*.
 - all delete events share a common observation-time of when the delete events occurred.  If it is necessary to identify separate observation times then the publisher would send separate messages.
 - data node subtrees that are deleted (list entries in this case) are identified by separate entries in the *updates* list.
 
