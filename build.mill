@@ -10,7 +10,7 @@ import uk.org.wilton.ietf.yang.mill.plugin.*
 
 object `package` extends IETF:
   def draft = Task.Source:
-    "draft-wilton-netconf-yang-push-2.md"
+    "draft-ietf-netconf-yang-push-2.md"
 
   // All RFCs that we need to extract YANG from.
   def rfcDeps = List(
