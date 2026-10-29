@@ -22,7 +22,7 @@ venue:
   mail: "netconf@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/netconf/"
   github: "rgwilton/draft-yp-observability"
-  latest: "https://rgwilton.github.io/draft-yp-observability/draft-wilton-netconf-yp-observability.html"
+  latest: "https://rgwilton.github.io/draft-yp-observability/draft-ietf-netconf-yang-push-2.html"
 
 author:
  -
